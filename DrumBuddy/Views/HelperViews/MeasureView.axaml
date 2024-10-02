@@ -1,0 +1,23 @@
+﻿<rxui:ReactiveUserControl x:TypeArguments="vm:MeasureViewModel"
+                         xmlns="https://github.com/avaloniaui"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:vm="clr-namespace:DrumBuddy.ViewModels.HelperViewModels"
+                         xmlns:views="clr-namespace:DrumBuddy.Views"
+                         xmlns:rxui="http://reactiveui.net" Height="120" Width="500"
+                         mc:Ignorable="d"
+                         x:Class="DrumBuddy.Views.HelperViews.MeasureView" >
+  <Design.DataContext>
+    <vm:MeasureViewModel/>
+  </Design.DataContext>
+  <Canvas x:Name="MeasureCanvas">
+    <!-- Draw 5 lines for the music sheet -->
+    <Line StartPoint="0,20" EndPoint="500,20" Stroke="Black" StrokeThickness="2"/>
+    <Line StartPoint="0,40" EndPoint="500,40" Stroke="Black" StrokeThickness="2"/>
+    <Line StartPoint="0,60" EndPoint="500,60" Stroke="Black" StrokeThickness="2"/>
+    <Line StartPoint="0,80" EndPoint="500,80" Stroke="Black" StrokeThickness="2"/>
+    <Line StartPoint="0,100" EndPoint="500,100" Stroke="Black" StrokeThickness="2"/>
+    <Line StartPoint="500,20" EndPoint="500,100" Stroke="Black" StrokeThickness="2"></Line>
+  </Canvas>
+</rxui:ReactiveUserControl>
