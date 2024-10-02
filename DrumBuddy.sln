@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrumBuddy.Core", "DrumBuddy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrumBuddy.IO", "DrumBuddy.IO\DrumBuddy.IO.csproj", "{0EAC9624-359B-4B44-ABA0-5C9F8E2710FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrumBuddy.Unit", "DrumBuddy.Unit\DrumBuddy.Unit.csproj", "{52354F9F-A702-45F7-A052-A29BA2DC290D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{0EAC9624-359B-4B44-ABA0-5C9F8E2710FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EAC9624-359B-4B44-ABA0-5C9F8E2710FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EAC9624-359B-4B44-ABA0-5C9F8E2710FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52354F9F-A702-45F7-A052-A29BA2DC290D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52354F9F-A702-45F7-A052-A29BA2DC290D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52354F9F-A702-45F7-A052-A29BA2DC290D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52354F9F-A702-45F7-A052-A29BA2DC290D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
