@@ -1,0 +1,16 @@
+<rxui:ReactiveUserControl x:TypeArguments="vm:RythmicGroupViewModel" 
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:vm="clr-namespace:DrumBuddy.ViewModels.HelperViewModels"
+                          xmlns:rxui="http://reactiveui.net"
+                          mc:Ignorable="d"
+                          x:Class="DrumBuddy.Views.HelperViews.RythmicGroupView" >
+    <Design.DataContext>
+        <vm:RythmicGroupViewModel/>
+    </Design.DataContext>
+    <Border BorderThickness="1" >
+        <!-- Add content for RythmicGroup here -->
+    </Border>
+</rxui:ReactiveUserControl>

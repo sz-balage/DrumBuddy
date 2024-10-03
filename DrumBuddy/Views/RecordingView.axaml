@@ -117,7 +117,7 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <helperViews:MeasureView Width="500"/>
+            <helperViews:MeasureView Width="500" Margin="10,0,10,0"/>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>

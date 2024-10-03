@@ -15,19 +15,21 @@ using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
 using System.ComponentModel;
 using System.Reactive.Concurrency;
+using DrumBuddy.IO.Enums;
+using DrumBuddy.IO.Extensions;
 
 namespace DrumBuddy.ViewModels
 {
     public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
     {
+        private DispatcherTimer _pointerTimer;
         private SourceList<MeasureViewModel> _measureSource = new();
         private RecordingService _recordingService;
         private ReadOnlyObservableCollection<MeasureViewModel> _measures;
-        
         private DispatcherTimer _timer;
-
         private IDisposable _recordingSubscription;
         private BPM _bpm;
+        private int _index = 0;
 
         public RecordingViewModel()
         {
@@ -50,7 +52,20 @@ namespace DrumBuddy.ViewModels
             TimeElapsed = "0:0:0";
             IsRecording = false;
             IsPaused = false;
+
+            #region pointerandmeasure
+            CurrentMeasure = Measures[0];
+
+           
+
+            #endregion
         }
+        private IObservable<IList<Note>> _gettingNotesWhileRecordingObs => 
+            _recordingService.GetNotesObservable(Observable.Interval(_bpm.QuarterNoteDuration()).Select(_ => new Beat(DateTime.Now,DrumType.Bass)))
+                .DoWhile(() => IsRecording);
+
+        [Reactive]
+        public MeasureViewModel _currentMeasure;
         [Reactive]
         private decimal _bpmDecimal;
         [Reactive]
@@ -71,6 +86,21 @@ namespace DrumBuddy.ViewModels
             IsPaused = false;
             _recordingSubscription = _recordingService.StartRecording(notes => notes.ToList().ForEach(n => Debug.WriteLine($"{n.Value.ToString()} was hit with {n.DrumType.ToString()}")), _bpm);
             _timer.Start();
+
+            _gettingNotesWhileRecordingObs
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Select((notes, i) => (notes, i % 4)) // change the select to include i % 4
+                .Subscribe((tuple) =>
+                {
+                    //add the notes to the current measure and move the pointer
+                    CurrentMeasure.MovePointerToNextRythmicGroup(tuple.Item2);
+                    //go to the next measure every 4 beats
+                    if (tuple.Item2 == 3 && CurrentMeasure != Measures.Last())
+                    {
+                        CurrentMeasure.IsPointerVisible = false;
+                        CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
+                    }
+                });
         }
 
         [ReactiveCommand]
@@ -92,6 +122,7 @@ namespace DrumBuddy.ViewModels
             _recordingSubscription.Dispose();
             _recordingService.PauseRecording();
             _timer.Stop();
+            _pointerTimer.Stop();
         }
         [ReactiveCommand]
         private void ResumeRecording()
@@ -99,6 +130,7 @@ namespace DrumBuddy.ViewModels
             IsPaused = false;
             _recordingSubscription = _recordingService.StartRecording(notes => notes.ToList().ForEach(n => Debug.WriteLine($"{n.Value.ToString()} was hit with {n.DrumType.ToString()}")), _bpm);
             _timer.Start();
+            _pointerTimer.Start();
         }
         public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
         public string? UrlPathSegment { get; } = "recording-view";
