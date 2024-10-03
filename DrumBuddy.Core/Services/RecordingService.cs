@@ -32,12 +32,15 @@ namespace DrumBuddy.Core.Services
         public IDisposable StartRecording(Action<IList<Note>> subToNotes, BPM tempo)
         {
             Tempo = tempo;
+            StopWatch.Start();
             return GetNotesObservable(_midiService.GetBeatsObservable())
                 .Subscribe(subToNotes);
         }
-        public void StopRecording() => StopWatch.Stop();
+
+        public void StopRecording() => StopWatch.Reset();
         public Stopwatch StopWatch { get; } = new();
         public BPM Tempo { get; private set; }
-     
+
+        public void PauseRecording() => StopWatch.Stop();
     }
 }

@@ -44,21 +44,40 @@
                                Margin="10"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="StopRecordingButton"
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Background="LightGray">
-                <StackPanel Orientation="Horizontal">
-                    <PathIcon Data="{StaticResource RecordIcon}"
-                              Foreground="Red"/>
-                    <TextBlock Text="Stop Recording"
-                               FontSize="24"
-                               Margin="10"/>
-                </StackPanel>
-            </Button>
+            <StackPanel Grid.Row="0"
+                        Grid.Column="0"
+                        Orientation="Horizontal">
+                <Button x:Name="StopRecordingButton"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Background="LightGray">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource RecordIcon}"
+                                  Foreground="Red"/>
+                        <TextBlock Text="Stop Recording"
+                                   FontSize="24"
+                                   Margin="10"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="PauseRecordingButton">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource Pause}"/>
+                        <TextBlock Text="Pause"
+                                   FontSize="24"
+                                   Margin="10"/></StackPanel>
+                </Button>
+                <Button x:Name="ResumeRecordingButton">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource Resume}"/>
+                        <TextBlock Text="Resume"
+                                   FontSize="24"
+                                   Margin="10"/></StackPanel>
+                </Button>
+            </StackPanel>
             <StackPanel Grid.Row="0" 
                         Grid.Column="1"
-                        Orientation="Horizontal">
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center">
                 <Label FontSize="24" 
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center">
@@ -72,6 +91,19 @@
                                FontSize="24"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Grid.Row="0"
+                        Grid.Column="2"
+                        Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label FontSize="24"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center">
+                    Time elapsed:
+                </Label>
+                <TextBlock x:Name="TimeElapsedTextBlock"
+                           FontSize="24"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
             </StackPanel>
         </Grid>
     </Border>

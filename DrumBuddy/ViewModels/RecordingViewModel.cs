@@ -11,7 +11,10 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
+using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
+using System.ComponentModel;
+using System.Reactive.Concurrency;
 
 namespace DrumBuddy.ViewModels
 {
@@ -20,27 +23,12 @@ namespace DrumBuddy.ViewModels
         private SourceList<MeasureViewModel> _measureSource = new();
         private RecordingService _recordingService;
         private ReadOnlyObservableCollection<MeasureViewModel> _measures;
+        
+        private DispatcherTimer _timer;
+
         private IDisposable _recordingSubscription;
         private BPM _bpm;
-        [Reactive]
-        private decimal _bpmDecimal;
-        [Reactive]
-        private bool _isRecording;
 
-        [ReactiveCommand]
-        private void StartRecording()
-        {
-            IsRecording = true;
-            _recordingSubscription = _recordingService.StartRecording(notes => notes.ToList().ForEach(n => Debug.WriteLine($"{n.Value.ToString()} was hit with {n.DrumType.ToString()}")), _bpm);
-        }
-
-        [ReactiveCommand]
-        private void StopRecording()
-        {
-            IsRecording = false;
-            _recordingSubscription.Dispose();
-            _recordingService.StopRecording();
-        }
         public RecordingViewModel()
         {
             _recordingService = new();
@@ -59,7 +47,58 @@ namespace DrumBuddy.ViewModels
                         Left: ex => Debug.WriteLine(ex.Message));
                 });
             BpmDecimal = 100; //default value
+            TimeElapsed = "0:0:0";
             IsRecording = false;
+            IsPaused = false;
+        }
+        [Reactive]
+        private decimal _bpmDecimal;
+        [Reactive]
+        private bool _isRecording;
+        [Reactive]
+        private bool _isPaused;
+
+        [Reactive]
+        private string _timeElapsed;
+        [ReactiveCommand]
+        private void StartRecording()
+        {
+            _timer = new DispatcherTimer();
+            _timer.Tick += (s, e) =>
+                TimeElapsed = $"{_recordingService.StopWatch.Elapsed.Minutes}:{_recordingService.StopWatch.Elapsed.Seconds}:{_recordingService.StopWatch.Elapsed.Milliseconds.ToString().Remove(1)}";
+            _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            IsRecording = true;
+            IsPaused = false;
+            _recordingSubscription = _recordingService.StartRecording(notes => notes.ToList().ForEach(n => Debug.WriteLine($"{n.Value.ToString()} was hit with {n.DrumType.ToString()}")), _bpm);
+            _timer.Start();
+        }
+
+        [ReactiveCommand]
+        private void StopRecording()
+        {
+            IsRecording = false;
+            IsPaused = false;
+            _recordingSubscription.Dispose();
+            _timer.Stop();
+            _recordingService.StopRecording();
+            //do something with the done sheet
+            TimeElapsed = $"0:0:0";
+        }
+
+        [ReactiveCommand]
+        private void PauseRecording()
+        {
+            IsPaused = true;
+            _recordingSubscription.Dispose();
+            _recordingService.PauseRecording();
+            _timer.Stop();
+        }
+        [ReactiveCommand]
+        private void ResumeRecording()
+        {
+            IsPaused = false;
+            _recordingSubscription = _recordingService.StartRecording(notes => notes.ToList().ForEach(n => Debug.WriteLine($"{n.Value.ToString()} was hit with {n.DrumType.ToString()}")), _bpm);
+            _timer.Start();
         }
         public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
         public string? UrlPathSegment { get; } = "recording-view";
