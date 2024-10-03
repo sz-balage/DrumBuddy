@@ -6,8 +6,30 @@
                           xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.HomeView">
-<Label x:Name="WelcomeLabel" 
-       VerticalAlignment="Center"
-       HorizontalAlignment="Center"
-       FontSize="24"/>
+    <Design.DataContext>
+        <vm:HomeViewModel />
+    </Design.DataContext>
+    <Grid>
+
+      <Image x:Name="HomeIcon"
+             VerticalAlignment="Center"
+             HorizontalAlignment="Center" 
+             Opacity="0.5"
+             Width="800"
+             Height="800"
+             Source="resm:DrumBuddy.Assets.snare-icon.jpg?assembly=DrumBuddy"/>
+       <StackPanel VerticalAlignment="Center"
+                   HorizontalAlignment="Center">
+           <Label x:Name="WelcomeLabel"
+                  FontSize="40" 
+                  FontWeight="Bold"
+                  HorizontalAlignment="Center"/>
+           <Label x:Name="SubTextLabel"
+                  FontSize="20"
+                  HorizontalAlignment="Center"
+                  FontWeight="Bold"/>
+       </StackPanel>
+       
+</Grid>
+
 </rxui:ReactiveUserControl>
