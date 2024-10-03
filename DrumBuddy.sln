@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrumBuddy", "DrumBuddy\DrumBuddy.csproj", "{33221A92-6E88-4BE0-ACCF-7DB5BD6BB26F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrumBuddy", "DrumBuddy\DrumBuddy.csproj", "{33221A92-6E88-4BE0-ACCF-7DB5BD6BB26F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrumBuddy.Core", "DrumBuddy.Core\DrumBuddy.Core.csproj", "{BC7AE4F7-2829-456F-81B4-468142F74E43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrumBuddy.Core", "DrumBuddy.Core\DrumBuddy.Core.csproj", "{BC7AE4F7-2829-456F-81B4-468142F74E43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrumBuddy.IO", "DrumBuddy.IO\DrumBuddy.IO.csproj", "{0EAC9624-359B-4B44-ABA0-5C9F8E2710FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrumBuddy.IO", "DrumBuddy.IO\DrumBuddy.IO.csproj", "{0EAC9624-359B-4B44-ABA0-5C9F8E2710FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrumBuddy.Unit", "DrumBuddy.Unit\DrumBuddy.Unit.csproj", "{52354F9F-A702-45F7-A052-A29BA2DC290D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrumBuddy.Core.Unit", "DrumBuddy.Unit\DrumBuddy.Core.Unit.csproj", "{52354F9F-A702-45F7-A052-A29BA2DC290D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
