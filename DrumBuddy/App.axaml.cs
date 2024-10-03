@@ -1,7 +1,9 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using DrumBuddy.ViewModels;
 using DrumBuddy.Views;
+using Splat;
 
 namespace DrumBuddy
 {
@@ -16,7 +18,11 @@ namespace DrumBuddy
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow();
+                desktop.MainWindow = Locator.Current.GetService<MainWindow>();
+                if (desktop.MainWindow.DataContext is MainViewModel vm)
+                {
+                    vm.SelectedPaneItem = vm.PaneItems[0];
+                }
             }
 
             base.OnFrameworkInitializationCompleted();

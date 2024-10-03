@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
         xmlns:rxui="http://reactiveui.net"
+        xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
         xmlns:app="clr-namespace:DrumBuddy"
+        xmlns:helpers="clr-namespace:DrumBuddy.Helpers.Models"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="DrumBuddy.Views.MainWindow"
         Title="DrumBuddy">
@@ -14,12 +16,45 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
-  <rxui:RoutedViewHost x:Name="RoutedViewHost">
-    <rxui:RoutedViewHost.DefaultContent>
-      <TextBlock Text="Loading..." />
-    </rxui:RoutedViewHost.DefaultContent>
-    <rxui:RoutedViewHost.ViewLocator>
-      <app:AppViewLocator></app:AppViewLocator>
-    </rxui:RoutedViewHost.ViewLocator>
-  </rxui:RoutedViewHost>
+    <SplitView x:Name="SplitView"
+               OpenPaneLength="200"
+               CompactPaneLength="48"
+               DisplayMode="CompactInline"
+               PaneBackground="LightGray">
+        <SplitView.Pane>
+            <StackPanel Spacing="5" Margin="5">
+                <Button x:Name="TriggerPaneButton">
+                    <PathIcon Data="{StaticResource Line_Horizontal_3}"></PathIcon>
+                </Button>
+                <ListBox x:Name="PaneListBox">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type helpers:ListItemTemplate}">
+                            <StackPanel Spacing="15" Orientation="Horizontal">
+                                <PathIcon Data="{Binding Icon}" Width="13"></PathIcon>
+                                <TextBlock Margin="0,2,0,0" Text="{Binding Label}"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </SplitView.Pane>
+        <SplitView.Content>
+            <Border CornerRadius="12,0,0,0">
+              <rxui:RoutedViewHost x:Name="RoutedViewHost">
+                  <rxui:RoutedViewHost.DefaultContent>
+                      <progRing:ProgressRing Foreground="Gray"
+                                             Width="80"
+                                             Height="80"
+                                             IsActive="True"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"/>
+                  </rxui:RoutedViewHost.DefaultContent>
+                  <rxui:RoutedViewHost.ViewLocator>
+                      <app:AppViewLocator></app:AppViewLocator>
+                  </rxui:RoutedViewHost.ViewLocator>
+              </rxui:RoutedViewHost>
+            </Border>
+        </SplitView.Content>
+    </SplitView>
+  
 </rxui:ReactiveWindow>

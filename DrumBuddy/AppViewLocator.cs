@@ -9,6 +9,7 @@ namespace DrumBuddy
     {
         public IViewFor ResolveView<T>(T viewModel, string contract = null) => viewModel switch
         {
+            HomeViewModel context => new HomeView() { ViewModel = context },
             RecordingViewModel context => new RecordingView() { ViewModel = context },
             _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
         };
