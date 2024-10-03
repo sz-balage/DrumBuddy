@@ -18,20 +18,22 @@
   </Design.DataContext>
     <SplitView x:Name="SplitView"
                OpenPaneLength="200"
-               CompactPaneLength="48"
+               CompactPaneLength="50"
                DisplayMode="CompactInline"
                PaneBackground="LightGray">
         <SplitView.Pane>
             <StackPanel Spacing="5" Margin="5">
-                <Button x:Name="TriggerPaneButton">
+                <Button x:Name="TriggerPaneButton" Height="40" Width="41">
                     <PathIcon Data="{StaticResource Line_Horizontal_3}"></PathIcon>
                 </Button>
                 <ListBox x:Name="PaneListBox">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type helpers:ListItemTemplate}">
                             <StackPanel Spacing="15" Orientation="Horizontal">
-                                <PathIcon Data="{Binding Icon}" Width="13"></PathIcon>
-                                <TextBlock Margin="0,2,0,0" Text="{Binding Label}"></TextBlock>
+                                <PathIcon VerticalAlignment="Center" Height="40" Data="{Binding Icon}" Width="15"></PathIcon>
+                                <TextBlock Margin="0,2,0,0"
+                                           Text="{Binding Label}"
+                                           VerticalAlignment="Center"></TextBlock>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

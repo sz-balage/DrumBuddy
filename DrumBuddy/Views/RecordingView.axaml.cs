@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
@@ -12,6 +13,9 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
 {
     private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl");
     private MeasureView MeasureView => this.FindControl<MeasureView>("measure");
+    private Button _startRecordingButton => this.FindControl<Button>("StartRecordingButton");
+    private Button _stopRecordingButton => this.FindControl<Button>("StopRecordingButton");
+    private NumericUpDown _bpmNumeric => this.FindControl<NumericUpDown>("BpmNumeric");
     public RecordingView()
     {
         InitializeComponent();
@@ -23,7 +27,26 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
 
             this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
                 .DisposeWith(d);
-
+            this.BindCommand(ViewModel, vm => vm.StartRecordingCommand, v => v._startRecordingButton)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.StopRecordingCommand, v => v._stopRecordingButton)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.IsRecording, v => v._bpmNumeric.IsEnabled, i => !i)
+                .DisposeWith(d);
+            this.OneWayBind(
+                ViewModel, 
+                vm => vm.IsRecording, 
+                v => v._startRecordingButton.IsVisible,
+                i =>
+                {
+                    return !i;
+                });
+            this.OneWayBind(ViewModel, vm => vm.IsRecording, v => v._stopRecordingButton.IsVisible,
+                i =>
+                {
+                    return i;
+                });
+            this.Bind(ViewModel, vm => vm.BpmDecimal, v => v._bpmNumeric.Value);
             // ViewModel.NoteObservable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(notes =>
             // {
             //     foreach (var note in notes)

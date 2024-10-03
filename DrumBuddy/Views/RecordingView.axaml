@@ -22,9 +22,61 @@
     <!-- </Grid.ColumnDefinitions> -->
     <!-- <Button x:Name="SnareButton">Click me to simulate a Snare beat.</Button> -->
     <!-- <Button Grid.Column="1" x:Name="BassButton">Click me to simulate a Bass drum beat.</Button> -->
-
-
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <Border Grid.Row="0" Background="LightGray">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="0.3*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="StartRecordingButton"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Background="LightGray">
+                <StackPanel Orientation="Horizontal">
+                    <PathIcon Data="{StaticResource RecordIcon}"/>
+                    <TextBlock Text="Start Recording" 
+                               FontSize="24"
+                               Margin="10"/>
+                </StackPanel>
+            </Button>
+            <Button x:Name="StopRecordingButton"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Background="LightGray">
+                <StackPanel Orientation="Horizontal">
+                    <PathIcon Data="{StaticResource RecordIcon}"
+                              Foreground="Red"/>
+                    <TextBlock Text="Stop Recording"
+                               FontSize="24"
+                               Margin="10"/>
+                </StackPanel>
+            </Button>
+            <StackPanel Grid.Row="0" 
+                        Grid.Column="1"
+                        Orientation="Horizontal">
+                <Label FontSize="24" 
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center">
+                    BPM:
+                </Label>
+                <NumericUpDown x:Name="BpmNumeric"
+                               Minimum="20"
+                               Maximum="250"
+                               Value="100"
+                               FormatString="0"
+                               FontSize="24"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+   
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
       <ItemsControl x:Name="MeasuresItemControl">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>

@@ -2,19 +2,18 @@
 using DrumBuddy.IO.Extensions;
 using DrumBuddy.IO.Models;
 using System.Reactive.Linq;
+using DrumBuddy.IO.Abstractions;
 
 namespace DrumBuddy.IO.Services
 {
-    public class MidiService
+    public class MidiService : IMidiService
     {
-        private BPM _tempo;
-
-        public MidiService(BPM tempo)
-        {
-            _tempo = tempo;
-        }
+        /// <summary>
+        /// ONLY FOR TESTING PURPOSES, THE MIDI SERVICE WILL NOT HAVE A TEMPO PROPERTY
+        /// </summary>
+        public BPM Tempo = (BPM)BPM.From(100); //default value is 100
         public IObservable<Beat> GetBeatsObservable() //for now for testing purposes it only returns a beat every sixteenth note duration (calculated from BPM
-         => Observable.Interval(_tempo.QuarterNoteDuration())
+         => Observable.Interval(Tempo.QuarterNoteDuration())
                        .Select(_ => new Beat(DateTime.Now, DrumType.Snare));
     }
 }

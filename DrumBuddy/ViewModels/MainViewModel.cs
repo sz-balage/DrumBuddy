@@ -23,7 +23,7 @@ namespace DrumBuddy.ViewModels
             if (Router.GetCurrentViewModel()?.GetType() == value.ModelType)
                 return;
             IsPaneOpen = false;
-            Router.Navigate.Execute(Locator.Current.GetService(value.ModelType) as IRoutableViewModel);
+            Router.NavigateAndReset.Execute(Locator.Current.GetService(value.ModelType) as IRoutableViewModel);
         }
         public ObservableCollection<ListItemTemplate> PaneItems { get; } = new()
         {
