@@ -15,6 +15,7 @@ using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
 using System.ComponentModel;
 using System.Reactive.Concurrency;
+using System.Threading;
 using DrumBuddy.IO.Enums;
 using DrumBuddy.IO.Extensions;
 
@@ -55,9 +56,11 @@ namespace DrumBuddy.ViewModels
             CurrentMeasure = null;
 
         }
-        private IObservable<IList<Note>> _gettingNotesWhileRecordingObs => 
+        private IObservable<(IList<Note>, int)> _notesObservable => 
             _recordingService.GetNotesObservable(Observable.Interval(_bpm.QuarterNoteDuration()).Select(_ => new Beat(DateTime.Now,DrumType.Bass)))
-                .DoWhile(() => IsRecording);
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Select((notes, i) => (notes, i % 4)) // change the select to include i % 4
+                .TakeUntil(tuple => (tuple.Item2 == 0 && IsPaused == true) || CurrentMeasure == Measures.Last());
 
         [Reactive]
         public MeasureViewModel _currentMeasure;
@@ -79,22 +82,20 @@ namespace DrumBuddy.ViewModels
                 TimeElapsed = $"{_recordingService.StopWatch.Elapsed.Minutes}:{_recordingService.StopWatch.Elapsed.Seconds}:{_recordingService.StopWatch.Elapsed.Milliseconds.ToString().Remove(1)}";
             _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             #endregion
-
-            #region UI buttons
-            IsRecording = true;
-            IsPaused = false;
-            #endregion
-
             _timer.Start();
             _recordingService.Tempo = _bpm;
             _recordingService.StopWatch.Start();
-            _pointerSubscription = _gettingNotesWhileRecordingObs
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Select((notes, i) => (notes, i % 4)) // change the select to include i % 4
+            _pointerSubscription = _notesObservable
                 .Subscribe((tuple) =>
                 {
+                    //if the recording is paused and the current rythmic group is 0, stop the timer
+                    if (IsPaused && tuple.Item2 == 0)
+                    {
+                        _recordingService.StopWatch.Stop();
+                        _timer.Stop();
+                    }
                     //go to the next measure every 4 beats
-                    if (tuple.Item2 == 0 && CurrentMeasure != Measures.Last())
+                    if (tuple.Item2 == 0)
                     {
                         if (CurrentMeasure == null)
                         {
@@ -107,22 +108,26 @@ namespace DrumBuddy.ViewModels
                         }
                     }
                     //add the notes to the current measure and move the pointer
-                    CurrentMeasure.MovePointerToNextRythmicGroup(tuple.Item2);
+                    CurrentMeasure?.MovePointerToNextRythmicGroup(tuple.Item2);
                 });
+            #region UI buttons
+            IsRecording = true;
+            IsPaused = false;
+            #endregion
         }
 
         [ReactiveCommand]
         private void StopRecording()
         {
-            IsRecording = false;
-            IsPaused = false;
+           
             _timer.Stop();
             _recordingService.StopWatch.Reset();
             StopAndResetPointer();
             //do something with the done sheet
+            IsRecording = false;
+            IsPaused = false;
             TimeElapsed = $"0:0:0";
         }
-
         private void ClearMeasures()
         {
             _measureSource.Clear();
@@ -132,15 +137,45 @@ namespace DrumBuddy.ViewModels
         [ReactiveCommand]
         private void PauseRecording()
         {
+            
             IsPaused = true;
-            _recordingService.PauseRecording();
-            _timer.Stop();
+
         }
+
+        private bool isFirstAfterResuming;
         [ReactiveCommand]
         private void ResumeRecording()
         {
+            isFirstAfterResuming = true;
+            _pointerSubscription = _notesObservable
+                .Subscribe((tuple) =>
+                {
+                    //if the recording is paused and the current rythmic group is 0, stop the timer
+                    if (IsPaused && tuple.Item2 == 0)
+                    {
+                        _recordingService.StopWatch.Stop();
+                        _timer.Stop();
+                    }
+                    //go to the next measure every 4 beats
+                    if (tuple.Item2 == 0)
+                    {
+                        if (!isFirstAfterResuming) //if it's the first beat after resuming, don't move the pointer
+                        {
+                            CurrentMeasure.IsPointerVisible = false;
+                            CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
+                        }
+                        else
+                        {
+                            //if it's the first beat after resuming, start the stopwatch and timer
+                            _recordingService.StopWatch.Start();
+                            _timer.Start(); 
+                            isFirstAfterResuming = false;
+                        }
+                    }
+                    //add the notes to the current measure and move the pointer
+                    CurrentMeasure.MovePointerToNextRythmicGroup(tuple.Item2);
+                });
             IsPaused = false;
-            _timer.Start();
         }
 
         private void StopAndResetPointer()

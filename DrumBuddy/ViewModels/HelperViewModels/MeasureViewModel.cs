@@ -16,6 +16,7 @@ namespace DrumBuddy.ViewModels.HelperViewModels
             set => this.RaiseAndSetIfChanged(ref _pointerPosition, value);
         }
 
+        private Measure _measure = new(new());
         public MeasureViewModel()
         {
             IsPointerVisible = true;
