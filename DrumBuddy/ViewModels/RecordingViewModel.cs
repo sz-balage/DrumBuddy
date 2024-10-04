@@ -7,6 +7,7 @@ using ReactiveUI;
 using Splat;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -108,7 +109,8 @@ namespace DrumBuddy.ViewModels
                         }
                     }
                     //add the notes to the current measure and move the pointer
-                    CurrentMeasure?.MovePointerToNextRythmicGroup(tuple.Item2);
+                    CurrentMeasure?.Measure.Groups.Add(new RythmicGroup(tuple.Item1.ToImmutableArray()));
+                    CurrentMeasure?.AddNotesToRythmicGroup(tuple);
                 });
             #region UI buttons
             IsRecording = true;
@@ -119,9 +121,9 @@ namespace DrumBuddy.ViewModels
         [ReactiveCommand]
         private void StopRecording()
         {
-           
+            var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
+            _recordingService.StopRecording(_bpm,measures);
             _timer.Stop();
-            _recordingService.StopWatch.Reset();
             StopAndResetPointer();
             //do something with the done sheet
             IsRecording = false;
@@ -137,9 +139,7 @@ namespace DrumBuddy.ViewModels
         [ReactiveCommand]
         private void PauseRecording()
         {
-            
             IsPaused = true;
-
         }
 
         private bool isFirstAfterResuming;
@@ -173,7 +173,7 @@ namespace DrumBuddy.ViewModels
                         }
                     }
                     //add the notes to the current measure and move the pointer
-                    CurrentMeasure.MovePointerToNextRythmicGroup(tuple.Item2);
+                    CurrentMeasure.AddNotesToRythmicGroup(tuple);
                 });
             IsPaused = false;
         }

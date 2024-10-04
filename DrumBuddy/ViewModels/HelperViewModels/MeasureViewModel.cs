@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Linq;
 using DrumBuddy.Core.Models;
+using LanguageExt;
 using ReactiveUI.SourceGenerators;
 
 namespace DrumBuddy.ViewModels.HelperViewModels
@@ -16,7 +19,7 @@ namespace DrumBuddy.ViewModels.HelperViewModels
             set => this.RaiseAndSetIfChanged(ref _pointerPosition, value);
         }
 
-        private Measure _measure = new(new());
+        public Measure Measure = new(new(4));
         public MeasureViewModel()
         {
             IsPointerVisible = true;
@@ -31,14 +34,12 @@ namespace DrumBuddy.ViewModels.HelperViewModels
             new RythmicGroupViewModel()
         };
 
-        public void MovePointerToNextRythmicGroup(int indexOfCurrentRythmicGroup)
+        public void AddNotesToRythmicGroup((IList<Note> notes, int rythmicGroupIndex) tuple)
         {
-            //ha 0: 35
-            //ha 1: 35+135=170
-            //ha 2: 170+135=305
-            //ha 3: 305+135=440
-            PointerPosition = (indexOfCurrentRythmicGroup * 135) + 35;
-            //PointerPosition = (indexOfCurrentRythmicGroup * 150) + 25;
+            Measure.Groups[tuple.rythmicGroupIndex] = new RythmicGroup(tuple.notes.ToImmutableArray());
+            PointerPosition = (tuple.rythmicGroupIndex * 135) + 35;
+            RythmicGroups[tuple.rythmicGroupIndex].AddNotes(tuple.notes);
         }
+        public bool IsEmpty => RythmicGroups.All(rg => rg.RythmicGroup.IsDefault());
     }
 }

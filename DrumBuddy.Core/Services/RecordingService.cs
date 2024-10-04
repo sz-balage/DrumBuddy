@@ -13,6 +13,7 @@ namespace DrumBuddy.Core.Services
     public class RecordingService
     {
         private IMidiService _midiService;
+        public List<Sheet> Sheets { get; private set; } = new();
         public RecordingService(IMidiService midiService = null)
         {
             _midiService = midiService ?? new MidiService();
@@ -37,7 +38,11 @@ namespace DrumBuddy.Core.Services
                 .Subscribe(subToNotes);
         }
 
-        public void StopRecording() => StopWatch.Reset();
+        public void StopRecording(BPM bpm,List<Measure> measures)
+        {
+            StopWatch.Reset();
+            Sheets.Add(new(bpm,measures));
+        }
         public Stopwatch StopWatch { get; } = new();
         public BPM Tempo { get;  set; }
 

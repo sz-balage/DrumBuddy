@@ -10,7 +10,6 @@
     <Design.DataContext>
         <vm:RythmicGroupViewModel/>
     </Design.DataContext>
-    <Border >
-        <!-- Add content for RythmicGroup here -->
-    </Border>
+    <ContentControl x:Name="Content">
+    </ContentControl>
 </rxui:ReactiveUserControl>
