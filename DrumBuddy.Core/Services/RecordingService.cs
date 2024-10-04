@@ -39,7 +39,7 @@ namespace DrumBuddy.Core.Services
 
         public void StopRecording() => StopWatch.Reset();
         public Stopwatch StopWatch { get; } = new();
-        public BPM Tempo { get; private set; }
+        public BPM Tempo { get;  set; }
 
         public void PauseRecording() => StopWatch.Stop();
     }

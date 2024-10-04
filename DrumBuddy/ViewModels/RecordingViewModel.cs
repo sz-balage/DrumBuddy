@@ -23,24 +23,23 @@ namespace DrumBuddy.ViewModels
     public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
     {
         private DispatcherTimer _pointerTimer;
-        private SourceList<MeasureViewModel> _measureSource = new();
         private RecordingService _recordingService;
+        private SourceList<MeasureViewModel> _measureSource = new();
         private ReadOnlyObservableCollection<MeasureViewModel> _measures;
         private DispatcherTimer _timer;
-        private IDisposable _recordingSubscription;
         private BPM _bpm;
-        private int _index = 0;
-
+        private IDisposable _pointerSubscription;
         public RecordingViewModel()
         {
             _recordingService = new();
             HostScreen = Locator.Current.GetService<IScreen>();
+            //binding measuresource
             _measureSource.Connect()
                 .Bind(out _measures)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe();
             _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(i => new MeasureViewModel()));
-            
+            //bpm changes should update the _bpm prop
             this.WhenAnyValue(vm => vm.BpmDecimal) //when the bpm changes, update the _bpm prop (should never be invalid due to the NumericUpDown control)
                 .Subscribe(i =>
                 {
@@ -48,17 +47,13 @@ namespace DrumBuddy.ViewModels
                         Right: bpm => _bpm = bpm,
                         Left: ex => Debug.WriteLine(ex.Message));
                 });
-            BpmDecimal = 100; //default value
+            //default values
+            BpmDecimal = 100; 
             TimeElapsed = "0:0:0";
             IsRecording = false;
             IsPaused = false;
+            CurrentMeasure = null;
 
-            #region pointerandmeasure
-            CurrentMeasure = Measures[0];
-
-           
-
-            #endregion
         }
         private IObservable<IList<Note>> _gettingNotesWhileRecordingObs => 
             _recordingService.GetNotesObservable(Observable.Interval(_bpm.QuarterNoteDuration()).Select(_ => new Beat(DateTime.Now,DrumType.Bass)))
@@ -78,28 +73,41 @@ namespace DrumBuddy.ViewModels
         [ReactiveCommand]
         private void StartRecording()
         {
+            #region UI timer init
             _timer = new DispatcherTimer();
             _timer.Tick += (s, e) =>
                 TimeElapsed = $"{_recordingService.StopWatch.Elapsed.Minutes}:{_recordingService.StopWatch.Elapsed.Seconds}:{_recordingService.StopWatch.Elapsed.Milliseconds.ToString().Remove(1)}";
             _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            #endregion
+
+            #region UI buttons
             IsRecording = true;
             IsPaused = false;
-            _recordingSubscription = _recordingService.StartRecording(notes => notes.ToList().ForEach(n => Debug.WriteLine($"{n.Value.ToString()} was hit with {n.DrumType.ToString()}")), _bpm);
-            _timer.Start();
+            #endregion
 
-            _gettingNotesWhileRecordingObs
+            _timer.Start();
+            _recordingService.Tempo = _bpm;
+            _recordingService.StopWatch.Start();
+            _pointerSubscription = _gettingNotesWhileRecordingObs
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Select((notes, i) => (notes, i % 4)) // change the select to include i % 4
                 .Subscribe((tuple) =>
                 {
+                    //go to the next measure every 4 beats
+                    if (tuple.Item2 == 0 && CurrentMeasure != Measures.Last())
+                    {
+                        if (CurrentMeasure == null)
+                        {
+                            CurrentMeasure = Measures[0];
+                        }
+                        else
+                        {
+                            CurrentMeasure.IsPointerVisible = false;
+                            CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
+                        }
+                    }
                     //add the notes to the current measure and move the pointer
                     CurrentMeasure.MovePointerToNextRythmicGroup(tuple.Item2);
-                    //go to the next measure every 4 beats
-                    if (tuple.Item2 == 3 && CurrentMeasure != Measures.Last())
-                    {
-                        CurrentMeasure.IsPointerVisible = false;
-                        CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
-                    }
                 });
         }
 
@@ -108,29 +116,39 @@ namespace DrumBuddy.ViewModels
         {
             IsRecording = false;
             IsPaused = false;
-            _recordingSubscription.Dispose();
             _timer.Stop();
-            _recordingService.StopRecording();
+            _recordingService.StopWatch.Reset();
+            StopAndResetPointer();
             //do something with the done sheet
             TimeElapsed = $"0:0:0";
+        }
+
+        private void ClearMeasures()
+        {
+            _measureSource.Clear();
+            _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(i => new MeasureViewModel()));
         }
 
         [ReactiveCommand]
         private void PauseRecording()
         {
             IsPaused = true;
-            _recordingSubscription.Dispose();
             _recordingService.PauseRecording();
             _timer.Stop();
-            _pointerTimer.Stop();
         }
         [ReactiveCommand]
         private void ResumeRecording()
         {
             IsPaused = false;
-            _recordingSubscription = _recordingService.StartRecording(notes => notes.ToList().ForEach(n => Debug.WriteLine($"{n.Value.ToString()} was hit with {n.DrumType.ToString()}")), _bpm);
             _timer.Start();
-            _pointerTimer.Start();
+        }
+
+        private void StopAndResetPointer()
+        {
+            _pointerSubscription.Dispose();
+            ClearMeasures();
+            CurrentMeasure.IsPointerVisible = false;
+            CurrentMeasure = null;
         }
         public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
         public string? UrlPathSegment { get; } = "recording-view";

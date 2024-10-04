@@ -7,7 +7,7 @@
                          xmlns:views="clr-namespace:DrumBuddy.Views"
                          xmlns:rxui="http://reactiveui.net"
                          xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
-                         Height="120" Width="500"
+                         Height="120" Width="600"
                          mc:Ignorable="d"
                          x:Class="DrumBuddy.Views.HelperViews.MeasureView" >
   <Design.DataContext>
@@ -16,28 +16,29 @@
   <Grid>
       <Canvas x:Name="MeasureCanvas">
           <!-- Draw 5 lines for the music sheet -->
-          <Line StartPoint="0,20" EndPoint="500,20" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,40" EndPoint="500,40" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,60" EndPoint="500,60" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,80" EndPoint="500,80" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,100" EndPoint="500,100" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="500,20" EndPoint="500,100" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,20" EndPoint="600,20" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,40" EndPoint="600,40" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,60" EndPoint="600,60" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,80" EndPoint="600,80" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,100" EndPoint="600,100" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="600,20" EndPoint="600,100" Stroke="Black" StrokeThickness="2"/>
 
           <!-- Pointer -->
-          <Line x:Name="Pointer"
-              Stroke="Red" StrokeThickness="2"/>
+          <Line x:Name="Pointer" Stroke="Red" StrokeThickness="2"/>
       </Canvas>
-      <ItemsControl x:Name="ItemsControl">
+      <Border>
+          <ItemsControl x:Name="ItemsControl" HorizontalAlignment="Center" Margin="35,0,35,0">
           <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                  <UniformGrid Columns="4"/>
+                <StackPanel Orientation="Horizontal" Spacing="10"/>
               </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
               <DataTemplate>
-                   <helperViews:RythmicGroupView Margin="10" Width="125"/>
+                  <helperViews:RythmicGroupView  Width="125" HorizontalAlignment="Center"/>
               </DataTemplate>
           </ItemsControl.ItemTemplate>
-      </ItemsControl>
+          </ItemsControl>
+      </Border>
   </Grid>
 </rxui:ReactiveUserControl>

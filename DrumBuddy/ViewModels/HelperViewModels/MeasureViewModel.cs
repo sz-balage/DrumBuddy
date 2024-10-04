@@ -32,7 +32,12 @@ namespace DrumBuddy.ViewModels.HelperViewModels
 
         public void MovePointerToNextRythmicGroup(int indexOfCurrentRythmicGroup)
         {
-            PointerPosition = indexOfCurrentRythmicGroup * 125;
+            //ha 0: 35
+            //ha 1: 35+135=170
+            //ha 2: 170+135=305
+            //ha 3: 305+135=440
+            PointerPosition = (indexOfCurrentRythmicGroup * 135) + 35;
+            //PointerPosition = (indexOfCurrentRythmicGroup * 150) + 25;
         }
     }
 }
