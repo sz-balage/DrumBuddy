@@ -57,12 +57,6 @@ namespace DrumBuddy.ViewModels
             CurrentMeasure = null;
 
         }
-        private IObservable<(IList<Note>, int)> _notesObservable => 
-            _recordingService.GetNotesObservable(Observable.Interval(_bpm.QuarterNoteDuration()).Select(_ => new Beat(DateTime.Now,DrumType.Bass)))
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Select((notes, i) => (notes, i % 4)) // change the select to include i % 4
-                .TakeUntil(tuple => (tuple.Item2 == 0 && IsPaused == true) || CurrentMeasure == Measures.Last());
-
         [Reactive]
         public MeasureViewModel _currentMeasure;
         [Reactive]
@@ -83,39 +77,32 @@ namespace DrumBuddy.ViewModels
                 TimeElapsed = $"{_recordingService.StopWatch.Elapsed.Minutes}:{_recordingService.StopWatch.Elapsed.Seconds}:{_recordingService.StopWatch.Elapsed.Milliseconds.ToString().Remove(1)}";
             _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             #endregion
-            _timer.Start();
-            _recordingService.Tempo = _bpm;
-            _recordingService.StopWatch.Start();
-            _pointerSubscription = _notesObservable
-                .Subscribe((tuple) =>
-                {
-                    //if the recording is paused and the current rythmic group is 0, stop the timer
-                    if (IsPaused && tuple.Item2 == 0)
-                    {
-                        _recordingService.StopWatch.Stop();
-                        _timer.Stop();
-                    }
-                    //go to the next measure every 4 beats
-                    if (tuple.Item2 == 0)
-                    {
-                        if (CurrentMeasure == null)
-                        {
-                            CurrentMeasure = Measures[0];
-                        }
-                        else
-                        {
-                            CurrentMeasure.IsPointerVisible = false;
-                            CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
-                        }
-                    }
-                    //add the notes to the current measure and move the pointer
-                    CurrentMeasure?.Measure.Groups.Add(new RythmicGroup(tuple.Item1.ToImmutableArray()));
-                    CurrentMeasure?.AddNotesToRythmicGroup(tuple);
-                });
+            _timer.Start(); //should be automatically started when _recordingService.StopWatch.Start() is called (and stop as well)
+            _pointerSubscription = _recordingService
+                .StartRecording(HandleIncomingNotes, _bpm, RxApp.MainThreadScheduler);
             #region UI buttons
             IsRecording = true;
             IsPaused = false;
             #endregion
+        }
+
+        private void HandleIncomingNotes((IList<Note>, int) notesAndIndex)
+        {
+            if (notesAndIndex.Item2 == 0)
+            {
+                if (CurrentMeasure == null)
+                {
+                    CurrentMeasure = Measures[0];
+                }
+                else
+                {
+                    CurrentMeasure.IsPointerVisible = false;
+                    CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
+                }
+            }
+            //add the notes to the current measure and move the pointer
+            CurrentMeasure?.Measure.Groups.Add(new RythmicGroup(notesAndIndex.Item1.ToImmutableArray()));
+            CurrentMeasure?.AddNotesToRythmicGroup(notesAndIndex);
         }
 
         [ReactiveCommand]
@@ -123,6 +110,7 @@ namespace DrumBuddy.ViewModels
         {
             var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
             _recordingService.StopRecording(_bpm,measures);
+            _pointerSubscription.Dispose(); //composite disposable should be introduced
             _timer.Stop();
             StopAndResetPointer();
             //do something with the done sheet
@@ -137,44 +125,13 @@ namespace DrumBuddy.ViewModels
         }
 
         [ReactiveCommand]
-        private void PauseRecording()
+        private void PauseRecording() //not implemented for now
         {
             IsPaused = true;
         }
-
-        private bool isFirstAfterResuming;
         [ReactiveCommand]
-        private void ResumeRecording()
+        private void ResumeRecording() //not implemented for now
         {
-            isFirstAfterResuming = true;
-            _pointerSubscription = _notesObservable
-                .Subscribe((tuple) =>
-                {
-                    //if the recording is paused and the current rythmic group is 0, stop the timer
-                    if (IsPaused && tuple.Item2 == 0)
-                    {
-                        _recordingService.StopWatch.Stop();
-                        _timer.Stop();
-                    }
-                    //go to the next measure every 4 beats
-                    if (tuple.Item2 == 0)
-                    {
-                        if (!isFirstAfterResuming) //if it's the first beat after resuming, don't move the pointer
-                        {
-                            CurrentMeasure.IsPointerVisible = false;
-                            CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
-                        }
-                        else
-                        {
-                            //if it's the first beat after resuming, start the stopwatch and timer
-                            _recordingService.StopWatch.Start();
-                            _timer.Start(); 
-                            isFirstAfterResuming = false;
-                        }
-                    }
-                    //add the notes to the current measure and move the pointer
-                    CurrentMeasure.AddNotesToRythmicGroup(tuple);
-                });
             IsPaused = false;
         }
 
