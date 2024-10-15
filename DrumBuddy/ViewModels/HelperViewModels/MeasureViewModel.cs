@@ -34,11 +34,9 @@ namespace DrumBuddy.ViewModels.HelperViewModels
             new RythmicGroupViewModel()
         };
 
-        public void AddNotesToRythmicGroup((IList<Note> notes, int rythmicGroupIndex) tuple)
+        public void MovePointerToRG(long rythmicGroupIndex)
         {
-            Measure.Groups[tuple.rythmicGroupIndex] = new RythmicGroup(tuple.notes.ToImmutableArray());
-            PointerPosition = (tuple.rythmicGroupIndex * 135) + 35;
-            RythmicGroups[tuple.rythmicGroupIndex].AddNotes(tuple.notes);
+            PointerPosition = (rythmicGroupIndex * 135) + 35;
         }
         public bool IsEmpty => RythmicGroups.All(rg => rg.RythmicGroup.IsDefault());
     }

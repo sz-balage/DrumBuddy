@@ -44,12 +44,12 @@ namespace DrumBuddy.Core.Services
         /// <summary>
         /// Returns a sequence of metronome beeps, and starts the stopwatch.
         /// </summary>
-        /// <returns>The index of the current beep relative to the start.</returns>
-        public IObservable<long> GetMetronomeBeeping()
-        {
-            StopWatch.Start();
-            return Observable.Interval(Tempo.QuarterNoteDuration(), _scheduler);
-        }
+        /// <returns>The index of the current beep from 0-3, resetting on each measure.</returns>
+        public IObservable<long> GetMetronomeBeeping(BPM bpm) => Observable.Interval(bpm.QuarterNoteDuration(), _scheduler)
+                                                                    .Select(i => i%4)
+                                                                    .Publish()
+                                                                    .AutoConnect(2);
+        
             
         /// <summary>
         /// Returns a beat sequence along with its time it was hit relative to the start of the stopwatch buffered by the sixteenth note duration.

@@ -68,6 +68,9 @@ namespace DrumBuddy.ViewModels
 
         [Reactive]
         private string _timeElapsed;
+
+        private IDisposable _countDownSubscription;
+
         [ReactiveCommand]
         private void StartRecording()
         {
@@ -78,17 +81,27 @@ namespace DrumBuddy.ViewModels
             _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             #endregion
             _timer.Start(); //should be automatically started when _recordingService.StopWatch.Start() is called (and stop as well)
-            _pointerSubscription = _recordingService
-                .StartRecording(HandleIncomingNotes, _bpm, RxApp.MainThreadScheduler);
+            var metronomeObs = _recordingService.GetMetronomeBeeping(_bpm);
+            _countDownSubscription = metronomeObs
+                .Take(4)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(CountDown);
+            _pointerSubscription = metronomeObs
+                .Skip(4)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(MovePointerOnMetronomeBeeps);
             #region UI buttons
             IsRecording = true;
             IsPaused = false;
             #endregion
         }
-
-        private void HandleIncomingNotes((IList<Note>, int) notesAndIndex)
+        private void CountDown(long idx)
         {
-            if (notesAndIndex.Item2 == 0)
+            Debug.WriteLine(idx + " count down");
+        }
+        private void MovePointerOnMetronomeBeeps(long idx)
+        {
+            if (idx == 0)
             {
                 if (CurrentMeasure == null)
                 {
@@ -100,10 +113,9 @@ namespace DrumBuddy.ViewModels
                     CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
                 }
             }
-            //add the notes to the current measure and move the pointer
-            CurrentMeasure?.Measure.Groups.Add(new RythmicGroup(notesAndIndex.Item1.ToImmutableArray()));
-            CurrentMeasure?.AddNotesToRythmicGroup(notesAndIndex);
+            CurrentMeasure?.MovePointerToRG(idx);
         }
+
 
         [ReactiveCommand]
         private void StopRecording()
