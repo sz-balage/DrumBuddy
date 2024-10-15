@@ -69,6 +69,10 @@ namespace DrumBuddy.ViewModels
         [Reactive]
         private string _timeElapsed;
 
+        [Reactive]
+        private int _countDown;
+        [Reactive]
+        private bool _countDownVisibility;
         private IDisposable _countDownSubscription;
 
         [ReactiveCommand]
@@ -82,10 +86,12 @@ namespace DrumBuddy.ViewModels
             #endregion
             _timer.Start(); //should be automatically started when _recordingService.StopWatch.Start() is called (and stop as well)
             var metronomeObs = _recordingService.GetMetronomeBeeping(_bpm);
+            CountDown = 5;
+
             _countDownSubscription = metronomeObs
                 .Take(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(CountDown);
+                .Subscribe(HandleCountDown);
             _pointerSubscription = metronomeObs
                 .Skip(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
@@ -95,9 +101,11 @@ namespace DrumBuddy.ViewModels
             IsPaused = false;
             #endregion
         }
-        private void CountDown(long idx)
+        private void HandleCountDown(long idx)
         {
-            Debug.WriteLine(idx + " count down");
+            if(idx == 0)
+                CountDownVisibility = true;
+            CountDown--;
         }
         private void MovePointerOnMetronomeBeeps(long idx)
         {
@@ -105,6 +113,7 @@ namespace DrumBuddy.ViewModels
             {
                 if (CurrentMeasure == null)
                 {
+                    CountDownVisibility = false;
                     CurrentMeasure = Measures[0];
                 }
                 else

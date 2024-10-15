@@ -20,11 +20,11 @@
              Source="resm:DrumBuddy.Assets.snare-icon.jpg?assembly=DrumBuddy"/>
        <StackPanel VerticalAlignment="Center"
                    HorizontalAlignment="Center">
-           <Label x:Name="WelcomeLabel"
+           <Label x:Name="WelcomeLabel" FontFamily="{StaticResource NunitoFont}"
                   FontSize="40" 
                   FontWeight="Bold"
                   HorizontalAlignment="Center"/>
-           <Label x:Name="SubTextLabel"
+           <Label x:Name="SubTextLabel" FontFamily="{StaticResource NunitoFont}"
                   FontSize="20"
                   HorizontalAlignment="Center"
                   FontWeight="Bold"/>

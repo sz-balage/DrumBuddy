@@ -31,7 +31,8 @@
                         <DataTemplate DataType="{x:Type helpers:ListItemTemplate}">
                             <StackPanel Spacing="15" Orientation="Horizontal">
                                 <PathIcon VerticalAlignment="Center" Height="40" Data="{Binding Icon}" Width="15"></PathIcon>
-                                <TextBlock Margin="0,2,0,0"
+                                <TextBlock Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"
+                                           FontWeight="Bold"
                                            Text="{Binding Label}"
                                            VerticalAlignment="Center"></TextBlock>
                             </StackPanel>

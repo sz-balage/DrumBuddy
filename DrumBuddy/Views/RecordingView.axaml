@@ -4,8 +4,8 @@
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          xmlns:rxui="http://reactiveui.net"
-                         xmlns:viewModels="clr-namespace:DrumBuddy.ViewModels"
                          xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
+                         xmlns:viewModels="clr-namespace:DrumBuddy.ViewModels"
                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                          x:Class="DrumBuddy.Views.RecordingView">
   <Design.DataContext>
@@ -39,7 +39,7 @@
                     Background="LightGray">
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource RecordIcon}"/>
-                    <TextBlock Text="Start Recording" 
+                    <TextBlock Text="Start Recording" FontFamily="{StaticResource NunitoFont}"
                                FontSize="24"
                                Margin="10"/>
                 </StackPanel>
@@ -54,7 +54,7 @@
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource RecordIcon}"
                                   Foreground="Red"/>
-                        <TextBlock Text="Stop Recording"
+                        <TextBlock Text="Stop Recording" FontFamily="{StaticResource NunitoFont}"
                                    FontSize="24"
                                    Margin="10"/>
                     </StackPanel>
@@ -62,14 +62,14 @@
                 <Button x:Name="PauseRecordingButton">
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource Pause}"/>
-                        <TextBlock Text="Pause"
+                        <TextBlock Text="Pause" FontFamily="{StaticResource NunitoFont}"
                                    FontSize="24"
                                    Margin="10"/></StackPanel>
                 </Button>
                 <Button x:Name="ResumeRecordingButton">
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource Resume}"/>
-                        <TextBlock Text="Resume"
+                        <TextBlock Text="Resume" FontFamily="{StaticResource NunitoFont}"
                                    FontSize="24"
                                    Margin="10"/></StackPanel>
                 </Button>
@@ -78,7 +78,7 @@
                         Grid.Column="1"
                         Orientation="Horizontal"
                         HorizontalAlignment="Center">
-                <Label FontSize="24" 
+                <Label FontSize="24" FontFamily="{StaticResource NunitoFont}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center">
                     BPM:
@@ -95,7 +95,7 @@
             <StackPanel Grid.Row="0"
                         Grid.Column="2"
                         Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label FontSize="24"
+                <Label FontSize="24" FontFamily="{StaticResource NunitoFont}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center">
                     Time elapsed:
@@ -107,7 +107,13 @@
             </StackPanel>
         </Grid>
     </Border>
-   
+    <Grid x:Name="CountdownGrid" Grid.Row="1" Background="#80000000" Opacity="0.7">
+        <TextBlock x:Name="CountdownTextBlock"  FontWeight="Bold"
+                   FontSize="300" 
+                   FontFamily="{StaticResource NunitoFont}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+    </Grid>
     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
       <ItemsControl x:Name="MeasuresItemControl">
         <ItemsControl.ItemsPanel>

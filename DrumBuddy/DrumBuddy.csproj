@@ -8,8 +8,42 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\Fonts\Nunito-Black.ttf" />
+    <None Remove="Assets\Fonts\Nunito-BlackItalic.ttf" />
+    <None Remove="Assets\Fonts\Nunito-Bold.ttf" />
+    <None Remove="Assets\Fonts\Nunito-BoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Nunito-ExtraBold.ttf" />
+    <None Remove="Assets\Fonts\Nunito-ExtraBoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Nunito-ExtraLight.ttf" />
+    <None Remove="Assets\Fonts\Nunito-ExtraLightItalic.ttf" />
+    <None Remove="Assets\Fonts\Nunito-Italic.ttf" />
+    <None Remove="Assets\Fonts\Nunito-Light.ttf" />
+    <None Remove="Assets\Fonts\Nunito-LightItalic.ttf" />
+    <None Remove="Assets\Fonts\Nunito-Medium.ttf" />
+    <None Remove="Assets\Fonts\Nunito-MediumItalic.ttf" />
+    <None Remove="Assets\Fonts\Nunito-Regular.ttf" />
+    <None Remove="Assets\Fonts\Nunito-SemiBold.ttf" />
+    <None Remove="Assets\Fonts\Nunito-SemiBoldItalic.ttf" />
     <None Remove="Assets\snare-icon.jpg" />
     <None Remove="Assets\window.icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\Fonts\Nunito-Black.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-BlackItalic.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-Bold.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-BoldItalic.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraBold.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraBoldItalic.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraLight.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraLightItalic.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-Italic.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-Light.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-LightItalic.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-Medium.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-MediumItalic.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-Regular.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-SemiBold.ttf" />
+    <AvaloniaResource Include="Assets\Fonts\Nunito-SemiBoldItalic.ttf" />
   </ItemGroup>
 
   <ItemGroup>
