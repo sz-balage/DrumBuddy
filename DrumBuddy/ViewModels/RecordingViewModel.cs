@@ -1,24 +1,16 @@
-﻿using DrumBuddy.Core.Models;
-using DrumBuddy.Core.Services;
+﻿using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Models;
 using DrumBuddy.ViewModels.HelperViewModels;
 using DynamicData;
 using ReactiveUI;
 using Splat;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
-using System.ComponentModel;
-using System.Reactive.Concurrency;
-using System.Threading;
-using DrumBuddy.IO.Enums;
-using DrumBuddy.IO.Extensions;
 
 namespace DrumBuddy.ViewModels
 {
@@ -30,6 +22,7 @@ namespace DrumBuddy.ViewModels
         private ReadOnlyObservableCollection<MeasureViewModel> _measures;
         private DispatcherTimer _timer;
         private BPM _bpm;
+        private IObservable<bool> _stopRecordingCanExecute;
         private IDisposable _pointerSubscription;
         public RecordingViewModel()
         {
@@ -49,6 +42,8 @@ namespace DrumBuddy.ViewModels
                         Right: bpm => _bpm = bpm,
                         Left: ex => Debug.WriteLine(ex.Message));
                 });
+            //stop recording can execute
+            _stopRecordingCanExecute = this.WhenAnyValue(vm => vm.IsRecording, vm => vm.CurrentMeasure, (recording, currentMeasure) => recording && currentMeasure != null);
             //default values
             BpmDecimal = 100; 
             TimeElapsed = "0:0:0";
@@ -126,7 +121,7 @@ namespace DrumBuddy.ViewModels
         }
 
 
-        [ReactiveCommand]
+        [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
         private void StopRecording()
         {
             var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
@@ -145,7 +140,7 @@ namespace DrumBuddy.ViewModels
             _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(i => new MeasureViewModel()));
         }
 
-        [ReactiveCommand]
+        [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
         private void PauseRecording() //not implemented for now
         {
             IsPaused = true;
