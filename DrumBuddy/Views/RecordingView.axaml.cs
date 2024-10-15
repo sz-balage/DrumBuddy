@@ -20,6 +20,8 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
     private Button _resumeRecordingButton => this.FindControl<Button>("ResumeRecordingButton");
     private NumericUpDown _bpmNumeric => this.FindControl<NumericUpDown>("BpmNumeric");
     private TextBlock _timeElapsedTB => this.FindControl<TextBlock>("TimeElapsedTextBlock");
+    private TextBlock _countDownTB => this.FindControl<TextBlock>("CountdownTextBlock");
+    private Grid _countDownGrid => this.FindControl<Grid>("CountdownGrid");
     public RecordingView()
     {
         InitializeComponent();
@@ -82,13 +84,10 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.BpmDecimal, v => v._bpmNumeric.Value);
             this.Bind(ViewModel, vm => vm.TimeElapsed, v => v._timeElapsedTB.Text);
-            // ViewModel.NoteObservable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(notes =>
-            // {
-            //     foreach (var note in notes)
-            //     {
-            //         Output.Text = Output.Text += $"A {note.DrumType.ToString()} with {note.Value} value was hit. Timing: {note.Timing}\n";
-            //     }
-            // });
+            this.OneWayBind(ViewModel, vm => vm.CountDown, v => v._countDownTB.Text)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.CountDownVisibility, v => v._countDownGrid.IsVisible)
+                .DisposeWith(d);
         });
         AvaloniaXamlLoader.Load(this);
     }
