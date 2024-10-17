@@ -1,24 +1,17 @@
-﻿using DrumBuddy.Core.Models;
-using DrumBuddy.Core.Services;
+﻿using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Models;
 using DrumBuddy.ViewModels.HelperViewModels;
 using DynamicData;
 using ReactiveUI;
 using Splat;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Media;
 using System.Reactive.Linq;
 using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
-using System.ComponentModel;
-using System.Reactive.Concurrency;
-using System.Threading;
-using DrumBuddy.IO.Enums;
-using DrumBuddy.IO.Extensions;
 
 namespace DrumBuddy.ViewModels
 {
@@ -31,10 +24,15 @@ namespace DrumBuddy.ViewModels
         private DispatcherTimer _timer;
         private BPM _bpm;
         private IDisposable _pointerSubscription;
+        private SoundPlayer _normalBeepPlayer;
+        private SoundPlayer _highBeepPlayer;
         public RecordingViewModel()
         {
             _recordingService = new();
             HostScreen = Locator.Current.GetService<IScreen>();
+            //init sound players
+            _normalBeepPlayer = new SoundPlayer(@"C:\Users\PC\Source\Repos\baluka1118\DrumBuddy\DrumBuddy\Assets\metronome.wav"); //relative path should be used
+            _highBeepPlayer = new SoundPlayer(@"C:\Users\PC\Source\Repos\baluka1118\DrumBuddy\DrumBuddy\Assets\metronomeup.wav");
             //binding measuresource
             _measureSource.Connect()
                 .Bind(out _measures)
@@ -88,7 +86,7 @@ namespace DrumBuddy.ViewModels
             var metronomeObs = _recordingService.GetMetronomeBeeping(_bpm);
             CountDown = 5;
 
-            _countDownSubscription = metronomeObs
+            _countDownSubscription = metronomeObs 
                 .Take(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(HandleCountDown);
@@ -104,13 +102,19 @@ namespace DrumBuddy.ViewModels
         private void HandleCountDown(long idx)
         {
             if(idx == 0)
+            {
                 CountDownVisibility = true;
+                _highBeepPlayer.Play();
+            }
+            else
+                _normalBeepPlayer.Play();
             CountDown--;
         }
         private void MovePointerOnMetronomeBeeps(long idx)
         {
             if (idx == 0)
             {
+                _highBeepPlayer.Play();
                 if (CurrentMeasure == null)
                 {
                     CountDownVisibility = false;
@@ -122,11 +126,13 @@ namespace DrumBuddy.ViewModels
                     CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
                 }
             }
+            else
+                _normalBeepPlayer.Play();
             CurrentMeasure?.MovePointerToRG(idx);
         }
 
 
-        [ReactiveCommand]
+        [ReactiveCommand] //can execute should only be true when we are past the countdown
         private void StopRecording()
         {
             var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
