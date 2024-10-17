@@ -24,6 +24,7 @@ namespace DrumBuddy.ViewModels
         private DispatcherTimer _timer;
         private BPM _bpm;
         private IDisposable _pointerSubscription;
+        private IObservable<bool> _stopRecordingCanExecute;
         private SoundPlayer _normalBeepPlayer;
         private SoundPlayer _highBeepPlayer;
         public RecordingViewModel()
@@ -39,6 +40,7 @@ namespace DrumBuddy.ViewModels
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe();
             _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(i => new MeasureViewModel()));
+            _stopRecordingCanExecute = this.WhenAnyValue(vm => vm.IsRecording, vm => vm.CurrentMeasure, (recording, currentMeasure) => recording && currentMeasure != null);
             //bpm changes should update the _bpm prop
             this.WhenAnyValue(vm => vm.BpmDecimal) //when the bpm changes, update the _bpm prop (should never be invalid due to the NumericUpDown control)
                 .Subscribe(i =>
@@ -132,7 +134,7 @@ namespace DrumBuddy.ViewModels
         }
 
 
-        [ReactiveCommand] //can execute should only be true when we are past the countdown
+        [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
         private void StopRecording()
         {
             var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
@@ -151,7 +153,7 @@ namespace DrumBuddy.ViewModels
             _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(i => new MeasureViewModel()));
         }
 
-        [ReactiveCommand]
+        [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
         private void PauseRecording() //not implemented for now
         {
             IsPaused = true;
