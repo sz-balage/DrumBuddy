@@ -9,12 +9,8 @@ namespace DrumBuddy.IO.Services
 {
     public class MidiService : IMidiService
     {
-        /// <summary>
-        /// ONLY FOR TESTING PURPOSES, THE MIDI SERVICE WILL NOT HAVE A TEMPO PROPERTY
-        /// </summary>
-        public BPM Tempo = (BPM)BPM.From(100); //default value is 100
-        public IObservable<Beat> GetBeatsObservable() //for now for testing purposes it only returns a beat every sixteenth note duration (calculated from BPM
-         => Observable.Interval(Tempo.QuarterNoteDuration())
+        public IObservable<Beat> GetBeatsObservable(BPM tempo) //for now for testing purposes it only returns a beat every sixteenth note duration (calculated from BPM
+         => Observable.Interval(tempo.QuarterNoteDuration())
                        .Select(_ => new Beat(DrumType.Snare));
     }
 }
