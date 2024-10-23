@@ -25,6 +25,7 @@ namespace DrumBuddy
             Locator.CurrentMutable.RegisterConstant<MainViewModel>(Locator.Current.GetService<IScreen>() as MainViewModel);
             Locator.CurrentMutable.RegisterConstant(new MainWindow());
             Locator.CurrentMutable.RegisterConstant(new HomeViewModel());
+            Locator.CurrentMutable.RegisterConstant(new LibraryViewModel());
             Locator.CurrentMutable.Register(() => new RecordingViewModel());
 
         }

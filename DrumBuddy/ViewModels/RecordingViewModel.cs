@@ -7,6 +7,7 @@ using Splat;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reactive.Linq;
@@ -32,8 +33,9 @@ namespace DrumBuddy.ViewModels
             _recordingService = new();
             HostScreen = Locator.Current.GetService<IScreen>();
             //init sound players
-            _normalBeepPlayer = new SoundPlayer(@"C:\Users\PC\Source\Repos\baluka1118\DrumBuddy\DrumBuddy\Assets\metronome.wav"); //relative path should be used
-            _highBeepPlayer = new SoundPlayer(@"C:\Users\PC\Source\Repos\baluka1118\DrumBuddy\DrumBuddy\Assets\metronomeup.wav");
+            var dir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent;
+            _normalBeepPlayer = new SoundPlayer(Path.Combine(dir.FullName,"Assets\\metronome.wav")); //relative path should be used
+            _highBeepPlayer = new SoundPlayer(Path.Combine(dir.FullName, "Assets\\metronomeup.wav"));
             //binding measuresource
             _measureSource.Connect()
                 .Bind(out _measures)

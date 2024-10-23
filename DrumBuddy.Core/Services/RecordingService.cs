@@ -39,7 +39,7 @@ namespace DrumBuddy.Core.Services
         public void StopRecording(BPM bpm,List<Measure> measures)
         {
             StopWatch.Reset();
-            Sheets.Add(new(bpm,measures));
+            Sheets.Add(new(bpm,measures,""));
         }
         public Stopwatch StopWatch { get; } = new();
     }

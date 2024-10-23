@@ -15,8 +15,8 @@ namespace DrumBuddy.ViewModels
         [ReactiveCommand]
         private void TogglePane() => IsPaneOpen = !IsPaneOpen;
         [Reactive]
-        private ListItemTemplate _selectedPaneItem;
-        private void OnSelectedPaneItemChanged(ListItemTemplate? value)
+        private NavigationMenuItemTemplate _selectedPaneItem;
+        private void OnSelectedPaneItemChanged(NavigationMenuItemTemplate? value)
         {
             if (value is null)
                 return;
@@ -25,10 +25,11 @@ namespace DrumBuddy.ViewModels
             IsPaneOpen = false;
             Router.NavigateAndReset.Execute(Locator.Current.GetService(value.ModelType) as IRoutableViewModel);
         }
-        public ObservableCollection<ListItemTemplate> PaneItems { get; } = new()
+        public ObservableCollection<NavigationMenuItemTemplate> PaneItems { get; } = new()
         {
             new(typeof(HomeViewModel),"HomeIcon"),
-            new(typeof(RecordingViewModel),"RecordIcon")
+            new(typeof(RecordingViewModel),"RecordIcon"),
+            new(typeof(LibraryViewModel),"LibraryIcon")
         };
         public RoutingState Router { get; } = new();
         public MainViewModel()
