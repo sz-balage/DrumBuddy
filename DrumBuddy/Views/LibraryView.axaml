@@ -4,6 +4,7 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
                           xmlns:rxui="http://reactiveui.net"
+                          xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.LibraryView">
   <Grid>
@@ -12,7 +13,11 @@
           <RowDefinition/>
       </Grid.RowDefinitions>
       <ListBox x:Name="SheetsListBox">
-
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock x:DataType="models:Sheet" Text="{Binding Name}"/>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
       </ListBox>
   </Grid>
 </rxui:ReactiveUserControl>

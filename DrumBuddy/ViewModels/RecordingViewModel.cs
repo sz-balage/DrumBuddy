@@ -11,8 +11,11 @@ using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
+using DrumBuddy.Core.Models;
+using DrumBuddy.ViewModels.Dialogs;
 
 namespace DrumBuddy.ViewModels
 {
@@ -28,10 +31,12 @@ namespace DrumBuddy.ViewModels
         private IObservable<bool> _stopRecordingCanExecute;
         private SoundPlayer _normalBeepPlayer;
         private SoundPlayer _highBeepPlayer;
+        private LibraryViewModel _library;
         public RecordingViewModel()
         {
             _recordingService = new();
             HostScreen = Locator.Current.GetService<IScreen>();
+            _library = Locator.Current.GetService<LibraryViewModel>();
             //init sound players
             var dir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent;
             _normalBeepPlayer = new SoundPlayer(Path.Combine(dir.FullName,"Assets\\metronome.wav")); //relative path should be used
@@ -59,6 +64,7 @@ namespace DrumBuddy.ViewModels
             CurrentMeasure = null;
 
         }
+        public Interaction<Sheet, bool> ShowSaveDialog { get; } = new();
         [Reactive]
         public MeasureViewModel _currentMeasure;
         [Reactive]
@@ -140,7 +146,8 @@ namespace DrumBuddy.ViewModels
         private void StopRecording()
         {
             var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
-            _recordingService.StopRecording(_bpm,measures);
+            //ask user if sheet should be saved
+            _library.AddSheet(new Sheet(_bpm, measures, "test"));
             _pointerSubscription.Dispose(); //composite disposable should be introduced
             _timer.Stop();
             StopAndResetPointer();

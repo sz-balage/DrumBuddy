@@ -2,6 +2,7 @@
 using Avalonia.ReactiveUI;
 using System;
 using DrumBuddy.ViewModels;
+using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.Views;
 using ReactiveUI;
 using Splat;
@@ -27,6 +28,8 @@ namespace DrumBuddy
             Locator.CurrentMutable.RegisterConstant(new HomeViewModel());
             Locator.CurrentMutable.RegisterConstant(new LibraryViewModel());
             Locator.CurrentMutable.Register(() => new RecordingViewModel());
+
+            Locator.CurrentMutable.Register(() => new SaveSheetView() { ViewModel = new SaveSheetViewModel()});
 
         }
         // Avalonia configuration, don't remove; also used by visual designer.
