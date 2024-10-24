@@ -16,7 +16,8 @@ using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
 using DrumBuddy.Core.Models;
 using DrumBuddy.ViewModels.Dialogs;
-using System.Reactive;
+using LanguageExt;
+using Unit = System.Reactive.Unit;
 
 namespace DrumBuddy.ViewModels
 {
@@ -65,10 +66,8 @@ namespace DrumBuddy.ViewModels
             IsRecording = false;
             IsPaused = false;
             CurrentMeasure = null;
-
         }
-        public Interaction<Unit, string> ShowChooseNameDialog {get;} = new();
-        public Interaction<Sheet, bool> ShowSaveDialog { get; } = new();
+        public Interaction<Unit, Option<string>> ShowSaveDialog { get; } = new();
         [Reactive]
         public MeasureViewModel _currentMeasure;
         [Reactive]
@@ -90,7 +89,6 @@ namespace DrumBuddy.ViewModels
         [ReactiveCommand]
         private void StartRecording()
         {
-            ShowChooseNameDialog.Handle(Unit.Default);
             #region UI timer init
             _timer = new DispatcherTimer();
             _timer.Tick += (s, e) =>
@@ -148,11 +146,8 @@ namespace DrumBuddy.ViewModels
 
 
         [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
-        private void StopRecording()
+        private async Task StopRecording()
         {
-            var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
-            //ask user if sheet should be saved
-            _library.AddSheet(new Sheet(_bpm, measures, "test"));
             _pointerSubscription.Dispose(); //composite disposable should be introduced
             _timer.Stop();
             StopAndResetPointer();
@@ -160,6 +155,13 @@ namespace DrumBuddy.ViewModels
             IsRecording = false;
             IsPaused = false;
             TimeElapsed = $"0:0:0";
+            
+            var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
+            //ask user if sheet should be saved
+            var sheet = new Sheet(_bpm, measures, "test");
+            var delete = await ShowSaveDialog.Handle(Unit.Default);
+            if(delete.IsSome)
+                _library.AddSheet(new Sheet(_bpm, measures, (string)delete));
         }
         private void ClearMeasures()
         {

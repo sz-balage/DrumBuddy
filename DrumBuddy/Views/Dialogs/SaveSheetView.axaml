@@ -4,9 +4,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:rxui="http://reactiveui.net"
         xmlns:dialogs="clr-namespace:DrumBuddy.ViewModels.Dialogs"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="150"
+        Width="300" Height="150" 
+        MaxWidth="300" MaxHeight="150"
+         MinWidth="300" MinHeight="150"
         x:Class="DrumBuddy.SaveSheetView"
-        Title="SaveSheetView">
+        Title="SaveSheetView" WindowStartupLocation="CenterScreen">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition/>
@@ -17,11 +20,11 @@
       <ColumnDefinition/>
       <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    <TextBox IsReadOnly="True" Grid.ColumnSpan="2">
+    <TextBlock Grid.ColumnSpan="2" TextWrapping="Wrap">
       Would you like to save this sheet? If so, please enter a name for the sheet.
-    </TextBox>
+    </TextBlock>
     <TextBox Grid.Row="1" x:Name="NameTB" Grid.ColumnSpan="2"/>
-    <Button x:Name="SaveButton" Grid.Row="2" Grid.Column="0">Save</Button>
-    <Button x:Name="CancelButton" Grid.Row="2" Grid.Column="1">Cancel</Button>
+    <Button x:Name="Save" Grid.Row="2" Grid.Column="0" Width="150">Save</Button>
+    <Button x:Name="Cancel" Grid.Row="2" Grid.Column="1" Width="150">Cancel</Button>
   </Grid>
 </rxui:ReactiveWindow>

@@ -4,24 +4,41 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using DrumBuddy.Core.Models;
 using DrumBuddy.ViewModels.Dialogs;
+using LanguageExt;
 using ReactiveUI;
+using Unit = System.Reactive.Unit;
 
 namespace DrumBuddy;
 
 public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
 {
     private TextBox NameTextB => this.FindControl<TextBox>("NameTB");
-    private Button Save => this.FindControl<Button>("SaveButton");
-    private Button CloseButton => this.FindControl<Button>("CloseButton");
+    private Button SaveButton => this.FindControl<Button>("Save");
+    private Button CloseButton => this.FindControl<Button>("Cancel");
     public SaveSheetView()
     {
         InitializeComponent();
         this.WhenActivated(d =>
         {
             this.Bind(ViewModel, vm => vm.SheetName, v => v.NameTextB.Text).DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.SaveSheetCommand, v => v.Save).DisposeWith(d);
-            ViewModel?.SaveSheetCommand.Subscribe(Observer.Create<Unit>(u => Close())); //make optional name
+            this.BindCommand(ViewModel, vm => vm.SaveSheetCommand, v => v.SaveButton).DisposeWith(d);
+            var observerCloseWithName = Observer.Create<Unit>(u => Close(Option<string>.Some(ViewModel.SheetName)));
+            ViewModel?.SaveSheetCommand.Subscribe(observerCloseWithName); //make optional name
+            CloseButton.Click += (sender, e) => Close(Option<string>.None);
+            this.KeyDown += (sender, e) =>
+            {
+                if (e.Key == Avalonia.Input.Key.Enter)
+                {
+                    if(!string.IsNullOrEmpty(ViewModel.SheetName))
+                        ViewModel.SaveSheetCommand.Execute().Subscribe(observerCloseWithName);
+                }
+                if(e.Key == Avalonia.Input.Key.Escape)
+                {
+                    Close(Option<string>.None);
+                }
+            };
         });
 
     }

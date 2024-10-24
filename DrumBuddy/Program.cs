@@ -29,7 +29,6 @@ namespace DrumBuddy
             Locator.CurrentMutable.RegisterConstant(new LibraryViewModel());
             Locator.CurrentMutable.Register(() => new RecordingViewModel());
 
-            Locator.CurrentMutable.Register(() => new SaveSheetView() { ViewModel = new SaveSheetViewModel()});
 
         }
         // Avalonia configuration, don't remove; also used by visual designer.
