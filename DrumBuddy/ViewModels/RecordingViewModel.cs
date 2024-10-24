@@ -16,6 +16,7 @@ using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
 using DrumBuddy.Core.Models;
 using DrumBuddy.ViewModels.Dialogs;
+using System.Reactive;
 
 namespace DrumBuddy.ViewModels
 {
@@ -41,6 +42,8 @@ namespace DrumBuddy.ViewModels
             var dir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent;
             _normalBeepPlayer = new SoundPlayer(Path.Combine(dir.FullName,"Assets\\metronome.wav")); //relative path should be used
             _highBeepPlayer = new SoundPlayer(Path.Combine(dir.FullName, "Assets\\metronomeup.wav"));
+            _normalBeepPlayer.Load();
+            _highBeepPlayer.Load();
             //binding measuresource
             _measureSource.Connect()
                 .Bind(out _measures)
@@ -64,6 +67,7 @@ namespace DrumBuddy.ViewModels
             CurrentMeasure = null;
 
         }
+        public Interaction<Unit, string> ShowChooseNameDialog {get;} = new();
         public Interaction<Sheet, bool> ShowSaveDialog { get; } = new();
         [Reactive]
         public MeasureViewModel _currentMeasure;
@@ -86,6 +90,7 @@ namespace DrumBuddy.ViewModels
         [ReactiveCommand]
         private void StartRecording()
         {
+            ShowChooseNameDialog.Handle(Unit.Default);
             #region UI timer init
             _timer = new DispatcherTimer();
             _timer.Tick += (s, e) =>

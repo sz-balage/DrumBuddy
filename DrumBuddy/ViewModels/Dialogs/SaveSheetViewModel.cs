@@ -1,10 +1,6 @@
 ﻿using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DrumBuddy.ViewModels.Dialogs
 {
@@ -14,11 +10,7 @@ namespace DrumBuddy.ViewModels.Dialogs
         private string _sheetName;
         private IObservable<bool> _saveSheetCanExecute => SheetName.WhenAnyValue(s => !string.IsNullOrEmpty(s));
         [ReactiveCommand(CanExecute = nameof(_saveSheetCanExecute))]
-        private void SaveSheet()
-        {
-            //save the sheet
-            ShouldBeSaved = true;
-        }
+        private void SaveSheet(){}
         public bool ShouldBeSaved { get; private set; }
     }
 }

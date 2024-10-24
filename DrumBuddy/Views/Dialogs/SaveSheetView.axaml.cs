@@ -1,3 +1,4 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
@@ -12,7 +13,7 @@ public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
 {
     private TextBox NameTextB => this.FindControl<TextBox>("NameTB");
     private Button Save => this.FindControl<Button>("SaveButton");
-    private Button Close => this.FindControl<Button>("CloseButton");
+    private Button CloseButton => this.FindControl<Button>("CloseButton");
     public SaveSheetView()
     {
         InitializeComponent();
@@ -20,7 +21,8 @@ public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
         {
             this.Bind(ViewModel, vm => vm.SheetName, v => v.NameTextB.Text).DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.SaveSheetCommand, v => v.Save).DisposeWith(d);
-            Close.Click += (s, e) => Close();
+            ViewModel?.SaveSheetCommand.Subscribe(Observer.Create<Unit>(u => Close())); //make optional name
         });
+
     }
 }
