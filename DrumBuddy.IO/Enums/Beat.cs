@@ -1,6 +1,6 @@
 ﻿namespace DrumBuddy.IO.Enums
 {
-    public enum DrumType
+    public enum Beat
     {
         HiHat_Foot,
         Bass,

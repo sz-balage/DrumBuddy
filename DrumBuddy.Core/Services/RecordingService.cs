@@ -19,7 +19,6 @@ namespace DrumBuddy.Core.Services
     {
         private IMidiService _midiService;
         private IScheduler _scheduler;
-        public List<Sheet> Sheets { get; private set; } = new();
         public RecordingService(IMidiService midiService = null, IScheduler scheduler = null)
         {
             _scheduler = scheduler ?? Scheduler.Default;
@@ -36,11 +35,6 @@ namespace DrumBuddy.Core.Services
         public IObservable<IList<Beat>> GetBeats(BPM bpm) =>
             _midiService.GetBeatsObservable(bpm)
                         .Buffer(bpm.SixteenthNoteDuration());
-        public void StopRecording(BPM bpm,List<Measure> measures)
-        {
-            StopWatch.Reset();
-            Sheets.Add(new(bpm,measures));
-        }
         public Stopwatch StopWatch { get; } = new();
     }
 }

@@ -8,6 +8,12 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   <ItemGroup>
+    <AvaloniaXaml Remove="Converters\**" />
+    <Compile Remove="Converters\**" />
+    <EmbeddedResource Remove="Converters\**" />
+    <None Remove="Converters\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Assets\Fonts\Nunito-Black.ttf" />
     <None Remove="Assets\Fonts\Nunito-BlackItalic.ttf" />
     <None Remove="Assets\Fonts\Nunito-Bold.ttf" />
@@ -69,9 +75,5 @@
     <EmbeddedResource Include="Assets\snare-icon.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Converters\" />
   </ItemGroup>
 </Project>

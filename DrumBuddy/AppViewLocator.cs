@@ -11,6 +11,7 @@ namespace DrumBuddy
         {
             HomeViewModel context => new HomeView() { ViewModel = context },
             RecordingViewModel context => new RecordingView() { ViewModel = context },
+            LibraryViewModel context => new LibraryView() { ViewModel = context },
             _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
         };
     }

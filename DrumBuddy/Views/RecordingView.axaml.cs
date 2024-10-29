@@ -7,6 +7,13 @@ using DrumBuddy.Views.HelperViews;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DrumBuddy.Core.Models;
+using DrumBuddy.ViewModels.Dialogs;
+using System.Threading.Tasks;
+using System.Reactive;
+using LanguageExt;
+using Splat;
+using Avalonia.Interactivity;
 
 namespace DrumBuddy.Views;
 
@@ -88,7 +95,15 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.CountDownVisibility, v => v._countDownGrid.IsVisible)
                 .DisposeWith(d);
+            this.BindInteraction(ViewModel, vm => vm.ShowSaveDialog, SaveHandler);
         });
         AvaloniaXamlLoader.Load(this);
+    }
+    private async Task SaveHandler(IInteractionContext<System.Reactive.Unit, Option<string>> context)
+    {
+        var mainWindow = Locator.Current.GetService<MainWindow>();
+        var saveView = new SaveSheetView(){ ViewModel = new SaveSheetViewModel() };
+        var result = await saveView.ShowDialog<Option<string>>(mainWindow);
+        context.SetOutput(result);
     }
 }

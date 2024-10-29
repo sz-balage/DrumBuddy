@@ -11,6 +11,6 @@ namespace DrumBuddy.IO.Services
     {
         public IObservable<Beat> GetBeatsObservable(BPM tempo) //for now for testing purposes it only returns a beat every sixteenth note duration (calculated from BPM
          => Observable.Interval(tempo.QuarterNoteDuration())
-                       .Select(_ => new Beat(DrumType.Snare));
+                       .Select(_ => Beat.Snare);
     }
 }

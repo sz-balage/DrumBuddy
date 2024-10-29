@@ -24,7 +24,6 @@ namespace DrumBuddy
                     vm.SelectedPaneItem = vm.PaneItems[0];
                 }
             }
-
             base.OnFrameworkInitializationCompleted();
         }
     }

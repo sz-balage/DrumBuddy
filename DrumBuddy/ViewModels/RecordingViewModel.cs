@@ -7,11 +7,17 @@ using Splat;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
+using DrumBuddy.Core.Models;
+using DrumBuddy.ViewModels.Dialogs;
+using LanguageExt;
+using Unit = System.Reactive.Unit;
 
 namespace DrumBuddy.ViewModels
 {
@@ -27,13 +33,18 @@ namespace DrumBuddy.ViewModels
         private IObservable<bool> _stopRecordingCanExecute;
         private SoundPlayer _normalBeepPlayer;
         private SoundPlayer _highBeepPlayer;
+        private LibraryViewModel _library;
         public RecordingViewModel()
         {
             _recordingService = new();
             HostScreen = Locator.Current.GetService<IScreen>();
+            _library = Locator.Current.GetService<LibraryViewModel>();
             //init sound players
-            _normalBeepPlayer = new SoundPlayer(@"C:\Users\PC\Source\Repos\baluka1118\DrumBuddy\DrumBuddy\Assets\metronome.wav"); //relative path should be used
-            _highBeepPlayer = new SoundPlayer(@"C:\Users\PC\Source\Repos\baluka1118\DrumBuddy\DrumBuddy\Assets\metronomeup.wav");
+            var dir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent;
+            _normalBeepPlayer = new SoundPlayer(Path.Combine(dir.FullName,"Assets\\metronome.wav")); //relative path should be used
+            _highBeepPlayer = new SoundPlayer(Path.Combine(dir.FullName, "Assets\\metronomeup.wav"));
+            _normalBeepPlayer.Load();
+            _highBeepPlayer.Load();
             //binding measuresource
             _measureSource.Connect()
                 .Bind(out _measures)
@@ -55,8 +66,8 @@ namespace DrumBuddy.ViewModels
             IsRecording = false;
             IsPaused = false;
             CurrentMeasure = null;
-
         }
+        public Interaction<Unit, Option<string>> ShowSaveDialog { get; } = new();
         [Reactive]
         public MeasureViewModel _currentMeasure;
         [Reactive]
@@ -135,10 +146,8 @@ namespace DrumBuddy.ViewModels
 
 
         [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
-        private void StopRecording()
+        private async Task StopRecording()
         {
-            var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
-            _recordingService.StopRecording(_bpm,measures);
             _pointerSubscription.Dispose(); //composite disposable should be introduced
             _timer.Stop();
             StopAndResetPointer();
@@ -146,6 +155,13 @@ namespace DrumBuddy.ViewModels
             IsRecording = false;
             IsPaused = false;
             TimeElapsed = $"0:0:0";
+            
+            var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
+            //ask user if sheet should be saved
+            var sheet = new Sheet(_bpm, measures, "test");
+            var delete = await ShowSaveDialog.Handle(Unit.Default);
+            if(delete.IsSome)
+                _library.AddSheet(new Sheet(_bpm, measures, (string)delete));
         }
         private void ClearMeasures()
         {

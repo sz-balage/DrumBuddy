@@ -28,7 +28,7 @@
                 </Button>
                 <ListBox x:Name="PaneListBox">
                     <ListBox.ItemTemplate>
-                        <DataTemplate DataType="{x:Type helpers:ListItemTemplate}">
+                        <DataTemplate DataType="{x:Type helpers:NavigationMenuItemTemplate}">
                             <StackPanel Spacing="15" Orientation="Horizontal">
                                 <PathIcon VerticalAlignment="Center" Height="40" Data="{Binding Icon}" Width="15"></PathIcon>
                                 <TextBlock Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"

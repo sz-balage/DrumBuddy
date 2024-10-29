@@ -9,9 +9,9 @@ using Avalonia.Media;
 
 namespace DrumBuddy.Helpers.Models
 {
-    public class ListItemTemplate
+    public class NavigationMenuItemTemplate
     {
-        public ListItemTemplate(Type modelType, string IconKey)
+        public NavigationMenuItemTemplate(Type modelType, string IconKey)
         {
             ModelType = modelType;
             Label = modelType.Name.Replace("ViewModel","");

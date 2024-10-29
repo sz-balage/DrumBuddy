@@ -28,5 +28,6 @@ namespace DrumBuddy.Views
             });
             InitializeComponent();
         }
+        
     }
 }
