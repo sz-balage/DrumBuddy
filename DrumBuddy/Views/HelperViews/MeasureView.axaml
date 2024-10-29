@@ -26,7 +26,7 @@
           <!-- Pointer -->
           <Line x:Name="Pointer" Stroke="Red" StrokeThickness="2"/>
       </Canvas>
-      <Border>
+      <Border HorizontalAlignment="Left">
           <ItemsControl x:Name="ItemsControl" HorizontalAlignment="Center" Margin="35,0,35,0">
           <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>

@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
@@ -13,18 +14,13 @@ namespace DrumBuddy.Views.HelperViews;
 
 public partial class RythmicGroupView : ReactiveUserControl<RythmicGroupViewModel>
 {
-    private ContentControl _content => this.FindControl<ContentControl>("Content");
+    private Path _tempEllipse => this.FindControl<Path>("TempEllipse");
     public RythmicGroupView()
     {
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            ViewModel.WhenAnyValue(x => x.RythmicGroup)
-                .WhereNotNull()
-                .Subscribe(rg =>
-                {
-                    _content.Content = DrawRythmicGroup(rg);
-                })
+            this.OneWayBind(ViewModel, vm => vm.Drawing, v => v._tempEllipse.Data)
                 .DisposeWith(d);
         });
     }

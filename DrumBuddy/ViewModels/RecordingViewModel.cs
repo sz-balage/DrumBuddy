@@ -5,35 +5,37 @@ using DynamicData;
 using ReactiveUI;
 using Splat;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
 using DrumBuddy.Core.Models;
-using DrumBuddy.ViewModels.Dialogs;
+using DrumBuddy.IO.Extensions;
 using LanguageExt;
 using Unit = System.Reactive.Unit;
 
 namespace DrumBuddy.ViewModels
 {
     public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
-    {
-        private DispatcherTimer _pointerTimer;
-        private RecordingService _recordingService;
-        private SourceList<MeasureViewModel> _measureSource = new();
-        private ReadOnlyObservableCollection<MeasureViewModel> _measures;
+    { 
+        private readonly RecordingService _recordingService;
+        private readonly SourceList<MeasureViewModel> _measureSource = new();
+        private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
         private DispatcherTimer _timer;
         private BPM _bpm;
-        private IDisposable _pointerSubscription;
         private IObservable<bool> _stopRecordingCanExecute;
-        private SoundPlayer _normalBeepPlayer;
-        private SoundPlayer _highBeepPlayer;
-        private LibraryViewModel _library;
+        private readonly SoundPlayer _normalBeepPlayer;
+        private readonly SoundPlayer _highBeepPlayer;
+        private readonly LibraryViewModel _library;
+        private CompositeDisposable _subs = new();
+        private long _tick;
         public RecordingViewModel()
         {
             _recordingService = new();
@@ -69,7 +71,7 @@ namespace DrumBuddy.ViewModels
         }
         public Interaction<Unit, Option<string>> ShowSaveDialog { get; } = new();
         [Reactive]
-        public MeasureViewModel _currentMeasure;
+        private MeasureViewModel _currentMeasure;
         [Reactive]
         private decimal _bpmDecimal;
         [Reactive]
@@ -84,29 +86,62 @@ namespace DrumBuddy.ViewModels
         private int _countDown;
         [Reactive]
         private bool _countDownVisibility;
-        private IDisposable _countDownSubscription;
-
         [ReactiveCommand]
         private void StartRecording()
         {
             #region UI timer init
             _timer = new DispatcherTimer();
             _timer.Tick += (s, e) =>
-                TimeElapsed = $"{_recordingService.StopWatch.Elapsed.Minutes}:{_recordingService.StopWatch.Elapsed.Seconds}:{_recordingService.StopWatch.Elapsed.Milliseconds.ToString().Remove(1)}";
-            _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            {
+                _tick++; //increments every second
+                TimeElapsed = $"{(_tick % 3600) / 60}:{_tick % 60}";
+            };
+            _timer.Interval = new TimeSpan(0, 0, 0, 1);
             #endregion
-            _timer.Start(); //should be automatically started when _recordingService.StopWatch.Start() is called (and stop as well)
+            _timer.Start();
             var metronomeObs = _recordingService.GetMetronomeBeeping(_bpm);
             CountDown = 5;
 
-            _countDownSubscription = metronomeObs 
+            _subs.Add(metronomeObs 
                 .Take(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(HandleCountDown);
-            _pointerSubscription = metronomeObs
+                .Subscribe(HandleCountDown));
+            _subs.Add(metronomeObs
                 .Skip(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(MovePointerOnMetronomeBeeps);
+                .Subscribe(MovePointerOnMetronomeBeeps));
+            //beat sub
+            var measureIdx = -1;
+            var rythmicGroupIndex = -1;
+            var delay  = (5*_bpm.QuarterNoteDuration()) - (_bpm.SixteenthNoteDuration() / 2.0); //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
+            var tempNotes = new List<Note>();
+            _subs.Add(_recordingService.GetNotes(_bpm)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Select((notes, idx) => (notes, idx))
+                .DelaySubscription(delay)
+                .Subscribe(data =>
+                {
+                    //idx is the current sixteenth note 
+                    var localMIdx = data.idx / 16;
+                    var localRgIdx = (data.idx % 16) / 4; 
+                    measureIdx = localMIdx;
+                    if(rythmicGroupIndex != localRgIdx)
+                    {
+                        rythmicGroupIndex = localRgIdx;
+                        if(rythmicGroupIndex == 0)
+                        {
+                            if(measureIdx != 0)
+                                Measures[measureIdx-1].AddRythmicGroupFromNotes(tempNotes);
+                        }   
+                        else
+                        {
+                            Measures[measureIdx].AddRythmicGroupFromNotes(tempNotes);
+                        }
+                        tempNotes.Clear();
+                    }
+                    tempNotes.Add(data.notes);
+                }));
+                
             #region UI buttons
             IsRecording = true;
             IsPaused = false;
@@ -148,9 +183,9 @@ namespace DrumBuddy.ViewModels
         [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
         private async Task StopRecording()
         {
-            _pointerSubscription.Dispose(); //composite disposable should be introduced
+            _subs.Dispose();
             _timer.Stop();
-            StopAndResetPointer();
+            ResetPointer();
             //do something with the done sheet
             IsRecording = false;
             IsPaused = false;
@@ -159,9 +194,9 @@ namespace DrumBuddy.ViewModels
             var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
             //ask user if sheet should be saved
             var sheet = new Sheet(_bpm, measures, "test");
-            var delete = await ShowSaveDialog.Handle(Unit.Default);
-            if(delete.IsSome)
-                _library.AddSheet(new Sheet(_bpm, measures, (string)delete));
+            var save = await ShowSaveDialog.Handle(Unit.Default);
+            if(save.IsSome)
+                _library.AddSheet(new Sheet(_bpm, measures, (string)save));
         }
         private void ClearMeasures()
         {
@@ -180,9 +215,8 @@ namespace DrumBuddy.ViewModels
             IsPaused = false;
         }
 
-        private void StopAndResetPointer()
+        private void ResetPointer()
         {
-            _pointerSubscription.Dispose();
             ClearMeasures();
             CurrentMeasure.IsPointerVisible = false;
             CurrentMeasure = null;

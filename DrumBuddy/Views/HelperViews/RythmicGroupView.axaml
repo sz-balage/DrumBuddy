@@ -10,6 +10,9 @@
     <Design.DataContext>
         <vm:RythmicGroupViewModel/>
     </Design.DataContext>
-    <ContentControl x:Name="Content">
-    </ContentControl>
+    <Canvas>
+        <Path x:Name="TempEllipse" 
+              x:DataType="vm:RythmicGroupViewModel"
+              Fill="{Binding Color}" Canvas.Top="50" Canvas.Left="50"></Path>
+    </Canvas>
 </rxui:ReactiveUserControl>

@@ -32,9 +32,9 @@ namespace DrumBuddy.Core.Services
                                                                     .Select(i => i%4)
                                                                     .Publish()
                                                                     .AutoConnect(2);
-        public IObservable<IList<Beat>> GetBeats(BPM bpm) =>
+        public IObservable<IList<Note>> GetNotes(BPM bpm) =>
             _midiService.GetBeatsObservable(bpm)
+                        .Select(b => new Note(b,NoteValue.Sixteenth))
                         .Buffer(bpm.SixteenthNoteDuration());
-        public Stopwatch StopWatch { get; } = new();
     }
 }
