@@ -18,7 +18,7 @@ namespace DrumBuddy.ViewModels.HelperViewModels
                 RadiusX = 30,
                 RadiusY = 30
             };
-            this.Color = rg.Notes.Length == 0 ? Brushes.Red : Brushes.Green;
+            this.Color = rg.IsEmpty ? Brushes.Red : Brushes.Green;
         }
         [Reactive]
         private RythmicGroup _rythmicGroup;

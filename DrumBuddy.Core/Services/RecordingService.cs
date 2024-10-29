@@ -11,6 +11,7 @@ using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
+using LanguageExt;
 
 [assembly: InternalsVisibleTo("DrumBuddy.Core.Unit")]
 namespace DrumBuddy.Core.Services
@@ -35,6 +36,7 @@ namespace DrumBuddy.Core.Services
         public IObservable<IList<Note>> GetNotes(BPM bpm) =>
             _midiService.GetBeatsObservable(bpm)
                         .Select(b => new Note(b,NoteValue.Sixteenth))
-                        .Buffer(bpm.SixteenthNoteDuration());
+                        .Buffer(bpm.SixteenthNoteDuration())
+                        .Select(notes => notes.Count == 0 ? Prelude.List(new Note(Beat.Rest, NoteValue.Sixteenth)).ToList() : notes);
     }
 }

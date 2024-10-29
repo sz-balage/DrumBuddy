@@ -90,26 +90,32 @@ namespace DrumBuddy.ViewModels
         private void StartRecording()
         {
             #region UI timer init
+            _tick = 0;
+            _subs = new CompositeDisposable();
             _timer = new DispatcherTimer();
             _timer.Tick += (s, e) =>
             {
                 _tick++; //increments every second
-                TimeElapsed = $"{(_tick % 3600) / 60}:{_tick % 60}";
+                TimeElapsed = $"{(_tick / 6000) % 60:D2}:{(_tick / 100) % 60:D2}:{_tick % 100:D2}";
+                
             };
-            _timer.Interval = new TimeSpan(0, 0, 0, 1);
+            _timer.Interval = new TimeSpan(0, 0, 0, 0,10);
             #endregion
-            _timer.Start();
             var metronomeObs = _recordingService.GetMetronomeBeeping(_bpm);
             CountDown = 5;
 
             _subs.Add(metronomeObs 
                 .Take(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(HandleCountDown));
+                .Subscribe(onNext: HandleCountDown, onCompleted: () => _timer.Start()));
             _subs.Add(metronomeObs
                 .Skip(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(MovePointerOnMetronomeBeeps));
+            // _subs.Add(metronomeObs
+            //     .Skip(4)
+            //     .Take(1)
+            //     .Subscribe(_ => _timer.Start()));
             //beat sub
             var measureIdx = -1;
             var rythmicGroupIndex = -1;
@@ -197,6 +203,7 @@ namespace DrumBuddy.ViewModels
             var save = await ShowSaveDialog.Handle(Unit.Default);
             if(save.IsSome)
                 _library.AddSheet(new Sheet(_bpm, measures, (string)save));
+            ClearMeasures();
         }
         private void ClearMeasures()
         {
@@ -217,7 +224,6 @@ namespace DrumBuddy.ViewModels
 
         private void ResetPointer()
         {
-            ClearMeasures();
             CurrentMeasure.IsPointerVisible = false;
             CurrentMeasure = null;
         }

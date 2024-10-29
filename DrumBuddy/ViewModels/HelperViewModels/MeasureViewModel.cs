@@ -32,11 +32,12 @@ namespace DrumBuddy.ViewModels.HelperViewModels
             Measure.Groups.Add(rg);
             RythmicGroups.Add(new(rg));
         }
+
+        public bool IsEmpty => Measure.IsEmpty;
         public ObservableCollection<RythmicGroupViewModel> RythmicGroups { get; } = new();
         public void MovePointerToRG(long rythmicGroupIndex)
         {
             PointerPosition = (rythmicGroupIndex * 135) + 35;
         }
-        public bool IsEmpty => RythmicGroups.All(rg => rg.RythmicGroup.IsDefault());
     }
 }
