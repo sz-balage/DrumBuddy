@@ -34,7 +34,7 @@ namespace DrumBuddy.Core.Services
                                                                     .Publish()
                                                                     .AutoConnect(2);
         public IObservable<IList<Note>> GetNotes(BPM bpm) =>
-            _midiService.GetBeatsObservable(bpm)
+            _midiService.GetBeatsObservable()
                         .Select(b => new Note(b,NoteValue.Sixteenth))
                         .Buffer(bpm.SixteenthNoteDuration())
                         .Select(notes => notes.Count == 0 ? Prelude.List(new Note(Beat.Rest, NoteValue.Sixteenth)).ToList() : notes);

@@ -3,6 +3,9 @@ using DrumBuddy.Helpers.Models;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using Avalonia.Interactivity;
+using DrumBuddy.IO.Models;
+using DrumBuddy.IO.Services;
+using LanguageExt;
 using ReactiveUI.SourceGenerators;
 using Splat;
 
@@ -37,5 +40,6 @@ namespace DrumBuddy.ViewModels
             this.WhenAnyValue(vm => vm.SelectedPaneItem)
                 .Subscribe(OnSelectedPaneItemChanged);
         }
+
     }
 }

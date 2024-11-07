@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using DrumBuddy.IO.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.Views;
@@ -28,8 +29,8 @@ namespace DrumBuddy
             Locator.CurrentMutable.RegisterConstant(new HomeViewModel());
             Locator.CurrentMutable.RegisterConstant(new LibraryViewModel());
             Locator.CurrentMutable.Register(() => new RecordingViewModel());
-
-
+            
+            Locator.CurrentMutable.RegisterConstant(new MidiService());
         }
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()

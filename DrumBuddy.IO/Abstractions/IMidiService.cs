@@ -10,6 +10,6 @@ namespace DrumBuddy.IO.Abstractions
 {
     public interface IMidiService
     {
-        public IObservable<Beat> GetBeatsObservable(BPM tempo);
+        public IObservable<Beat> GetBeatsObservable();
     }
 }

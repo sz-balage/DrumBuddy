@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reactive.Disposables;
@@ -18,6 +17,7 @@ using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
 using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Extensions;
+using DrumBuddy.IO.Services;
 using LanguageExt;
 using Unit = System.Reactive.Unit;
 
@@ -42,9 +42,8 @@ namespace DrumBuddy.ViewModels
             HostScreen = Locator.Current.GetService<IScreen>();
             _library = Locator.Current.GetService<LibraryViewModel>();
             //init sound players
-            var dir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent;
-            _normalBeepPlayer = new SoundPlayer(Path.Combine(dir.FullName,"Assets\\metronome.wav")); //relative path should be used
-            _highBeepPlayer = new SoundPlayer(Path.Combine(dir.FullName, "Assets\\metronomeup.wav"));
+            _normalBeepPlayer = new SoundPlayer(FileSystemService.GetPathToRegularBeepSound()); //relative path should be used
+            _highBeepPlayer = new SoundPlayer(FileSystemService.GetPathToHighBeepSound());
             _normalBeepPlayer.Load();
             _highBeepPlayer.Load();
             //binding measuresource
@@ -69,27 +68,8 @@ namespace DrumBuddy.ViewModels
             IsPaused = false;
             CurrentMeasure = null;
         }
-        public Interaction<Unit, Option<string>> ShowSaveDialog { get; } = new();
-        [Reactive]
-        private MeasureViewModel _currentMeasure;
-        [Reactive]
-        private decimal _bpmDecimal;
-        [Reactive]
-        private bool _isRecording;
-        [Reactive]
-        private bool _isPaused;
-
-        [Reactive]
-        private string _timeElapsed;
-
-        [Reactive]
-        private int _countDown;
-        [Reactive]
-        private bool _countDownVisibility;
-        [ReactiveCommand]
-        private void StartRecording()
+        private void InitTimer()
         {
-            #region UI timer init
             _tick = 0;
             _subs = new CompositeDisposable();
             _timer = new DispatcherTimer();
@@ -100,10 +80,10 @@ namespace DrumBuddy.ViewModels
                 
             };
             _timer.Interval = new TimeSpan(0, 0, 0, 0,10);
-            #endregion
+        }
+        private void InitMetronomeSubs()
+        {
             var metronomeObs = _recordingService.GetMetronomeBeeping(_bpm);
-            CountDown = 5;
-
             _subs.Add(metronomeObs 
                 .Take(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
@@ -112,10 +92,9 @@ namespace DrumBuddy.ViewModels
                 .Skip(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(MovePointerOnMetronomeBeeps));
-            // _subs.Add(metronomeObs
-            //     .Skip(4)
-            //     .Take(1)
-            //     .Subscribe(_ => _timer.Start()));
+        }
+        private void InitBeatSub()
+        {
             //beat sub
             var measureIdx = -1;
             var rythmicGroupIndex = -1;
@@ -147,11 +126,6 @@ namespace DrumBuddy.ViewModels
                     }
                     tempNotes.Add(data.notes);
                 }));
-                
-            #region UI buttons
-            IsRecording = true;
-            IsPaused = false;
-            #endregion
         }
         private void HandleCountDown(long idx)
         {
@@ -184,6 +158,37 @@ namespace DrumBuddy.ViewModels
                 _normalBeepPlayer.Play();
             CurrentMeasure?.MovePointerToRG(idx);
         }
+        public Interaction<Unit, Option<string>> ShowSaveDialog { get; } = new();
+        [Reactive]
+        private MeasureViewModel _currentMeasure;
+        [Reactive]
+        private decimal _bpmDecimal;
+        [Reactive]
+        private bool _isRecording;
+        [Reactive]
+        private bool _isPaused;
+
+        [Reactive]
+        private string _timeElapsed;
+
+        [Reactive]
+        private int _countDown;
+        [Reactive]
+        private bool _countDownVisibility;
+        [ReactiveCommand]
+        private void StartRecording()
+        {
+            InitTimer();
+            CountDown = 5;
+            InitMetronomeSubs();
+            InitBeatSub();
+         
+            #region UI buttons
+            IsRecording = true;
+            IsPaused = false;
+            #endregion
+        }
+
 
 
         [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
