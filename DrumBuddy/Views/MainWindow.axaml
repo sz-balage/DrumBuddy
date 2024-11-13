@@ -16,7 +16,33 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
-    <SplitView x:Name="SplitView"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <Border x:Name="NoConnection" x:DataType="vm:MainViewModel" 
+              
+              Background="DarkRed"
+              IsVisible="{Binding NoConnection}">
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Label Foreground="White" VerticalAlignment="Center">
+                    There are no MIDI devices connected.
+                </Label>
+                <Button x:Name="RetryButton" Margin="10,0,0,0">
+                    <TextBlock Foreground="White">Retry</TextBlock>
+                </Button>
+            </StackPanel>
+        </Border>
+        <Grid x:Name="Connected" x:DataType="vm:MainViewModel"
+              Background="DarkGreen" 
+              IsVisible="{Binding ConnectedSucc}">
+            <Label HorizontalAlignment="Center" Foreground="White">
+                A MIDI device was connected successfully.
+            </Label>
+        </Grid>
+         <SplitView x:Name="SplitView" Grid.Row="1"
                OpenPaneLength="200"
                CompactPaneLength="50"
                DisplayMode="CompactInline"
@@ -59,5 +85,9 @@
             </Border>
         </SplitView.Content>
     </SplitView>
-  
+    <Border Grid.Row="1" x:Name="ErrorBorder" Background="Red" CornerRadius="5" Padding="10" Margin="10"
+            HorizontalAlignment="Right" VerticalAlignment="Bottom">
+        <TextBlock x:Name="ErrorMessage" Foreground="White"/>
+    </Border>    
+    </Grid>
 </rxui:ReactiveWindow>

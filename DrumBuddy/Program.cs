@@ -1,9 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.ViewModels;
-using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.Views;
 using ReactiveUI;
 using Splat;
@@ -23,6 +23,8 @@ namespace DrumBuddy
 
         private static void RegisterServices(AppBuilder appBuilder)
         {
+            Locator.CurrentMutable.RegisterConstant(new MidiService());
+            Locator.CurrentMutable.RegisterConstant<IMidiService>(Locator.Current.GetService<MidiService>());
             Locator.CurrentMutable.RegisterConstant<IScreen>(new MainViewModel());
             Locator.CurrentMutable.RegisterConstant<MainViewModel>(Locator.Current.GetService<IScreen>() as MainViewModel);
             Locator.CurrentMutable.RegisterConstant(new MainWindow());
@@ -30,11 +32,11 @@ namespace DrumBuddy
             Locator.CurrentMutable.RegisterConstant(new LibraryViewModel());
             Locator.CurrentMutable.Register(() => new RecordingViewModel());
             
-            Locator.CurrentMutable.RegisterConstant(new MidiService());
         }
         // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
+        private static AppBuilder BuildAvaloniaApp() =>
+            // IconProvider.Current.Register<FontAwesomeIconProvider>();
+            AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()
                 .UseReactiveUI()

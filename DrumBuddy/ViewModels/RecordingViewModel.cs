@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using ReactiveUI.SourceGenerators;
 using DrumBuddy.Core.Models;
+using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Enums;
 using DrumBuddy.IO.Extensions;
 using DrumBuddy.IO.Services;
 using LanguageExt;
@@ -25,7 +27,6 @@ namespace DrumBuddy.ViewModels
 {
     public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
     { 
-        private readonly RecordingService _recordingService;
         private readonly SourceList<MeasureViewModel> _measureSource = new();
         private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
         private DispatcherTimer _timer;
@@ -36,10 +37,11 @@ namespace DrumBuddy.ViewModels
         private readonly LibraryViewModel _library;
         private CompositeDisposable _subs = new();
         private long _tick;
+        private IMidiService _midiService;
         public RecordingViewModel()
         {
-            _recordingService = new();
             HostScreen = Locator.Current.GetService<IScreen>();
+            _midiService = Locator.Current.GetService<MidiService>();
             _library = Locator.Current.GetService<LibraryViewModel>();
             //init sound players
             _normalBeepPlayer = new SoundPlayer(FileSystemService.GetPathToRegularBeepSound()); //relative path should be used
@@ -68,6 +70,8 @@ namespace DrumBuddy.ViewModels
             IsPaused = false;
             CurrentMeasure = null;
         }
+
+        public IObservable<Beat> KeyboardBeats { get; set; }
         private void InitTimer()
         {
             _tick = 0;
@@ -83,7 +87,7 @@ namespace DrumBuddy.ViewModels
         }
         private void InitMetronomeSubs()
         {
-            var metronomeObs = _recordingService.GetMetronomeBeeping(_bpm);
+            var metronomeObs = RecordingService.GetMetronomeBeeping(_bpm);
             _subs.Add(metronomeObs 
                 .Take(4)
                 .ObserveOn(RxApp.MainThreadScheduler)
@@ -100,7 +104,7 @@ namespace DrumBuddy.ViewModels
             var rythmicGroupIndex = -1;
             var delay  = (5*_bpm.QuarterNoteDuration()) - (_bpm.SixteenthNoteDuration() / 2.0); //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
             var tempNotes = new List<Note>();
-            _subs.Add(_recordingService.GetNotes(_bpm)
+            _subs.Add(RecordingService.GetNotes(_bpm,KeyboardInputEnabled ? KeyboardBeats : _midiService.GetBeatsObservable())
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Select((notes, idx) => (notes, idx))
                 .DelaySubscription(delay)
@@ -189,6 +193,7 @@ namespace DrumBuddy.ViewModels
             #endregion
         }
 
+        [Reactive] private bool _keyboardInputEnabled;
 
 
         [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]

@@ -12,8 +12,7 @@ using DrumBuddy.IO.Extensions;
 using DrumBuddy.IO.Models;
 using DrumBuddy.IO.Services;
 using FluentAssertions;
-using FluentAssertions.Extensions;
-using NSubstitute;
+using FluentAssertions.Extensions; 
 using System.Reactive.Subjects;
 
 namespace DrumBuddy.Core.Unit
@@ -21,13 +20,10 @@ namespace DrumBuddy.Core.Unit
     public class WhenRecordingHappens
     {
         private readonly TestScheduler _testScheduler;
-        private readonly IMidiService _midiService;
-        private readonly RecordingService _recordingService;
+      
         public WhenRecordingHappens()
         {
             _testScheduler = new TestScheduler();
-            _midiService = Substitute.For<IMidiService>();
-            _recordingService = new RecordingService(_midiService,_testScheduler);
         }
     }
 }
