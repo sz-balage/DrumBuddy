@@ -8,151 +8,172 @@ namespace DrumBuddy.Core.Unit;
 
 public class WhenNotesAreUpscaled
 {
-       [Fact]
-        public void WithOneNoteFollowedByThreeRests_UpscalesToQuarter()
+    [Theory]
+    [InlineData(Beat.Snare)]
+    [InlineData(Beat.Bass)]
+    [InlineData(Beat.HiHat)]
+    [InlineData(Beat.Crash1)]
+    [InlineData(Beat.Crash2)]
+    [InlineData(Beat.Ride)]
+    [InlineData(Beat.Tom1)]
+    [InlineData(Beat.Tom2)]
+    [InlineData(Beat.FloorTom)]
+    public void WithOneNoteFollowedByThreeRests_UpscalesToQuarter(Beat beat)
+    {
+        // Arrange
+        var notes = new List<Note>
         {
-            // Arrange
-            var notes = new List<Note>
-            {
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-            };
+            new(beat, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth)
+        };
 
-            // Act
-            var result = RecordingService.UpscaleNotes(notes);
+        // Act
+        var result = RecordingService.UpscaleNotes(notes);
 
-            // Assert
-            result.Count.ShouldBe(1);
-            result[0].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Quarter);
-        }
+        // Assert
+        result.Count.ShouldBe(1);
+        result[0].ShouldHaveBeatAndValue(beat, NoteValue.Quarter);
+    }
 
-        [Fact]
-        public void WithFourConsecutiveSnares_KeepsThemDistinct()
+    [Theory]
+    [InlineData(Beat.Snare, Beat.Snare)]
+    [InlineData(Beat.Bass, Beat.Bass)]
+    [InlineData(Beat.Snare, Beat.Bass)]
+    public void WithFourConsecutiveNotes_KeepsThemDistinct(Beat beat1, Beat beat2)
+    {
+        // Arrange
+        var notes = new List<Note>
         {
-            // Arrange
-            var notes = new List<Note>
-            {
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-            };
+            new(beat1, NoteValue.Sixteenth),
+            new(beat2, NoteValue.Sixteenth),
+            new(beat1, NoteValue.Sixteenth),
+            new(beat2, NoteValue.Sixteenth)
+        };
 
-            // Act
-            var result = RecordingService.UpscaleNotes(notes);
+        // Act
+        var result = RecordingService.UpscaleNotes(notes);
 
-            // Assert
-            result.Count.ShouldBe(4);
-            for (int i = 0; i < 4; i++)
+        // Assert
+        result.Count.ShouldBe(4);
+        for (var i = 0; i < 4; i++)
+        {
+            if (i == 0 || i == 2)
             {
-                Assert.Equal(Beat.Snare, result[i].Beat);
-                Assert.Equal(NoteValue.Sixteenth, result[i].Value);
+                result[i].ShouldHaveBeatAndValue(beat1, NoteValue.Sixteenth);
+            }
+            else
+            {
+                result[i].ShouldHaveBeatAndValue(beat2, NoteValue.Sixteenth);
             }
         }
+    }
 
-        [Fact]
-        public void WithConsecutiveRests_UpscalesNotes()
+    [Fact]
+    public void WithConsecutiveRests_UpscalesNotes()
+    {
+        // Arrange
+        var notes = new List<Note>
         {
-            // Arrange
-            var notes = new List<Note>
-            {
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-            };
+            new(Beat.Snare, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Snare, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth)
+        };
 
-            // Act
-            var result = RecordingService.UpscaleNotes(notes);
+        // Act
+        var result = RecordingService.UpscaleNotes(notes);
 
-            // Assert
-            result.Count.ShouldBe(2);
-            result[0].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Eighth);
-            result[1].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Eighth);
-        }
+        // Assert
+        result.Count.ShouldBe(2);
+        result[0].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Eighth);
+        result[1].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Eighth);
+    }
 
 
-        [Fact]
-        public void WithOneNoteFollowedByTwoRestsAndOneNote_UpscalesToNoteRestNote()
+    [Theory]
+    [InlineData(Beat.Snare, Beat.Snare)]
+    [InlineData(Beat.Bass, Beat.Bass)]
+    [InlineData(Beat.Snare, Beat.Bass)]
+    public void WithOneNoteFollowedByTwoRestsAndOneNote_UpscalesToNoteRestNote(Beat beat1, Beat beat2)
+    {
+        var notes = new List<Note>
         {
-            var notes = new List<Note>
-            {
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-            };
-            var result = RecordingService.UpscaleNotes(notes);
+            new(beat1, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(beat2, NoteValue.Sixteenth)
+        };
+        var result = RecordingService.UpscaleNotes(notes);
 
-            result.Count.ShouldBe(3);
-            result[0].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Eighth);
-            result[1].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Sixteenth);
-            result[2].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Sixteenth);
-        }
+        result.Count.ShouldBe(3);
+        result[0].ShouldHaveBeatAndValue(beat1, NoteValue.Eighth);
+        result[1].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Sixteenth);
+        result[2].ShouldHaveBeatAndValue(beat2, NoteValue.Sixteenth);
+    }
 
-        [Fact]
-        public void WithFourRests_UpscalesToOneQuarterRest()
+    [Fact]
+    public void WithFourRests_UpscalesToOneQuarterRest()
+    {
+        // Arrange
+        var notes = new List<Note>
         {
-            // Arrange
-            var notes = new List<Note>
-            {
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-            };
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth)
+        };
 
-            // Act
-            var result = RecordingService.UpscaleNotes(notes);
+        // Act
+        var result = RecordingService.UpscaleNotes(notes);
 
-            // Assert
-            result.Count.ShouldBe(1);
-            result[0].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Quarter);
-        }
+        // Assert
+        result.Count.ShouldBe(1);
+        result[0].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Quarter);
+    }
 
-        [Fact]
-        public void WithTwoRestsFollowedByNoteAndRest_UpscalesToOneRestOneNote()
+    [Fact]
+    public void WithTwoRestsFollowedByNoteAndRest_UpscalesToOneRestOneNote()
+    {
+        // Arrange
+        var notes = new List<Note>
         {
-            // Arrange
-            var notes = new List<Note>
-            {
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-            };
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Snare, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth)
+        };
 
-            // Act
-            var result = RecordingService.UpscaleNotes(notes);
+        // Act
+        var result = RecordingService.UpscaleNotes(notes);
 
-            // Assert
-            result.Count.ShouldBe(2);
-            result[0].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Eighth);
-            result[1].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Eighth);
-        }
+        // Assert
+        result.Count.ShouldBe(2);
+        result[0].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Eighth);
+        result[1].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Eighth);
+    }
 
-        [Fact]
-        public void WithThreeRestsFollowedByOneNote_UpscalesToTwoRestOneNote()
+    [Fact]
+    public void WithThreeRestsFollowedByOneNote_UpscalesToTwoRestOneNote()
+    {
+        // Arrange
+        var notes = new List<Note>
         {
-            
-            // Arrange
-            var notes = new List<Note>
-            {
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Rest, NoteValue.Sixteenth),
-                new Note(Beat.Snare, NoteValue.Sixteenth),
-            };
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Rest, NoteValue.Sixteenth),
+            new(Beat.Snare, NoteValue.Sixteenth)
+        };
 
-            // Act
-            var result = RecordingService.UpscaleNotes(notes);
+        // Act
+        var result = RecordingService.UpscaleNotes(notes);
 
-            // Assert
-            result.Count.ShouldBe(3);
-            result[0].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Eighth);
-            result[1].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Sixteenth);
-            result[2].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Sixteenth);
-        }
+        // Assert
+        result.Count.ShouldBe(3);
+        result[0].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Eighth);
+        result[1].ShouldHaveBeatAndValue(Beat.Rest, NoteValue.Sixteenth);
+        result[2].ShouldHaveBeatAndValue(Beat.Snare, NoteValue.Sixteenth);
+    }
+
 }

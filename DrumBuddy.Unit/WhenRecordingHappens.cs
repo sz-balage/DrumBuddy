@@ -15,7 +15,5 @@ namespace DrumBuddy.Core.Unit
         {
             _testScheduler = new TestScheduler();
         }
-
-     
     }
 }
