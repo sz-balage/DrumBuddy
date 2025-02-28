@@ -3,8 +3,8 @@ using DrumBuddy.IO.Enums;
 
 namespace DrumBuddy.Core.Models
 {
-    public record RythmicGroup(ImmutableArray<Note> Notes)
+    public record RythmicGroup(ImmutableArray<NoteGroup> NoteGroups)
     {
-        public bool IsEmpty => Notes.All(n => n.Beat == Beat.Rest);
+        public bool IsEmpty => NoteGroups.All(n => n.IsRest);
     }
 }

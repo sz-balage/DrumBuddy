@@ -32,99 +32,106 @@ public static class RecordingService
             .Select(notes =>
                 notes.Count == 0 ? Prelude.List(new Note(Beat.Rest, NoteValue.Sixteenth)).ToList() : notes);
     }
-    
-    /// <summary>
-    /// Upscales notes to the next higher note value if possible.
-    /// </summary>
-    /// <param name="notes">Notes to upscale.</param>
-    /// <returns>Upscaled notes.</returns>
-    public static List<Note> UpscaleNotes(List<Note> notes)
-    {
-        if (notes == null || !notes.Any())
-            return new List<Note>();
 
-        var result = new List<Note>();
+    /// <summary>
+    ///     Upscales notes to the next higher note value if possible.
+    /// </summary>
+    /// <param name="noteGroups">Note groups to upscale.</param>
+    /// <returns>Upscaled note groups.</returns>
+    public static List<NoteGroup> UpscaleNotes(List<NoteGroup> noteGroups)
+    {
+        if (noteGroups == null || !noteGroups.Any())
+            return new List<NoteGroup>();
+
+        var result = new List<NoteGroup>();
         var position = 0;
 
-        while (position < notes.Count)
-            //handle rest sequences
-            if (notes[position].Beat == Beat.Rest)
+        while (position < noteGroups.Count)
+            // Handle rest sequences
+            if (noteGroups[position].IsRest)
             {
                 var consecutiveRests = 1;
-                while (position + consecutiveRests < notes.Count &&
-                       notes[position + consecutiveRests].Beat == Beat.Rest)
+                while (position + consecutiveRests < noteGroups.Count &&
+                       noteGroups[position + consecutiveRests].IsRest)
                     consecutiveRests++;
 
-                //create appropriate rest notes based on the count
+                // Create appropriate rest notes based on the count
                 if (consecutiveRests >= 4)
                 {
-                    result.Add(new Note(Beat.Rest, NoteValue.Quarter));
+                    result.Add(new NoteGroup { new Note(Beat.Rest, NoteValue.Quarter) });
                     position += 4;
-                    //handle any remaining rests
+                    // Handle any remaining rests
                     consecutiveRests -= 4;
                 }
                 else if (consecutiveRests >= 2)
                 {
-                    result.Add(new Note(Beat.Rest, NoteValue.Eighth));
+                    result.Add(new NoteGroup { new Note(Beat.Rest, NoteValue.Eighth) });
                     position += 2;
                     consecutiveRests -= 2;
                 }
 
-                //add any remaining single rests
+                // Add any remaining single rests
                 while (consecutiveRests > 0)
                 {
-                    result.Add(new Note(Beat.Rest, NoteValue.Sixteenth));
+                    result.Add(new NoteGroup { new Note(Beat.Rest, NoteValue.Sixteenth) });
                     position++;
                     consecutiveRests--;
                 }
             }
-            //handle non-rest notes
+            // Handle non-rest note groups
             else
             {
-                var currentBeat = notes[position].Beat;
-
-                //count following rests (up to 3 at most)
+                // Count following rests (up to 3 at most)
                 var followingRests = 0;
-                for (var i = position + 1; i < notes.Count && i < position + 4; i++)
-                    if (notes[i].Beat == Beat.Rest)
+                for (var i = position + 1; i < noteGroups.Count && i < position + 4; i++)
+                    if (noteGroups[i].IsRest)
                         followingRests++;
                     else
                         break;
 
-                //determine note value based on following rests
+                // Determine note value based on following rests
                 NoteValue noteValue;
                 int restsToConsume;
 
                 switch (followingRests)
                 {
-                    case 3: //note followed by 3 rests = quarter note
+                    case 3: // Note followed by 3 rests = quarter note
                         noteValue = NoteValue.Quarter;
                         restsToConsume = 3;
                         break;
-                    case 1: //note followed by 1 rest = eighth note
+                    case 1: // Note followed by 1 rest = eighth note
                         noteValue = NoteValue.Eighth;
                         restsToConsume = 1;
                         break;
-                    case 2: //note followed by 2 rests = eighth note + sixteenth
+                    case 2: // Note followed by 2 rests = eighth note + sixteenth
                         noteValue = NoteValue.Eighth;
-                        restsToConsume = 1; //only consume one rest for eighth note
+                        restsToConsume = 1; // Only consume one rest for eighth note
                         break;
-                    default: //no following rests = sixteenth note
+                    default: // No following rests = sixteenth note
                         noteValue = NoteValue.Sixteenth;
                         restsToConsume = 0;
                         break;
                 }
 
-                result.Add(new Note(currentBeat, noteValue));
+                // Add the note group with upscaled value if applicable
+                if (noteValue != NoteValue.Sixteenth)
+                    // Use ChangeValues to update all notes in the group
+                    result.Add(noteGroups[position].ChangeValues(noteValue));
+                else
+                    // If no upscaling, add the original group
+                    result.Add(new NoteGroup(noteGroups[position]));
 
+                // Advance position past this note group
                 position++;
 
+                // Advance past the consumed rests
                 position += restsToConsume;
 
-                //if we had exactly 2 rests but only consumed 1 for the eighth note, add the remaining rest as sixteenth
+                // If we had exactly 2 rests but only consumed 1 for the eighth note,
+                // add the remaining rest as sixteenth
                 if (followingRests == 2 && restsToConsume == 1)
                 {
-                    result.Add(new Note(Beat.Rest, NoteValue.Sixteenth));
+                    result.Add(new NoteGroup { new Note(Beat.Rest, NoteValue.Sixteenth) });
                     position++;
                 }
             }

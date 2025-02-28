@@ -4,6 +4,7 @@ using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using DrumBuddy.Core.Models;
+using DrumBuddy.Core.Services;
 using DynamicData;
 using LanguageExt;
 using ReactiveUI.SourceGenerators;
@@ -26,9 +27,9 @@ namespace DrumBuddy.ViewModels.HelperViewModels
         }
         [Reactive]
         private bool _isPointerVisible;
-        public void AddRythmicGroupFromNotes(List<Note> notes)
+        public void AddRythmicGroupFromNotes(List<NoteGroup> notes)
         {
-            var rg = new RythmicGroup(notes.ToImmutableArray()); //will be a call to the recordingservice
+            var rg = new RythmicGroup(RecordingService.UpscaleNotes(notes).ToImmutableArray()); //will be a call to the recordingservice
             Measure.Groups.Add(rg);
             RythmicGroups.Add(new(rg));
         }

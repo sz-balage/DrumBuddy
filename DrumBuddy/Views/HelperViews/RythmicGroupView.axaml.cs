@@ -29,7 +29,7 @@ public partial class RythmicGroupView : ReactiveUserControl<RythmicGroupViewMode
     {
         return new TextBlock()
         {
-            Text = $"{rg.Notes.Length.ToString()} notes were hit",
+            Text = $"{rg.NoteGroups.Length.ToString()} notes were hit",
             TextWrapping = TextWrapping.Wrap
         };
     }

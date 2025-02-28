@@ -112,7 +112,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         var delay = 5 * _bpm.QuarterNoteDuration() -
                     _bpm.SixteenthNoteDuration() /
                     2.0; //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
-        var tempNotes = new List<Note>();
+        var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
             .GetNotes(_bpm, KeyboardInputEnabled ? KeyboardBeats : _midiService.GetBeatsObservable())
             .ObserveOn(RxApp.MainThreadScheduler)
@@ -140,7 +140,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
                     tempNotes.Clear();
                 }
 
-                tempNotes.Add(data.notes);
+                tempNotes.Add(new(data.notes));
             }));
     }
 
