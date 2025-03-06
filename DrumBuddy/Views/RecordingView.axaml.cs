@@ -102,7 +102,15 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             this.BindInteraction(ViewModel, vm => vm.ShowSaveDialog, SaveHandler);
             this.Bind(ViewModel, vm => vm.KeyboardInputEnabled, v => v._keyboardCheckBox.IsChecked);
             ViewModel.KeyboardBeats = Observable.FromEventPattern(this, nameof(this.KeyDown))
-                .Select(_ => Beat.Snare);
+                .Select(ep => ep.EventArgs as KeyEventArgs)
+                .Select(e => e.Key switch
+                {
+                    Key.S => Beat.Tom1,
+                    Key.D => Beat.Bass,
+                    Key.A => Beat.HiHat,
+                    Key.W => Beat.Snare,
+                    _ => Beat.Rest
+                });
             
         });
         

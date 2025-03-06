@@ -7,12 +7,16 @@
                           xmlns:rxui="http://reactiveui.net"
                           mc:Ignorable="d"
                           x:Class="DrumBuddy.Views.HelperViews.RythmicGroupView" >
-    <Design.DataContext>
-        <vm:RythmicGroupViewModel/>
-    </Design.DataContext>
     <Canvas>
-        <Path x:Name="TempEllipse" 
-              x:DataType="vm:RythmicGroupViewModel"
-              Fill="{Binding Color}" Canvas.Top="50" Canvas.Left="50"></Path>
+        <ItemsControl x:Name="NotesItemsControl">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="Geometry">
+                    <Path Data="{Binding}" 
+                          Stroke="Black"
+                          StrokeThickness="1.5"
+                          Fill="Black"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Canvas>
 </rxui:ReactiveUserControl>

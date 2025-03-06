@@ -180,7 +180,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
             _normalBeepPlayer.Play();
         }
 
-        CurrentMeasure?.MovePointerToRG(idx);
+        CurrentMeasure?.MovePointerToRg(idx);
     }
 
     public Interaction<Unit, Option<string>> ShowSaveDialog { get; } = new();

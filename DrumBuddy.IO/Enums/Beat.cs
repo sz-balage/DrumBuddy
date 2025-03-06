@@ -2,7 +2,7 @@
 {
     public enum Beat
     {
-        HiHat_Foot,
+        HiHatFoot,
         Bass = 36,
         FloorTom = 43,
         Snare = 38,
@@ -14,12 +14,4 @@
         Crash2 = 457,
         Rest
     }
-    // tam1 48
-    // tam2 45
-    // alsotam 43
-    // hihat 42
-    // snare 38
-    // crash 49
-    // ride 51
-    // crash2 57
 }

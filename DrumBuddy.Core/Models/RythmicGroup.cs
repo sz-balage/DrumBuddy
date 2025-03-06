@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using DrumBuddy.IO.Enums;
 
 namespace DrumBuddy.Core.Models
 {
