@@ -24,12 +24,12 @@ public static class RecordingService
             .AutoConnect(2);
     }
 
-    public static IObservable<IList<Note>> GetNotes(Bpm bpm, IObservable<Beat> beats)
+    public static IObservable<IList<Note>> GetNotes(Bpm bpm, IObservable<Drum> beats)
     {
         return beats.Select(b => new Note(b, NoteValue.Sixteenth))
             .Buffer(bpm.SixteenthNoteDuration())
             .Select(notes =>
-                notes.Count == 0 ? CreateList(new Note(Beat.Rest, NoteValue.Sixteenth)) : notes);
+                notes.Count == 0 ? CreateList(new Note(Drum.Rest, NoteValue.Sixteenth)) : notes);
     }
 
     /// <summary>
@@ -57,14 +57,14 @@ public static class RecordingService
                 // Create appropriate rest notes based on the count
                 if (consecutiveRests >= 4)
                 {
-                    result.Add([new Note(Beat.Rest, NoteValue.Quarter)]);
+                    result.Add([new Note(Drum.Rest, NoteValue.Quarter)]);
                     position += 4;
                     // Handle any remaining rests
                     consecutiveRests -= 4;
                 }
                 else if (consecutiveRests >= 2)
                 {
-                    result.Add([new Note(Beat.Rest, NoteValue.Eighth)]);
+                    result.Add([new Note(Drum.Rest, NoteValue.Eighth)]);
                     position += 2;
                     consecutiveRests -= 2;
                 }
@@ -72,7 +72,7 @@ public static class RecordingService
                 // Add any remaining single rests
                 while (consecutiveRests > 0)
                 {
-                    result.Add([new Note(Beat.Rest, NoteValue.Sixteenth)]);
+                    result.Add([new Note(Drum.Rest, NoteValue.Sixteenth)]);
                     position++;
                     consecutiveRests--;
                 }
@@ -129,7 +129,7 @@ public static class RecordingService
                 // add the remaining rest as sixteenth
                 if (followingRests == 2 && restsToConsume == 1)
                 {
-                    result.Add([new Note(Beat.Rest, NoteValue.Sixteenth)]);
+                    result.Add([new Note(Drum.Rest, NoteValue.Sixteenth)]);
                     position++;
                 }
             }

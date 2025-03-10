@@ -37,7 +37,7 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
         {
             //MeasureView.ViewModel= new MeasureViewModel();
             // ViewModel.BeatObservableFromUI = Observable.FromEventPattern<RoutedEventArgs>(SnareButton, nameof(SnareButton.Click))
-            //     .Select(_ => new Beat(DateTime.Now, DrumType.Snare));
+            //     .Select(_ => new Drum(DateTime.Now, DrumType.Snare));
 
             this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
                 .DisposeWith(d);
@@ -88,11 +88,11 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => e.Key switch
                 {
-                    Key.S => Beat.Tom1,
-                    Key.D => Beat.Bass,
-                    Key.A => Beat.HiHat,
-                    Key.W => Beat.Snare,
-                    _ => Beat.Rest
+                    Key.S => Drum.Tom1,
+                    Key.D => Drum.Bass,
+                    Key.A => Drum.HiHat,
+                    Key.W => Drum.Snare,
+                    _ => Drum.Rest
                 });
         });
 

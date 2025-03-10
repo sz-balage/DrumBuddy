@@ -75,7 +75,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         CurrentMeasure = null;
     }
 
-    public IObservable<Beat> KeyboardBeats { get; set; }
+    public IObservable<Drum> KeyboardBeats { get; set; }
 
     private void InitTimer()
     {
@@ -105,7 +105,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
 
     private void InitBeatSub()
     {
-        //beat sub
+        //drum sub
         var measureIdx = -1;
         var rythmicGroupIndex = -1;
         var delay = 5 * _bpm.QuarterNoteDuration() -

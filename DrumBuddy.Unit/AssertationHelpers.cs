@@ -7,9 +7,9 @@ namespace DrumBuddy.Core.Unit;
 
 public static class AssertationHelpers
 {
-    public static void ShouldHaveBeatAndValue(this Note note, Beat beat, NoteValue value)
+    public static void ShouldHaveBeatAndValue(this Note note, Drum drum, NoteValue value)
     {
-        note.Beat.ShouldBe(beat);
+        note.Drum.ShouldBe(drum);
         note.Value.ShouldBe(value);
     }
 }

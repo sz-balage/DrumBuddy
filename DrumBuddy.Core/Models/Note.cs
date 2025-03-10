@@ -3,5 +3,5 @@ using DrumBuddy.IO.Enums;
 
 namespace DrumBuddy.Core.Models
 {
-    public record Note(Beat Beat, NoteValue Value);
+    public record Note(Drum Drum, NoteValue Value);
 }

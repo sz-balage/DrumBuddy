@@ -58,11 +58,11 @@ namespace DrumBuddy.IO.Services
             _device = newDevice;
             IsConnected = true;
         }
-        public IObservable<Beat> GetBeatsObservable() => IsConnected ? 
-            _midiInput.Select(args => (Beat)int.Parse(args.NoteNumber.ToString()))
+        public IObservable<Drum> GetBeatsObservable() => IsConnected ? 
+            _midiInput.Select(args => (Drum)int.Parse(args.NoteNumber.ToString()))
                 .Buffer(2)
                 .Select(list => list.First()) 
-            : Observable.Empty<Beat>();
+            : Observable.Empty<Drum>();
     }
 
     public record MidiDeviceConnectionResult(bool IsSuccess,string? Message);

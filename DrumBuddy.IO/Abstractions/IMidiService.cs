@@ -5,7 +5,7 @@ namespace DrumBuddy.IO.Abstractions
 {
     public interface IMidiService
     {
-        public IObservable<Beat> GetBeatsObservable();
+        public IObservable<Drum> GetBeatsObservable();
         public bool IsConnected { get; }
         public IObservable<bool> InputDeviceDisconnected { get; }
         public MidiDeviceConnectionResult TryConnect();

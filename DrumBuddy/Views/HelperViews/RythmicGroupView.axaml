@@ -7,10 +7,10 @@
                           xmlns:rxui="http://reactiveui.net"
                           mc:Ignorable="d"
                           x:Class="DrumBuddy.Views.HelperViews.RythmicGroupView" >
-    <Canvas>
+    <Canvas> <!-- TODO modify itemscontrol to contain image paths with coordinates -->
         <ItemsControl x:Name="NotesItemsControl">
             <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="Geometry">
+                <DataTemplate x:DataType="Geometry"> 
                     <Path Data="{Binding}" 
                           Stroke="Black"
                           StrokeThickness="1.5"
