@@ -31,7 +31,7 @@ namespace DrumBuddy.Core.Services
         private static XElement ConvertRythmicGroupToXml(RythmicGroup group)
         {
             return new XElement("note",
-                group.NoteGroups.Select(n => ConvertNoteToXml(n)));
+                group.NoteGroups.Select(ConvertNoteToXml));
         }
 
         private static XElement ConvertNoteToXml(NoteGroup note)

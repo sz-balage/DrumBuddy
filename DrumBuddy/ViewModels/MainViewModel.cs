@@ -6,11 +6,10 @@ using System.Reactive.Linq;
 using System.Threading;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using DrumBuddy.Extensions;
 using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Models;
 using DrumBuddy.IO.Services;
-using LanguageExt;
-using LanguageExt.Common;
 using ReactiveUI.SourceGenerators;
 using Splat;
 
@@ -27,14 +26,7 @@ namespace DrumBuddy.ViewModels
                 {
                     NoConnection = true;
                 });
-            _midiService.TryConnect()
-                .Match(
-                    Succ: _ => SuccessfulConnection(),
-                    Fail: err =>
-                    {
-                        NoConnection = true;
-                        //ConnectionError(err);
-                    });
+            TryConnect();
             this.WhenAnyValue(vm => vm.SelectedPaneItem)
                 .Subscribe(OnSelectedPaneItemChanged);
             ErrorMessage = string.Empty;
@@ -50,13 +42,23 @@ namespace DrumBuddy.ViewModels
             }, null, TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan);
         }
 
-        private void ConnectionError(Error error)
+        private void ConnectionError(string message)
         {
-            ErrorMessage = error.Message;
+            NoConnection = true;
+            ErrorMessage = message;
             var timer = new Timer(_ =>
             {
                 Dispatcher.UIThread.Invoke(() => ErrorMessage = string.Empty);
             }, null, TimeSpan.FromSeconds(5), Timeout.InfiniteTimeSpan);
+        }
+        private void OnSelectedPaneItemChanged(NavigationMenuItemTemplate? value)
+        {
+            if (value is null)
+                return;
+            if (Router.GetCurrentViewModel()?.GetType() == value.ModelType)
+                return; 
+            IsPaneOpen = false;
+            Router.NavigateAndReset.Execute(Locator.Current.GetRequiredService(value.ModelType) as IRoutableViewModel);
         }
         [Reactive]
         private bool _isPaneOpen;
@@ -71,14 +73,19 @@ namespace DrumBuddy.ViewModels
 
         [Reactive] 
         private string _errorMessage;
-        private void OnSelectedPaneItemChanged(NavigationMenuItemTemplate? value)
+        [ReactiveCommand]
+        private void TryConnect()
         {
-            if (value is null)
-                return;
-            if (Router.GetCurrentViewModel()?.GetType() == value.ModelType)
-                return; 
-            IsPaneOpen = false;
-            Router.NavigateAndReset.Execute(Locator.Current.GetService(value.ModelType) as IRoutableViewModel);
+            var connectionResult = _midiService.TryConnect();
+            switch (connectionResult.IsSuccess)
+            {
+                case true:
+                    SuccessfulConnection();
+                    break;
+                case false:
+                    ConnectionError(connectionResult.Message!);
+                    break;
+            }
         }
         public ObservableCollection<NavigationMenuItemTemplate> PaneItems { get; } = new()
         {
@@ -89,14 +96,6 @@ namespace DrumBuddy.ViewModels
         public RoutingState Router { get; } = new();
         
 
-        [ReactiveCommand]
-        private void TryConnect()
-        {
-            _midiService.TryConnect()
-                .Match(
-                    Succ: _ => SuccessfulConnection(),
-                    Fail: ConnectionError);
-        }
       
     }
 }

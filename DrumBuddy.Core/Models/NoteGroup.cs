@@ -1,11 +1,11 @@
 ﻿using DrumBuddy.Core.Enums;
 using DrumBuddy.IO.Enums;
-using Melanchall.DryWetMidi.MusicTheory;
 
 namespace DrumBuddy.Core.Models;
 public class NoteGroup : List<Note>
 {
-    public NoteGroup() : base() { }
+    public NoteGroup()
+    { }
         
     public NoteGroup(List<Note> notes) : base(notes) { }
         

@@ -1,11 +1,5 @@
-﻿using DrumBuddy.IO.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DrumBuddy.IO.Enums;
-using LanguageExt;
+﻿using DrumBuddy.IO.Enums;
+using DrumBuddy.IO.Services;
 
 namespace DrumBuddy.IO.Abstractions
 {
@@ -14,7 +8,7 @@ namespace DrumBuddy.IO.Abstractions
         public IObservable<Beat> GetBeatsObservable();
         public bool IsConnected { get; }
         public IObservable<bool> InputDeviceDisconnected { get; }
-        public Fin<Unit> TryConnect();
+        public MidiDeviceConnectionResult TryConnect();
 
     }
 }

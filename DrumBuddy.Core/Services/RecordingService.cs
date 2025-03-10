@@ -5,8 +5,7 @@ using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Enums;
 using DrumBuddy.IO.Extensions;
 using DrumBuddy.IO.Models;
-using LanguageExt;
-
+using static DrumBuddy.Core.Helpers.CollectionInitializers;
 [assembly: InternalsVisibleTo("DrumBuddy.Core.Unit")]
 
 namespace DrumBuddy.Core.Services;
@@ -17,7 +16,7 @@ public static class RecordingService
     ///     Returns a sequence of metronome beeps, and starts the stopwatch.
     /// </summary>
     /// <returns>The index of the current beep from 0-3, resetting on each measure.</returns>
-    public static IObservable<long> GetMetronomeBeeping(BPM bpm)
+    public static IObservable<long> GetMetronomeBeeping(Bpm bpm)
     {
         return Observable.Interval(bpm.QuarterNoteDuration())
             .Select(i => i % 4)
@@ -25,12 +24,12 @@ public static class RecordingService
             .AutoConnect(2);
     }
 
-    public static IObservable<IList<Note>> GetNotes(BPM bpm, IObservable<Beat> Beats)
+    public static IObservable<IList<Note>> GetNotes(Bpm bpm, IObservable<Beat> beats)
     {
-        return Beats.Select(b => new Note(b, NoteValue.Sixteenth))
+        return beats.Select(b => new Note(b, NoteValue.Sixteenth))
             .Buffer(bpm.SixteenthNoteDuration())
             .Select(notes =>
-                notes.Count == 0 ? Prelude.List(new Note(Beat.Rest, NoteValue.Sixteenth)).ToList() : notes);
+                notes.Count == 0 ? CreateList(new Note(Beat.Rest, NoteValue.Sixteenth)) : notes);
     }
 
     /// <summary>
@@ -40,7 +39,7 @@ public static class RecordingService
     /// <returns>Upscaled note groups.</returns>
     public static List<NoteGroup> UpscaleNotes(List<NoteGroup> noteGroups)
     {
-        if (noteGroups == null || !noteGroups.Any())
+        if (noteGroups == null! || !noteGroups.Any())
             return new List<NoteGroup>();
 
         var result = new List<NoteGroup>();
@@ -58,14 +57,14 @@ public static class RecordingService
                 // Create appropriate rest notes based on the count
                 if (consecutiveRests >= 4)
                 {
-                    result.Add(new NoteGroup { new Note(Beat.Rest, NoteValue.Quarter) });
+                    result.Add([new Note(Beat.Rest, NoteValue.Quarter)]);
                     position += 4;
                     // Handle any remaining rests
                     consecutiveRests -= 4;
                 }
                 else if (consecutiveRests >= 2)
                 {
-                    result.Add(new NoteGroup { new Note(Beat.Rest, NoteValue.Eighth) });
+                    result.Add([new Note(Beat.Rest, NoteValue.Eighth)]);
                     position += 2;
                     consecutiveRests -= 2;
                 }
@@ -73,7 +72,7 @@ public static class RecordingService
                 // Add any remaining single rests
                 while (consecutiveRests > 0)
                 {
-                    result.Add(new NoteGroup { new Note(Beat.Rest, NoteValue.Sixteenth) });
+                    result.Add([new Note(Beat.Rest, NoteValue.Sixteenth)]);
                     position++;
                     consecutiveRests--;
                 }
@@ -114,12 +113,11 @@ public static class RecordingService
                 }
 
                 // Add the note group with upscaled value if applicable
-                if (noteValue != NoteValue.Sixteenth)
-                    // Use ChangeValues to update all notes in the group
-                    result.Add(noteGroups[position].ChangeValues(noteValue));
-                else
+                // Use ChangeValues to update all notes in the group
+                result.Add(noteValue != NoteValue.Sixteenth
+                    ? noteGroups[position].ChangeValues(noteValue)
                     // If no upscaling, add the original group
-                    result.Add(new NoteGroup(noteGroups[position]));
+                    : new NoteGroup(noteGroups[position]));
 
                 // Advance position past this note group
                 position++;
@@ -131,27 +129,11 @@ public static class RecordingService
                 // add the remaining rest as sixteenth
                 if (followingRests == 2 && restsToConsume == 1)
                 {
-                    result.Add(new NoteGroup { new Note(Beat.Rest, NoteValue.Sixteenth) });
+                    result.Add([new Note(Beat.Rest, NoteValue.Sixteenth)]);
                     position++;
                 }
             }
 
         return result;
-    }
-
-    /// <summary>
-    ///     Checks if the beats at all specified positions are identical
-    /// </summary>
-    private static bool AreBeatsIdentical(Dictionary<int, List<Beat>> groupedBeats, params int[] positions)
-    {
-        if (positions.Length <= 1)
-            return true;
-
-        // Check if all positions have exactly one beat and they're all the same
-        if (positions.Any(p => !groupedBeats.ContainsKey(p) || groupedBeats[p].Count != 1))
-            return false;
-
-        var firstBeat = groupedBeats[positions[0]][0];
-        return positions.All(p => groupedBeats[p][0] == firstBeat);
     }
 }

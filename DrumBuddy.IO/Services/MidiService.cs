@@ -2,11 +2,8 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DrumBuddy.IO.Abstractions;
-using LanguageExt;
-using LanguageExt.Common;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Multimedia;
-using static LanguageExt.Prelude;
 
 namespace DrumBuddy.IO.Services
 {
@@ -21,12 +18,23 @@ namespace DrumBuddy.IO.Services
             _devicesWatcher = DevicesWatcher.Instance;
             _devicesWatcher.DeviceRemoved += OnDeviceRemoved;
         }
-        public Fin<Unit> TryConnect() =>
-            InputDevice.GetAll().Match(
-            Empty: () => FinFail<Unit>(Error.New("Couldn't find any MIDI devices connected to the computer.")),
-            More: devices => devices.Count == 1
-                ? SetDevice(devices.Single())
-                : FinFail<Unit>(Error.New("More than one MIDI device connected. Please remove any additional devices.")));
+        public MidiDeviceConnectionResult TryConnect()
+        {
+            var devices = InputDevice.GetAll();
+            if (devices.Count == 0)
+                return new MidiDeviceConnectionResult(false, "No MIDI devices connected.");
+            if (devices.Count > 1)
+                return new MidiDeviceConnectionResult(false, "Multiple MIDI devices connected. Please remove any additional devices.");
+            SetDevice(devices.Single());
+            return new MidiDeviceConnectionResult(true, null);
+            // return InputDevice.GetAll().Match(
+            //     Empty: () => new MidiDeviceConnectionError("No MIDI devices connected."),
+            //     More: devices => devices.Count == 1
+            //         ? Either<MidiDeviceConnectionError, Unit>.Right(SetDevice(devices.Single()))
+            //         : new MidiDeviceConnectionError(
+            //             "More than one MIDI device connected. Please remove any additional devices."));
+        }
+
         private void OnDeviceRemoved(object? sender, DeviceAddedRemovedEventArgs e)
         {
             if (e.Device is InputDevice device && device.Name == _device.Name)
@@ -45,11 +53,10 @@ namespace DrumBuddy.IO.Services
         }
         private readonly Subject<bool> _inputDeviceDisconnected = new();
         public IObservable<bool> InputDeviceDisconnected => _inputDeviceDisconnected;
-        private Unit SetDevice(InputDevice newDevice)
+        private void SetDevice(InputDevice newDevice)
         {
             _device = newDevice;
             IsConnected = true;
-            return unit;
         }
         public IObservable<Beat> GetBeatsObservable() => IsConnected ? 
             _midiInput.Select(args => (Beat)int.Parse(args.NoteNumber.ToString()))
@@ -57,4 +64,6 @@ namespace DrumBuddy.IO.Services
                 .Select(list => list.First()) 
             : Observable.Empty<Beat>();
     }
+
+    public record MidiDeviceConnectionResult(bool IsSuccess,string? Message);
 }

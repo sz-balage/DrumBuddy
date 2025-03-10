@@ -17,7 +17,6 @@ using DrumBuddy.IO.Models;
 using DrumBuddy.IO.Services;
 using DrumBuddy.ViewModels.HelperViewModels;
 using DynamicData;
-using LanguageExt;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
@@ -30,7 +29,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private DispatcherTimer _timer;
-    private BPM _bpm;
+    private Bpm _bpm;
     private IObservable<bool> _stopRecordingCanExecute;
     private readonly SoundPlayer _normalBeepPlayer;
     private readonly SoundPlayer _highBeepPlayer;
@@ -62,11 +61,11 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         this
             .WhenAnyValue(vm =>
                 vm.BpmDecimal) //when the bpm changes, update the _bpm prop (should never be invalid due to the NumericUpDown control)
+            .Skip(1)
             .Subscribe(i =>
             {
-                BPM.From(Convert.ToInt32(i)).Match(
-                    Right: bpm => _bpm = bpm,
-                    Left: ex => Debug.WriteLine(ex.Message));
+                int value = Convert.ToInt32(i);
+                _bpm = new Bpm(value);
             });
         //default values
         BpmDecimal = 100;
@@ -183,7 +182,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         CurrentMeasure?.MovePointerToRg(idx);
     }
 
-    public Interaction<Unit, Option<string>> ShowSaveDialog { get; } = new();
+    public Interaction<Unit, string?> ShowSaveDialog { get; } = new();
     [Reactive] private MeasureViewModel _currentMeasure;
     [Reactive] private decimal _bpmDecimal;
     [Reactive] private bool _isRecording;
@@ -228,7 +227,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         //ask user if sheet should be saved
         var sheet = new Sheet(_bpm, measures, "test");
         var save = await ShowSaveDialog.Handle(Unit.Default);
-        if (save.IsSome)
+        if (save is not null)
             _library.AddSheet(new Sheet(_bpm, measures, (string)save));
         ClearMeasures();
     }

@@ -31,7 +31,6 @@ namespace DrumBuddy
             Locator.CurrentMutable.RegisterConstant(new HomeViewModel());
             Locator.CurrentMutable.RegisterConstant(new LibraryViewModel());
             Locator.CurrentMutable.Register(() => new RecordingViewModel());
-            
         }
         // Avalonia configuration, don't remove; also used by visual designer.
         private static AppBuilder BuildAvaloniaApp() =>

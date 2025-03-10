@@ -43,7 +43,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
             var line = new LineGeometry(new Point(62.5, 20), new Point(62.5, 100));
             Geometries.Add(line);
         }
-        // var noteGroups = RythmicGroup.NoteGroups;
+        // var noteGroups = _rythmicGroup.NoteGroups;
         // for (var i = 0; i < noteGroups.Length && i < 4; i++)
         // {
         //     var xPosition = i * SectionWidth;
@@ -56,22 +56,20 @@ public partial class RythmicGroupViewModel : ReactiveObject
         //         var line = new LineGeometry(
         //             new Point(centerX, 40),
         //             new Point(centerX, 40 + RestLineHeight));
-        //         // Draw a vertical line for rest
         //         Geometries.Add(line);
         //         continue;
         //     }
         //
         //     foreach (var note in noteGroup)
-        //         if (note.Beat == Beat.Snare || note.Beat == Beat.Bass)
-        //         {
-        //             double yPosition = note.Beat == Beat.Snare ? 60 : 30;
-        //             var ellipse = new EllipseGeometry(new Rect(
-        //                 centerX - NoteRadius,
-        //                 yPosition - NoteRadius,
-        //                 NoteRadius * 2,
-        //                 NoteRadius * 2));
-        //             Geometries.Add(ellipse);
-        //         }
+        //     {
+        //         double yPosition = DrawHelper.GetPoisitionForBeat(note.Beat);
+        //         var ellipse = new EllipseGeometry(new Rect(
+        //             centerX - NoteRadius,
+        //             yPosition - NoteRadius,
+        //             NoteRadius * 2,
+        //             NoteRadius * 2));
+        //         Geometries.Add(ellipse);
+        //     }
         // }
     }
 }

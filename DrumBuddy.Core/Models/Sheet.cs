@@ -3,7 +3,7 @@ using DrumBuddy.IO.Models;
 
 namespace DrumBuddy.Core.Models
 {
-    public class Sheet(BPM tempo, List<Measure> measures, string name)
+    public class Sheet(Bpm tempo, List<Measure> measures, string name)
     {
         public TimeSpan Length => CalculateLength();
         private TimeSpan CalculateLength()
@@ -17,7 +17,7 @@ namespace DrumBuddy.Core.Models
         }
         public string Name { get; init; } = name;
 
-        public BPM Tempo { get; } = tempo;
+        public Bpm Tempo { get; } = tempo;
 
         public List<Measure> Measures { get; } = measures;
     }

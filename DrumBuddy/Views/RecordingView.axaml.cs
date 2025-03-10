@@ -1,22 +1,18 @@
 using System;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
-using DrumBuddy.ViewModels;
-using DrumBuddy.Views.HelperViews;
-using ReactiveUI;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DrumBuddy.Core.Models;
-using DrumBuddy.ViewModels.Dialogs;
 using System.Threading.Tasks;
-using System.Reactive;
+using Avalonia.Controls;
 using Avalonia.Input;
-using LanguageExt;
-using Splat;
-using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 using DrumBuddy.IO.Enums;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using DrumBuddy.ViewModels;
+using DrumBuddy.ViewModels.Dialogs;
+using DrumBuddy.Views.HelperViews;
+using ReactiveUI;
+using Splat;
 
 namespace DrumBuddy.Views;
 
@@ -33,6 +29,7 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
     private TextBlock _countDownTB => this.FindControl<TextBlock>("CountdownTextBlock");
     private Grid _countDownGrid => this.FindControl<Grid>("CountdownGrid");
     private CheckBox _keyboardCheckBox => this.FindControl<CheckBox>("KeyboardInputCheckBox");
+
     public RecordingView()
     {
         InitializeComponent();
@@ -47,7 +44,7 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             this.BindCommand(ViewModel, vm => vm.StartRecordingCommand, v => v._startRecordingButton)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.StopRecordingCommand, v => v._stopRecordingButton)
-                .DisposeWith(d);  
+                .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.PauseRecordingCommand, v => v._pauseRecordingButton)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.ResumeRecordingCommand, v => v._resumeRecordingButton)
@@ -55,42 +52,28 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             this.OneWayBind(ViewModel, vm => vm.IsRecording, v => v._bpmNumeric.IsEnabled, i => !i)
                 .DisposeWith(d);
             this.OneWayBind(
-                ViewModel, 
-                vm => vm.IsRecording, 
+                ViewModel,
+                vm => vm.IsRecording,
                 v => v._startRecordingButton.IsVisible,
-                i =>
-                {
-                    return !i;
-                });
+                i => { return !i; });
             this.OneWayBind(ViewModel, vm => vm.IsRecording, v => v._stopRecordingButton.IsVisible,
-                i =>
-                {
-                    return i;
-                });
+                i => { return i; });
             ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsPaused)
                 .Subscribe(rp =>
                 {
                     if (rp.Item1 && !rp.Item2)
-                    {
                         _pauseRecordingButton.IsVisible = true;
-                    }
                     else
-                    {
                         _pauseRecordingButton.IsVisible = false;
-                    }
                 })
                 .DisposeWith(d);
             ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsPaused)
                 .Subscribe(rp =>
                 {
                     if (rp.Item1 && rp.Item2)
-                    {
                         _resumeRecordingButton.IsVisible = true;
-                    }
                     else
-                    {
                         _resumeRecordingButton.IsVisible = false;
-                    }
                 })
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.BpmDecimal, v => v._bpmNumeric.Value);
@@ -101,7 +84,7 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowSaveDialog, SaveHandler);
             this.Bind(ViewModel, vm => vm.KeyboardInputEnabled, v => v._keyboardCheckBox.IsChecked);
-            ViewModel.KeyboardBeats = Observable.FromEventPattern(this, nameof(this.KeyDown))
+            ViewModel.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => e.Key switch
                 {
@@ -111,16 +94,16 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                     Key.W => Beat.Snare,
                     _ => Beat.Rest
                 });
-            
         });
-        
+
         AvaloniaXamlLoader.Load(this);
     }
-    private async Task SaveHandler(IInteractionContext<System.Reactive.Unit, Option<string>> context)
+
+    private async Task SaveHandler(IInteractionContext<Unit, string?> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var saveView = new SaveSheetView(){ ViewModel = new SaveSheetViewModel() };
-        var result = await saveView.ShowDialog<Option<string>>(mainWindow);
+        var saveView = new SaveSheetView { ViewModel = new SaveSheetViewModel() };
+        var result = await saveView.ShowDialog<string>(mainWindow);
         context.SetOutput(result);
     }
 }

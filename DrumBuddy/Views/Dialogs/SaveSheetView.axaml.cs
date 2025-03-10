@@ -6,7 +6,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Core.Models;
 using DrumBuddy.ViewModels.Dialogs;
-using LanguageExt;
 using ReactiveUI;
 using Unit = System.Reactive.Unit;
 
@@ -24,9 +23,9 @@ public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
         {
             this.Bind(ViewModel, vm => vm.SheetName, v => v.NameTextB.Text).DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.SaveSheetCommand, v => v.SaveButton).DisposeWith(d);
-            var observerCloseWithName = Observer.Create<Unit>(u => Close(Option<string>.Some(ViewModel.SheetName)));
+            var observerCloseWithName = Observer.Create<Unit>(u => Close(ViewModel.SheetName));
             ViewModel?.SaveSheetCommand.Subscribe(observerCloseWithName); //make optional name
-            CloseButton.Click += (sender, e) => Close(Option<string>.None);
+            CloseButton.Click += (sender, e) => Close(null);
             this.KeyDown += (sender, e) =>
             {
                 if (e.Key == Avalonia.Input.Key.Enter)
@@ -36,7 +35,7 @@ public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
                 }
                 if(e.Key == Avalonia.Input.Key.Escape)
                 {
-                    Close(Option<string>.None);
+                    Close(null);
                 }
             };
         });
