@@ -7,7 +7,12 @@
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:models="clr-namespace:DrumBuddy.Models"
                           mc:Ignorable="d"
+                          d:DesignWidth="500"
+                          d:DesignHeight="500"
                           x:Class="DrumBuddy.Views.HelperViews.RythmicGroupView">
+    <Design.DataContext>
+        <vm:RythmicGroupViewModel/>
+    </Design.DataContext>
     <Grid>
         <ItemsControl x:Name="NoteImagesList">
             <ItemsControl.ItemsPanel>

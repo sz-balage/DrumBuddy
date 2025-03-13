@@ -1,5 +1,10 @@
+using System.Collections.Immutable;
 using System.Reactive.Disposables;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using DrumBuddy.Core.Enums;
+using DrumBuddy.Core.Models;
+using DrumBuddy.IO.Enums;
 using DrumBuddy.ViewModels.HelperViewModels;
 using ReactiveUI;
 

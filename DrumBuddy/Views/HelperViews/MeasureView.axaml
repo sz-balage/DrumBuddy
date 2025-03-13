@@ -28,16 +28,16 @@
       </Canvas>
       <Border HorizontalAlignment="Left">
           <ItemsControl x:Name="ItemsControl" HorizontalAlignment="Center" Margin="35,0,35,0">
-          <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" Spacing="10"/>
-              </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                  <helperViews:RythmicGroupView  Width="125" HorizontalAlignment="Center"/>
-              </DataTemplate>
-          </ItemsControl.ItemTemplate>
+              <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="10"/>
+                  </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                      <helperViews:RythmicGroupView  Width="125" HorizontalAlignment="Center"/>
+                  </DataTemplate>
+              </ItemsControl.ItemTemplate>
           </ItemsControl>
       </Border>
   </Grid>
