@@ -7,7 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 
-namespace DrumBuddy.Helpers.Models
+namespace DrumBuddy.Models
 {
     public class NavigationMenuItemTemplate
     {

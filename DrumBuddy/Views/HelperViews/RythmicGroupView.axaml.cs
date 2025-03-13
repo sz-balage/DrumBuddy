@@ -20,7 +20,8 @@ public partial class RythmicGroupView : ReactiveUserControl<RythmicGroupViewMode
         {
             // this.OneWayBind(ViewModel, vm => vm.Drawing, v => v._tempEllipse.Data)
             //     .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Geometries, v => v.NotesItemsControl.ItemsSource).DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.NotesImageAndBoundsList, v => v.NoteImagesList.ItemsSource).DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.Lines, v => v.LinesList.ItemsSource).DisposeWith(d);
         });
     }
 

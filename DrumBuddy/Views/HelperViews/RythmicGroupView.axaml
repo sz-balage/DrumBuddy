@@ -5,18 +5,37 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:vm="clr-namespace:DrumBuddy.ViewModels.HelperViewModels"
                           xmlns:rxui="http://reactiveui.net"
+                          xmlns:models="clr-namespace:DrumBuddy.Models"
                           mc:Ignorable="d"
                           x:Class="DrumBuddy.Views.HelperViews.RythmicGroupView" >
-    <Canvas> <!-- TODO modify itemscontrol to contain image paths with coordinates -->
-        <ItemsControl x:Name="NotesItemsControl">
+    <Grid> <!-- TODO modify itemscontrol to contain image paths with coordinates -->
+        <ItemsControl x:Name="NoteImagesList">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid></Grid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="Geometry"> 
-                    <Path Data="{Binding}" 
-                          Stroke="Black"
-                          StrokeThickness="1.5"
-                          Fill="Black"/>
+                <DataTemplate DataType="{x:Type models:NoteImageAndBounds}">
+                    <Image Source="{Binding Image}"
+                           Width="{Binding Bounds.Width}" 
+                           Height="{Binding Bounds.Height}">
+                        <Image.RenderTransform>
+                            <TranslateTransform X="{Binding Bounds.X}" Y="{Binding Bounds.Y}" />
+                        </Image.RenderTransform>
+                    </Image>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-    </Canvas>
+        <ItemsControl x:Name="LinesList">
+            <!-- <ItemsControl.ItemTemplate> -->
+            <!--     <DataTemplate x:DataType="Geometry">  -->
+            <!--         <Path Data="{Binding}"  -->
+            <!--               Stroke="Black" -->
+            <!--               StrokeThickness="1.5" -->
+            <!--               Fill="Black"/> -->
+            <!--     </DataTemplate> -->
+            <!-- </ItemsControl.ItemTemplate> -->
+        </ItemsControl>
+    </Grid>
 </rxui:ReactiveUserControl>

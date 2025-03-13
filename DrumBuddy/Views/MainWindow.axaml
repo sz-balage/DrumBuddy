@@ -7,7 +7,7 @@
         xmlns:rxui="http://reactiveui.net"
         xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
         xmlns:app="clr-namespace:DrumBuddy"
-        xmlns:helpers="clr-namespace:DrumBuddy.Helpers.Models"
+        xmlns:models="clr-namespace:DrumBuddy.Models"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="DrumBuddy.Views.MainWindow"
         Title="DrumBuddy">
@@ -54,7 +54,7 @@
                 </Button>
                 <ListBox x:Name="PaneListBox">
                     <ListBox.ItemTemplate>
-                        <DataTemplate DataType="{x:Type helpers:NavigationMenuItemTemplate}">
+                        <DataTemplate DataType="{x:Type models:NavigationMenuItemTemplate}">
                             <StackPanel Spacing="15" Orientation="Horizontal">
                                 <PathIcon VerticalAlignment="Center" Height="40" Data="{Binding Icon}" Width="15"></PathIcon>
                                 <TextBlock Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"

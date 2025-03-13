@@ -1,14 +1,17 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia;
+using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
-using DrumBuddy.Helpers.Services;
+using DrumBuddy.Services;
 using DrumBuddy.IO.Enums;
+using DrumBuddy.Models;
+using DrumBuddy.Services;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using static DrumBuddy.Helpers.Services.DrawHelper;
+using static DrumBuddy.Services.DrawHelper;
 namespace DrumBuddy.ViewModels.HelperViewModels;
 
 public partial class RythmicGroupViewModel : ReactiveObject
@@ -25,7 +28,8 @@ public partial class RythmicGroupViewModel : ReactiveObject
 
     [Reactive] private RythmicGroup _rythmicGroup;
 
-    public ObservableCollection<Geometry> Geometries { get; } = new();
+    public ObservableCollection<NoteImageAndBounds> NotesImageAndBoundsList { get; } = new();
+    public ObservableCollection<Line> Lines { get; } = new();
     
     private double GetDisplacementForNoteValue(NoteValue beat) => beat switch
     {
@@ -66,8 +70,8 @@ public partial class RythmicGroupViewModel : ReactiveObject
         else
         {
             //quarter rest 
-            var line = new LineGeometry(new Point(62.5, 20), new Point(62.5, 100));
-            Geometries.Add(line);
+            var line = new Line(){ StartPoint = new Point(62.5, 20), EndPoint = new Point(62.5, 100), StrokeThickness = 2, Stroke = Brushes.Black};
+            Lines.Add(line);
         }
     }
 }

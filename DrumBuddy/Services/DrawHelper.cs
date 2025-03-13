@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using DrumBuddy.IO.Enums;
 
-namespace DrumBuddy.Helpers.Services;
+namespace DrumBuddy.Services;
 
 
 public static class DrawHelper

@@ -24,7 +24,6 @@ public partial class LibraryView : ReactiveUserControl<LibraryViewModel>
             this.Bind(ViewModel, vm => vm.SelectedSheet,
                       v => v.SheetsLB.SelectedItem)
                 .DisposeWith(d);
-            
             this.BindCommand(ViewModel, vm => vm.RemoveSheetCommand,
                                      v => v.DeleteSheetButton)
                 .DisposeWith(d);
