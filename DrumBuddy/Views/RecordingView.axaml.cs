@@ -88,10 +88,14 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => e.Key switch
                 {
-                    Key.S => Drum.Tom1,
-                    Key.D => Drum.Bass,
-                    Key.A => Drum.HiHat,
-                    Key.W => Drum.Snare,
+                    Key.A =>Drum.HiHat,
+                    Key.S =>Drum.Snare,
+                    Key.D =>Drum.Kick,
+                    Key.F =>Drum.FloorTom,
+                    Key.Q =>Drum.Crash1,
+                    Key.W => Drum.Tom1,
+                    Key.E => Drum.Tom2,
+                    Key.R => Drum.Ride,
                     _ => Drum.Rest
                 });
         });

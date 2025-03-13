@@ -8,15 +8,13 @@ namespace DrumBuddy.Services;
 public static class DrawHelper
 {
     private static readonly Size NoteHeadSize = new(24, 20);
+    private static readonly Size NoteHeadWithLineSize = new(28, 20);
 
     private static readonly Size QuarterRestImageSize = new(60, 60);
-    private static readonly Size EighthRestImageSize = new(50, 50);
-    private static readonly Size SixteenthRestImageSize = new(40, 40);
-
-
+    private static readonly Size EighthRestImageSize = new(40, 40);
+    private static readonly Size SixteenthRestImageSize = new(60, 60);
+    
     public const double SectionWidth = 31.25; //125/4
-    public const double NoteRadius = 10.0;
-    public const double RestLineHeight = 20.0;
 
     private const string BaseNotationPath = "avares://DrumBuddy/Assets/Notation/";
     private const string ImageExtension = ".png";
@@ -26,23 +24,27 @@ public static class DrawHelper
         return Math.Abs(GetPositionForDrum(drum) - GetPositionForDrum(otherDrum)) == 10;
     }
 
-    //Bass: between line 1 and 2
+    //Kick: between line 1 and 2
     //Snare: between line 3 and 4
     //FloorTom: between line 2 and 3
     //Tom1: between line 4 and 5
     //Tom2: on line 4
-    //HiHat: on top of line 5 (between line 5 and the invisible line 6)
+    //HiHat: above line 5 (between line 5 and the invisible line 6)
+    //Ride: on line 5
+    //Crash: on line 6
     public static int GetPositionForDrum(Drum drum)
     {
-        return drum switch
+        return drum switch 
         {
-            Drum.Bass => 80,
-            Drum.Snare => 40,
-            Drum.FloorTom => 60,
-            Drum.Tom1 => 20,
-            Drum.Tom2 => 30,
-            Drum.HiHat => 0,
-            _ => 0
+            Drum.Kick => 65,
+            Drum.Snare => 25,
+            Drum.FloorTom => 45,
+            Drum.Tom1 => 5,
+            Drum.Tom2 => 15,
+            Drum.Ride => -5,
+            Drum.HiHat => -15,
+            Drum.Crash1 => -25,
+            _ => 35
         };
     }
 
@@ -50,8 +52,8 @@ public static class DrawHelper
     {
         return drum switch
         {
-            Drum.HiHat or Drum.Crash1 or Drum.Crash2 => (new Uri(BaseNotationPath + "note_head_x" + ImageExtension),
-                NoteHeadSize),
+            Drum.HiHat  or Drum.Ride => (new Uri(BaseNotationPath + "note_head_x" + ImageExtension), NoteHeadSize),
+            Drum.Crash1 => (new Uri(BaseNotationPath + "note_head_x_line" + ImageExtension), NoteHeadWithLineSize),
             Drum.Rest => throw new ArgumentException(
                 "Drum must be a note to use this extension method. For rests use the SingleRestPath extension method.",
                 nameof(drum)),

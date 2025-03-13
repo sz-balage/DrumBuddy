@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls.Shapes;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
+using DrumBuddy.IO.Enums;
 using DrumBuddy.Models;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -43,11 +45,11 @@ public partial class RythmicGroupViewModel : ReactiveObject
             {
                 var noteGroup = noteGroups[i];
                 //if rest -> eighth rest can only be in first position
-                // if (noteGroup.IsRest || noteGroup.Single().Value == NoteValue.Sixteenth)
-                // {
-                //     //sixteenth rest -> x position is the same as the previous note (if it is the first then of course ignore this) + couple of pixels -> draw a point
-                //     
-                // }
+                if (noteGroup.IsRest || noteGroup.Single().Value == NoteValue.Sixteenth)
+                {
+                    //sixteenth rest -> x position is the same as the previous note (if it is the first then of course ignore this) + couple of pixels -> draw a point
+                    continue;
+                }
                 noteGroup.Sort((n1, n2) => GetPositionForDrum(n1.Drum).CompareTo(GetPositionForDrum(n2.Drum)));
                 for (var j = 0; j < noteGroups[i].Count; j++)
                 {
@@ -56,8 +58,15 @@ public partial class RythmicGroupViewModel : ReactiveObject
                     if (j == 1 && note.Drum.IsOneDrumAwayFrom(noteGroups[i][0].Drum))
                     {
                         //TODO draw with offset and continue
+                        
                     }
                     //TODO draw without offset
+                    var point = new Point(0, y);
+                    var noteHeadPathAndSize = note.Drum.NoteHeadImagePathAndSize();
+                    var noteImage = new NoteImageAndBounds(noteHeadPathAndSize.Path,
+                        new Rect(point, noteHeadPathAndSize.ImageSize));
+                    NotesImageAndBoundsList.Add(noteImage);
+                    
                 }
 
                 x += GetDisplacementForNoteValue(noteGroup.Value);
@@ -67,7 +76,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
         {
             //quarter rest 
             var quarterRestPathAndSize = GetSingleRestImagePathAndSize(NoteValue.Quarter);
-            var point = new Point(0, 0);
+            var point = new Point(0, GetPositionForDrum(Drum.Rest));
             var restImage = new NoteImageAndBounds(quarterRestPathAndSize.Path,
                 new Rect(point, quarterRestPathAndSize.ImageSize));
             NotesImageAndBoundsList.Add(restImage);
