@@ -8,6 +8,7 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   <ItemGroup>
+    <AvaloniaResource Include="Assets\**"/>
     <AvaloniaXaml Remove="Converters\**" />
     <Compile Remove="Converters\**" />
     <EmbeddedResource Remove="Converters\**" />
