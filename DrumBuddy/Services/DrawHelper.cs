@@ -32,7 +32,7 @@ public static class DrawHelper
     //HiHat: above line 5 (between line 5 and the invisible line 6)
     //Ride: on line 5
     //Crash: on line 6
-    public static int GetPositionForDrum(Drum drum)
+    public static double GetPositionForDrum(Drum drum)
     {
         return drum switch 
         {
