@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia;
 using DrumBuddy.Core.Enums;
+using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Enums;
 
 namespace DrumBuddy.Services;
@@ -13,6 +14,7 @@ public static class DrawHelper
     private static readonly Size QuarterRestImageSize = new(60, 60);
     private static readonly Size EighthRestImageSize = new(40, 40);
     private static readonly Size SixteenthRestImageSize = new(60, 60);
+    private static readonly Size CircleSize = new(8, 8);
 
     private const string BaseNotationPath = "avares://DrumBuddy/Assets/Notation/";
     private const string ImageExtension = ".png";
@@ -46,26 +48,31 @@ public static class DrawHelper
         };
     }
 
-    public static (Uri Path, Size ImageSize) NoteHeadImagePathAndSize(this Drum drum)
+    public static (Uri Path, Size ImageSize) NoteHeadImagePathAndSize(this Note note)
     {
-        return drum switch
+        return note.Drum switch
         {
             Drum.HiHat  or Drum.Ride => (new Uri(BaseNotationPath + "note_head_x" + ImageExtension), NoteHeadSize),
             Drum.Crash1 => (new Uri(BaseNotationPath + "note_head_x_line" + ImageExtension), NoteHeadWithLineSize),
-            Drum.Rest => throw new ArgumentException(
-                "Drum must be a note to use this extension method. For rests use the SingleRestPath extension method.",
-                nameof(drum)),
+            Drum.Rest => note.Value switch
+            {
+                NoteValue.Quarter => (new Uri(BaseNotationPath + "quarter_rest" + ImageExtension), QuarterRestImageSize),
+                NoteValue.Eighth => (new Uri(BaseNotationPath + "eighth_rest" + ImageExtension), EighthRestImageSize),
+                _ => (new Uri(BaseNotationPath + "sixteenth_rest" + ImageExtension), SixteenthRestImageSize)
+            },
             _ => (new Uri(BaseNotationPath + "note_head" + ImageExtension), NoteHeadSize)
         };
     }
 
-    public static (Uri Path, Size ImageSize) GetSingleRestImagePathAndSize(NoteValue value)
-    {
-        return value switch
-        {
-            NoteValue.Quarter => (new Uri(BaseNotationPath + "quarter_rest" + ImageExtension), QuarterRestImageSize),
-            NoteValue.Eighth => (new Uri(BaseNotationPath + "eighth_rest" + ImageExtension), EighthRestImageSize),
-            _ => (new Uri(BaseNotationPath + "sixteenth_rest" + ImageExtension), SixteenthRestImageSize)
-        };
-    }
+    public static (Uri Path, Size ImageSize) GetCircleImagePathAndSize() => (new Uri(BaseNotationPath + "circle" + ".png"), CircleSize);
+
+    // public static (Uri Path, Size ImageSize) GetSingleRestImagePathAndSize(NoteValue value)
+    // {
+    //     return value switch
+    //     {
+    //         NoteValue.Quarter => (new Uri(BaseNotationPath + "quarter_rest" + ImageExtension), QuarterRestImageSize),
+    //         NoteValue.Eighth => (new Uri(BaseNotationPath + "eighth_rest" + ImageExtension), EighthRestImageSize),
+    //         _ => (new Uri(BaseNotationPath + "sixteenth_rest" + ImageExtension), SixteenthRestImageSize)
+    //     };
+    // }
 }
