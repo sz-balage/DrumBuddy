@@ -130,18 +130,23 @@ public partial class RythmicGroupViewModel : ReactiveObject
     
         var hihatNote = new Note(Drum.HiHat, NoteValue.Sixteenth);
         var kickNote = new Note(Drum.Kick, NoteValue.Sixteenth);
+        var tom1Note = new Note(Drum.Tom1, NoteValue.Sixteenth);
+        var tom2Note = new Note(Drum.Tom2, NoteValue.Sixteenth);
+        
         List<NoteGroup> noteGroups =
         [
-            new([kickNote, hihatNote]),
+            new([tom1Note,tom2Note, hihatNote]),
             new([hihatNote]),
             new([hihatNote]),
             new([hihatNote])
         ];
         double x = startingXPosition;
+        
         // Calculate spacing based on available width
         for (int i = 0; i < noteGroups.Count; i++)
         {
             var noteGroup = noteGroups[i];
+            noteGroup.Sort((n1, n2) => GetPositionForDrum(n2.Drum).CompareTo(GetPositionForDrum(n1.Drum)));
             for (var j = 0; j < noteGroup.Count; j++)
             {
                 var note = noteGroup[j];

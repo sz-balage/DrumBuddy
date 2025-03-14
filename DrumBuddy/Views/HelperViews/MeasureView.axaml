@@ -7,7 +7,7 @@
                          xmlns:rxui="http://reactiveui.net"
                          xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
                          Height="190"
-                         d:DesignWidth="800"
+                         d:DesignWidth="1200"
                          mc:Ignorable="d"
                          x:Class="DrumBuddy.Views.HelperViews.MeasureView" >
   <Design.DataContext>
@@ -16,12 +16,12 @@
   <Grid>
       <Canvas x:Name="MeasureCanvas">
           <!-- Draw 5 lines for the music sheet -->
-          <Line StartPoint="0,90" EndPoint="800,90" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,110" EndPoint="800,110" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,130" EndPoint="800,130" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,150" EndPoint="800,150" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,170" EndPoint="800,170" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="800,90" EndPoint="800,170" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,90" EndPoint="1200,90" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,110" EndPoint="1200,110" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,130" EndPoint="1200,130" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,150" EndPoint="1200,150" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,170" EndPoint="1200,170" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="1200,90" EndPoint="1200,170" Stroke="Black" StrokeThickness="2"/>
 
           <!-- Pointer -->
           <Line x:Name="Pointer" Stroke="Red" StrokeThickness="2"/>

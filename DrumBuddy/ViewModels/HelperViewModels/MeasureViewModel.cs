@@ -35,12 +35,12 @@ public partial class MeasureViewModel : ReactiveObject
         RythmicGroups.Add(new RythmicGroupViewModel(rg, Width));
     }
 
-    [Reactive] private int _width = 800;
+    [Reactive] private int _width = 1200;
     public bool IsEmpty => Measure.IsEmpty;
     public ObservableCollection<RythmicGroupViewModel> RythmicGroups { get; } = new();
 
     public void MovePointerToRg(long rythmicGroupIndex)
     {
-        PointerPosition = rythmicGroupIndex * 135 + 35;
+        PointerPosition = (rythmicGroupIndex * (Width/4)) + 35;
     }
 }
