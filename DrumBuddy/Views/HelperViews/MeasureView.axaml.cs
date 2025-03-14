@@ -34,6 +34,7 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
                     ;
                 });
             this.Bind(ViewModel, vm => vm.IsPointerVisible, v => v.Pointer.IsVisible);
+            this.Bind(ViewModel, vm => vm.Width, v => v.Width);
             //this.OneWayBind(ViewModel, vm => vm.PointerPosition, v => v.Pointer.StartPoint,
             //        d =>
             //        {

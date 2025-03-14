@@ -6,8 +6,8 @@
                          xmlns:vm="clr-namespace:DrumBuddy.ViewModels.HelperViewModels"
                          xmlns:rxui="http://reactiveui.net"
                          xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
-                         Height="190" Width="600"
-                         d:DesignWidth="620"
+                         Height="190"
+                         d:DesignWidth="800"
                          mc:Ignorable="d"
                          x:Class="DrumBuddy.Views.HelperViews.MeasureView" >
   <Design.DataContext>
@@ -16,26 +16,26 @@
   <Grid>
       <Canvas x:Name="MeasureCanvas">
           <!-- Draw 5 lines for the music sheet -->
-          <Line StartPoint="0,90" EndPoint="600,90" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,110" EndPoint="600,110" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,130" EndPoint="600,130" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,150" EndPoint="600,150" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="0,170" EndPoint="600,170" Stroke="Black" StrokeThickness="2"/>
-          <Line StartPoint="600,90" EndPoint="600,170" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,90" EndPoint="800,90" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,110" EndPoint="800,110" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,130" EndPoint="800,130" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,150" EndPoint="800,150" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="0,170" EndPoint="800,170" Stroke="Black" StrokeThickness="2"/>
+          <Line StartPoint="800,90" EndPoint="800,170" Stroke="Black" StrokeThickness="2"/>
 
           <!-- Pointer -->
           <Line x:Name="Pointer" Stroke="Red" StrokeThickness="2"/>
       </Canvas>
       <Border HorizontalAlignment="Left">
-          <ItemsControl x:Name="ItemsControl" HorizontalAlignment="Center" Margin="35,0,35,0">
+          <ItemsControl x:Name="ItemsControl" HorizontalAlignment="Center">
               <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" Spacing="10"/>
+                    <StackPanel Orientation="Horizontal"/>
                   </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                      <helperViews:RythmicGroupView  Width="125" HorizontalAlignment="Center"/>
+                      <helperViews:RythmicGroupView HorizontalContentAlignment="Stretch" />
                   </DataTemplate>
               </ItemsControl.ItemTemplate>
           </ItemsControl>

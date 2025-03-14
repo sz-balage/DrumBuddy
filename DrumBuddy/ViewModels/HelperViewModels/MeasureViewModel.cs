@@ -32,9 +32,10 @@ public partial class MeasureViewModel : ReactiveObject
         var rg = new RythmicGroup(RecordingService.UpscaleNotes(notes)
             .ToImmutableArray()); //will be a call to the recordingservice
         Measure.Groups.Add(rg);
-        RythmicGroups.Add(new RythmicGroupViewModel(rg));
+        RythmicGroups.Add(new RythmicGroupViewModel(rg, Width));
     }
 
+    [Reactive] private int _width = 800;
     public bool IsEmpty => Measure.IsEmpty;
     public ObservableCollection<RythmicGroupViewModel> RythmicGroups { get; } = new();
 

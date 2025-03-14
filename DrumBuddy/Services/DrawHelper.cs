@@ -13,8 +13,6 @@ public static class DrawHelper
     private static readonly Size QuarterRestImageSize = new(60, 60);
     private static readonly Size EighthRestImageSize = new(40, 40);
     private static readonly Size SixteenthRestImageSize = new(60, 60);
-    
-    public const double NoteGroupWidth = 31.25; //125/4
 
     private const string BaseNotationPath = "avares://DrumBuddy/Assets/Notation/";
     private const string ImageExtension = ".png";
