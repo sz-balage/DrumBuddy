@@ -1,9 +1,8 @@
-﻿namespace DrumBuddy.Core.Enums
+﻿namespace DrumBuddy.Core.Enums;
+
+public enum NoteValue
 {
-    public enum NoteValue
-    {
-        Quarter,
-        Eighth,
-        Sixteenth
-    }
+    Quarter,
+    Eighth,
+    Sixteenth
 }

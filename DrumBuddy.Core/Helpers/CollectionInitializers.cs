@@ -8,6 +8,7 @@ public static class CollectionInitializers
         list.Add(value);
         return list;
     }
+
     public static List<T> CreateList<T>(IEnumerable<T> values)
     {
         var list = new List<T>();

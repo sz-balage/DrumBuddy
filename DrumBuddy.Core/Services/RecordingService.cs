@@ -6,7 +6,8 @@ using DrumBuddy.IO.Enums;
 using DrumBuddy.IO.Extensions;
 using DrumBuddy.IO.Models;
 using static DrumBuddy.Core.Helpers.CollectionInitializers;
-[assembly: InternalsVisibleTo("DrumBuddy.Core.Unit")]
+
+[assembly: InternalsVisibleTo("DrumBuddy.Client.Core.Unit")]
 
 namespace DrumBuddy.Core.Services;
 
