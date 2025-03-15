@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls.Shapes;
 using DrumBuddy.Client.Models;
@@ -13,8 +14,8 @@ using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using static DrumBuddy.Client.Services.DrawHelper;
 
+[assembly: InternalsVisibleTo("DrumBuddy.Client.Unit")]
 namespace DrumBuddy.Client.ViewModels.HelperViewModels;
-
 public partial class RythmicGroupViewModel : ReactiveObject
 {
     [Reactive] private RythmicGroup _rythmicGroup;
@@ -91,7 +92,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
     //                 if(noteGroup.Value == NoteValue.Eighth)
     //                 {
     //                     var restPathAndSize = GetSingleRestImagePathAndSize(NoteValue.Eighth);
-    //                     var point = new Point(x, GetPositionForDrum(Drum.Rest));
+    //                     var point = new Point(x, GetYPositionForDrum(Drum.Rest));
     //                     var restImage = new NoteImageAndBounds(restPathAndSize.Path,
     //                         new Rect(point, restPathAndSize.ImageSize));
     //                     imagesBuilder.Add(restImage);
@@ -100,7 +101,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
     //                 else if (i != 0)
     //                 {
     //                     var restPathAndSize = GetSingleRestImagePathAndSize(NoteValue.Sixteenth);
-    //                     var point = new Point(x, GetPositionForDrum(Drum.Rest));
+    //                     var point = new Point(x, GetYPositionForDrum(Drum.Rest));
     //                     var restImage = new NoteImageAndBounds(restPathAndSize.Path,
     //                         new Rect(point, restPathAndSize.ImageSize));
     //                     imagesBuilder.Add(restImage);
@@ -111,11 +112,11 @@ public partial class RythmicGroupViewModel : ReactiveObject
     //                     x += GetDisplacementForNoteValue(NoteValue.Sixteenth,noteGroupWidth);
     //                 }
     //             }
-    //             noteGroup.Sort((n1, n2) => GetPositionForDrum(n1.Drum).CompareTo(GetPositionForDrum(n2.Drum)));
+    //             noteGroup.Sort((n1, n2) => GetYPositionForDrum(n1.Drum).CompareTo(GetYPositionForDrum(n2.Drum)));
     //             for (var j = 0; j < noteGroup.Count; j++)
     //             {
     //                 var note = noteGroup[j];
-    //                 var y = GetPositionForDrum(note.Drum);
+    //                 var y = GetYPositionForDrum(note.Drum);
     //                 var point = new Point(x, y);
     //                 if (j == 1 && note.Drum.IsOneDrumAwayFrom(noteGroup[0].Drum))
     //                 {
@@ -133,15 +134,21 @@ public partial class RythmicGroupViewModel : ReactiveObject
     //     {
     //         //quarter rest 
     //         var quarterRestPathAndSize = GetSingleRestImagePathAndSize(NoteValue.Quarter);
-    //         var point = new Point(0, GetPositionForDrum(Drum.Rest));
+    //         var point = new Point(0, GetYPositionForDrum(Drum.Rest));
     //         var restImage = new NoteImageAndBounds(quarterRestPathAndSize.Path,
     //             new Rect(point, quarterRestPathAndSize.ImageSize));
     //         imagesBuilder.Add(restImage);
     //     }
     //     return ([..linesBuilder], [..imagesBuilder]);
     // }
-
-    private (ImmutableArray<Line> Lines, ImmutableArray<NoteImageAndBounds> Images) GenerateLinesAndNoteImages(
+    /// <summary>
+    /// Generates lines and note images for the given rythmic group.
+    /// </summary>
+    /// <param name="rythmicGroup">Containing the note groups to draw.</param>
+    /// <param name="noteGroupWidth">Used for calculating displacement for each notegroup.</param>
+    /// <param name="startingXPosition">Determines the position of the first notegroup horizontally.</param>
+    /// <returns>The lines and images to draw.</returns>
+    internal static (ImmutableArray<Line> Lines, ImmutableArray<NoteImageAndBounds> Images) GenerateLinesAndNoteImages(
         RythmicGroup rythmicGroup, int noteGroupWidth, int startingXPosition)
     {
         var lines = new List<Line>(); //TODO: draw lines
@@ -151,7 +158,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
         for (var i = 0; i < noteGroups.Length; i++)
         {
             var noteGroup = noteGroups[i];
-            noteGroup.Sort((n1, n2) => GetPositionForDrum(n2.Drum).CompareTo(GetPositionForDrum(n1.Drum)));
+            noteGroup.Sort((n1, n2) => GetYPositionForDrum(n2.Drum).CompareTo(GetYPositionForDrum(n1.Drum)));
             if (noteGroup is { IsRest: true, Value: NoteValue.Sixteenth } && i != 0)
             {
                 var previousX = images[i - 1].Bounds.X;
@@ -167,7 +174,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
             for (var j = 0; j < noteGroup.Count; j++)
             {
                 var note = noteGroup[j];
-                var y = GetPositionForDrum(note.Drum);
+                var y = GetYPositionForDrum(note.Drum);
                 var point = new Point(x, y);
                 if (j == 1 && note.Drum.IsOneDrumAwayFrom(noteGroup[0].Drum))
                     point = point.WithX(x + NoteHeadSize.Width);
