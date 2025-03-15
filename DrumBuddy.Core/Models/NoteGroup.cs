@@ -5,7 +5,7 @@ namespace DrumBuddy.Core.Models;
 
 public class NoteGroup : List<Note>
 {
-    private const int _maxSize = 3;
+    private const int MaxSize = 3;
 
     public NoteGroup()
     {
@@ -13,13 +13,13 @@ public class NoteGroup : List<Note>
 
     public NoteGroup(List<Note> notes) : base(notes)
     {
-        if (notes.Count > _maxSize) throw new InvalidOperationException("How many limbs you got?");
+        if (notes.Count > MaxSize) throw new InvalidOperationException("How many limbs you got?");
         Value = notes.First().Value;
     }
 
     public NoteGroup(IEnumerable<Note> notes) : base(notes)
     {
-        if (notes.Count() > _maxSize) throw new InvalidOperationException("How many limbs you got?");
+        if (notes.Count() > MaxSize) throw new InvalidOperationException("How many limbs you got?");
         Value = notes.First().Value;
     }
 
@@ -29,7 +29,7 @@ public class NoteGroup : List<Note>
 
     public new void Add(Note note)
     {
-        if (Count == _maxSize) throw new InvalidOperationException("How many limbs you got?");
+        if (Count == MaxSize) throw new InvalidOperationException("How many limbs you got?");
         base.Add(note);
     }
 

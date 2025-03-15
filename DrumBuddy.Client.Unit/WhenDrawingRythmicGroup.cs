@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Avalonia;
 using Avalonia.Controls.Shapes;
+using Avalonia.Media.Imaging;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Client.Services;
 using DrumBuddy.Core.Enums;
@@ -26,13 +27,23 @@ public class WhenDrawingRythmicGroup
     {
         //Arrange
         var creationData = _quarterRest.NoteHeadImagePathAndSize();
-        // var expectedResult = (new List<Line>(), new List<NoteImageAndBounds> { new NoteImageAndBounds(creationData., new Rect(StartingXPosition, 0, NoteGroupWidth, NoteGroupWidth)) });
+        Bitmap testBitmap = null;
+        var expectedResult = (new List<Line>(), new List<NoteImageAndBounds> { new NoteImageAndBounds(testBitmap, new Rect(StartingXPosition, 0, NoteGroupWidth, NoteGroupWidth)) });
         List<NoteGroup> noteGroup =
         [
             new([_quarterRest])
         ];
         var rgToDraw = new RythmicGroup([..noteGroup]);
+        Func<Note, Point, NoteImageAndBounds> getNoteImage = (note, point) =>
+        {
+            return new NoteImageAndBounds(testBitmap, new Rect(point, new Size(NoteGroupWidth, NoteGroupWidth)));
+        };
+        Func<Point, NoteImageAndBounds> getCircleImage = point =>
+        {
+            return new NoteImageAndBounds(testBitmap, new Rect(point, new Size(NoteGroupWidth, NoteGroupWidth)));
+        };
         // Act
-        var result = GenerateLinesAndNoteImages(rgToDraw, NoteGroupWidth, StartingXPosition);
+        var result = GenerateLinesAndNoteImages(getNoteImage, getCircleImage, rgToDraw, NoteGroupWidth, StartingXPosition);
+        ;
     }
 }

@@ -15,6 +15,7 @@ using ReactiveUI.SourceGenerators;
 using static DrumBuddy.Client.Services.DrawHelper;
 
 [assembly: InternalsVisibleTo("DrumBuddy.Client.Unit")]
+[assembly: InternalsVisibleTo("DrumBuddy.Benchmark")]
 namespace DrumBuddy.Client.ViewModels.HelperViewModels;
 public partial class RythmicGroupViewModel : ReactiveObject
 {
@@ -48,7 +49,21 @@ public partial class RythmicGroupViewModel : ReactiveObject
                     new([hihatNote])
                 ];
                 var testRythmicGroup = new RythmicGroup(noteGroups.ToImmutableArray());
-                DrawNotes(() => GenerateLinesAndNoteImages(testRythmicGroup, noteGroupWidth, startingXPos));
+                Func<Note, Point, NoteImageAndBounds> getNoteImage = (note, point) =>
+                {
+                    var noteHeadPathAndSize = note.NoteHeadImagePathAndSize();
+                    var noteImage = new NoteImageAndBounds(noteHeadPathAndSize.Path,
+                         new Rect(point, noteHeadPathAndSize.ImageSize));
+                    return noteImage;
+                };
+                Func<Point, NoteImageAndBounds> getCircleImage = point =>
+                {
+                    var pathAndSize = GetCircleImagePathAndSize();
+                    var circleImage = new NoteImageAndBounds(pathAndSize.Path,
+                        new Rect(point, pathAndSize.ImageSize));
+                    return circleImage;
+                };
+                DrawNotes(() => GenerateLinesAndNoteImages(getNoteImage, getCircleImage, testRythmicGroup, noteGroupWidth, startingXPos));
                 //DrawNotes(() => GenerateLinesAndNoteImages(rythmicGroup,noteGroupWidth, -1 * (noteGroupWidth/2)));
             });
     }
@@ -144,12 +159,18 @@ public partial class RythmicGroupViewModel : ReactiveObject
     /// <summary>
     /// Generates lines and note images for the given rythmic group.
     /// </summary>
+    /// <param name="getCircleImage">Function for creating a circle image.</param>
     /// <param name="rythmicGroup">Containing the note groups to draw.</param>
     /// <param name="noteGroupWidth">Used for calculating displacement for each notegroup.</param>
     /// <param name="startingXPosition">Determines the position of the first notegroup horizontally.</param>
+    /// <param name="getNoteImage">Function for creating a note image</param>
     /// <returns>The lines and images to draw.</returns>
     internal static (ImmutableArray<Line> Lines, ImmutableArray<NoteImageAndBounds> Images) GenerateLinesAndNoteImages(
-        RythmicGroup rythmicGroup, int noteGroupWidth, int startingXPosition)
+        Func<Note, Point, NoteImageAndBounds> getNoteImage,
+        Func<Point, NoteImageAndBounds> getCircleImage,
+        RythmicGroup rythmicGroup,
+        int noteGroupWidth,
+        int startingXPosition)
     {
         var lines = new List<Line>(); //TODO: draw lines
         var images = new List<NoteImageAndBounds>();
@@ -164,9 +185,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
                 var previousX = images[i - 1].Bounds.X;
                 var previousY = images[i - 1].Bounds.Y;
                 var point = new Point(previousX + 20, previousY);
-                var pathAndSize = GetCircleImagePathAndSize();
-                var circleImage = new NoteImageAndBounds(pathAndSize.Path,
-                    new Rect(point, pathAndSize.ImageSize));
+                var circleImage = getCircleImage(point);
                 images.Add(circleImage);
                 continue;
             }
@@ -178,9 +197,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
                 var point = new Point(x, y);
                 if (j == 1 && note.Drum.IsOneDrumAwayFrom(noteGroup[0].Drum))
                     point = point.WithX(x + NoteHeadSize.Width);
-                var noteHeadPathAndSize = note.NoteHeadImagePathAndSize();
-                var noteImage = new NoteImageAndBounds(noteHeadPathAndSize.Path,
-                    new Rect(point, noteHeadPathAndSize.ImageSize));
+                var noteImage = getNoteImage(note, point);
                 images.Add(noteImage);
             }
 
