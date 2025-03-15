@@ -1,0 +1,49 @@
+<rxui:ReactiveUserControl x:TypeArguments="vm:LibraryViewModel" xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels"
+                          xmlns:rxui="http://reactiveui.net"
+                          xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
+                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                          x:Class="DrumBuddy.Client.LibraryView">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.05*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="See the previously created drum sheets below"
+                   FontSize="15"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+        <Button x:Name="DeleteButton" Grid.Row="0" Grid.Column="1" Width="125">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Delete sheet" Foreground="IndianRed" VerticalAlignment="Center" Margin="0,0,5,0" />
+                <PathIcon x:Name="DeleteIcon" Foreground="IndianRed" Data="{StaticResource delete}" Margin="0,0,10,0" />
+            </StackPanel>
+        </Button>
+        <ListBox Grid.Row="1" x:Name="SheetsListBox" Grid.ColumnSpan="2">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="models:Sheet">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <PathIcon Data="{StaticResource document}" Margin="0,0,10,0" />
+                            <TextBlock Text="Name: " />
+                            <TextBlock Text="{Binding Name}" Margin="0,0,5,0" />
+                            <TextBlock Text="Length: " />
+                            <TextBlock Text="{Binding Length}" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</rxui:ReactiveUserControl>

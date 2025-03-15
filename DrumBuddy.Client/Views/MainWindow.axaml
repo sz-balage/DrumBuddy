@@ -1,0 +1,93 @@
+<rxui:ReactiveWindow x:TypeArguments="vm:MainViewModel"
+                     xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels"
+                     xmlns:rxui="http://reactiveui.net"
+                     xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+                     xmlns:app="clr-namespace:DrumBuddy.Client"
+                     xmlns:models="clr-namespace:DrumBuddy.Client.Models"
+                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                     x:Class="DrumBuddy.Client.Views.MainWindow"
+                     Title="DrumBuddy.Client">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainViewModel />
+    </Design.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border x:Name="NoConnection" x:DataType="vm:MainViewModel"
+
+                Background="DarkRed"
+                IsVisible="{Binding NoConnection}">
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Label Foreground="White" VerticalAlignment="Center">
+                    There are no MIDI devices connected.
+                </Label>
+                <Button x:Name="RetryButton" Margin="10,0,0,0">
+                    <TextBlock Foreground="White">Retry</TextBlock>
+                </Button>
+            </StackPanel>
+        </Border>
+        <Grid x:Name="Connected" x:DataType="vm:MainViewModel"
+              Background="DarkGreen"
+              IsVisible="{Binding ConnectedSucc}">
+            <Label HorizontalAlignment="Center" Foreground="White">
+                A MIDI device was connected successfully.
+            </Label>
+        </Grid>
+        <SplitView x:Name="SplitView" Grid.Row="1"
+                   OpenPaneLength="200"
+                   CompactPaneLength="50"
+                   DisplayMode="CompactInline"
+                   PaneBackground="LightGray">
+            <SplitView.Pane>
+                <StackPanel Spacing="5" Margin="5">
+                    <Button x:Name="TriggerPaneButton" Height="40" Width="41">
+                        <PathIcon Data="{StaticResource Line_Horizontal_3}" />
+                    </Button>
+                    <ListBox x:Name="PaneListBox">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:NavigationMenuItemTemplate}">
+                                <StackPanel Spacing="15" Orientation="Horizontal">
+                                    <PathIcon VerticalAlignment="Center" Height="40" Data="{Binding Icon}" Width="15" />
+                                    <TextBlock Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"
+                                               FontWeight="Bold"
+                                               Text="{Binding Label}"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Border CornerRadius="12,0,0,0">
+                    <rxui:RoutedViewHost x:Name="RoutedViewHost">
+                        <rxui:RoutedViewHost.DefaultContent>
+                            <progRing:ProgressRing Foreground="Gray"
+                                                   Width="80"
+                                                   Height="80"
+                                                   IsActive="True"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                        </rxui:RoutedViewHost.DefaultContent>
+                        <rxui:RoutedViewHost.ViewLocator>
+                            <app:AppViewLocator />
+                        </rxui:RoutedViewHost.ViewLocator>
+                    </rxui:RoutedViewHost>
+                </Border>
+            </SplitView.Content>
+        </SplitView>
+        <Border Grid.Row="1" x:Name="ErrorBorder" Background="Red" CornerRadius="5" Padding="10" Margin="10"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <TextBlock x:Name="ErrorMessage" Foreground="White" />
+        </Border>
+    </Grid>
+</rxui:ReactiveWindow>

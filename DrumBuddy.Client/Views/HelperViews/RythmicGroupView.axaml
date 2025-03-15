@@ -1,0 +1,37 @@
+<rxui:ReactiveUserControl x:TypeArguments="vm:RythmicGroupViewModel"
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels.HelperViewModels"
+                          xmlns:rxui="http://reactiveui.net"
+                          xmlns:models="clr-namespace:DrumBuddy.Client.Models"
+                          mc:Ignorable="d"
+                          d:DesignWidth="500"
+                          d:DesignHeight="500"
+                          x:Class="DrumBuddy.Client.Views.HelperViews.RythmicGroupView">
+    <Design.DataContext>
+        <vm:RythmicGroupViewModel />
+    </Design.DataContext>
+    <Grid>
+        <ItemsControl x:Name="NoteImagesList">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:NoteImageAndBounds}">
+                    <Image Source="{Binding Image}"
+                           Width="{Binding Bounds.Width}"
+                           Height="{Binding Bounds.Height}">
+                        <Image.RenderTransform>
+                            <TranslateTransform X="{Binding Bounds.X}" Y="{Binding Bounds.Y}" />
+                        </Image.RenderTransform>
+                    </Image>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ItemsControl x:Name="LinesList" />
+    </Grid>
+</rxui:ReactiveUserControl>

@@ -1,0 +1,44 @@
+﻿<rxui:ReactiveUserControl x:TypeArguments="vm:MeasureViewModel"
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels.HelperViewModels"
+                          xmlns:rxui="http://reactiveui.net"
+                          xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
+                          Height="190"
+                          d:DesignWidth="1200"
+                          mc:Ignorable="d"
+                          x:Class="DrumBuddy.Client.Views.HelperViews.MeasureView">
+    <Design.DataContext>
+        <vm:MeasureViewModel />
+    </Design.DataContext>
+    <Grid>
+        <Canvas x:Name="MeasureCanvas">
+            <!-- Draw 5 lines for the music sheet -->
+            <Line StartPoint="0,90" EndPoint="1200,90" Stroke="Black" StrokeThickness="2" />
+            <Line StartPoint="0,110" EndPoint="1200,110" Stroke="Black" StrokeThickness="2" />
+            <Line StartPoint="0,130" EndPoint="1200,130" Stroke="Black" StrokeThickness="2" />
+            <Line StartPoint="0,150" EndPoint="1200,150" Stroke="Black" StrokeThickness="2" />
+            <Line StartPoint="0,170" EndPoint="1200,170" Stroke="Black" StrokeThickness="2" />
+            <Line StartPoint="1200,90" EndPoint="1200,170" Stroke="Black" StrokeThickness="2" />
+
+            <!-- Pointer -->
+            <Line x:Name="Pointer" Stroke="Red" StrokeThickness="2" />
+        </Canvas>
+        <Border HorizontalAlignment="Left">
+            <ItemsControl x:Name="ItemsControl" HorizontalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <helperViews:RythmicGroupView HorizontalContentAlignment="Stretch" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+    </Grid>
+</rxui:ReactiveUserControl>
