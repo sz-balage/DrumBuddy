@@ -41,14 +41,15 @@ public partial class RythmicGroupViewModel : ReactiveObject
                 var tom2Note = new Note(Drum.Tom2, NoteValue.Sixteenth);
                 var sixteenthRest = new Note(Drum.Rest, NoteValue.Sixteenth);
                 var eighthRest = new Note(Drum.Rest, NoteValue.Eighth);
+                var quarterRest = new Note(Drum.Rest, NoteValue.Quarter);
                 List<NoteGroup> noteGroups =
                 [
-                    new([eighthRest]),
-                    new([sixteenthRest]),
-                    // new([hihatNote]),
-                    new([hihatNote])
+                    new([quarterRest]),
+                    // new([sixteenthRest]),
+                    // // new([hihatNote]),
+                    // new([hihatNote])
                 ];
-                var testRythmicGroup = new RythmicGroup(noteGroups.ToImmutableArray());
+                var testRythmicGroup = new RythmicGroup([..noteGroups]);
                 Func<Note, Point, NoteImageAndBounds> getNoteImage = (note, point) =>
                 {
                     var noteHeadPathAndSize = note.NoteHeadImagePathAndSize();
@@ -87,75 +88,6 @@ public partial class RythmicGroupViewModel : ReactiveObject
         Lines.AddRange(result.Lines);
         NotesImageAndBoundsList.AddRange(result.Images);
     }
-    // private static (ImmutableArray<Line> Lines, ImmutableArray<NoteImageAndBounds> Images) OLDGenerateLinesAndNoteImages(RythmicGroup rythmicGroup, int noteGroupWidth, int startingXPosition)
-    // {
-    //     var linesBuilder = new List<Line>();
-    //     var imagesBuilder = new List<NoteImageAndBounds>();
-    //     if (!rythmicGroup.IsEmpty)
-    //     {
-    //         double x = startingXPosition;
-    //         var noteGroups = rythmicGroup.NoteGroups;
-    //         for (var i = 0; i < noteGroups.Length; i++)
-    //         {
-    //             var noteGroup = noteGroups[i];
-    //             //if rest -> eighth rest can only be in first position
-    //             if (noteGroup.IsRest)
-    //             {
-    //                 x += GetDisplacementForNoteValue(noteGroup.Value,noteGroupWidth);
-    //                 continue;
-    //                 //sixteenth rest -> x position is the same as the previous note (if it is the first then of course ignore this) + couple of pixels -> draw a point
-    //                 if(noteGroup.Value == NoteValue.Eighth)
-    //                 {
-    //                     var restPathAndSize = GetSingleRestImagePathAndSize(NoteValue.Eighth);
-    //                     var point = new Point(x, GetYPositionForDrum(Drum.Rest));
-    //                     var restImage = new NoteImageAndBounds(restPathAndSize.Path,
-    //                         new Rect(point, restPathAndSize.ImageSize));
-    //                     imagesBuilder.Add(restImage);
-    //                     x += GetDisplacementForNoteValue(NoteValue.Eighth,noteGroupWidth);
-    //                 }
-    //                 else if (i != 0)
-    //                 {
-    //                     var restPathAndSize = GetSingleRestImagePathAndSize(NoteValue.Sixteenth);
-    //                     var point = new Point(x, GetYPositionForDrum(Drum.Rest));
-    //                     var restImage = new NoteImageAndBounds(restPathAndSize.Path,
-    //                         new Rect(point, restPathAndSize.ImageSize));
-    //                     imagesBuilder.Add(restImage);
-    //                     x += GetDisplacementForNoteValue(NoteValue.Sixteenth,noteGroupWidth);
-    //                 }
-    //                 else
-    //                 {
-    //                     x += GetDisplacementForNoteValue(NoteValue.Sixteenth,noteGroupWidth);
-    //                 }
-    //             }
-    //             noteGroup.Sort((n1, n2) => GetYPositionForDrum(n1.Drum).CompareTo(GetYPositionForDrum(n2.Drum)));
-    //             for (var j = 0; j < noteGroup.Count; j++)
-    //             {
-    //                 var note = noteGroup[j];
-    //                 var y = GetYPositionForDrum(note.Drum);
-    //                 var point = new Point(x, y);
-    //                 if (j == 1 && note.Drum.IsOneDrumAwayFrom(noteGroup[0].Drum))
-    //                 {
-    //                            point = point.WithX(x + NoteHeadSize.Width);
-    //                 }
-    //                 var noteHeadPathAndSize = note.Drum.NoteHeadImagePathAndSize();
-    //                 var noteImage = new NoteImageAndBounds(noteHeadPathAndSize.Path,
-    //                     new Rect(point, noteHeadPathAndSize.ImageSize));
-    //                 imagesBuilder.Add(noteImage);
-    //             }
-    //             x += GetDisplacementForNoteValue(noteGroup.Value,noteGroupWidth);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         //quarter rest 
-    //         var quarterRestPathAndSize = GetSingleRestImagePathAndSize(NoteValue.Quarter);
-    //         var point = new Point(0, GetYPositionForDrum(Drum.Rest));
-    //         var restImage = new NoteImageAndBounds(quarterRestPathAndSize.Path,
-    //             new Rect(point, quarterRestPathAndSize.ImageSize));
-    //         imagesBuilder.Add(restImage);
-    //     }
-    //     return ([..linesBuilder], [..imagesBuilder]);
-    // }
     /// <summary>
     /// Generates lines and note images for the given rythmic group.
     /// </summary>
