@@ -48,7 +48,7 @@ public class NoteDrawHelper
         //var highestY = GetYPositionForDrum(noteGroup.Last().Drum);
         var startPointY = FromCentreBasedToTopLeftCoordinateY(lowestY); 
         var endPointY = FromCentreBasedToTopLeftCoordinateY(highestY - 3 * NoteHeadSize.Height);
-        return new LineAndStroke(new Point(FromCentreBasedToTopLeftCoordinateX(xPosition) + 12, startPointY),
+        return new LineAndStroke(noteGroup,new Point(FromCentreBasedToTopLeftCoordinateX(xPosition) + 12, startPointY),
             new Point(FromCentreBasedToTopLeftCoordinateX(xPosition) + 12, endPointY), VerticalLineThickness);
     }
 
@@ -170,10 +170,38 @@ public class NoteDrawHelper
             {
                 var firstLine = linesAndStrokes.First();
                 var lastLine = linesAndStrokes.Last();
-                var lineAndStroke = new LineAndStroke(firstLine.EndPoint, lastLine.EndPoint, HorizontalLineThickness);
+                var lineAndStroke = new LineAndStroke(noteGroups[i],firstLine.EndPoint, lastLine.EndPoint, HorizontalLineThickness);
                 linesAndStrokes.Add(lineAndStroke);
             }
-            
+        }
+        var sixteenthNotes = noteGroups.Where(ng => ng is { Value: NoteValue.Sixteenth, IsRest: false }).ToList();
+        if (sixteenthNotes.Count == 1)
+        {
+            var sixteenthNoteGroup = sixteenthNotes.Single();
+            var lineOfGroup = linesAndStrokes.Single(line => line.NoteGroup == sixteenthNoteGroup && line.LineType == LineType.Vertical);
+            if (lineOfGroup == linesAndStrokes.First())
+            {
+                //draw two lines
+                var startPoint1 = lineOfGroup.EndPoint;
+                var endPoint1 = lineOfGroup.EndPoint.WithX(startPoint1.X+ 20).WithY(startPoint1.Y+40);
+                var startPoint2 = startPoint1.WithY(startPoint1.Y+20);
+                var endPoint2 = endPoint1.WithY(endPoint1.Y+20);
+                var lineAndStroke1 = new LineAndStroke(sixteenthNoteGroup, startPoint1, endPoint1, VerticalLineThickness);
+                var lineAndStroke2 = new LineAndStroke(sixteenthNoteGroup, startPoint2, endPoint2, VerticalLineThickness);
+                linesAndStrokes.Add(lineAndStroke1);
+                linesAndStrokes.Add(lineAndStroke2);
+            }
+            else
+            {
+                //it is already connected by one line, so draw a little line below that line
+                var startPoint = lineOfGroup.EndPoint.WithX(lineOfGroup.EndPoint.X-10).WithY(lineOfGroup.EndPoint.Y+10);
+                var endPoint = lineOfGroup.EndPoint.WithY(lineOfGroup.EndPoint.Y+10);
+                var lineAndStroke = new LineAndStroke(sixteenthNoteGroup, startPoint, endPoint, HorizontalLineThickness);
+                linesAndStrokes.Add(lineAndStroke);
+            }
+        }
+        else if (sixteenthNotes.Count > 1)
+        {
         }
         return ([..images], [..linesAndStrokes]);
     }

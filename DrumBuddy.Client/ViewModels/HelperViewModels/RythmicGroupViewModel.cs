@@ -39,7 +39,8 @@ public partial class RythmicGroupViewModel : ReactiveObject
                 var quarterRest = new Note(Drum.Rest, NoteValue.Quarter);
                 List<NoteGroup> noteGroups =
                 [
-                    new([kickNote with{Value = NoteValue.Eighth}]),
+                    //new([hihatNote with{Value = NoteValue.Eighth}]),
+                    new([eighthRest]),
                     new([sixteenthRest]),
 
                     //new([hihatNote with{Value = NoteValue.Eighth}, tom1Note with{Value = NoteValue.Eighth}, tom2Note with{Value = NoteValue.Eighth}]),
