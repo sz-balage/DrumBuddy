@@ -40,11 +40,19 @@ public partial class RythmicGroupViewModel : ReactiveObject
                 List<NoteGroup> noteGroups =
                 [
                     //new([hihatNote with{Value = NoteValue.Eighth}]),
-                    new([eighthRest]),
+                    // new([hihatNote]),
+                    // new([hihatNote]),
+                    //new([eighthRest]),
                     new([sixteenthRest]),
-
-                    //new([hihatNote with{Value = NoteValue.Eighth}, tom1Note with{Value = NoteValue.Eighth}, tom2Note with{Value = NoteValue.Eighth}]),
-                    new([hihatNote])
+                    new([hihatNote]),
+                    new([hihatNote with{Value = NoteValue.Eighth}])
+                    //new([hihatNote with{Value = NoteValue.Eighth}]),
+                    //new([hihatNote with {Value = NoteValue.Eighth}]),
+                    // new([sixteenthRest]),
+                    //
+                    // new([hihatNote with{Value = NoteValue.Eighth}]),
+                    // new([sixteenthRest])
+                    //new([hihatNote with {Value = NoteValue.Eighth}, tom1Note with {Value = NoteValue.Eighth}, tom2Note with {Value = NoteValue.Eighth}]),
                 ];
                 var testRythmicGroup = new RythmicGroup([..noteGroups]);
                 DrawNotes(testRythmicGroup); //modify to rythmicGroup
