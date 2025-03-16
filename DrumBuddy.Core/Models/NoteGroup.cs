@@ -30,6 +30,9 @@ public class NoteGroup : List<Note>
     public new void Add(Note note)
     {
         if (Count == MaxSize) throw new InvalidOperationException("How many limbs you got?");
+        // If this is the first note, set the Value property
+        if (Count == 0)
+            Value = note.Value;
         base.Add(note);
     }
 
