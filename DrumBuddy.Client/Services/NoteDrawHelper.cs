@@ -15,7 +15,8 @@ public class NoteDrawHelper
     private const string BaseNotationPath = "avares://DrumBuddy.Client/Assets/Notation/";
     private const string ImageExtension = ".png";
 
-    private const int LineThickness = 2;
+    private const int VerticalLineThickness = 2;
+    private const int HorizontalLineThickness = 8;
 
     private static readonly Size NoteHeadSize = new(24, 20);
     private static readonly Size NoteHeadWithLineSize = new(28, 20);
@@ -40,15 +41,15 @@ public class NoteDrawHelper
         return Math.Abs(GetYPositionForDrum(drum) - GetYPositionForDrum(otherDrum)) == NoteHeadSize.Height / 2;
     }
 
-    private LineAndStroke GetLineForNoteGroup(NoteGroup noteGroup, double xPosition)
+    private LineAndStroke GetLineForNoteGroup(NoteGroup noteGroup, double highestY, double xPosition)
     {
         //get start and endpoint for each note groups line -> the start point is the y position of the lowest note in the group, the endpoint is the y position of the highest note in the group + 3 * notehead height
         var lowestY = GetYPositionForDrum(noteGroup.First().Drum);
-        var highestY = GetYPositionForDrum(noteGroup.Last().Drum);
-        var startPointY = FromCentreBasedToTopLeftCoordinateY(lowestY); // + 20; // 85;
-        var endPointY = FromCentreBasedToTopLeftCoordinateY(highestY - 3 * NoteHeadSize.Height); // -15 - 60;//-15;// 
+        //var highestY = GetYPositionForDrum(noteGroup.Last().Drum);
+        var startPointY = FromCentreBasedToTopLeftCoordinateY(lowestY); 
+        var endPointY = FromCentreBasedToTopLeftCoordinateY(highestY - 3 * NoteHeadSize.Height);
         return new LineAndStroke(new Point(FromCentreBasedToTopLeftCoordinateX(xPosition) + 12, startPointY),
-            new Point(FromCentreBasedToTopLeftCoordinateX(xPosition) + 12, endPointY), LineThickness);
+            new Point(FromCentreBasedToTopLeftCoordinateX(xPosition) + 12, endPointY), VerticalLineThickness);
     }
 
     /// <summary>
@@ -122,8 +123,6 @@ public class NoteDrawHelper
     /// </summary>
     /// <param name="getCircleImage">Function for creating a circle image.</param>
     /// <param name="rythmicGroup">Containing the note groups to draw.</param>
-    /// <param name="noteGroupWidth">Used for calculating displacement for each notegroup.</param>
-    /// <param name="startingXPosition">Determines the position of the first notegroup horizontally.</param>
     /// <param name="getNoteImage">Function for creating a note image</param>
     /// <returns>The lines and images to draw.</returns>
     internal (ImmutableArray<NoteImageAndBounds> Images, ImmutableArray<LineAndStroke> LineAndStrokes)
@@ -132,6 +131,7 @@ public class NoteDrawHelper
             Func<Point, NoteImageAndBounds> getCircleImage,
             RythmicGroup rythmicGroup)
     {
+        double highestY = rythmicGroup.NoteGroups.Select(ng => GetYPositionForDrum(ng.First().Drum)).Min();
         var linesAndStrokes = new List<LineAndStroke>(); //TODO: draw lines horizontally
         var images = new List<NoteImageAndBounds>();
         var noteGroups = rythmicGroup.NoteGroups;
@@ -141,7 +141,7 @@ public class NoteDrawHelper
             var noteGroup = noteGroups[i];
             noteGroup.Sort((n1, n2) => GetYPositionForDrum(n2.Drum).CompareTo(GetYPositionForDrum(n1.Drum)));
             if (!noteGroup.IsRest)
-                linesAndStrokes.Add(GetLineForNoteGroup(noteGroup, x));
+                linesAndStrokes.Add(GetLineForNoteGroup(noteGroup, highestY, x));
             if (noteGroup is { IsRest: true, Value: NoteValue.Sixteenth } && i != 0)
             {
                 var previousX = images[i - 1].Bounds.X;
@@ -165,10 +165,16 @@ public class NoteDrawHelper
                 var noteImage = getNoteImage(note, point);
                 images.Add(noteImage);
             }
-
             x += GetDisplacementForNoteValue(noteGroup.Value, _noteGroupWidth);
+            if (i == (noteGroups.Length-1) && linesAndStrokes.Count > 1)
+            {
+                var firstLine = linesAndStrokes.First();
+                var lastLine = linesAndStrokes.Last();
+                var lineAndStroke = new LineAndStroke(firstLine.EndPoint, lastLine.EndPoint, HorizontalLineThickness);
+                linesAndStrokes.Add(lineAndStroke);
+            }
+            
         }
-
         return ([..images], [..linesAndStrokes]);
     }
 
