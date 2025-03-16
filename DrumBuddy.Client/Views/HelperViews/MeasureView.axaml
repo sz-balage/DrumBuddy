@@ -6,7 +6,6 @@
                           xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels.HelperViewModels"
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
-                          Height="190"
                           d:DesignWidth="1200"
                           mc:Ignorable="d"
                           x:Class="DrumBuddy.Client.Views.HelperViews.MeasureView">

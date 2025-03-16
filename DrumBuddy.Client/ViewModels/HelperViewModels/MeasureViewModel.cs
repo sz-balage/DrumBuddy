@@ -13,7 +13,8 @@ public partial class MeasureViewModel : ReactiveObject
     [Reactive] private bool _isPointerVisible;
     private double _pointerPosition;
 
-    [Reactive] private int _width = 1200;
+    [Reactive] private double _width = 1200;
+    [Reactive] private double _height = 190;
 
     public Measure Measure = new(new List<RythmicGroup>(4));
 
@@ -36,7 +37,7 @@ public partial class MeasureViewModel : ReactiveObject
         var rg = new RythmicGroup(RecordingService.UpscaleNotes(notes)
             .ToImmutableArray()); //will be a call to the recordingservice
         Measure.Groups.Add(rg);
-        RythmicGroups.Add(new RythmicGroupViewModel(rg, Width));
+        RythmicGroups.Add(new RythmicGroupViewModel(rg, Width, Height));
     }
 
     public void MovePointerToRg(long rythmicGroupIndex)

@@ -14,7 +14,7 @@
         <vm:RythmicGroupViewModel />
     </Design.DataContext>
     <Grid>
-        <ItemsControl x:Name="NoteImagesList">
+       <ItemsControl x:Name="NoteImagesList">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid />
@@ -32,6 +32,24 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <ItemsControl x:Name="LinesList" />
+        <ItemsControl x:Name="LinesList">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:LineAndStroke}">
+                    <Line StartPoint="{Binding StartPoint}"
+                          EndPoint="{Binding EndPoint}"
+                          Stroke="{Binding StrokeColor}"
+                          StrokeThickness="{Binding StrokeThickness}">
+                        <Line.RenderTransform>
+                            <TranslateTransform/>
+                        </Line.RenderTransform>
+                    </Line>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </rxui:ReactiveUserControl>

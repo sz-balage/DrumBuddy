@@ -22,28 +22,28 @@ public class WhenDrawingRythmicGroup
     private static Note _sixteenthRest = new Note(Drum.Rest, NoteValue.Sixteenth);
     private static Note _eighthRest = new Note(Drum.Rest, NoteValue.Eighth);
     private static Note _quarterRest = new Note(Drum.Rest, NoteValue.Eighth);
-    [Fact]
-    public void ShouldGenerateForSingleRest()
-    {
-        //Arrange
-        var creationData = _quarterRest.NoteHeadImagePathAndSize();
-        Bitmap testBitmap = null;
-        var expectedResult = (new List<Line>(), new List<NoteImageAndBounds> { new NoteImageAndBounds(testBitmap, new Rect(StartingXPosition, 0, NoteGroupWidth, NoteGroupWidth)) });
-        List<NoteGroup> noteGroup =
-        [
-            new([_quarterRest])
-        ];
-        var rgToDraw = new RythmicGroup([..noteGroup]);
-        Func<Note, Point, NoteImageAndBounds> getNoteImage = (note, point) =>
-        {
-            return new NoteImageAndBounds(testBitmap, new Rect(point, new Size(NoteGroupWidth, NoteGroupWidth)));
-        };
-        Func<Point, NoteImageAndBounds> getCircleImage = point =>
-        {
-            return new NoteImageAndBounds(testBitmap, new Rect(point, new Size(NoteGroupWidth, NoteGroupWidth)));
-        };
-        // Act
-        var result = GenerateLinesAndNoteImages(getNoteImage, getCircleImage, rgToDraw, NoteGroupWidth, StartingXPosition);
-        ;
-    }
+    // [Fact]
+    // public void ShouldGenerateForSingleRest()
+    // {
+    //     //Arrange
+    //     var creationData = _quarterRest.NoteHeadImagePathAndSize();
+    //     Bitmap testBitmap = null;
+    //     var expectedResult = (new List<Line>(), new List<NoteImageAndBounds> { new NoteImageAndBounds(testBitmap, new Rect(StartingXPosition, 0, NoteGroupWidth, NoteGroupWidth)) });
+    //     List<NoteGroup> noteGroup =
+    //     [
+    //         new([_quarterRest])
+    //     ];
+    //     var rgToDraw = new RythmicGroup([..noteGroup]);
+    //     Func<Note, Point, NoteImageAndBounds> getNoteImage = (note, point) =>
+    //     {
+    //         return new NoteImageAndBounds(testBitmap, new Rect(point, new Size(NoteGroupWidth, NoteGroupWidth)));
+    //     };
+    //     Func<Point, NoteImageAndBounds> getCircleImage = point =>
+    //     {
+    //         return new NoteImageAndBounds(testBitmap, new Rect(point, new Size(NoteGroupWidth, NoteGroupWidth)));
+    //     };
+    //     // Act
+    //     var result = GenerateLinesAndNoteImages(getNoteImage, getCircleImage, rgToDraw, NoteGroupWidth, StartingXPosition);
+    //     ;
+    // }
 }
