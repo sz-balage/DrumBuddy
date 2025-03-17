@@ -187,7 +187,8 @@ public class NoteDrawHelper
         {
             var sixteenthNoteGroup = sixteenthNotes.Single();
             var lineOfGroup = linesAndStrokes.Single(line => line.NoteGroup == sixteenthNoteGroup && line.LineType == LineType.Vertical);
-            if (lineOfGroup == linesAndStrokes.First() && sixteenthNoteGroup != noteGroups.First(ng => !ng.IsRest))
+            var lastNonRest = noteGroups.Last(ng => !ng.IsRest);
+            if (lineOfGroup == linesAndStrokes.First() && sixteenthNoteGroup == lastNonRest) //TODO: fix bug
             {
                 //draw two lines diagonally
                 //TODO: use curly lines instead of straight lines
