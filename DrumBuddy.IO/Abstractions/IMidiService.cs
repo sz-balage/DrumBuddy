@@ -1,4 +1,4 @@
-﻿using DrumBuddy.IO.Enums;
+﻿using DrumBuddy.Core.Enums;
 using DrumBuddy.IO.Services;
 
 namespace DrumBuddy.IO.Abstractions;

@@ -6,7 +6,6 @@ using Avalonia;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
-using DrumBuddy.IO.Enums;
 
 namespace DrumBuddy.Client.Services;
 

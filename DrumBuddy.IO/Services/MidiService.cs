@@ -1,7 +1,7 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using DrumBuddy.Core.Enums;
 using DrumBuddy.IO.Abstractions;
-using DrumBuddy.IO.Enums;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Multimedia;
 
@@ -32,12 +32,6 @@ public class MidiService : IMidiService
                 "Multiple MIDI devices connected. Please remove any additional devices.");
         SetDevice(devices.Single());
         return new MidiDeviceConnectionResult(true, null);
-        // return InputDevice.GetAll().Match(
-        //     Empty: () => new MidiDeviceConnectionError("No MIDI devices connected."),
-        //     More: devices => devices.Count == 1
-        //         ? Either<MidiDeviceConnectionError, Unit>.Right(SetDevice(devices.Single()))
-        //         : new MidiDeviceConnectionError(
-        //             "More than one MIDI device connected. Please remove any additional devices."));
     }
 
     public bool IsConnected

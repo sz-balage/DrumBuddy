@@ -1,4 +1,4 @@
-﻿namespace DrumBuddy.IO.Enums;
+﻿namespace DrumBuddy.Core.Enums;
 
 public enum Drum
 {

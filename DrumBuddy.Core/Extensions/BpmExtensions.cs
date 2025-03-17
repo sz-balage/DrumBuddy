@@ -1,6 +1,6 @@
-﻿using DrumBuddy.IO.Models;
+﻿using DrumBuddy.Core.Models;
 
-namespace DrumBuddy.IO.Extensions;
+namespace DrumBuddy.Core.Extensions;
 
 public static class BpmExtensions
 {

@@ -10,7 +10,7 @@ using Avalonia.ReactiveUI;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Client.ViewModels.Dialogs;
 using DrumBuddy.Client.Views.HelperViews;
-using DrumBuddy.IO.Enums;
+using DrumBuddy.Core.Enums;
 using ReactiveUI;
 using Splat;
 

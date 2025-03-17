@@ -1,10 +1,8 @@
 ﻿using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using DrumBuddy.Core.Enums;
+using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
-using DrumBuddy.IO.Enums;
-using DrumBuddy.IO.Extensions;
-using DrumBuddy.IO.Models;
 using static DrumBuddy.Core.Helpers.CollectionInitializers;
 
 [assembly: InternalsVisibleTo("DrumBuddy.Client.Core.Unit")]

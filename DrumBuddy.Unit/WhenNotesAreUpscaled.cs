@@ -1,7 +1,6 @@
 ﻿using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
-using DrumBuddy.IO.Enums;
 using Shouldly;
 
 namespace DrumBuddy.Core.Unit;

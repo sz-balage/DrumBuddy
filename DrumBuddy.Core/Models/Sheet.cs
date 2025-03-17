@@ -1,5 +1,4 @@
-﻿using DrumBuddy.IO.Extensions;
-using DrumBuddy.IO.Models;
+﻿using DrumBuddy.Core.Extensions;
 
 namespace DrumBuddy.Core.Models;
 

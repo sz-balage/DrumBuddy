@@ -1,6 +1,6 @@
 namespace DrumBuddy.IO.Services;
 
-public static class FileSystemService
+public static class FileSystemService //TODO: should be part of client, not IO, and use assetloader there
 {
     public static string GetPathToHighBeepSound()
     {

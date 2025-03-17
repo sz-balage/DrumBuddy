@@ -6,7 +6,6 @@ using DrumBuddy.Client.Models;
 using DrumBuddy.Client.Services;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
-using DrumBuddy.IO.Enums;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;

@@ -1,8 +1,9 @@
 ﻿using DrumBuddy.Core.Enums;
-using DrumBuddy.IO.Enums;
 
 namespace DrumBuddy.Core.Models;
-
+/// <summary>
+/// Represents a group of notes that are played at the same time.
+/// </summary>
 public class NoteGroup : List<Note>
 {
     private const int MaxSize = 3;

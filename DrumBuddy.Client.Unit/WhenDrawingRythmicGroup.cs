@@ -6,7 +6,6 @@ using DrumBuddy.Client.Models;
 using DrumBuddy.Client.Services;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
-using DrumBuddy.IO.Enums;
 using static DrumBuddy.Client.ViewModels.HelperViewModels.RythmicGroupViewModel;
 
 namespace DrumBuddy.Client.Unit;

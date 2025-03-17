@@ -1,4 +1,4 @@
-﻿namespace DrumBuddy.IO.Models;
+﻿namespace DrumBuddy.Core.Models;
 
 public readonly record struct Bpm
 {
