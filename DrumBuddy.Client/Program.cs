@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Client.Views;
+using DrumBuddy.Core.Abstractions;
+using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
 using ReactiveUI;
 using Splat;
+using static Splat.Locator;
 
 namespace DrumBuddy.Client;
 
@@ -23,14 +28,29 @@ internal class Program
 
     private static void RegisterServices(AppBuilder appBuilder)
     {
-        Locator.CurrentMutable.RegisterConstant(new MidiService());
-        Locator.CurrentMutable.RegisterConstant<IMidiService>(Locator.Current.GetService<MidiService>());
-        Locator.CurrentMutable.RegisterConstant<IScreen>(new MainViewModel());
-        Locator.CurrentMutable.RegisterConstant<MainViewModel>(Locator.Current.GetService<IScreen>() as MainViewModel);
-        Locator.CurrentMutable.RegisterConstant(new MainWindow());
-        Locator.CurrentMutable.RegisterConstant(new HomeViewModel());
-        Locator.CurrentMutable.RegisterConstant(new LibraryViewModel());
-        Locator.CurrentMutable.Register(() => new RecordingViewModel());
+        RegisterCoreServices();
+        RegisterIOServices();
+        CurrentMutable.RegisterConstant(new MainViewModel(Current.GetRequiredService<IMidiService>()));
+        CurrentMutable.RegisterConstant<IScreen>(Current.GetService<MainViewModel>());
+        CurrentMutable.RegisterConstant(new MainWindow());
+        CurrentMutable.RegisterConstant(new HomeViewModel());
+        CurrentMutable.RegisterConstant(new LibraryViewModel(Current.GetRequiredService<IScreen>(),Current.GetRequiredService<ISheetStorage>()));
+        CurrentMutable.Register(() =>
+            new RecordingViewModel(Current.GetRequiredService<IScreen>(),
+                Current.GetRequiredService<IMidiService>(),
+                Current.GetRequiredService<LibraryViewModel>()));
+    }
+
+    private static void RegisterCoreServices()
+    {
+        CurrentMutable.RegisterConstant<ISerializationService>(new SerializationService());
+    }
+
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
+    private static void RegisterIOServices()
+    {
+        CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
+        CurrentMutable.RegisterConstant<ISheetStorage>(new SheetStorage(Current.GetRequiredService<ISerializationService>()));
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

@@ -24,9 +24,9 @@ public partial class MainViewModel : ReactiveObject, IScreen
 
     [Reactive] private NavigationMenuItemTemplate _selectedPaneItem;
 
-    public MainViewModel()
+    public MainViewModel(IMidiService midiService)
     {
-        _midiService = Locator.Current.GetService<MidiService>();
+        _midiService = midiService;
         _midiService!.InputDeviceDisconnected
             .Subscribe(connected => { NoConnection = true; });
         TryConnect();
@@ -67,7 +67,10 @@ public partial class MainViewModel : ReactiveObject, IScreen
         if (Router.GetCurrentViewModel()?.GetType() == value.ModelType)
             return;
         IsPaneOpen = false;
-        Router.NavigateAndReset.Execute(Locator.Current.GetRequiredService(value.ModelType) as IRoutableViewModel);
+        var navigateTo = Locator.Current.GetRequiredService(value.ModelType) as IRoutableViewModel;
+        if (navigateTo is null)
+            throw new Exception("ViewModel not found.");
+        Router.NavigateAndReset.Execute(navigateTo);
     }
 
     [ReactiveCommand]

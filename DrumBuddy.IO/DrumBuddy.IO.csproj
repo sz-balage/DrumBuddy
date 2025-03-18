@@ -13,10 +13,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Enums\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj" />
     </ItemGroup>
 

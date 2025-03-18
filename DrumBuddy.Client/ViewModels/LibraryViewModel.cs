@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Core.Models;
+using DrumBuddy.IO.Abstractions;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -15,18 +16,18 @@ public partial class LibraryViewModel : ReactiveObject, IRoutableViewModel
     private readonly ReadOnlyObservableCollection<Sheet> _sheets;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     private IObservable<bool> _removeCanExecute;
-
-    [Reactive] private Sheet _selectedSheet;
-
-    public LibraryViewModel()
+    private ISheetStorage _sheetStorage;
+    public LibraryViewModel(IScreen hostScreen, ISheetStorage sheetStorage)
     {
-        HostScreen = Locator.Current.GetRequiredService<IScreen>();
+        HostScreen = hostScreen;
+        _sheetStorage = sheetStorage;
         _sheetSource.Connect()
             .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _sheets)
             .Subscribe();
-        _removeCanExecute = this.WhenAnyValue(vm => vm.SelectedSheet).Select(sheet => sheet != null);
+        _removeCanExecute = this.WhenAnyValue(vm => vm.SelectedSheet).Select(sheet => sheet != null!);
     }
+    [Reactive] private Sheet _selectedSheet;
 
     public ReadOnlyObservableCollection<Sheet> Sheets => _sheets;
     public string? UrlPathSegment { get; } = "library";

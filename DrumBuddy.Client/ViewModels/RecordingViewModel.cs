@@ -7,6 +7,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Extensions;
@@ -48,11 +49,12 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
 
-    public RecordingViewModel()
+    public RecordingViewModel(IScreen hostScreen, IMidiService midiService, LibraryViewModel library)
     {
-        HostScreen = Locator.Current.GetService<IScreen>();
-        _midiService = Locator.Current.GetService<MidiService>();
-        _library = Locator.Current.GetService<LibraryViewModel>();
+
+        HostScreen = hostScreen;
+        _midiService = midiService;
+        _library = library;
         //init sound players
         _normalBeepPlayer =
             new SoundPlayer(FileSystemService.GetPathToRegularBeepSound()); //relative path should be used
