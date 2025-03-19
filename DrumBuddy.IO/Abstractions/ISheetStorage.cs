@@ -1,11 +1,13 @@
-﻿using DrumBuddy.Core.Models;
+﻿using System.Collections.Immutable;
+using DrumBuddy.Core.Models;
 
 namespace DrumBuddy.IO.Abstractions;
 
 public interface ISheetStorage
 {
-    Task SaveSheetAsync(Sheet sheet, string fileName);
-    Task<Sheet> LoadSheetAsync(string fileName);
+    Task RemoveSheetAsync(Sheet sheet);
+    Task SaveSheetAsync(Sheet sheet);
+    Task<ImmutableArray<Sheet>> LoadSheetsAsync();
     Task<IEnumerable<string>> GetSavedSheetNames();
     Task RenameFileAsync(string oldFileName, string newFileName);
 }

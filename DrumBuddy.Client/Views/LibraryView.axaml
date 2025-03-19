@@ -6,7 +6,7 @@
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                          x:Class="DrumBuddy.Client.LibraryView">
+                          x:Class="DrumBuddy.Client.Views.LibraryView">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.05*" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Media;
@@ -8,6 +9,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
+using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Extensions;
@@ -85,11 +87,16 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         IsRecording = false;
         IsPaused = false;
         CurrentMeasure = null;
+
+        this.WhenNavigatingFromObservable().Subscribe(_ =>
+        {
+            _subs.Dispose(); //TODO: dispose disposables when navigating away from the viewmodel
+        });
     }
 
     public IObservable<Drum> KeyboardBeats { get; set; }
 
-    public Interaction<Unit, string?> ShowSaveDialog { get; } = new();
+    public Interaction<SheetCreationData, string?> ShowSaveDialog { get; } = new();
 
     public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
     public string? UrlPathSegment { get; } = "recording-view";
@@ -230,10 +237,9 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
 
         var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
         //ask user if sheet should be saved
-        var sheet = new Sheet(_bpm, measures, "test");
-        var save = await ShowSaveDialog.Handle(Unit.Default);
-        if (save is not null)
-            _library.AddSheet(new Sheet(_bpm, measures, save));
+        _ = await ShowSaveDialog.Handle(new SheetCreationData(_bpm, [..measures]));
+        // if (save is not null)
+        //     await _library.TrySaveSheet(new Sheet(_bpm, measures, save));
         ClearMeasures();
     }
 

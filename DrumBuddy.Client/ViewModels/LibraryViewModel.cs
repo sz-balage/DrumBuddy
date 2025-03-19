@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
+using System.Threading.Tasks;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Abstractions;
@@ -26,6 +29,13 @@ public partial class LibraryViewModel : ReactiveObject, IRoutableViewModel
             .Bind(out _sheets)
             .Subscribe();
         _removeCanExecute = this.WhenAnyValue(vm => vm.SelectedSheet).Select(sheet => sheet != null!);
+        this.WhenNavigatedTo(() =>
+        {
+            return LoadSheets()
+                .ToObservable()
+                .Subscribe(_ => { },
+                    onError: ex => Debug.WriteLine(ex));
+        });
     }
     [Reactive] private Sheet _selectedSheet;
 
@@ -33,14 +43,23 @@ public partial class LibraryViewModel : ReactiveObject, IRoutableViewModel
     public string? UrlPathSegment { get; } = "library";
     public IScreen HostScreen { get; }
 
-    public void AddSheet(Sheet sheet)
+    public async Task TrySaveSheet(Sheet sheet)
     {
-        _sheetSource.AddOrUpdate(sheet);
+        await _sheetStorage.SaveSheetAsync(sheet);
     }
-
+    
+    //TODO: implement rename sheet
+    
     [ReactiveCommand(CanExecute = nameof(_removeCanExecute))]
-    private void RemoveSheet()
+    private async Task RemoveSheet()
     {
+        await _sheetStorage.RemoveSheetAsync(_selectedSheet);
         _sheetSource.Remove(_selectedSheet);
+    }
+    public async Task LoadSheets()
+    {
+        var sheets = await _sheetStorage.LoadSheetsAsync();
+        _sheetSource.Clear();
+        _sheetSource.AddOrUpdate(sheets);
     }
 }

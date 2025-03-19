@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using DrumBuddy.Core.Abstractions;
+using DrumBuddy.Core.Helpers;
 using DrumBuddy.Core.Models;
 
 namespace DrumBuddy.Core.Services;
@@ -7,11 +8,18 @@ namespace DrumBuddy.Core.Services;
 
 public class SerializationService : ISerializationService
 {
-    private readonly JsonSerializerOptions _options = new()
+    private readonly JsonSerializerOptions _options;
+
+    public SerializationService()
     {
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
+        _options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        
+        _options.Converters.Add(new BpmJsonConverter());
+    }
 
     public string SerializeSheet(Sheet sheet)
     {

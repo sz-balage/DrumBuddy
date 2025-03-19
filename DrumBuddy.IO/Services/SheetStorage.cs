@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Immutable;
+using System.Text;
 using System.Text.RegularExpressions;
 using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Models;
@@ -24,24 +25,35 @@ public class SheetStorage : ISheetStorage
             Directory.CreateDirectory(_saveDirectory);
     }
 
-    public async Task SaveSheetAsync(Sheet sheet, string fileName)
+    public async Task SaveSheetAsync(Sheet sheet)
     {
-        var normalizedName = NormalizeFileName(fileName);
+        var normalizedName = NormalizeFileName(sheet.Name);
         var filePath = GetFullPath(normalizedName);
         var json = _serializationService.SerializeSheet(sheet);
-
+        
         await File.WriteAllTextAsync(filePath, json, Encoding.UTF8);
     }
 
-    public async Task<Sheet> LoadSheetAsync(string fileName)
+    public async Task RemoveSheetAsync(Sheet sheet)
     {
+        var fileName = NormalizeFileName(sheet.Name);
         var filePath = GetFullPath(fileName);
-
+        
         if (!File.Exists(filePath))
             throw new FileNotFoundException($"Sheet file not found: {fileName}");
-
-        var json = await File.ReadAllTextAsync(filePath, Encoding.UTF8);
-        return _serializationService.DeserializeSheet(json);
+        await Task.Run(() => File.Delete(filePath));    
+    }
+    public async Task<ImmutableArray<Sheet>> LoadSheetsAsync()
+    {
+        var filePaths = Directory.EnumerateFiles(_saveDirectory,$"*{FileExtension}");
+        var arrayBuilder = ImmutableArray.CreateBuilder<Sheet>(filePaths.Count());
+        foreach (var filePath in Directory.EnumerateFiles(_saveDirectory,$"*{FileExtension}"))
+        {
+            var json = await File.ReadAllTextAsync(filePath, Encoding.UTF8);
+            var sheet = _serializationService.DeserializeSheet(json); //TODO: cannot deserialize BPM property
+            arrayBuilder.Add(sheet);
+        }
+        return arrayBuilder.MoveToImmutable();
     }
 
     public async Task<IEnumerable<string>> GetSavedSheetNames()
@@ -50,9 +62,18 @@ public class SheetStorage : ISheetStorage
             Directory.GetFiles(_saveDirectory, $"*{FileExtension}")
                 .Select(p => DenormalizeFileName(Path.GetFileNameWithoutExtension(p)))))!;
     }
-
-    public async Task RenameFileAsync(string oldFileName, string newFileName)
+    /// <summary>
+    /// Renames file from old sheet name to new sheet name.
+    /// </summary>
+    /// <param name="oldSheetName"></param>
+    /// <param name="newSheetName"></param>
+    /// <exception cref="FileNotFoundException"></exception>
+    /// <exception cref="IOException"></exception>
+    public async Task RenameFileAsync(string oldSheetName, string newSheetName)
     {
+        var oldFileName = NormalizeFileName(oldSheetName);
+        var newFileName = NormalizeFileName(newSheetName);
+        
         var oldPath = GetFullPath(oldFileName);
         var newPath = GetFullPath(NormalizeFileName(newFileName));
 
@@ -76,13 +97,7 @@ public class SheetStorage : ISheetStorage
         return normalized;
     }
 
-    private string DenormalizeFileName(string fileName)
-    {
-        return fileName.Replace('_', ' ');
-    }
+    private string DenormalizeFileName(string fileName) => fileName.Replace('_', ' ');
 
-    private string GetFullPath(string fileName)
-    {
-        return Path.Combine(_saveDirectory, fileName);
-    }
+    private string GetFullPath(string fileName) => Path.Combine(_saveDirectory, fileName + FileExtension);
 }

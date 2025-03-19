@@ -1,17 +1,20 @@
+using System;
+using System.Diagnostics;
 using System.Reactive.Disposables;
+using System.Reactive.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.ViewModels;
 using ReactiveUI;
 
-namespace DrumBuddy.Client;
+namespace DrumBuddy.Client.Views;
 
 public partial class LibraryView : ReactiveUserControl<LibraryViewModel>
 {
     public LibraryView()
     {
         InitializeComponent();
-        this.WhenActivated(d =>
+        this.WhenActivated(async d =>
         {
             this.OneWayBind(ViewModel,
                     vm => vm.Sheets,

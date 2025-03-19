@@ -74,10 +74,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
     }
 
     [ReactiveCommand]
-    private void TogglePane()
-    {
-        IsPaneOpen = !IsPaneOpen;
-    }
+    private void TogglePane() => IsPaneOpen = !IsPaneOpen;
 
     [ReactiveCommand]
     private void TryConnect()

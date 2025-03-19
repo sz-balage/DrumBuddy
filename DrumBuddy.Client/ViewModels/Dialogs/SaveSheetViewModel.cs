@@ -1,23 +1,33 @@
 ﻿using System;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
+using DrumBuddy.Client.Extensions;
+using DrumBuddy.Client.Models;
+using DrumBuddy.Core.Models;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using Splat;
 
 namespace DrumBuddy.Client.ViewModels.Dialogs;
 
 public partial class SaveSheetViewModel : ReactiveObject
 {
     private IObservable<bool> _saveSheetCanExecute;
-
+    private LibraryViewModel _library;
+    private SheetCreationData _sheetCreationData;
     [Reactive] private string _sheetName;
 
-    public SaveSheetViewModel()
+    public SaveSheetViewModel(SheetCreationData sheetCreationData)
     {
+        _library = Locator.Current.GetRequiredService<LibraryViewModel>();
+        _sheetCreationData = sheetCreationData;
         _saveSheetCanExecute = this.WhenAnyValue(vm => vm.SheetName).Select(s => !string.IsNullOrEmpty(s));
     }
 
     [ReactiveCommand(CanExecute = nameof(_saveSheetCanExecute))]
-    private void SaveSheet()
+    private async Task SaveSheet()
     {
+        Sheet sheetToSave = new(_sheetCreationData.Bpm, _sheetCreationData.Measures, _sheetName);
+        await _library.TrySaveSheet(sheetToSave);
     }
 }
