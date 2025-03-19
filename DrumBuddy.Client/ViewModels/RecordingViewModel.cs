@@ -86,7 +86,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         TimeElapsed = "0:0:0";
         IsRecording = false;
         IsPaused = false;
-        CurrentMeasure = null;
+        CurrentMeasure = null!;
 
         this.WhenNavigatingFromObservable().Subscribe(_ =>
         {
@@ -188,7 +188,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         if (idx == 0)
         {
             _highBeepPlayer.Play();
-            if (CurrentMeasure == null)
+            if (CurrentMeasure == null!)
             {
                 CountDownVisibility = false;
                 CurrentMeasure = Measures[0];

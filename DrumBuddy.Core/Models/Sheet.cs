@@ -3,10 +3,11 @@ using DrumBuddy.Core.Extensions;
 
 namespace DrumBuddy.Core.Models;
 
-public class Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name)
+public class Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, string description)
 {
     public TimeSpan Length => CalculateLength();
     public string Name { get; init; } = name;
+    public string Description { get; init; } = description;
 
     public Bpm Tempo { get; } = tempo;
 

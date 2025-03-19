@@ -33,7 +33,7 @@
         </StackPanel>
 
         <StackPanel Grid.Row="3">
-            <TextBlock Text="Description" Classes="label"/>
+            <TextBlock  Text="Description" Classes="label"/>
             <TextBox x:Name="DescriptionTb" Watermark="Enter sheet description"
                      AcceptsReturn="True"
                      TextWrapping="Wrap"

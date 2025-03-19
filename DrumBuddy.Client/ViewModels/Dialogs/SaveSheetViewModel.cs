@@ -16,6 +16,7 @@ public partial class SaveSheetViewModel : ReactiveObject
     private readonly LibraryViewModel _library;
     private readonly SheetCreationData _sheetCreationData;
     [Reactive] private string _sheetName;
+    [Reactive] private string _sheetDescription = "";
 
     public SaveSheetViewModel(SheetCreationData sheetCreationData)
     {
@@ -28,7 +29,7 @@ public partial class SaveSheetViewModel : ReactiveObject
     private async Task SaveSheet()
     {
         _sheetName = _sheetName.Trim();
-        Sheet sheetToSave = new(_sheetCreationData.Bpm, _sheetCreationData.Measures, _sheetName);
+        Sheet sheetToSave = new(_sheetCreationData.Bpm, _sheetCreationData.Measures, _sheetName, _sheetDescription);
         await _library.TrySaveSheet(sheetToSave);
     }
 }
