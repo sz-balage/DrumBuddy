@@ -17,12 +17,12 @@ public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            this.Bind(ViewModel, vm => vm.SheetName, v => v.NameTextB.Text).DisposeWith(d);
+            this.Bind(ViewModel, vm => vm.SheetName, v => v.NameTB.Text).DisposeWith(d);
             this.Bind(ViewModel, vm => vm.SheetDescription, v => v.DescriptionTb.Text).DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.SaveSheetCommand, v => v.SaveButton).DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.SaveSheetCommand, v => v.Save).DisposeWith(d);
             var observerCloseWithName = Observer.Create<Unit>(u => Close(ViewModel.SheetName));
             ViewModel?.SaveSheetCommand.Subscribe(observerCloseWithName); //make optional name
-            CloseButton.Click += (sender, e) => Close(null);
+            Cancel.Click += (sender, e) => Close(null);
             KeyDown += (sender, e) =>
             {
                 if (e.Key == Key.Enter)
