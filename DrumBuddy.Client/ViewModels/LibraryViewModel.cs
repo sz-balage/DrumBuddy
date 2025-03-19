@@ -33,7 +33,11 @@ public partial class LibraryViewModel : ReactiveObject, IRoutableViewModel
         {
             return LoadSheets()
                 .ToObservable()
-                .Subscribe(_ => { },
+                .Subscribe(_ =>
+                    {
+                        var source = _sheetSource;
+                        ;
+                    },
                     onError: ex => Debug.WriteLine(ex));
         });
     }
@@ -61,5 +65,10 @@ public partial class LibraryViewModel : ReactiveObject, IRoutableViewModel
         var sheets = await _sheetStorage.LoadSheetsAsync();
         _sheetSource.Clear();
         _sheetSource.AddOrUpdate(sheets);
+    }
+
+    public bool SheetExists(string sheetName)
+    {
+        return _sheetStorage.SheetExists(sheetName);
     }
 }

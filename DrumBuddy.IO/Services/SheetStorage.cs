@@ -45,9 +45,9 @@ public class SheetStorage : ISheetStorage
     }
     public async Task<ImmutableArray<Sheet>> LoadSheetsAsync()
     {
-        var filePaths = Directory.EnumerateFiles(_saveDirectory,$"*{FileExtension}");
+        var filePaths = Directory.EnumerateFiles(_saveDirectory,$"*{FileExtension}").ToList();
         var arrayBuilder = ImmutableArray.CreateBuilder<Sheet>(filePaths.Count());
-        foreach (var filePath in Directory.EnumerateFiles(_saveDirectory,$"*{FileExtension}"))
+        foreach (var filePath in filePaths)
         {
             var json = await File.ReadAllTextAsync(filePath, Encoding.UTF8);
             var sheet = _serializationService.DeserializeSheet(json); //TODO: cannot deserialize BPM property
@@ -84,6 +84,11 @@ public class SheetStorage : ISheetStorage
             throw new IOException($"A file with name {newFileName} already exists.");
 
         await Task.Run(() => File.Move(oldPath, newPath));
+    }
+
+    public bool SheetExists(string sheetName)
+    {
+        return File.Exists(GetFullPath(NormalizeFileName(sheetName)));
     }
 
     private string NormalizeFileName(string fileName)

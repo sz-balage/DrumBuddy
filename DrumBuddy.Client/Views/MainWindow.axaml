@@ -7,6 +7,8 @@
                      xmlns:rxui="http://reactiveui.net"
                      xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
                      xmlns:app="clr-namespace:DrumBuddy.Client"
+                     MinHeight="500"
+                     MinWidth="1250"
                      xmlns:models="clr-namespace:DrumBuddy.Client.Models"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="DrumBuddy.Client.Views.MainWindow"
@@ -30,8 +32,8 @@
                 <Label Foreground="White" VerticalAlignment="Center">
                     There are no MIDI devices connected.
                 </Label>
-                <Button x:Name="RetryButton" Margin="10,0,0,0">
-                    <TextBlock Foreground="White">Retry</TextBlock>
+                <Button Background="DarkRed" Foreground="White" x:Name="RetryButton" Margin="10,0,0,0">
+                    <TextBlock>Retry</TextBlock>
                 </Button>
             </StackPanel>
         </Border>

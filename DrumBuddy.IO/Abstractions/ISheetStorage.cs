@@ -10,4 +10,5 @@ public interface ISheetStorage
     Task<ImmutableArray<Sheet>> LoadSheetsAsync();
     Task<IEnumerable<string>> GetSavedSheetNames();
     Task RenameFileAsync(string oldFileName, string newFileName);
+    bool SheetExists(string sheetName);
 }

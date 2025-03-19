@@ -16,9 +16,9 @@ using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using ReactiveUI;
 using Splat;
+// ReSharper disable InconsistentNaming
 
 namespace DrumBuddy.Client.Views;
-
 public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
 {
     public RecordingView()
@@ -96,22 +96,22 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
         AvaloniaXamlLoader.Load(this);
     }
 
-    private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl");
-    private MeasureView MeasureView => this.FindControl<MeasureView>("measure");
-    private Button _startRecordingButton => this.FindControl<Button>("StartRecordingButton");
-    private Button _stopRecordingButton => this.FindControl<Button>("StopRecordingButton");
-    private Button _pauseRecordingButton => this.FindControl<Button>("PauseRecordingButton");
-    private Button _resumeRecordingButton => this.FindControl<Button>("ResumeRecordingButton");
-    private NumericUpDown _bpmNumeric => this.FindControl<NumericUpDown>("BpmNumeric");
-    private TextBlock _timeElapsedTB => this.FindControl<TextBlock>("TimeElapsedTextBlock");
-    private TextBlock _countDownTB => this.FindControl<TextBlock>("CountdownTextBlock");
-    private Grid _countDownGrid => this.FindControl<Grid>("CountdownGrid");
-    private CheckBox _keyboardCheckBox => this.FindControl<CheckBox>("KeyboardInputCheckBox");
+    private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl")!;
+    private MeasureView MeasureView => this.FindControl<MeasureView>("measure")!;
+    private Button _startRecordingButton => this.FindControl<Button>("StartRecordingButton")!;
+    private Button _stopRecordingButton => this.FindControl<Button>("StopRecordingButton")!;
+    private Button _pauseRecordingButton => this.FindControl<Button>("PauseRecordingButton")!;
+    private Button _resumeRecordingButton => this.FindControl<Button>("ResumeRecordingButton")!;
+    private NumericUpDown _bpmNumeric => this.FindControl<NumericUpDown>("BpmNumeric")!;
+    private TextBlock _timeElapsedTB => this.FindControl<TextBlock>("TimeElapsedTextBlock")!;
+    private TextBlock _countDownTB => this.FindControl<TextBlock>("CountdownTextBlock")!;
+    private Grid _countDownGrid => this.FindControl<Grid>("CountdownGrid")!;
+    private CheckBox _keyboardCheckBox => this.FindControl<CheckBox>("KeyboardInputCheckBox")!;
 
     private async Task SaveHandler(IInteractionContext<SheetCreationData, string?> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var saveView = new SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
+        var saveView = new Dialogs.SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
         var result = await saveView.ShowDialog<string>(mainWindow);
         context.SetOutput(result);
     }

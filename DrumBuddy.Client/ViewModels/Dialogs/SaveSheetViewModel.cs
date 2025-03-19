@@ -13,8 +13,8 @@ namespace DrumBuddy.Client.ViewModels.Dialogs;
 public partial class SaveSheetViewModel : ReactiveObject
 {
     private IObservable<bool> _saveSheetCanExecute;
-    private LibraryViewModel _library;
-    private SheetCreationData _sheetCreationData;
+    private readonly LibraryViewModel _library;
+    private readonly SheetCreationData _sheetCreationData;
     [Reactive] private string _sheetName;
 
     public SaveSheetViewModel(SheetCreationData sheetCreationData)
@@ -27,6 +27,7 @@ public partial class SaveSheetViewModel : ReactiveObject
     [ReactiveCommand(CanExecute = nameof(_saveSheetCanExecute))]
     private async Task SaveSheet()
     {
+        _sheetName = _sheetName.Trim();
         Sheet sheetToSave = new(_sheetCreationData.Bpm, _sheetCreationData.Measures, _sheetName);
         await _library.TrySaveSheet(sheetToSave);
     }

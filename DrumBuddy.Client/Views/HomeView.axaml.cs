@@ -3,7 +3,7 @@ using Avalonia.ReactiveUI;
 using DrumBuddy.Client.ViewModels;
 using ReactiveUI;
 
-namespace DrumBuddy.Client;
+namespace DrumBuddy.Client.Views;
 
 public partial class HomeView : ReactiveUserControl<HomeViewModel>
 {
@@ -12,9 +12,9 @@ public partial class HomeView : ReactiveUserControl<HomeViewModel>
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            this.Bind(ViewModel, vm => vm.WelcomeText, v => v.WelcomeLabel.Content)
+            this.Bind<HomeViewModel, HomeView, string, object?>(ViewModel, vm => vm.WelcomeText, v => v.WelcomeLabel.Content)
                 .DisposeWith(d);
-            this.Bind(ViewModel, vm => vm.SubText, v => v.SubTextLabel.Content)
+            this.Bind<HomeViewModel, HomeView, string, object?>(ViewModel, vm => vm.SubText, v => v.SubTextLabel.Content)
                 .DisposeWith(d);
         });
     }

@@ -83,5 +83,6 @@
 
     <ItemGroup>
         <Folder Include="Assets\Notation\"/>
+        <Folder Include="ViewModels\Design\" />
     </ItemGroup>
 </Project>

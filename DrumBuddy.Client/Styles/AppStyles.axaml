@@ -1,0 +1,48 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Design.PreviewWith>
+    <Border></Border>
+    <Button Classes="confirm">Asddd</Button>
+</Design.PreviewWith>
+    <!-- Text input controls -->
+    <Style Selector="TextBox.form">
+        <Setter Property="Margin" Value="0,8"/>
+        <Setter Property="Padding" Value="10,8"/>
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+    
+    <!-- Labels -->
+    <Style Selector="TextBlock.label">
+        <Setter Property="Margin" Value="0,12,0,2"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
+    </Style>
+    
+    <!-- Standard buttons -->
+    <Style Selector="Button.button">
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
+    </Style>
+    
+    <!-- Confirm/Primary buttons -->
+    <Style Selector="Button.confirm">
+        <Setter Property="Background" Value="#ff0073cf"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+    
+    <Style Selector="Button.confirm:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#0080e0"/>
+    </Style>
+    
+    <!-- Dialog title style -->
+    <Style Selector="TextBlock.dialog-title">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
+        <Setter Property="Margin" Value="0,0,0,16"/>
+    </Style>
+</Styles>

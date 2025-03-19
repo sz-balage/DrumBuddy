@@ -1,30 +1,61 @@
-<rxui:ReactiveWindow x:TypeArguments="dialogs:SaveSheetViewModel" xmlns="https://github.com/avaloniaui"
-                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                     xmlns:rxui="http://reactiveui.net"
-                     xmlns:dialogs="clr-namespace:DrumBuddy.Client.ViewModels.Dialogs"
-                     mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="150"
-                     Width="300" Height="150"
-                     MaxWidth="300" MaxHeight="150"
-                     MinWidth="300" MinHeight="150"
-                     x:Class="DrumBuddy.Client.SaveSheetView"
-                     Title="SaveSheetView" WindowStartupLocation="CenterScreen">
-    <Grid>
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DrumBuddy.Client.ViewModels.Dialogs"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="350"
+        x:Class="DrumBuddy.Client.Views.Dialogs.SaveSheetView"
+        Title="Save Drum Sheet"
+        Width="450" Height="350"
+        WindowStartupLocation="CenterOwner"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaToDecorationsHint="True"
+        CanResize="False">
+    <Window.Styles>
+        <StyleInclude Source="/Styles/AppStyles.axaml"></StyleInclude>
+    </Window.Styles>
+    <Grid Margin="20">
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="2" TextWrapping="Wrap">
-            Would you like to save this sheet? If so, please enter a name for the sheet.
-        </TextBlock>
-        <TextBox Grid.Row="1" x:Name="NameTB" Grid.ColumnSpan="2" />
-        <Button x:Name="Save" Grid.Row="2" Grid.Column="0" Width="150">Save</Button>
-        <Button x:Name="Cancel" Grid.Row="2" Grid.Column="1" Width="150">Cancel</Button>
+
+        <TextBlock Grid.Row="0"
+                   Text="Save Your Recording"
+                   Classes="dialog-title"/>
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="Title" Classes="label"/>
+            <TextBox Watermark="Enter sheet title" x:Name="NameTB"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3">
+            <TextBlock Text="Description" Classes="label"/>
+            <TextBox x:Name="DescriptionTb" Watermark="Enter sheet description"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Height="80"/>
+        </StackPanel>
+
+        <Grid Grid.Row="4" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Content="Cancel"
+                    Classes="button"
+                    x:Name="Cancel"/>
+
+            <Button Grid.Column="2"
+                    Classes="button confirm"
+                    Content="Save"
+                    x:Name="Save"/>
+        </Grid>
     </Grid>
-</rxui:ReactiveWindow>
+</Window>

@@ -11,7 +11,7 @@ public class AppViewLocator : IViewLocator
     {
         return viewModel switch
         {
-            HomeViewModel context => new HomeView { ViewModel = context },
+            HomeViewModel context => new Views.HomeView { ViewModel = context },
             RecordingViewModel context => new RecordingView { ViewModel = context },
             LibraryViewModel context => new LibraryView { ViewModel = context },
             _ => throw new ArgumentOutOfRangeException(nameof(viewModel))

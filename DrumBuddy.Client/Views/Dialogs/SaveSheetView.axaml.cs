@@ -1,5 +1,6 @@
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
@@ -7,7 +8,7 @@ using DrumBuddy.Client.ViewModels.Dialogs;
 using ReactiveUI;
 using Unit = System.Reactive.Unit;
 
-namespace DrumBuddy.Client;
+namespace DrumBuddy.Client.Views.Dialogs;
 
 public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
 {
@@ -25,7 +26,7 @@ public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
             {
                 if (e.Key == Key.Enter)
                     if (!string.IsNullOrEmpty(ViewModel.SheetName))
-                        ViewModel.SaveSheetCommand.Execute().Subscribe(observerCloseWithName);
+                        ViewModel.SaveSheetCommand.Execute().ObserveOn(RxApp.MainThreadScheduler).Subscribe(observerCloseWithName);
                 if (e.Key == Key.Escape) Close(null);
             };
         });
