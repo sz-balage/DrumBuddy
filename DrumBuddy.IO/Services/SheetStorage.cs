@@ -62,28 +62,20 @@ public class SheetStorage : ISheetStorage
             Directory.GetFiles(_saveDirectory, $"*{FileExtension}")
                 .Select(p => DenormalizeFileName(Path.GetFileNameWithoutExtension(p)))))!;
     }
+
     /// <summary>
     /// Renames file from old sheet name to new sheet name.
     /// </summary>
     /// <param name="oldSheetName"></param>
-    /// <param name="newSheetName"></param>
+    /// <param name="newSheet"></param>
     /// <exception cref="FileNotFoundException"></exception>
     /// <exception cref="IOException"></exception>
-    public async Task RenameFileAsync(string oldSheetName, string newSheetName)
+    public async Task RenameFileAsync(string oldSheetName, Sheet newSheet)
     {
         var oldFileName = NormalizeFileName(oldSheetName);
-        var newFileName = NormalizeFileName(newSheetName);
-        
         var oldPath = GetFullPath(oldFileName);
-        var newPath = GetFullPath(NormalizeFileName(newFileName));
-
-        if (!File.Exists(oldPath))
-            throw new FileNotFoundException($"Sheet file not found: {oldFileName}");
-
-        if (File.Exists(newPath))
-            throw new IOException($"A file with name {newFileName} already exists.");
-
-        await Task.Run(() => File.Move(oldPath, newPath));
+        File.Delete(oldPath);
+        await SaveSheetAsync(newSheet);
     }
 
     public bool SheetExists(string sheetName)

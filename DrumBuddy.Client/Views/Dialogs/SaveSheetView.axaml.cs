@@ -27,16 +27,8 @@ public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
             Cancel.Click += (sender, e) => Close(null);
             KeyDown += (sender, e) =>
             {
-                if (e.Key == Key.Enter)
-                    if (!string.IsNullOrEmpty(ViewModel.SheetName))
-                        ViewModel.SaveSheetCommand.Execute().ObserveOn(RxApp.MainThreadScheduler).Subscribe(observerCloseWithName);
                 if (e.Key == Key.Escape) Close(null);
             };
         });
     }
-
-    private TextBox NameTextB => this.FindControl<TextBox>("NameTB")!;
-    private Button SaveButton => this.FindControl<Button>("Save")!;
-    private Button CloseButton => this.FindControl<Button>("Cancel")!;
-    private TextBox DescriptionTextB => this.FindControl<TextBox>("DescriptionTB")!;
 }

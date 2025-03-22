@@ -239,7 +239,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         //ask user if sheet should be saved
         var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm, [..measures]));
         // if (save is not null)
-        //     await _library.TrySaveSheet(new Sheet(_bpm, measures, save));
+        //     await _library.SaveSheet(new Sheet(_bpm, measures, save));
         ClearMeasures();
         if (dialogResult != null)
         {

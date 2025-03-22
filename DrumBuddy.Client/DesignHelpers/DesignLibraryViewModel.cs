@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reactive;
+using System.Threading.Tasks;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
@@ -27,6 +28,18 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     public IScreen HostScreen { get; }
     public ReadOnlyObservableCollection<Sheet> Sheets { get; }
     public ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<Unit, Unit> RenameSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; } = ReactiveCommand.Create(() => { });
     public Sheet? SelectedSheet { get; set; }
+    public bool SheetExists(string sheetName)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public Task SaveSheet(Sheet sheet)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public Interaction<Sheet, string?> ShowRenameDialog { get; } = new();
 }

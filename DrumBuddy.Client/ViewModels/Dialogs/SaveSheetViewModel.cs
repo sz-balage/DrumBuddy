@@ -33,23 +33,18 @@ public partial class SaveSheetViewModel : ReactiveObject, IValidatableViewModel
         this.ValidationRule(
             viewModel => viewModel.SheetName,
             titleObservable,
-            name =>!string.IsNullOrEmpty(name) && !_library.SheetExists(name),
+            name =>!string.IsNullOrEmpty(name) && !_library.SheetExists(name.Trim()),
             n =>
             {
                 return string.IsNullOrEmpty(n) ? "Sheet title cannot be empty!" : "Sheet with this name already exists!";
             });
-        // this.ValidationRule(
-        //     viewModel => viewModel.SheetName,
-        //     titleObservable,
-        //     name => !string.IsNullOrEmpty(name),
-        //     _ => "Sheet title cannot be empty.");
-         }
+    }
     [ReactiveCommand(CanExecute = nameof(_saveSheetCanExecute))]
     private async Task SaveSheet()
     {
         _sheetName = _sheetName.Trim();
         Sheet sheetToSave = new(_sheetCreationData.Bpm, _sheetCreationData.Measures, _sheetName, _sheetDescription);
-        await _library.TrySaveSheet(sheetToSave);
+        await _library.SaveSheet(sheetToSave);
     }
     public IValidationContext ValidationContext { get; } = new ValidationContext();
 }

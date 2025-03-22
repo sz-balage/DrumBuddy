@@ -3,13 +3,16 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Threading.Tasks;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.DesignHelpers;
 using DrumBuddy.Client.ViewModels;
+using DrumBuddy.Client.ViewModels.Dialogs;
 using DrumBuddy.Core.Models;
 using ReactiveUI;
+using Splat;
 
 namespace DrumBuddy.Client.Views;
 
@@ -40,10 +43,20 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.NavigateToRecordingViewCommand, view => view.NavSheetButton)
                 .DisposeWith(d);
+            this.BindInteraction(ViewModel, vm => vm.ShowRenameDialog, HandleRename)
+                .DisposeWith(d);
             // this.BindCommand(ViewModel, vm => vm.RemoveSheetCommand,
             //         v => v.DeleteSheetMenuItem)
             //     .DisposeWith(d);
         });
+    }
+
+    private async Task HandleRename(IInteractionContext<Sheet, string?> arg)
+    {
+        var mainWindow = Locator.Current.GetService<MainWindow>();
+        var view = new Dialogs.RenameSheetView(){ViewModel = new RenameSheetViewModel(arg.Input)};
+        var result = await view.ShowDialog<string>(mainWindow);
+        arg.SetOutput(result);
     }
 
     private ListBox SheetsLB => this.FindControl<ListBox>("SheetsListBox");
@@ -67,8 +80,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         ViewModel.RemoveSheetCommand.Execute().Subscribe();
     }
 
-    private void CreateFirstSheetButton_OnClick(object? sender, RoutedEventArgs e)
+    private void MenuItem_OnClick(object? sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        ViewModel.RenameSheetCommand.Execute().Subscribe();
     }
 }

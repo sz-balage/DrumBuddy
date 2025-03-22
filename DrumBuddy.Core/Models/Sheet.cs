@@ -20,4 +20,9 @@ public class Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, str
                    Measures.Last().Groups.Count(g => g.NoteGroups != null) * Tempo.QuarterNoteDuration();
         return TimeSpan.Zero;
     }
+
+    public Sheet RenameSheet(string newName)
+    {
+        return new Sheet(Tempo, Measures, newName, Description);
+    }
 }

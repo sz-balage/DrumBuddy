@@ -51,7 +51,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     public string? UrlPathSegment { get; } = "library";
     public IScreen HostScreen { get; }
 
-    public async Task TrySaveSheet(Sheet sheet)
+    public async Task SaveSheet(Sheet sheet)
     {
         await _sheetStorage.SaveSheetAsync(sheet);
     }
@@ -71,13 +71,26 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         var mainVm = HostScreen as MainViewModel;
         mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<RecordingViewModel>());
     }
-
+    [ReactiveCommand]
+    private async Task RenameSheet()
+    {
+        var dialogResult = await ShowRenameDialog.Handle(_selectedSheet);
+        if(dialogResult != null)
+        {
+            var newSheet = _selectedSheet.RenameSheet(dialogResult);
+            await _sheetStorage.RenameFileAsync(SelectedSheet.Name, newSheet);
+            _sheetSource.Remove(SelectedSheet);
+            _sheetSource.AddOrUpdate(newSheet);
+            //SelectedSheet.RenameSheet(dialogResult);
+        }
+    }
     private async Task LoadSheets()
     {
         var sheets = await _sheetStorage.LoadSheetsAsync();
         _sheetSource.Clear();
         _sheetSource.AddOrUpdate(sheets);
     }
+    public Interaction<Sheet, string?> ShowRenameDialog { get; } = new();
 
     public bool SheetExists(string sheetName)
     {
@@ -89,6 +102,10 @@ public interface ILibraryViewModel : IRoutableViewModel
 {
     ReadOnlyObservableCollection<Sheet> Sheets { get; }
     ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; }
+    ReactiveCommand<Unit, Unit> RenameSheetCommand { get; }
     ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; }
-    Sheet? SelectedSheet { get; set; }
+    Sheet? SelectedSheet { get; set; } 
+    bool SheetExists(string sheetName);
+    Task SaveSheet(Sheet sheet);
+    Interaction<Sheet, string?> ShowRenameDialog { get; }
 }

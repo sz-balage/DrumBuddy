@@ -20,11 +20,11 @@ public class SerializationService : ISerializationService
         
         _options.Converters.Add(new BpmJsonConverter());
     }
-
     public string SerializeSheet(Sheet sheet)
     {
         return JsonSerializer.Serialize(sheet, _options);
     }
+    //TODO: sheet name has to come through constructor when deserializing, cause from now on it is not stored in json, but the interpreted from the name of the file
 
     public Sheet DeserializeSheet(string json)
     {
