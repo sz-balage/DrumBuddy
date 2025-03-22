@@ -13,45 +13,8 @@
         <designHelpers:DesignLibraryViewModel/>
     </Design.DataContext>
     <UserControl.Styles>
-        <Style Selector="ListBox">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Margin" Value="0,10,0,0"/>
-        </Style>
-        <Style Selector="ListBoxItem">
-            <Setter Property="Padding" Value="12,16"/>
-            <Setter Property="Margin" Value="0,0,0,8"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Background" Value="#f5f5f5"/>
-        </Style>
-        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-            <Setter Property="Background">
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                    <GradientStop Offset="0" Color="#e8f0fe" />
-                    <GradientStop Offset="1" Color="#f0f0f0" />
-                </LinearGradientBrush>
-            </Setter>
-        </Style>
-        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-            <Setter Property="Background">
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                    <GradientStop Offset="0" Color="#d2e3fc" />
-                    <GradientStop Offset="1" Color="#f0f0f0" />
-                </LinearGradientBrush>
-            </Setter>
-        </Style>
-        <Style Selector="TextBlock.header">
-            <Setter Property="FontSize" Value="20"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontFamily" Value="{DynamicResource NunitoFont}"/>
-            <Setter Property="Margin" Value="8,0,0,0"/>
-        </Style>
-        <Style Selector="MenuItem[Foreground=IndianRed]:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="TextBlock.Foreground" Value="IndianRed" />
-        </Style>
-
-        <Style Selector="MenuItem[Foreground=IndianRed]:pressed /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="TextBlock.Foreground" Value="IndianRed" />
-        </Style>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+      
     </UserControl.Styles>
     <Grid Margin="16">
         <Grid.RowDefinitions>

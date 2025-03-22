@@ -88,7 +88,8 @@ public class SheetStorage : ISheetStorage
 
     public bool SheetExists(string sheetName)
     {
-        return File.Exists(GetFullPath(NormalizeFileName(sheetName)));
+        var filePath = GetFullPath(NormalizeFileName(sheetName));
+        return File.Exists(filePath);
     }
 
     private string NormalizeFileName(string fileName)

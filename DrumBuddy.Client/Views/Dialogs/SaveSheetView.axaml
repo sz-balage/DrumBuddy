@@ -5,7 +5,7 @@
         mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="320"
         x:Class="DrumBuddy.Client.Views.Dialogs.SaveSheetView"
         Title="Save Drum Sheet"
-        Width="450" Height="320"
+        Width="450" Height="340"
         WindowStartupLocation="CenterOwner"
         ExtendClientAreaChromeHints="NoChrome"
         ExtendClientAreaToDecorationsHint="True"
@@ -29,7 +29,9 @@
         <StackPanel Grid.Row="1">
             <TextBlock Text="Title" Classes="label" />
             <TextBox Watermark="Enter sheet title" x:Name="NameTB" />
+            <TextBlock x:Name="SheetTitleValidation" Foreground="Red"/>
         </StackPanel>
+
 
         <StackPanel Grid.Row="3">
             <TextBlock Text="Description" Classes="label" />
