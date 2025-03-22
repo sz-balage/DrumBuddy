@@ -24,35 +24,9 @@ internal class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        BuildAvaloniaApp().AfterSetup(RegisterServices).StartWithClassicDesktopLifetime(args);
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
-
-    private static void RegisterServices(AppBuilder appBuilder)
-    {
-        RegisterCoreServices();
-        RegisterIOServices();
-        CurrentMutable.RegisterConstant(new MainViewModel(Current.GetRequiredService<IMidiService>()));
-        CurrentMutable.RegisterConstant<IScreen>(Current.GetService<MainViewModel>());
-        CurrentMutable.RegisterConstant(new MainWindow());
-        CurrentMutable.RegisterConstant(new HomeViewModel());
-        CurrentMutable.RegisterConstant(new LibraryViewModel(Current.GetRequiredService<IScreen>(),Current.GetRequiredService<ISheetStorage>()));
-        CurrentMutable.Register(() =>
-            new RecordingViewModel(Current.GetRequiredService<IScreen>(),
-                Current.GetRequiredService<IMidiService>(),
-                Current.GetRequiredService<LibraryViewModel>()));
-    }
-
-    private static void RegisterCoreServices()
-    {
-        CurrentMutable.RegisterConstant<ISerializationService>(new SerializationService());
-    }
-
-    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
-    private static void RegisterIOServices()
-    {
-        CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
-        CurrentMutable.RegisterConstant<ISheetStorage>(new SheetStorage(Current.GetRequiredService<ISerializationService>()));
-    }
+    
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()

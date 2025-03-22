@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
@@ -42,6 +43,11 @@ public partial class MainViewModel : ReactiveObject, IScreen
         new NavigationMenuItemTemplate(typeof(LibraryViewModel), "LibraryIcon")
     };
 
+    public void NavigateFromCode(IRoutableViewModel viewModel)
+    {
+        var navigateTo = PaneItems.Single(item => item.ModelType == viewModel.GetType());
+        SelectedPaneItem = navigateTo;
+    }
     public RoutingState Router { get; } = new();
 
     private void SuccessfulConnection()

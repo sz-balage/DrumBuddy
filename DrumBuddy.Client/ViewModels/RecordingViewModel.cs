@@ -237,10 +237,15 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
 
         var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
         //ask user if sheet should be saved
-        _ = await ShowSaveDialog.Handle(new SheetCreationData(_bpm, [..measures]));
+        var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm, [..measures]));
         // if (save is not null)
         //     await _library.TrySaveSheet(new Sheet(_bpm, measures, save));
         ClearMeasures();
+        if (dialogResult != null)
+        {
+            var mainVm = HostScreen as MainViewModel;
+            mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<LibraryViewModel>());
+        }
     }
 
     private void ClearMeasures()

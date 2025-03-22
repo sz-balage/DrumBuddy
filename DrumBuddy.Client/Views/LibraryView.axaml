@@ -5,65 +5,54 @@
                           xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels"
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
+                          xmlns:designHelpers="clr-namespace:DrumBuddy.Client.DesignHelpers"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                          x:Class="DrumBuddy.Client.Views.LibraryView">
+                          x:Class="DrumBuddy.Client.Views.LibraryView"
+                          x:DataType="vm:LibraryViewModel">
+    <Design.DataContext>
+        <designHelpers:DesignLibraryViewModel/>
+    </Design.DataContext>
     <UserControl.Styles>
         <Style Selector="ListBox">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Margin" Value="0,10,0,0"/>
         </Style>
-        
         <Style Selector="ListBoxItem">
             <Setter Property="Padding" Value="12,16"/>
             <Setter Property="Margin" Value="0,0,0,8"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Background" Value="#f5f5f5"/>
         </Style>
-        
         <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#e8f0fe"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#e8f0fe" />
+                    <GradientStop Offset="1" Color="#f0f0f0" />
+                </LinearGradientBrush>
+            </Setter>
         </Style>
-        
         <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-            <Setter Property="Background" Value="#d2e3fc"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#d2e3fc" />
+                    <GradientStop Offset="1" Color="#f0f0f0" />
+                </LinearGradientBrush>
+            </Setter>
         </Style>
-        
         <Style Selector="TextBlock.header">
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontFamily" Value="{DynamicResource NunitoFont}"/>
             <Setter Property="Margin" Value="8,0,0,0"/>
         </Style>
-        
-        <Style Selector="Button.delete-button">
-            <Setter Property="Background" Value="#ffdede"/>
-            <Setter Property="CornerRadius" Value="6"/>
-            <Setter Property="Padding" Value="16,8"/>
-        </Style>
-        
-        <Style Selector="Button.delete-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#ffcece"/>
-        </Style>
-        
-        <Style Selector="Button.delete-button:disabled /template/ ContentPresenter">
-            <Setter Property="Background" Value="#ffdede"/>
-            <Setter Property="Opacity" Value="0.7"/>
-        </Style>
-        <Style Selector="Button.rename-button">
-            <Setter Property="Background" Value="#0073cf"/>
-            <Setter Property="CornerRadius" Value="6"/>
-            <Setter Property="Padding" Value="12,8"/>
+        <Style Selector="MenuItem[Foreground=IndianRed]:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="TextBlock.Foreground" Value="IndianRed" />
         </Style>
 
-        <Style Selector="Button.rename-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#0080e0"/>
-        </Style>
-
-        <Style Selector="Button.rename-button:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="#0060b0"/>
+        <Style Selector="MenuItem[Foreground=IndianRed]:pressed /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="TextBlock.Foreground" Value="IndianRed" />
         </Style>
     </UserControl.Styles>
-    
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -77,89 +66,119 @@
         <TextBlock Text="Your Sheet Library" 
                    Classes="header"
                    VerticalAlignment="Center" />
-        
-        <Button x:Name="DeleteButton"
-                Grid.Row="0" Grid.Column="1" 
-                Classes="delete-button">
-            <StackPanel Orientation="Horizontal">
-                <PathIcon x:Name="DeleteIcon" 
-                          Data="{StaticResource delete}" 
-                          Foreground="IndianRed"
-                          Width="16"
-                          Height="16" />
-                <TextBlock Text="Delete Sheet" 
-                          Foreground="IndianRed" 
-                          Margin="8,0,0,0"
-                          FontWeight="Medium" />
-            </StackPanel>
-        </Button>
         <ListBox Grid.Row="1" 
                  x:Name="SheetsListBox" 
-                 Grid.ColumnSpan="2" Grid.Column="0"
-                 Margin="0,16,0,0">
-             <ListBox.ItemTemplate>
-    <DataTemplate DataType="models:Sheet">
-        <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto">
-            <PathIcon Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
-                     Data="{StaticResource music}"
-                     Width="40"
-                     Height="40"
-                     Margin="0,0,16,0"
-                     Foreground="#444444" />
+                 Grid.ColumnSpan="2" Grid.Column="0">
+            <ListBox.ItemTemplate>
+                    <DataTemplate DataType="models:Sheet">
+                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,*,Auto">
+                            <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                     Data="{StaticResource music}"
+                                     Width="30"
+                                     Height="30"
+                                     Margin="5,0,20,0"
+                                     Foreground="#444444" />
 
-            <!-- Name Row -->
-            <StackPanel Grid.Row="0" Grid.Column="1"
-                       Orientation="Horizontal"
-                       Margin="0,0,0,4">
-                <TextBlock Text="Name: "
-                          FontWeight="SemiBold"
-                          Opacity="0.8" />
-                <TextBlock Text="{Binding Name}"
-                          FontWeight="SemiBold" />
-            </StackPanel>
-            <StackPanel Grid.Row="1" Grid.Column="1"
-                       Orientation="Horizontal"
-                       Margin="0,4,0,4">
-                <TextBlock Text="Description: "
-                          FontWeight="SemiBold"
-                          Opacity="0.8" />
-                <TextBlock Text="{Binding Description}"
-                          TextTrimming="CharacterEllipsis" />
-            </StackPanel>
+                            <!-- Name Row -->
+                            <StackPanel Grid.Row="0" Grid.Column="1"
+                                       Orientation="Horizontal"
+                                       Margin="0,0,0,4">
+                                <TextBlock Text="Name: " 
+                                          FontWeight="SemiBold" 
+                                          Opacity="0.8" />
+                                <TextBlock Text="{Binding Name}"
+                                          FontWeight="SemiBold"
+                                          MaxWidth="320"
+                                          TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1"
+                                       Orientation="Horizontal"
+                                       Margin="0,4,0,4">
+                                <TextBlock Text="Description: "
+                                          FontWeight="SemiBold"
+                                          Opacity="0.8" />
+                                <TextBlock Text="{Binding Description}"
+                                           MaxWidth="800"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
 
-            <!-- Length Row -->
-            <StackPanel Grid.Row="2" Grid.Column="1"
-                       Orientation="Horizontal"
-                       Margin="0,4,0,0">
-                <TextBlock Text="Length: "
-                          FontWeight="SemiBold"
-                          Opacity="0.8" />
-                <TextBlock Text="{Binding Length}" />
-            </StackPanel>
-
-            <!-- Rename Button -->
-            <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="3"
-                   Classes="rename-button"
-                   VerticalAlignment="Stretch"
-                   Margin="16,0,0,0">
+                            <!-- Length Row -->
+                            <StackPanel Grid.Row="0" Grid.Column="2"
+                                       Orientation="Horizontal"
+                                       Margin="0,0,50,0">
+                                <TextBlock Text="Length: "
+                                          FontWeight="SemiBold"
+                                          Opacity="0.8" />
+                                <TextBlock Text="{Binding Length, StringFormat={}{0:mm\\:ss\\.fff}}" />     </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="3"
+                                        Orientation="Horizontal"
+                                        Margin="0,0,0,0">
+                                <TextBlock Text="Tempo: "
+                                           FontWeight="SemiBold"
+                                           Opacity="0.8" />
+                                <TextBlock Text="{Binding Tempo.Value, StringFormat='0 BPM'}" />
+                            </StackPanel>
+                            <!-- Menu Button with Flyout -->
+                            <Button Grid.Row="0" Grid.Column="4" Grid.RowSpan="2"
+                                    VerticalAlignment="Center"
+                                    Margin="8,0,0,0"
+                                    Padding="8,8"
+                                    Background="Transparent"
+                                    Click="Button_OnClick">
+                                <Button.Flyout>
+                                    <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                                        <MenuItem Header="Edit">
+                                            <MenuItem.Icon>
+                                                <PathIcon Data="{StaticResource edit_regular}"></PathIcon>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Rename">
+                                            <MenuItem.Icon>
+                                                <PathIcon Data="{StaticResource rename_regular}"></PathIcon>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem x:Name="DeleteMenuItem"
+                                                  Click="DeleteMenuItem_OnClick"
+                                              Header="Delete"
+                                              Foreground="IndianRed">
+                                            <MenuItem.Icon>
+                                                <PathIcon Foreground="IndianRed" Data="{StaticResource delete}"></PathIcon>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </Button.Flyout>
+                                <StackPanel Orientation="Vertical" Spacing="2">
+                                    <Ellipse Width="4" Height="4" Fill="#444444" />
+                                    <Ellipse Width="4" Height="4" Fill="#444444" />
+                                    <Ellipse Width="4" Height="4" Fill="#444444" />
+                                </StackPanel>
+                            </Button>
+                        </Grid> 
+                        <!-- TODO: make a popup with ... at the end of each list item, containing an Edit, Delete, and Rename menu point -->
+                    </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Grid.Row="1"
+                    Background="Transparent"
+                    x:Name="ZeroStateStack"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="16">
+            <TextBlock Text="You haven't created any sheets yet. To get started, click below."
+                       TextAlignment="Center"
+                       FontSize="20"/>
+            <Button x:Name="CreateFirstSheetButton"
+                    HorizontalAlignment="Center"
+                    Classes="accent">
                 <StackPanel Orientation="Horizontal">
-                    <PathIcon Data="{StaticResource textedit}"
-                             Width="20"
-                             Height="20"
-                             Margin="0,6,0,0"
-                             Foreground="White" />
-                    <TextBlock Text="Rename"
-                               VerticalAlignment="Center"
-                              Foreground="White"
-                              Margin="6,0,0,0"
-                              FontWeight="Medium"
-                              FontSize="16" />
+                    <PathIcon Data="{StaticResource RecordIcon}" Foreground="White"/>
+                    <TextBlock Text="Create your first sheet"
+                               FontWeight="Bold"
+                               FontSize="18"
+                               Margin="10" />
                 </StackPanel>
             </Button>
-        </Grid> 
-        <!-- TODO: make a popup with ... at the end of each list item, containing an Edit, Delete, and Rename menu point -->
-    </DataTemplate>
-</ListBox.ItemTemplate>
-        </ListBox>
+        </StackPanel>
     </Grid>
 </rxui:ReactiveUserControl>

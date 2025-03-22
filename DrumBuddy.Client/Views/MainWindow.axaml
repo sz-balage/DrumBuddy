@@ -80,9 +80,9 @@
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center" />
                         </rxui:RoutedViewHost.DefaultContent>
-                        <rxui:RoutedViewHost.ViewLocator>
-                            <app:AppViewLocator />
-                        </rxui:RoutedViewHost.ViewLocator>
+                        <!-- <rxui:RoutedViewHost.ViewLocator> -->
+                        <!--     <app:AppViewLocator /> -->
+                        <!-- </rxui:RoutedViewHost.ViewLocator> -->
                     </rxui:RoutedViewHost>
                 </Border>
             </SplitView.Content>
