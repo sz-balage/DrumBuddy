@@ -1,8 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 <Design.PreviewWith>
-    <Border></Border>
-    <Button Classes="confirm">Asddd</Button>
+    <Button Classes="confirm">asdasd</Button>
 </Design.PreviewWith>
     <Style Selector="ListBox">
         <Setter Property="Background" Value="Transparent"/>

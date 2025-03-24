@@ -14,9 +14,8 @@
     </Design.DataContext>
     <UserControl.Styles>
         <StyleInclude Source="/Styles/AppStyles.axaml" />
-      
     </UserControl.Styles>
-    <Grid Margin="16">
+    <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -25,10 +24,12 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        
-        <TextBlock Text="Your Sheet Library" 
-                   Classes="header"
-                   VerticalAlignment="Center" />
+        <Border Background="LightGray" HorizontalAlignment="Stretch" >
+            <TextBlock Text="Your Sheet Library" 
+                       Margin="16"
+                       Classes="header"
+                       VerticalAlignment="Center" />
+        </Border>
         <ListBox Grid.Row="1" 
                  x:Name="SheetsListBox" 
                  Grid.ColumnSpan="2" Grid.Column="0">
