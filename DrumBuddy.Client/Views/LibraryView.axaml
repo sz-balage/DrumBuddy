@@ -91,7 +91,7 @@
                                     Click="Button_OnClick">
                                 <Button.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedLeft">
-                                        <MenuItem Header="Edit">
+                                        <MenuItem Header="Edit" Click="EditMenuItem_OnClick">
                                             <MenuItem.Icon>
                                                 <PathIcon Data="{StaticResource edit_regular}"></PathIcon>
                                             </MenuItem.Icon>

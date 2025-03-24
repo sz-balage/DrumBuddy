@@ -84,6 +84,17 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             //SelectedSheet.RenameSheet(dialogResult);
         }
     }
+    [ReactiveCommand]
+    private async Task EditSheet()
+    {
+        var editResult = await ShowEditDialog.Handle(SelectedSheet);
+        if (editResult != null)
+        {
+            await _sheetStorage.RemoveSheetAsync(SelectedSheet);
+            _sheetSource.Remove(SelectedSheet);
+            _sheetSource.AddOrUpdate(editResult);
+        }
+    }
     private async Task LoadSheets()
     {
         var sheets = await _sheetStorage.LoadSheetsAsync();
@@ -91,6 +102,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         _sheetSource.AddOrUpdate(sheets);
     }
     public Interaction<Sheet, string?> ShowRenameDialog { get; } = new();
+    public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
 
     public bool SheetExists(string sheetName)
     {
@@ -103,9 +115,11 @@ public interface ILibraryViewModel : IRoutableViewModel
     ReadOnlyObservableCollection<Sheet> Sheets { get; }
     ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; }
     ReactiveCommand<Unit, Unit> RenameSheetCommand { get; }
+    ReactiveCommand<Unit, Unit> EditSheetCommand { get; }
     ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; }
     Sheet? SelectedSheet { get; set; } 
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);
+    Interaction<Sheet, Sheet?> ShowEditDialog { get; }
     Interaction<Sheet, string?> ShowRenameDialog { get; }
 }

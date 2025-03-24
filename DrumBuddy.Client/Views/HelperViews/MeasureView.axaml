@@ -23,7 +23,7 @@
             <Line StartPoint="1200,90" EndPoint="1200,170" Stroke="Black" StrokeThickness="2" />
 
             <!-- Pointer -->
-            <Line x:Name="Pointer" Stroke="Red" StrokeThickness="2" />
+          
         </Canvas>
         <Border HorizontalAlignment="Left">
             <ItemsControl x:Name="ItemsControl" HorizontalAlignment="Center">
@@ -39,5 +39,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Border>
+        <Line x:Name="Pointer" Stroke="Red" StrokeThickness="2" />
     </Grid>
 </rxui:ReactiveUserControl>

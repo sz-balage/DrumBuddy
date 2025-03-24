@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Linq;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using ReactiveUI;
@@ -18,8 +19,17 @@ public partial class MeasureViewModel : ReactiveObject
 
     public Measure Measure = new(new List<RythmicGroup>(4));
 
-    public MeasureViewModel()
+    public MeasureViewModel(Measure? measure = null)
     {
+        if (measure is not null)
+        {
+            foreach (var rg in measure.Groups)
+            {
+                Measure.Groups.Add(rg);
+                RythmicGroups.Add(new RythmicGroupViewModel(rg, Width, Height));
+            }
+            return;
+        }
         IsPointerVisible = true;
     }
 
@@ -34,8 +44,7 @@ public partial class MeasureViewModel : ReactiveObject
 
     public void AddRythmicGroupFromNotes(List<NoteGroup> notes)
     {
-        var rg = new RythmicGroup(RecordingService.UpscaleNotes(notes)
-            .ToImmutableArray()); //will be a call to the recordingservice
+        var rg = new RythmicGroup([..RecordingService.UpscaleNotes(notes)]); 
         Measure.Groups.Add(rg);
         RythmicGroups.Add(new RythmicGroupViewModel(rg, Width, Height));
     }

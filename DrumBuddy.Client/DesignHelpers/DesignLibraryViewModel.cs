@@ -29,6 +29,7 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     public ReadOnlyObservableCollection<Sheet> Sheets { get; }
     public ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> RenameSheetCommand { get; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<Unit, Unit> EditSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; } = ReactiveCommand.Create(() => { });
     public Sheet? SelectedSheet { get; set; }
     public bool SheetExists(string sheetName)
@@ -40,6 +41,8 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         throw new System.NotImplementedException();
     }
+
+    public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
 
     public Interaction<Sheet, string?> ShowRenameDialog { get; } = new();
 }

@@ -45,10 +45,21 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowRenameDialog, HandleRename)
                 .DisposeWith(d);
+            this.BindInteraction(ViewModel, vm => vm.ShowEditDialog, HandleEdit)
+                .DisposeWith(d);
+            
             // this.BindCommand(ViewModel, vm => vm.RemoveSheetCommand,
             //         v => v.DeleteSheetMenuItem)
             //     .DisposeWith(d);
         });
+    }
+
+    private async Task HandleEdit(IInteractionContext<Sheet, Sheet?> arg)
+    {
+        var mainWindow = Locator.Current.GetService<MainWindow>();
+        var view = new Dialogs.EditingView(){ViewModel = new EditingViewModel(arg.Input)};
+        var result = await view.ShowDialog<Sheet?>(mainWindow);
+        arg.SetOutput(result);
     }
 
     private async Task HandleRename(IInteractionContext<Sheet, string?> arg)
@@ -83,5 +94,10 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private void MenuItem_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.RenameSheetCommand.Execute().Subscribe();
+    }
+
+    private void EditMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.EditSheetCommand.Execute().Subscribe();
     }
 }
