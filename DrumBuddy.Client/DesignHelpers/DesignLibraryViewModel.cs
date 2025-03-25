@@ -34,12 +34,12 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     public Sheet? SelectedSheet { get; set; }
     public bool SheetExists(string sheetName)
     {
-        throw new System.NotImplementedException();
+        return true;
     }
 
     public Task SaveSheet(Sheet sheet)
     {
-        throw new System.NotImplementedException();
+        return Task.CompletedTask;
     }
 
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();

@@ -42,9 +42,15 @@ public partial class MeasureViewModel : ReactiveObject
     public bool IsEmpty => Measure.IsEmpty;
     public ObservableCollection<RythmicGroupViewModel> RythmicGroups { get; } = new();
 
-    public void AddRythmicGroupFromNotes(List<NoteGroup> notes)
+    public void AddRythmicGroupFromNotes(List<NoteGroup> notes, int index)
     {
-        var rg = new RythmicGroup([..RecordingService.UpscaleNotes(notes)]); 
+        var rg = new RythmicGroup([..RecordingService.UpscaleNotes(notes)]);
+        if (Measure.Groups.Count >= index + 1)
+        {
+            Measure.Groups[index] = rg;
+            RythmicGroups[index] = new RythmicGroupViewModel(rg, Width, Height);
+            return;
+        }
         Measure.Groups.Add(rg);
         RythmicGroups.Add(new RythmicGroupViewModel(rg, Width, Height));
     }

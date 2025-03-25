@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.Models;
@@ -35,10 +36,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.StopRecordingCommand, v => v._stopRecordingButton)
                 .DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.PauseRecordingCommand, v => v._pauseRecordingButton)
-                .DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.ResumeRecordingCommand, v => v._resumeRecordingButton)
-                .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.IsRecording, v => v._bpmNumeric.IsEnabled, i => !i)
                 .DisposeWith(d);
             this.OneWayBind(
@@ -48,24 +45,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                 i => { return !i; });
             this.OneWayBind(ViewModel, vm => vm.IsRecording, v => v._stopRecordingButton.IsVisible,
                 i => { return i; });
-            ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsPaused)
-                .Subscribe(rp =>
-                {
-                    if (rp.Item1 && !rp.Item2)
-                        _pauseRecordingButton.IsVisible = true;
-                    else
-                        _pauseRecordingButton.IsVisible = false;
-                })
-                .DisposeWith(d);
-            ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsPaused)
-                .Subscribe(rp =>
-                {
-                    if (rp.Item1 && rp.Item2)
-                        _resumeRecordingButton.IsVisible = true;
-                    else
-                        _resumeRecordingButton.IsVisible = false;
-                })
-                .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.BpmDecimal, v => v._bpmNumeric.Value);
             this.Bind(ViewModel, vm => vm.TimeElapsed, v => v._timeElapsedTB.Text);
             this.OneWayBind(ViewModel, vm => vm.CountDown, v => v._countDownTB.Text)
@@ -89,6 +68,12 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                 });
 
             ViewModel!.StopRecordingCommand.ThrownExceptions.Subscribe(ex => Debug.WriteLine(ex.Message));
+            
+            this.Bind(ViewModel, vm => vm.CanSave, v => v.SaveButton.IsEnabled)
+                .DisposeWith(d);
+            this.Bind(ViewModel, vm => vm.CanSave, v => v.CancelButton.IsEnabled)
+                .DisposeWith(d);
+            
         });
 
         AvaloniaXamlLoader.Load(this);
@@ -112,5 +97,27 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
         var saveView = new Dialogs.SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
         var result = await saveView.ShowDialog<string>(mainWindow);
         context.SetOutput(result);
+    }
+
+    private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is MeasureView measureView)
+        {
+            var index = MeasureControl.ItemContainerGenerator.IndexFromContainer(
+                measureView.Parent as Control);
+                
+            ViewModel?.HandleMeasureClick(index);
+        }
+    }
+
+    private void CancelButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        Close(null);
+    }
+
+    private void SaveButton_OnClick(object? sender, RoutedEventArgs e)
+    { 
+        var result = ViewModel.Save();
+        Close(result);
     }
 }

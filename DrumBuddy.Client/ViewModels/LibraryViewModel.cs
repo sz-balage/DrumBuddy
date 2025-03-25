@@ -92,6 +92,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         {
             await _sheetStorage.RemoveSheetAsync(SelectedSheet);
             _sheetSource.Remove(SelectedSheet);
+            await _sheetStorage.SaveSheetAsync(editResult);
             _sheetSource.AddOrUpdate(editResult);
         }
     }

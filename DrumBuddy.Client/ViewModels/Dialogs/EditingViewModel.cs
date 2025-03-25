@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Media;
@@ -8,7 +9,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
-using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Extensions;
@@ -37,9 +37,12 @@ public partial class EditingViewModel : ReactiveObject
     [Reactive] private int _countDown;
     [Reactive] private bool _countDownVisibility;
     [Reactive] private MeasureViewModel _currentMeasure;
-    [Reactive] private bool _isPaused;
+    private int _selectedEntryPointMeasureIndex;
+
     [Reactive] private bool _isRecording;
 
+    // Add new properties
+    [Reactive] private bool _canSave;
     [Reactive] private bool _keyboardInputEnabled;
     private IObservable<bool> _stopRecordingCanExecute;
     private CompositeDisposable _subs = new();
@@ -47,9 +50,11 @@ public partial class EditingViewModel : ReactiveObject
 
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
+    private readonly Sheet _originalSheet;
 
     public EditingViewModel(Sheet originalSheet)
     {
+        _originalSheet = originalSheet;
         _midiService = Locator.Current.GetRequiredService<IMidiService>();
         //init sound players
         _normalBeepPlayer =
@@ -80,8 +85,13 @@ public partial class EditingViewModel : ReactiveObject
         BpmDecimal = 100;
         TimeElapsed = "0:0:0";
         IsRecording = false;
-        IsPaused = false;
-        CurrentMeasure = null!;
+        HandleMeasureClick(0); //put pointer to first measure by default
+        // Existing constructor code...
+        CanSave = false;
+
+        // Update CanSave when recording state changes or measures are filled
+        this.WhenAnyValue(vm => vm.IsRecording)
+            .Subscribe(recording => CanSave = !recording && Measures.Any(m => !m.IsEmpty));
     }
 
     public IObservable<Drum> KeyboardBeats { get; set; }
@@ -106,9 +116,9 @@ public partial class EditingViewModel : ReactiveObject
     {
         var metronomeObs = RecordingService.GetMetronomeBeeping(_bpm);
         _subs.Add(metronomeObs
-            .Take(4)
+            .Take(5)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(HandleCountDown, () => _timer.Start()));
+            .Subscribe(HandleCountDown));
         _subs.Add(metronomeObs
             .Skip(4)
             .ObserveOn(RxApp.MainThreadScheduler)
@@ -117,12 +127,16 @@ public partial class EditingViewModel : ReactiveObject
 
     private void InitBeatSub()
     {
-        //drum sub
-        var measureIdx = -1;
+        // Get the starting measure index
+        var startMeasureIdx = CurrentMeasure != null ? Measures.IndexOf(CurrentMeasure) : 0;
+
+        // drum sub
+        var measureIdx =
+            startMeasureIdx - 1; // Start one measure before so the first increment puts us at the right position
         var rythmicGroupIndex = -1;
         var delay = 5 * _bpm.QuarterNoteDuration() -
-                    _bpm.SixteenthNoteDuration() /
-                    2.0; //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
+                    _bpm.SixteenthNoteDuration() / 2.0;
+
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
             .GetNotes(_bpm, KeyboardInputEnabled ? KeyboardBeats : _midiService.GetBeatsObservable())
@@ -131,25 +145,23 @@ public partial class EditingViewModel : ReactiveObject
             .DelaySubscription(delay)
             .Subscribe(data =>
             {
-                //idx is the current sixteenth note 
-                var localMIdx = data.idx / 16;
-                var localRgIdx = data.idx % 16 / 4;
-                measureIdx = localMIdx;
-                if (rythmicGroupIndex != localRgIdx)
-                {
-                    rythmicGroupIndex = localRgIdx;
-                    if (rythmicGroupIndex == 0)
-                    {
-                        if (measureIdx != 0)
-                            Measures[measureIdx - 1].AddRythmicGroupFromNotes(tempNotes);
-                    }
-                    else
-                    {
-                        Measures[measureIdx].AddRythmicGroupFromNotes(tempNotes);
-                    }
+                var absoluteIdx = data.idx;
+                var localMIdx = startMeasureIdx + absoluteIdx / 16;
+                var localRgIdx = absoluteIdx % 16 / 4;
 
-                    tempNotes.Clear();
-                }
+                if (measureIdx != localMIdx || rythmicGroupIndex != localRgIdx)
+                    if (rythmicGroupIndex != localRgIdx || measureIdx != localMIdx)
+                    {
+                        if (tempNotes.Count > 0)
+                        {
+                            if (measureIdx >= 0 && measureIdx < Measures.Count)
+                                Measures[measureIdx].AddRythmicGroupFromNotes(tempNotes, rythmicGroupIndex);
+                            tempNotes.Clear();
+                        }
+
+                        measureIdx = localMIdx;
+                        rythmicGroupIndex = localRgIdx;
+                    }
 
                 tempNotes.Add(new NoteGroup(data.notes));
             }));
@@ -157,6 +169,8 @@ public partial class EditingViewModel : ReactiveObject
 
     private void HandleCountDown(long idx)
     {
+        if (idx == 5)
+            return;
         if (idx == 0)
         {
             CountDownVisibility = true;
@@ -170,15 +184,16 @@ public partial class EditingViewModel : ReactiveObject
         CountDown--;
     }
 
+    private bool _recordingJustStarted = true;
+    //TODO: fix pointer movement for passing first measure in editing mode
     private void MovePointerOnMetronomeBeeps(long idx)
     {
         if (idx == 0)
         {
             _highBeepPlayer.Play();
-            if (CurrentMeasure == null!)
+            if (CurrentMeasure == Measures[_selectedEntryPointMeasureIndex])
             {
                 CountDownVisibility = false;
-                CurrentMeasure = Measures[0];
             }
             else
             {
@@ -192,41 +207,95 @@ public partial class EditingViewModel : ReactiveObject
         }
 
         CurrentMeasure?.MovePointerToRg(idx);
+
+        // // Get the starting measure index
+        // int startMeasureIdx = CurrentMeasure != null ? Measures.IndexOf(CurrentMeasure) : 0;
+        //
+        // // Calculate which measure we should be on
+        // int measureIdx = startMeasureIdx + (int)(idx / 4);
+        // int rgIdx = (int)(idx % 4);
+        //
+        // // First beat of the measure
+        // if (rgIdx == 0)
+        // {
+        //     _highBeepPlayer.Play();
+        //
+        //     // If we're just starting
+        //     if (idx == 0)
+        //     {
+        //         // Don't change the current measure on the first beat
+        //         // Just ensure pointer is visible
+        //         if (CurrentMeasure != null)
+        //         {
+        //             CurrentMeasure.IsPointerVisible = true;
+        //         }
+        //     }
+        //     else
+        //     {
+        //         // For subsequent measures, move to the next one
+        //         if (CurrentMeasure != null)
+        //             CurrentMeasure.IsPointerVisible = false;
+        //
+        //         // Make sure we don't go past the end of the collection
+        //         if (measureIdx < Measures.Count)
+        //             CurrentMeasure = Measures[measureIdx];
+        //     }
+        // }
+        // else
+        // {
+        //     _normalBeepPlayer.Play();
+        // }
+        //
+        // // Move the pointer to the current rhythmic group
+        // CurrentMeasure?.MovePointerToRg(rgIdx);
+    }
+
+    public void HandleMeasureClick(int measureIndex)
+    {
+        if (IsRecording)
+            return;
+
+        // Reset any existing pointer
+        if (CurrentMeasure != null!)
+            CurrentMeasure.IsPointerVisible = false;
+
+        // Set the new current measure
+        _selectedEntryPointMeasureIndex = measureIndex;
+        CurrentMeasure = Measures[_selectedEntryPointMeasureIndex];
+        CurrentMeasure.IsPointerVisible = true;
+        CurrentMeasure.MovePointerToRg(0);
     }
 
     [ReactiveCommand]
     private void StartRecording()
     {
+        // Make sure a measure is selected
         InitTimer();
         CountDown = 5;
         InitMetronomeSubs();
         InitBeatSub();
 
-        #region UI buttons
-
         IsRecording = true;
-        IsPaused = false;
-
-        #endregion
     }
 
+    public Sheet Save()
+    {
+        var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToImmutableArray();
+        return new Sheet(_bpm, measures, _originalSheet.Name, _originalSheet.Description);
+    }
 
     [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
-    private async Task StopRecording()
+    private void StopRecording()
     {
         _subs.Dispose();
         _timer.Stop();
         ResetPointer();
         //do something with the done sheet
         IsRecording = false;
-        IsPaused = false;
         TimeElapsed = "0:0:0";
 
-        var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
-        //ask user if sheet should be saved
-        //// if (save is not null)
-        //     await _library.SaveSheet(new Sheet(_bpm, measures, save));
-        ClearMeasures();
+        // Update CanSave status
+        CanSave = Measures.Any(m => !m.IsEmpty);
     }
 
     private void ClearMeasures()
@@ -235,21 +304,14 @@ public partial class EditingViewModel : ReactiveObject
         _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(i => new MeasureViewModel()));
     }
 
-    [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
-    private void PauseRecording() //not implemented for now
-    {
-        IsPaused = true;
-    }
-
-    [ReactiveCommand]
-    private void ResumeRecording() //not implemented for now
-    {
-        IsPaused = false;
-    }
-
     private void ResetPointer()
     {
         CurrentMeasure.IsPointerVisible = false;
-        CurrentMeasure = null;
+        if (CurrentMeasure != Measures.Last())
+        {
+            CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
+            CurrentMeasure.IsPointerVisible = true;
+            CurrentMeasure.MovePointerToRg(0);
+        }
     }
 }

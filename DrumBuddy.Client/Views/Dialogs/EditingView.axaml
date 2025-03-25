@@ -50,22 +50,6 @@
                                        Margin="10" />
                         </StackPanel>
                     </Button>
-                    <Button x:Name="PauseRecordingButton">
-                        <StackPanel Orientation="Horizontal">
-                            <PathIcon Data="{StaticResource Pause}" />
-                            <TextBlock Text="Pause" FontFamily="{StaticResource NunitoFont}"
-                                       FontSize="24"
-                                       Margin="10" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="ResumeRecordingButton">
-                        <StackPanel Orientation="Horizontal">
-                            <PathIcon Data="{StaticResource Resume}" />
-                            <TextBlock Text="Resume" FontFamily="{StaticResource NunitoFont}"
-                                       FontSize="24"
-                                       Margin="10" />
-                        </StackPanel>
-                    </Button>
                 </StackPanel>
                 <StackPanel Grid.Row="0"
                             Grid.Column="1"
@@ -88,15 +72,10 @@
                 <StackPanel Grid.Row="0"
                             Grid.Column="2"
                             Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Label FontSize="24" FontFamily="{StaticResource NunitoFont}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center">
-                        Time elapsed:
-                    </Label>
-                    <TextBlock x:Name="TimeElapsedTextBlock"
-                               FontSize="24"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button x:Name="CancelButton" Click="CancelButton_OnClick" Content="Cancel" Width="100" Height="40"/>
+                        <Button x:Name="SaveButton" Click="SaveButton_OnClick" Content="Save" Width="100" Height="40"/>
+                    </StackPanel>
                     <CheckBox x:Name="KeyboardInputCheckBox"
                               FontSize="24"
                               FontWeight="Bold"
@@ -124,7 +103,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <helperViews:MeasureView Width="600" />
+                        <helperViews:MeasureView Width="600" PointerPressed="InputElement_OnPointerPressed" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

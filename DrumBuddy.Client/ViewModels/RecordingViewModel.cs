@@ -154,11 +154,11 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
                     if (rythmicGroupIndex == 0)
                     {
                         if (measureIdx != 0)
-                            Measures[measureIdx - 1].AddRythmicGroupFromNotes(tempNotes);
+                            Measures[measureIdx - 1].AddRythmicGroupFromNotes(tempNotes, 3);
                     }
                     else
                     {
-                        Measures[measureIdx].AddRythmicGroupFromNotes(tempNotes);
+                        Measures[measureIdx].AddRythmicGroupFromNotes(tempNotes,rythmicGroupIndex);
                     }
 
                     tempNotes.Clear();

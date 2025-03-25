@@ -23,6 +23,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
 
     public RythmicGroupViewModel(RythmicGroup rg, double hostScreenWidth, double hostScreenHeight)
     {
+        //TODO: look at buggy note rendering when editing
         Width = hostScreenWidth / 4;
         RythmicGroup = rg;
         _drawHelper = new NoteDrawHelper(Width, hostScreenHeight);
@@ -54,7 +55,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
                     //new([hihatNote with {Value = NoteValue.Eighth}, tom1Note with {Value = NoteValue.Eighth}, tom2Note with {Value = NoteValue.Eighth}]),
                 ];
                 var testRythmicGroup = new RythmicGroup([..noteGroups]);
-                DrawNotes(testRythmicGroup); //modify to rythmicGroup
+                DrawNotes(rythmicGroup); //modify to rythmicGroup
             });
     }
 

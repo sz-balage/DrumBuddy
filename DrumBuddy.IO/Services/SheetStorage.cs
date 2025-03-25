@@ -7,7 +7,7 @@ using DrumBuddy.IO.Abstractions;
 
 namespace DrumBuddy.IO.Services;
 
-public class SheetStorage : ISheetStorage
+public class SheetStorage : ISheetStorage //TODO: look at sqlite for storing sheets
 {
     private readonly ISerializationService _serializationService;
     private readonly string _saveDirectory;
