@@ -11,12 +11,12 @@ namespace DrumBuddy.Core.Services;
 
 public class SerializationService : ISerializationService
 {
-    public string SerializeMeasurementData(ImmutableArray<Measure> measures)
+    public byte[] SerializeMeasurementData(ImmutableArray<Measure> measures)
     {
-        return JsonSerializer.Serialize(measures);
+        return JsonSerializer.SerializeToUtf8Bytes(measures);
     }
   
-    public ImmutableArray<Measure> DeserializeMeasurementData(string json)
+    public ImmutableArray<Measure> DeserializeMeasurementData(byte[] json)
     {
         var measures = JsonSerializer.Deserialize<IEnumerable<Measure>>(json)
             ?? throw new InvalidOperationException("Failed to deserialize sheet");

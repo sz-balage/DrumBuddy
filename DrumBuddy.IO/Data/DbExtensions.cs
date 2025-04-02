@@ -23,8 +23,7 @@ public static class DbExtensions
     public static async Task<IEnumerable<T>> QueryAsync<T>(this SqlQueryString sql, string connectionString, object? sqlParameter = null)
     {
         using var connection = new SQLiteConnection(connectionString);
-        await connection.OpenAsync();
-        var result = await connection.QueryAsync(sql, sqlParameter);
+        await connection.OpenAsync(); 
         var records = await connection.QueryAsync<T>(sql, sqlParameter);
         return records;
     }

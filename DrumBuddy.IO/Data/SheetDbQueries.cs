@@ -44,10 +44,10 @@ public static class SheetDbQueries
     //     return records;
     // }
     public sealed record SheetDbRecord(
-        int Id,
+        long Id,
         string Name,
         string Description,
-        int Tempo,
-        string MeasuresData
+        long Tempo,
+        byte[] MeasuresData
     );
 }

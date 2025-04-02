@@ -50,7 +50,7 @@ public class SheetStorage : ISheetStorage //TODO: look at sqlite for storing she
         // var filePaths = Directory.EnumerateFiles(_saveDirectory,$"*{FileExtension}").ToList();
         var dbRecords = await SheetDbQueries.SelectAllSheetsAsync(_connectionString);
         var sheets = dbRecords.Select(r =>
-            new Sheet(new Bpm(r.Tempo), [.._serializationService.DeserializeMeasurementData(r.MeasuresData)], r.Name,
+            new Sheet(new Bpm((int)r.Tempo), [.._serializationService.DeserializeMeasurementData(r.MeasuresData)], r.Name,
                 r.Description));
         
         return [..sheets];

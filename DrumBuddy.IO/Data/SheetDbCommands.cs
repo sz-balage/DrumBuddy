@@ -20,11 +20,11 @@ public static class SheetDbCommands
                                           WHERE name = @Name
                                           """;
 
-    public static async Task<int> InsertSheetAsync(string connectionString, string name, int tempo, string measuresData, string? description = null) 
+    public static async Task<int> InsertSheetAsync(string connectionString, string name, int tempo, byte[] measuresData, string? description = null) 
         => await SqlQueryString.FromRawString(InsertSheetSql)
         .ExecuteAsync(connectionString, new { Name = name, MeasuresData = measuresData, Tempo = tempo, Description = description });
     
-    public static async Task<int> UpdateSheetAsync(string connectionString, string name, int tempo, string measuresData, string? description = null) 
+    public static async Task<int> UpdateSheetAsync(string connectionString, string name, int tempo, byte[] measuresData, string? description = null) 
         => await SqlQueryString.FromRawString(InsertSheetSql)
                          .ExecuteAsync(connectionString, new { Name = name, MeasuresData = measuresData, Tempo = tempo, Description = description });
     

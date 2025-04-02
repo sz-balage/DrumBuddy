@@ -5,6 +5,6 @@ namespace DrumBuddy.Core.Abstractions;
 
 public interface ISerializationService
 {
-    string SerializeMeasurementData(ImmutableArray<Measure> measures);
-    ImmutableArray<Measure> DeserializeMeasurementData(string bytes);
+    byte[] SerializeMeasurementData(ImmutableArray<Measure> measures);
+    ImmutableArray<Measure> DeserializeMeasurementData(byte[] bytes);
 }
