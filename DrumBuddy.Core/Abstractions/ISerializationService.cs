@@ -1,9 +1,10 @@
-﻿using DrumBuddy.Core.Models;
+﻿using System.Collections.Immutable;
+using DrumBuddy.Core.Models;
 
 namespace DrumBuddy.Core.Abstractions;
 
 public interface ISerializationService
 {
-    string SerializeSheet(Sheet sheet);
-    Sheet DeserializeSheet(string json);
+    string SerializeMeasurementData(ImmutableArray<Measure> measures);
+    ImmutableArray<Measure> DeserializeMeasurementData(string bytes);
 }

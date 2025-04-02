@@ -1,9 +1,11 @@
 ﻿using System.Collections.Immutable;
+using System.Data.SQLite;
 using System.Text;
 using System.Text.RegularExpressions;
 using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Data;
 
 namespace DrumBuddy.IO.Services;
 
@@ -12,11 +14,12 @@ public class SheetStorage : ISheetStorage //TODO: look at sqlite for storing she
     private readonly ISerializationService _serializationService;
     private readonly string _saveDirectory;
     private const string FileExtension = ".dby";
-
-    public SheetStorage(ISerializationService serializationService)
+    private readonly string _connectionString;
+    public SheetStorage(ISerializationService serializationService, string connectionString)
     {
         _serializationService = serializationService;
 
+        _connectionString = connectionString;
         _saveDirectory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             "DrumBuddy", "SavedFiles");
@@ -24,14 +27,13 @@ public class SheetStorage : ISheetStorage //TODO: look at sqlite for storing she
         if (!Directory.Exists(_saveDirectory))
             Directory.CreateDirectory(_saveDirectory);
     }
-
     public async Task SaveSheetAsync(Sheet sheet)
     {
-        var normalizedName = NormalizeFileName(sheet.Name);
-        var filePath = GetFullPath(normalizedName);
-        var json = _serializationService.SerializeSheet(sheet);
-        
-        await File.WriteAllTextAsync(filePath, json, Encoding.UTF8);
+        // var normalizedName = NormalizeFileName(sheet.Name);
+        // var filePath = GetFullPath(normalizedName);
+        var serialized = _serializationService.SerializeMeasurementData(sheet.Measures);
+        await SheetDbCommands.InsertSheetAsync(_connectionString, sheet.Name, sheet.Tempo.Value, serialized, sheet.Description);
+        // await File.WriteAllTextAsync(filePath, json, Encoding.UTF8);
     }
 
     public async Task RemoveSheetAsync(Sheet sheet)
@@ -45,15 +47,20 @@ public class SheetStorage : ISheetStorage //TODO: look at sqlite for storing she
     }
     public async Task<ImmutableArray<Sheet>> LoadSheetsAsync()
     {
-        var filePaths = Directory.EnumerateFiles(_saveDirectory,$"*{FileExtension}").ToList();
-        var arrayBuilder = ImmutableArray.CreateBuilder<Sheet>(filePaths.Count());
-        foreach (var filePath in filePaths)
-        {
-            var json = await File.ReadAllTextAsync(filePath, Encoding.UTF8);
-            var sheet = _serializationService.DeserializeSheet(json); //TODO: cannot deserialize BPM property
-            arrayBuilder.Add(sheet);
-        }
-        return arrayBuilder.MoveToImmutable();
+        // var filePaths = Directory.EnumerateFiles(_saveDirectory,$"*{FileExtension}").ToList();
+        var dbRecords = await SheetDbQueries.SelectAllSheetsAsync(_connectionString);
+        var sheets = dbRecords.Select(r =>
+            new Sheet(new Bpm(r.Tempo), [.._serializationService.DeserializeMeasurementData(r.MeasuresData)], r.Name,
+                r.Description));
+        
+        return [..sheets];
+        // foreach (var filePath in filePaths)
+        // {
+        //     var json = await File.ReadAllTextAsync(filePath, Encoding.UTF8);
+        //     var sheet = _serializationService.DeserializeSheet(json); //TODO: cannot deserialize BPM property
+        //     arrayBuilder.Add(sheet);
+        // }
+        // return arrayBuilder.MoveToImmutable();
     }
 
     public async Task<IEnumerable<string>> GetSavedSheetNames()

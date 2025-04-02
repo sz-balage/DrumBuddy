@@ -1,4 +1,5 @@
-﻿using DrumBuddy.Core.Enums;
+﻿using System.Text.Json.Serialization;
+using DrumBuddy.Core.Enums;
 
 namespace DrumBuddy.Core.Models;
 /// <summary>
@@ -25,6 +26,8 @@ public class NoteGroup : List<Note>
     }
 
     public NoteValue Value { get; private set; }
+    
+    [JsonIgnore]
 
     public bool IsRest => Count == 0 || (Count == 1 && this[0].Drum == Drum.Rest);
 

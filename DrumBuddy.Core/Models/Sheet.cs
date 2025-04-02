@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 using DrumBuddy.Core.Extensions;
 
 namespace DrumBuddy.Core.Models;
@@ -10,7 +11,6 @@ public class Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, str
     public string Description { get; init; } = description;
 
     public Bpm Tempo { get; } = tempo;
-
     public ImmutableArray<Measure> Measures { get; } = measures;
 
     private TimeSpan CalculateLength()

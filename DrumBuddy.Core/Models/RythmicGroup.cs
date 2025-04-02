@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 
 namespace DrumBuddy.Core.Models;
 
@@ -8,5 +9,6 @@ namespace DrumBuddy.Core.Models;
 /// <param name="NoteGroups">Note groups inside the rythmic group</param>
 public record RythmicGroup(ImmutableArray<NoteGroup> NoteGroups)
 {
+    [JsonIgnore]
     public bool IsEmpty => NoteGroups.All(n => n.IsRest);
 }

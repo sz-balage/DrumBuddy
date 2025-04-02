@@ -1,18 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using Avalonia.ReactiveUI;
-using DrumBuddy.Client.Extensions;
-using DrumBuddy.Client.ViewModels;
-using DrumBuddy.Client.Views;
-using DrumBuddy.Core.Abstractions;
-using DrumBuddy.Core.Services;
-using DrumBuddy.IO.Abstractions;
-using DrumBuddy.IO.Services;
-using ReactiveUI;
-using Splat;
-using static Splat.Locator;
 
 namespace DrumBuddy.Client;
 
@@ -26,7 +14,7 @@ internal class Program
     {
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
-    
+
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()

@@ -1,4 +1,7 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Immutable;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Text.Json;
 using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Helpers;
 using DrumBuddy.Core.Models;
@@ -8,26 +11,15 @@ namespace DrumBuddy.Core.Services;
 
 public class SerializationService : ISerializationService
 {
-    private readonly JsonSerializerOptions _options;
-
-    public SerializationService()
+    public string SerializeMeasurementData(ImmutableArray<Measure> measures)
     {
-        _options = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-        
-        _options.Converters.Add(new BpmJsonConverter());
-    }
-    public string SerializeSheet(Sheet sheet)
-    {
-        return JsonSerializer.Serialize(sheet, _options);
+        return JsonSerializer.Serialize(measures);
     }
   
-    public Sheet DeserializeSheet(string json)
+    public ImmutableArray<Measure> DeserializeMeasurementData(string json)
     {
-        return JsonSerializer.Deserialize<Sheet>(json, _options)
-               ?? throw new InvalidOperationException("Failed to deserialize sheet");
+        var measures = JsonSerializer.Deserialize<IEnumerable<Measure>>(json)
+            ?? throw new InvalidOperationException("Failed to deserialize sheet");
+        return [..measures];
     }
 }

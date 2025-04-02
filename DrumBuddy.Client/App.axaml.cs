@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -78,7 +79,9 @@ public class App : Application
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
     private static void RegisterIOServices()
     {
+        string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sheet_db.db");
+        string connectionString = "Data Source=\"C:\\Users\\szabo\\RiderProjects\\DrumBuddy\\DrumBuddy.Client\\sheet_db.db\";";
         CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
-        CurrentMutable.RegisterConstant<ISheetStorage>(new SheetStorage(Locator.Current.GetRequiredService<ISerializationService>()));
+        CurrentMutable.RegisterConstant<ISheetStorage>(new SheetStorage(Locator.Current.GetRequiredService<ISerializationService>(), connectionString));
     }
 }
