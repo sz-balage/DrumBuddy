@@ -45,6 +45,10 @@ public class NoteGroup : List<Note>
         return this.Any(note => note.Drum == drum);
     }
 
+    public void RefreshValue()
+    {
+        Value = this.First().Value;
+    }
     public NoteGroup ChangeValues(NoteValue value)
     {
         Value = value;

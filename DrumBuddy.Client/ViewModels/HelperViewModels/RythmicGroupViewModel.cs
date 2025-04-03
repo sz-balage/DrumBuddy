@@ -19,7 +19,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
 {
     [Reactive] private RythmicGroup _rythmicGroup;
     [Reactive] private double _width;
-    private readonly NoteDrawHelper _drawHelper;
+    private  NoteDrawHelper _drawHelper;
 
     public RythmicGroupViewModel(RythmicGroup rg, double hostScreenWidth, double hostScreenHeight)
     {
@@ -30,7 +30,9 @@ public partial class RythmicGroupViewModel : ReactiveObject
         this.WhenAnyValue(x => x.RythmicGroup)
             .Subscribe(rythmicGroup =>
             {
+                _drawHelper = new NoteDrawHelper(Width, hostScreenHeight);
                 var hihatNote = new Note(Drum.HiHat, NoteValue.Sixteenth);
+                var snareNote = new Note(Drum.Snare, NoteValue.Sixteenth);
                 var kickNote = new Note(Drum.Kick, NoteValue.Sixteenth);
                 var tom1Note = new Note(Drum.Tom1, NoteValue.Sixteenth);
                 var tom2Note = new Note(Drum.Tom2, NoteValue.Sixteenth);
@@ -43,9 +45,9 @@ public partial class RythmicGroupViewModel : ReactiveObject
                     // new([hihatNote]),
                     // new([hihatNote]),
                     //new([eighthRest]),
+                    new([snareNote with{Value = NoteValue.Eighth}]),
                     new([sixteenthRest]),
-                    new([hihatNote]),
-                    new([hihatNote with{Value = NoteValue.Eighth}])
+                    new([tom1Note])
                     //new([hihatNote with{Value = NoteValue.Eighth}]),
                     //new([hihatNote with {Value = NoteValue.Eighth}]),
                     // new([sixteenthRest]),

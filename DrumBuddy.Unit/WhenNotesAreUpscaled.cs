@@ -34,6 +34,7 @@ public class WhenNotesAreUpscaled
         result.Count.ShouldBe(1);
         result[0].Count.ShouldBe(1);
         result[0][0].ShouldHaveBeatAndValue(drum, NoteValue.Quarter);
+        result[0].Value.ShouldBe(NoteValue.Quarter);
     }
 
     [Theory]
@@ -60,9 +61,15 @@ public class WhenNotesAreUpscaled
         {
             result[i].Count.ShouldBe(1);
             if (i == 0 || i == 2)
+            {
                 result[i][0].ShouldHaveBeatAndValue(beat1, NoteValue.Sixteenth);
+                result[i].Value.ShouldBe(NoteValue.Sixteenth);
+            }
             else
+            {
                 result[i][0].ShouldHaveBeatAndValue(beat2, NoteValue.Sixteenth);
+                result[i].Value.ShouldBe(NoteValue.Sixteenth);
+            }
         }
     }
 
@@ -84,7 +91,9 @@ public class WhenNotesAreUpscaled
         // Assert
         result.Count.ShouldBe(2);
         result[0].Count.ShouldBe(1);
+        result[0].Value.ShouldBe(NoteValue.Eighth);
         result[1].Count.ShouldBe(1);
+        result[1].Value.ShouldBe(NoteValue.Eighth);
         result[0][0].ShouldHaveBeatAndValue(Drum.Snare, NoteValue.Eighth);
         result[1][0].ShouldHaveBeatAndValue(Drum.Snare, NoteValue.Eighth);
     }
@@ -107,8 +116,11 @@ public class WhenNotesAreUpscaled
 
         result.Count.ShouldBe(3);
         result[0].Count.ShouldBe(1);
+        result[0].Value.ShouldBe(NoteValue.Eighth);
         result[1].Count.ShouldBe(1);
+        result[1].Value.ShouldBe(NoteValue.Sixteenth);
         result[2].Count.ShouldBe(1);
+        result[2].Value.ShouldBe(NoteValue.Sixteenth);
         result[0][0].ShouldHaveBeatAndValue(beat1, NoteValue.Eighth);
         result[1][0].ShouldHaveBeatAndValue(Drum.Rest, NoteValue.Sixteenth);
         result[2][0].ShouldHaveBeatAndValue(beat2, NoteValue.Sixteenth);
@@ -132,6 +144,7 @@ public class WhenNotesAreUpscaled
         // Assert
         result.Count.ShouldBe(1);
         result[0].Count.ShouldBe(1);
+        result[0].Value.ShouldBe(NoteValue.Quarter);
         result[0][0].ShouldHaveBeatAndValue(Drum.Rest, NoteValue.Quarter);
     }
 
@@ -153,7 +166,9 @@ public class WhenNotesAreUpscaled
         // Assert
         result.Count.ShouldBe(2);
         result[0].Count.ShouldBe(1);
+        result[0].Value.ShouldBe(NoteValue.Eighth);
         result[1].Count.ShouldBe(1);
+        result[1].Value.ShouldBe(NoteValue.Eighth);
         result[0][0].ShouldHaveBeatAndValue(Drum.Rest, NoteValue.Eighth);
         result[1][0].ShouldHaveBeatAndValue(Drum.Snare, NoteValue.Eighth);
     }
@@ -176,8 +191,11 @@ public class WhenNotesAreUpscaled
         // Assert
         result.Count.ShouldBe(3);
         result[0].Count.ShouldBe(1);
+        result[0].Value.ShouldBe(NoteValue.Eighth);
         result[1].Count.ShouldBe(1);
+        result[1].Value.ShouldBe(NoteValue.Sixteenth);
         result[2].Count.ShouldBe(1);
+        result[2].Value.ShouldBe(NoteValue.Sixteenth);
         result[0][0].ShouldHaveBeatAndValue(Drum.Rest, NoteValue.Eighth);
         result[1][0].ShouldHaveBeatAndValue(Drum.Rest, NoteValue.Sixteenth);
         result[2][0].ShouldHaveBeatAndValue(Drum.Snare, NoteValue.Sixteenth);
@@ -207,6 +225,7 @@ public class WhenNotesAreUpscaled
 
         // First group should have two notes with eighth value
         result[0].Count.ShouldBe(2);
+        result[0].Value.ShouldBe(NoteValue.Eighth);
         result[0][0].Drum.ShouldBe(Drum.Kick);
         result[0][0].Value.ShouldBe(NoteValue.Eighth);
         result[0][1].Drum.ShouldBe(Drum.HiHat);
@@ -214,6 +233,7 @@ public class WhenNotesAreUpscaled
 
         // Second group should be just HiHat with eighth value
         result[1].Count.ShouldBe(1);
+        result[1].Value.ShouldBe(NoteValue.Eighth);
         result[1][0].Drum.ShouldBe(Drum.HiHat);
         result[1][0].Value.ShouldBe(NoteValue.Eighth);
     }
@@ -246,17 +266,21 @@ public class WhenNotesAreUpscaled
 
         // Verify the counts and notes in each group
         result[0].Count.ShouldBe(2);
+        result[0].Value.ShouldBe(NoteValue.Sixteenth);
         result[0][0].Drum.ShouldBe(Drum.Kick);
         result[0][1].Drum.ShouldBe(Drum.HiHat);
 
         result[1].Count.ShouldBe(1);
+        result[1].Value.ShouldBe(NoteValue.Sixteenth);
         result[1][0].Drum.ShouldBe(Drum.HiHat);
 
         result[2].Count.ShouldBe(2);
+        result[2].Value.ShouldBe(NoteValue.Sixteenth);
         result[2][0].Drum.ShouldBe(Drum.Snare);
         result[2][1].Drum.ShouldBe(Drum.HiHat);
 
         result[3].Count.ShouldBe(1);
+        result[3].Value.ShouldBe(NoteValue.Sixteenth);
         result[3][0].Drum.ShouldBe(Drum.HiHat);
 
         // All should be sixteenth notes (not upscaled)
