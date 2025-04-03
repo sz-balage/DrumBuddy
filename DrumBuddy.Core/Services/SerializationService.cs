@@ -15,21 +15,10 @@ public class SerializationService : ISerializationService
     {
         return JsonSerializer.SerializeToUtf8Bytes(measures);
     }
-    //TODO: not very good solution, look at why value isnt deserialized, OR make it computed value
     public ImmutableArray<Measure> DeserializeMeasurementData(byte[] json)
     {
         var measures = JsonSerializer.Deserialize<IEnumerable<Measure>>(json)
             ?? throw new InvalidOperationException("Failed to deserialize sheet");
-        foreach (var measure in measures)
-        {
-            foreach (var measureGroup in measure.Groups)
-            {
-                foreach (var noteGroup in measureGroup.NoteGroups)
-                {
-                    noteGroup.RefreshValue();
-                }
-            }
-        }
         return [..measures];
     }
 }

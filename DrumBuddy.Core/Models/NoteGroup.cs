@@ -16,16 +16,14 @@ public class NoteGroup : List<Note>
     public NoteGroup(List<Note> notes) : base(notes)
     {
         if (notes.Count > MaxSize) throw new InvalidOperationException("How many limbs you got?");
-        Value = notes.First().Value;
     }
 
     public NoteGroup(IEnumerable<Note> notes) : base(notes)
     {
-        if (notes.Count() > MaxSize) throw new InvalidOperationException("How many limbs you got?");
-        Value = notes.First().Value;
+        if (notes.Count() > MaxSize) throw new InvalidOperationException("How many limbs you got?"); 
     }
 
-    public NoteValue Value { get; private set; }
+    public NoteValue Value => this.First().Value;
     
     [JsonIgnore]
 
@@ -34,9 +32,6 @@ public class NoteGroup : List<Note>
     public new void Add(Note note)
     {
         if (Count == MaxSize) throw new InvalidOperationException("How many limbs you got?");
-        // If this is the first note, set the Value property
-        if (Count == 0)
-            Value = note.Value;
         base.Add(note);
     }
 
@@ -44,14 +39,8 @@ public class NoteGroup : List<Note>
     {
         return this.Any(note => note.Drum == drum);
     }
-
-    public void RefreshValue()
-    {
-        Value = this.First().Value;
-    }
     public NoteGroup ChangeValues(NoteValue value)
-    {
-        Value = value;
+    { 
         return new NoteGroup(this.Select(note => new Note(note.Drum, value)));
     }
 }
