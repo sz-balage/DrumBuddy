@@ -9,7 +9,7 @@ using DrumBuddy.IO.Data;
 
 namespace DrumBuddy.IO.Services;
 
-public class SheetStorage : ISheetStorage //TODO: look at sqlite for storing sheets
+public class SheetStorage : ISheetStorage
 {
     private readonly ISerializationService _serializationService;
     private readonly string _saveDirectory;
@@ -57,6 +57,12 @@ public class SheetStorage : ISheetStorage //TODO: look at sqlite for storing she
     public bool SheetExists(string sheetName)
     {
         return SheetDbQueries.SheetExists(_connectionString, sheetName);
+    }
+
+    public Task UpdateSheetAsync(Sheet sheet)
+    {
+        var serialized = _serializationService.SerializeMeasurementData(sheet.Measures);
+        return SheetDbCommands.UpdateSheetAsync(_connectionString, sheet.Name, sheet.Tempo.Value, serialized, sheet.Name, sheet.Description);
     }
 
     private string DenormalizeFileName(string fileName) => fileName.Replace('_', ' ');

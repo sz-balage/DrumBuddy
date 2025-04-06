@@ -19,14 +19,14 @@ public partial class RenameSheetViewModel : ReactiveObject, IValidatableViewMode
     private string _newName;
     [Reactive]
     private string _newDescription;
-    private LibraryViewModel _library;
+
     public RenameSheetViewModel(Sheet sheet)
     {
-        _library = Locator.Current.GetService<LibraryViewModel>()!;
+        var library = Locator.Current.GetService<LibraryViewModel>()!;
         OriginalSheet = sheet; 
         this.ValidationRule(
             viewModel => viewModel.NewName,
-            name => !string.IsNullOrEmpty(name) && (name == OriginalSheet.Name || !_library.SheetExists(name)),
+            name => !string.IsNullOrEmpty(name) && (name == OriginalSheet.Name || !library.SheetExists(name)),
             n => string.IsNullOrEmpty(n) ? "Sheet title cannot be empty!" : "Sheet with this name already exists!");
         NewName = sheet.Name;
         NewDescription = sheet.Description;
