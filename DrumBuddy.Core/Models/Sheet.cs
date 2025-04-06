@@ -21,8 +21,8 @@ public class Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, str
         return TimeSpan.Zero;
     }
 
-    public Sheet RenameSheet(string newName)
+    public Sheet RenameSheet(string newName, string newDescription)
     {
-        return new Sheet(Tempo, Measures, newName, Description);
+        return new Sheet(Tempo, Measures, newName, newDescription);
     }
 }

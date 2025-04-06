@@ -44,5 +44,5 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
 
-    public Interaction<Sheet, string?> ShowRenameDialog { get; } = new();
+    public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
 }

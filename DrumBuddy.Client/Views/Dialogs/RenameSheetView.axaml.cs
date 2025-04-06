@@ -22,17 +22,19 @@ public partial class RenameSheetView : ReactiveWindow<RenameSheetViewModel>
             ViewModel = new RenameSheetViewModel(new Sheet(new Bpm(100),ImmutableArray<Measure>.Empty, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "New Sheet"));
         this.WhenActivated(d =>
         {
-            OriginalNameTB.Text = $"Rename {ViewModel!.OriginalName}";
+            OriginalNameTB.Text = $"Rename {ViewModel!.OriginalSheet}";
             this.BindValidation(ViewModel, vm => vm.NewName, v => v.NewNameValidation.Text).DisposeWith(d);
             this.Bind(ViewModel, vm => vm.NewName, v => v.NewNameTB.Text).DisposeWith(d);
+            this.Bind(ViewModel, vm => vm.NewDescription, v => v.DescriptionTb.Text).DisposeWith(d);
             
             this.BindCommand(ViewModel, vm => vm.RenameSheetCommand, v => v.Save).DisposeWith(d);
-            var observerCloseWithName = Observer.Create<Unit>(u => Close(ViewModel.NewName));
+            var originalSheet = ViewModel.OriginalSheet;
+            var observerCloseWithName = Observer.Create<Unit>(u => Close(new Sheet(originalSheet.Tempo, originalSheet.Measures, ViewModel.NewName, ViewModel.NewDescription)));
             ViewModel?.RenameSheetCommand.Subscribe(observerCloseWithName); //make optional name
-            Cancel.Click += (sender, e) => Close(null);
+            Cancel.Click += (sender, e) => Close(ViewModel!.OriginalSheet);
             KeyDown += (sender, e) =>
             {
-                if (e.Key == Key.Escape) Close(null);
+                if (e.Key == Key.Escape) Close(ViewModel!.OriginalSheet);
             };
         });
         InitializeComponent();

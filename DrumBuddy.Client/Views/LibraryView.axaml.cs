@@ -62,11 +62,11 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         arg.SetOutput(result);
     }
 
-    private async Task HandleRename(IInteractionContext<Sheet, string?> arg)
+    private async Task HandleRename(IInteractionContext<Sheet, Sheet> arg)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
         var view = new Dialogs.RenameSheetView(){ViewModel = new RenameSheetViewModel(arg.Input)};
-        var result = await view.ShowDialog<string>(mainWindow);
+        var result = await view.ShowDialog<Sheet>(mainWindow);
         arg.SetOutput(result);
     }
 

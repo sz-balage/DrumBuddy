@@ -27,6 +27,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         HostScreen = hostScreen;
         _sheetStorage = sheetStorage;
         _sheetSource.Connect()
+            .SortBy(s => s.Name)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _sheets)
             .Subscribe();
@@ -74,10 +75,9 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     [ReactiveCommand]
     private async Task RenameSheet()
     {
-        var dialogResult = await ShowRenameDialog.Handle(_selectedSheet);
-        if(dialogResult != null)
+        var newSheet = await ShowRenameDialog.Handle(_selectedSheet);
+        if(newSheet != _selectedSheet)
         {
-            var newSheet = _selectedSheet.RenameSheet(dialogResult);
             await _sheetStorage.RenameSheetAsync(SelectedSheet.Name, newSheet);
             _sheetSource.Remove(SelectedSheet);
             _sheetSource.AddOrUpdate(newSheet);
@@ -102,7 +102,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         _sheetSource.Clear();
         _sheetSource.AddOrUpdate(sheets);
     }
-    public Interaction<Sheet, string?> ShowRenameDialog { get; } = new();
+    public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
 
     public bool SheetExists(string sheetName)
@@ -122,5 +122,5 @@ public interface ILibraryViewModel : IRoutableViewModel
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);
     Interaction<Sheet, Sheet?> ShowEditDialog { get; }
-    Interaction<Sheet, string?> ShowRenameDialog { get; }
+    Interaction<Sheet, Sheet> ShowRenameDialog { get; }
 }
