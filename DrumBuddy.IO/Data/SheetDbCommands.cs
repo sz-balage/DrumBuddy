@@ -10,10 +10,11 @@ public static class SheetDbCommands
                                           """;
     private const string UpdateSheetSql = """
                                           UPDATE Sheets
-                                          SET description = @Description,
+                                          SET name = @NewName,
+                                              description = @Description,
                                               tempo = @Tempo,
                                               measures_data = @MeasuresData
-                                          WHERE name = @Name
+                                          WHERE name = @OldName
                                           """;
     private const string DeleteSheetSql = """
                                           DELETE FROM Sheets
@@ -24,9 +25,9 @@ public static class SheetDbCommands
         => await SqlQueryString.FromRawString(InsertSheetSql)
         .ExecuteAsync(connectionString, new { Name = name, MeasuresData = measuresData, Tempo = tempo, Description = description });
     
-    public static async Task<int> UpdateSheetAsync(string connectionString, string name, int tempo, byte[] measuresData, string? description = null) 
-        => await SqlQueryString.FromRawString(InsertSheetSql)
-                         .ExecuteAsync(connectionString, new { Name = name, MeasuresData = measuresData, Tempo = tempo, Description = description });
+    public static async Task<int> UpdateSheetAsync(string connectionString, string name, int tempo, byte[] measuresData, string? newName = null, string? description = null) 
+        => await SqlQueryString.FromRawString(UpdateSheetSql)
+                         .ExecuteAsync(connectionString, new { OldName = name, MeasuresData = measuresData, Tempo = tempo, NewName = newName, Description = description });
     
     public static async Task DeleteSheetAsync(string connectionString, string name) 
         => await SqlQueryString.FromRawString(DeleteSheetSql)

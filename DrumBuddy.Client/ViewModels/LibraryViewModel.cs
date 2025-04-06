@@ -78,7 +78,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         if(dialogResult != null)
         {
             var newSheet = _selectedSheet.RenameSheet(dialogResult);
-            await _sheetStorage.RenameFileAsync(SelectedSheet.Name, newSheet);
+            await _sheetStorage.RenameSheetAsync(SelectedSheet.Name, newSheet);
             _sheetSource.Remove(SelectedSheet);
             _sheetSource.AddOrUpdate(newSheet);
             //SelectedSheet.RenameSheet(dialogResult);

@@ -8,7 +8,6 @@ public interface ISheetStorage
     Task RemoveSheetAsync(Sheet sheet);
     Task SaveSheetAsync(Sheet sheet);
     Task<ImmutableArray<Sheet>> LoadSheetsAsync();
-    Task<IEnumerable<string>> GetSavedSheetNames();
-    Task RenameFileAsync(string oldFileName, Sheet newSheet);
-    bool SheetExists(string sheetName);
+    Task RenameSheetAsync(string oldFileName, Sheet newSheet);
+    bool  SheetExists(string sheetName);
 }

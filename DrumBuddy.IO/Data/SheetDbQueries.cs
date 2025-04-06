@@ -7,6 +7,16 @@ namespace DrumBuddy.IO.Data;
 
 public static class SheetDbQueries
 {
+    private const string SelectSheetSql = """
+        SELECT id AS Id,
+               name AS Name,
+               description AS Description,
+               tempo AS Tempo,
+               measures_data AS MeasuresData
+        FROM Sheets
+        WHERE name = @Name
+        """;
+    
     const string SelectAllSheetsSql = """
         SELECT id AS Id,
                name AS Name,
@@ -16,33 +26,25 @@ public static class SheetDbQueries
         FROM Sheets
         """;
 
+    const string SheetExistsSql = """
+          SELECT COUNT(1)
+          FROM Sheets
+          WHERE name = @Name
+          """;
     public static async Task<IEnumerable<SheetDbRecord>> SelectAllSheetsAsync(string connectionString)
         => await SqlQueryString.FromRawString(SelectAllSheetsSql)
             .QueryAsync<SheetDbRecord>(connectionString);
-   
-    // public static async Task<IEnumerable<SheetDbRecord>> SelectAllSheetsAsync(string connectionString)
-    // {
-    //     var records = new List<SheetDbRecord>();
-    //
-    //     using var connection = new SQLiteConnection(connectionString);
-    //     await connection.OpenAsync();
-    //
-    //     using var command = new SQLiteCommand(SelectAllSheetsSql, connection);
-    //     using var reader = await command.ExecuteReaderAsync();
-    //
-    //     while (await reader.ReadAsync())
-    //     {
-    //         var id = reader.GetInt32(0);
-    //         var name = reader.GetString(1);
-    //         var description = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
-    //         var tempo = reader.GetInt32(3);
-    //         var measuresData = reader.IsDBNull(4) ? Array.Empty<byte>() : reader["MeasuresData"] as byte[];
-    //
-    //         records.Add(new SheetDbRecord(id, name, description, tempo, measuresData ?? Array.Empty<byte>()));
-    //     }
-    //
-    //     return records;
-    // }
+    
+    public static async Task<SheetDbRecord?> SelectSheetAsync(string connectionString, string name)
+    {
+        var result = await SqlQueryString.FromRawString(SelectSheetSql)
+            .QuerySingleOrDefaultAsync<SheetDbRecord>(connectionString, new { Name = name });
+        return result;
+    }
+    public static bool SheetExists(string connectionString, string sheetName)
+    {
+        return SqlQueryString.FromRawString(SheetExistsSql).QuerySingle<int>(connectionString, new { Name = sheetName }) > 0;
+    }
     public sealed record SheetDbRecord(
         long Id,
         string Name,
@@ -50,4 +52,7 @@ public static class SheetDbQueries
         long Tempo,
         byte[] MeasuresData
     );
+
+
+    
 }

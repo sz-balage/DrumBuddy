@@ -27,6 +27,13 @@ public static class DbExtensions
         var records = await connection.QueryAsync<T>(sql, sqlParameter);
         return records;
     }
+    public static T QuerySingle<T>(this SqlQueryString sql, string connectionString, object? sqlParameter = null)
+    {
+        using var connection = new SQLiteConnection(connectionString);
+        connection.Open();
+        var record = connection.QuerySingle<T>(sql, sqlParameter);
+        return record;
+    }
     public static async Task<IEnumerable<T>> QueryAsync<T>(this SqlQueryString sql, SQLiteConnection connection, object? sqlParameter = null, SQLiteTransaction? transaction = null)
     {
         if (connection.State != ConnectionState.Open)
@@ -50,6 +57,20 @@ public static class DbExtensions
         var record = await connection.QuerySingleAsync<T>(sql, sqlParameter, transaction);
         return record;
     }
+    public static async Task<T?> QuerySingleOrDefaultAsync<T>(this SqlQueryString sql, string connectionString, object? sqlParameter = null)
+    {
+        using var connection = new SQLiteConnection(connectionString);
+        await connection.OpenAsync();
+        var record = await connection.QuerySingleOrDefaultAsync<T>(sql, sqlParameter);
+        return record;
+    }
+    public static async Task<T?> QuerySingleOrDefaultAsync<T>(this SqlQueryString sql, SQLiteConnection connection, object? sqlParameter = null, SQLiteTransaction? transaction = null)
+    {
+        if (connection.State != ConnectionState.Open)
+            await connection.OpenAsync();
+        var record = await connection.QuerySingleOrDefaultAsync<T>(sql, sqlParameter, transaction);
+        return record;
+    }
 }
 
 public readonly record struct SqlQueryString
@@ -69,4 +90,5 @@ public readonly record struct SqlQueryString
                                                       rawSql.StartsWith("DELETE", StringComparison.OrdinalIgnoreCase);
     
     public static implicit operator string(SqlQueryString sql) => sql.Value;
+    
 }

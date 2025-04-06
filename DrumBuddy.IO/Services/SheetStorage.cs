@@ -29,77 +29,34 @@ public class SheetStorage : ISheetStorage //TODO: look at sqlite for storing she
     }
     public async Task SaveSheetAsync(Sheet sheet)
     {
-        // var normalizedName = NormalizeFileName(sheet.Name);
-        // var filePath = GetFullPath(normalizedName);
         var serialized = _serializationService.SerializeMeasurementData(sheet.Measures);
         await SheetDbCommands.InsertSheetAsync(_connectionString, sheet.Name, sheet.Tempo.Value, serialized, sheet.Description);
-        // await File.WriteAllTextAsync(filePath, json, Encoding.UTF8);
     }
 
     public async Task RemoveSheetAsync(Sheet sheet)
     {
-        var fileName = NormalizeFileName(sheet.Name);
-        var filePath = GetFullPath(fileName);
-        
-        if (!File.Exists(filePath))
-            throw new FileNotFoundException($"Sheet file not found: {fileName}");
-        await Task.Run(() => File.Delete(filePath));    
+        await SheetDbCommands.DeleteSheetAsync(_connectionString, sheet.Name);
     }
     public async Task<ImmutableArray<Sheet>> LoadSheetsAsync()
     {
-        // var filePaths = Directory.EnumerateFiles(_saveDirectory,$"*{FileExtension}").ToList();
         var dbRecords = await SheetDbQueries.SelectAllSheetsAsync(_connectionString);
         var sheets = dbRecords.Select(r =>
-            new Sheet(new Bpm((int)r.Tempo), [.._serializationService.DeserializeMeasurementData(r.MeasuresData)], r.Name,
-                r.Description));
-        
+            new Sheet(new Bpm((int)r.Tempo), 
+            [.._serializationService.DeserializeMeasurementData(r.MeasuresData)], 
+                    r.Name,
+                    r.Description));
         return [..sheets];
-        // foreach (var filePath in filePaths)
-        // {
-        //     var json = await File.ReadAllTextAsync(filePath, Encoding.UTF8);
-        //     var sheet = _serializationService.DeserializeSheet(json); //TODO: cannot deserialize BPM property
-        //     arrayBuilder.Add(sheet);
-        // }
-        // return arrayBuilder.MoveToImmutable();
-    }
-
-    public async Task<IEnumerable<string>> GetSavedSheetNames()
+      }
+    
+    public async Task RenameSheetAsync(string oldSheetName, Sheet newSheet)
     {
-        return (await Task.Run(() =>
-            Directory.GetFiles(_saveDirectory, $"*{FileExtension}")
-                .Select(p => DenormalizeFileName(Path.GetFileNameWithoutExtension(p)))))!;
-    }
-
-    /// <summary>
-    /// Renames file from old sheet name to new sheet name.
-    /// </summary>
-    /// <param name="oldSheetName"></param>
-    /// <param name="newSheet"></param>
-    /// <exception cref="FileNotFoundException"></exception>
-    /// <exception cref="IOException"></exception>
-    public async Task RenameFileAsync(string oldSheetName, Sheet newSheet)
-    {
-        var oldFileName = NormalizeFileName(oldSheetName);
-        var oldPath = GetFullPath(oldFileName);
-        File.Delete(oldPath);
-        await SaveSheetAsync(newSheet);
+        var serialized = _serializationService.SerializeMeasurementData(newSheet.Measures);
+        await SheetDbCommands.UpdateSheetAsync(_connectionString, oldSheetName, newSheet.Tempo.Value, serialized, newSheet.Name, newSheet.Description);
     }
 
     public bool SheetExists(string sheetName)
     {
-        var filePath = GetFullPath(NormalizeFileName(sheetName));
-        return File.Exists(filePath);
-    }
-
-    private string NormalizeFileName(string fileName)
-    {
-        var spacesReplaced = fileName.Replace(' ', '_');
-
-        // Replace invalid filename characters with underscores
-        var invalidChars = new string(Path.GetInvalidFileNameChars());
-        var invalidCharsPattern = $"[{Regex.Escape(invalidChars)}]";
-        var normalized = Regex.Replace(spacesReplaced, invalidCharsPattern, "_");
-        return normalized;
+        return SheetDbQueries.SheetExists(_connectionString, sheetName);
     }
 
     private string DenormalizeFileName(string fileName) => fileName.Replace('_', ' ');
