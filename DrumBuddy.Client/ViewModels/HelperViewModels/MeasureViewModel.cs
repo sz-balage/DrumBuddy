@@ -28,7 +28,6 @@ public partial class MeasureViewModel : ReactiveObject
                 Measure.Groups.Add(rg);
                 RythmicGroups.Add(new RythmicGroupViewModel(rg, Width, Height));
             }
-            return;
         }
         IsPointerVisible = true;
     }

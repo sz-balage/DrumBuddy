@@ -82,7 +82,7 @@ public partial class EditingViewModel : ReactiveObject
                 _bpm = new Bpm(value);
             });
         //default values
-        BpmDecimal = 100;
+        BpmDecimal = originalSheet.Tempo;
         TimeElapsed = "0:0:0";
         IsRecording = false;
         HandleMeasureClick(0); //put pointer to first measure by default
@@ -185,20 +185,22 @@ public partial class EditingViewModel : ReactiveObject
     }
 
     private bool _recordingJustStarted = true;
-    //TODO: fix pointer movement for passing first measure in editing mode
+    private static int _firstMeasurePassedCount = 0;
     private void MovePointerOnMetronomeBeeps(long idx)
     {
         if (idx == 0)
         {
             _highBeepPlayer.Play();
-            if (CurrentMeasure == Measures[_selectedEntryPointMeasureIndex])
+            if (CurrentMeasure == Measures[_selectedEntryPointMeasureIndex] && _firstMeasurePassedCount == 0)
             {
                 CountDownVisibility = false;
+                _firstMeasurePassedCount++;
             }
             else
             {
                 CurrentMeasure.IsPointerVisible = false;
                 CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
+                CurrentMeasure.IsPointerVisible = true;
             }
         }
         else
@@ -207,47 +209,6 @@ public partial class EditingViewModel : ReactiveObject
         }
 
         CurrentMeasure?.MovePointerToRg(idx);
-
-        // // Get the starting measure index
-        // int startMeasureIdx = CurrentMeasure != null ? Measures.IndexOf(CurrentMeasure) : 0;
-        //
-        // // Calculate which measure we should be on
-        // int measureIdx = startMeasureIdx + (int)(idx / 4);
-        // int rgIdx = (int)(idx % 4);
-        //
-        // // First beat of the measure
-        // if (rgIdx == 0)
-        // {
-        //     _highBeepPlayer.Play();
-        //
-        //     // If we're just starting
-        //     if (idx == 0)
-        //     {
-        //         // Don't change the current measure on the first beat
-        //         // Just ensure pointer is visible
-        //         if (CurrentMeasure != null)
-        //         {
-        //             CurrentMeasure.IsPointerVisible = true;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         // For subsequent measures, move to the next one
-        //         if (CurrentMeasure != null)
-        //             CurrentMeasure.IsPointerVisible = false;
-        //
-        //         // Make sure we don't go past the end of the collection
-        //         if (measureIdx < Measures.Count)
-        //             CurrentMeasure = Measures[measureIdx];
-        //     }
-        // }
-        // else
-        // {
-        //     _normalBeepPlayer.Play();
-        // }
-        //
-        // // Move the pointer to the current rhythmic group
-        // CurrentMeasure?.MovePointerToRg(rgIdx);
     }
 
     public void HandleMeasureClick(int measureIndex)
@@ -293,6 +254,7 @@ public partial class EditingViewModel : ReactiveObject
         //do something with the done sheet
         IsRecording = false;
         TimeElapsed = "0:0:0";
+        _firstMeasurePassedCount = 0;
 
         // Update CanSave status
         CanSave = Measures.Any(m => !m.IsEmpty);
@@ -309,7 +271,9 @@ public partial class EditingViewModel : ReactiveObject
         CurrentMeasure.IsPointerVisible = false;
         if (CurrentMeasure != Measures.Last())
         {
-            CurrentMeasure = Measures[Measures.IndexOf(CurrentMeasure) + 1];
+            int nextIndex = Measures.IndexOf(CurrentMeasure) + 1;
+            CurrentMeasure = Measures[nextIndex];
+            _selectedEntryPointMeasureIndex = nextIndex;
             CurrentMeasure.IsPointerVisible = true;
             CurrentMeasure.MovePointerToRg(0);
         }

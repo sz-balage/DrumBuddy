@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -37,12 +36,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         {
             return LoadSheets()
                 .ToObservable()
-                .Subscribe(_ =>
-                    {
-                        var source = _sheetSource;
-                        ;
-                    },
-                    ex => Debug.WriteLine(ex));
+                .Subscribe();
         });
     }
 

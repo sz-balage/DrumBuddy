@@ -76,6 +76,8 @@ public partial class MainViewModel : ReactiveObject, IScreen
         var navigateTo = Locator.Current.GetRequiredService(value.ModelType) as IRoutableViewModel;
         if (navigateTo is null)
             throw new Exception("ViewModel not found.");
+        if (Router.GetCurrentViewModel() is RecordingViewModel rvm)
+            rvm.Dispose();
         Router.NavigateAndReset.Execute(navigateTo);
     }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Media;
@@ -16,20 +15,17 @@ using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Abstractions;
-using DrumBuddy.IO.Models;
 using DrumBuddy.IO.Services;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
-using Unit = System.Reactive.Unit;
 
 namespace DrumBuddy.Client.ViewModels;
 
-public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
+public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
     private readonly SoundPlayer _highBeepPlayer;
-    private readonly LibraryViewModel _library;
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly IMidiService _midiService;
@@ -51,12 +47,10 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
 
-    public RecordingViewModel(IScreen hostScreen, IMidiService midiService, LibraryViewModel library)
+    public RecordingViewModel(IScreen hostScreen, IMidiService midiService)
     {
-
         HostScreen = hostScreen;
         _midiService = midiService;
-        _library = library;
         //init sound players
         _normalBeepPlayer =
             new SoundPlayer(FileSystemService.GetPathToRegularBeepSound()); //relative path should be used
@@ -68,7 +62,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
             .Bind(out _measures)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe();
-        _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(i => new MeasureViewModel()));
+        _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(_ => new MeasureViewModel()));
         _stopRecordingCanExecute = this.WhenAnyValue(vm => vm.IsRecording, vm => vm.CurrentMeasure,
             (recording, currentMeasure) => recording && currentMeasure != null);
         //bpm changes should update the _bpm prop
@@ -87,7 +81,6 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
         IsRecording = false;
         IsPaused = false;
         CurrentMeasure = null!;
-
         this.WhenNavigatingFromObservable().Subscribe(_ =>
         {
             _subs.Dispose(); //TODO: dispose disposables when navigating away from the viewmodel
@@ -158,7 +151,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
                     }
                     else
                     {
-                        Measures[measureIdx].AddRythmicGroupFromNotes(tempNotes,rythmicGroupIndex);
+                        Measures[measureIdx].AddRythmicGroupFromNotes(tempNotes, rythmicGroupIndex);
                     }
 
                     tempNotes.Clear();
@@ -270,5 +263,17 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel
     {
         CurrentMeasure.IsPointerVisible = false;
         CurrentMeasure = null;
+    }
+
+    public void Dispose()
+    {
+        _highBeepPlayer.Dispose();
+        _measureSource.Dispose();
+        _normalBeepPlayer.Dispose();
+        _subs.Dispose();
+        _startRecordingCommand?.Dispose();
+        _stopRecordingCommand?.Dispose();
+        _pauseRecordingCommand?.Dispose();
+        _resumeRecordingCommand?.Dispose();
     }
 }

@@ -60,8 +60,7 @@ public class App : Application
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>()));
         CurrentMutable.Register(() =>
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
-                Locator.Current.GetRequiredService<IMidiService>(),
-                Locator.Current.GetRequiredService<LibraryViewModel>()));
+                Locator.Current.GetRequiredService<IMidiService>()));
         
         // HomeViewModel context => new Views.HomeView { ViewModel = context },
         // RecordingViewModel context => new RecordingView { ViewModel = context },
