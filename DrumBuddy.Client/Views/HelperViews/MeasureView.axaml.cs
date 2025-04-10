@@ -21,7 +21,7 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
                 .Subscribe(d =>
                 {
                     _pointer.StartPoint = Pointer.StartPoint.WithX(d);
-                    _pointer.EndPoint = Pointer.StartPoint.WithY(d);
+                    _pointer.EndPoint = Pointer.StartPoint.WithY(190);
                 })
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.IsPointerVisible, v => v.Pointer.IsVisible)
