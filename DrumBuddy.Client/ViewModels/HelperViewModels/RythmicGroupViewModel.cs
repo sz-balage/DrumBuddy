@@ -20,7 +20,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
     [Reactive] private RythmicGroup _rythmicGroup;
     [Reactive] private double _width;
     private  NoteDrawHelper _drawHelper;
-
+    private static int _counter = 0;
     public RythmicGroupViewModel(RythmicGroup rg, double hostScreenWidth, double hostScreenHeight)
     {
         //TODO: look at buggy note rendering when editing
@@ -39,25 +39,21 @@ public partial class RythmicGroupViewModel : ReactiveObject
                 var sixteenthRest = new Note(Drum.Rest, NoteValue.Sixteenth);
                 var eighthRest = new Note(Drum.Rest, NoteValue.Eighth);
                 var quarterRest = new Note(Drum.Rest, NoteValue.Quarter);
-                List<NoteGroup> noteGroups =
+                List<NoteGroup> noteGroupsWithKick =
                 [
-                    //new([hihatNote with{Value = NoteValue.Eighth}]),
-                    // new([hihatNote]),
-                    // new([hihatNote]),
-                    //new([eighthRest]),
-                    new([snareNote with{Value = NoteValue.Eighth}]),
-                    new([sixteenthRest]),
-                    new([tom1Note])
-                    //new([hihatNote with{Value = NoteValue.Eighth}]),
-                    //new([hihatNote with {Value = NoteValue.Eighth}]),
-                    // new([sixteenthRest]),
-                    //
-                    // new([hihatNote with{Value = NoteValue.Eighth}]),
-                    // new([sixteenthRest])
-                    //new([hihatNote with {Value = NoteValue.Eighth}, tom1Note with {Value = NoteValue.Eighth}, tom2Note with {Value = NoteValue.Eighth}]),
+                    new([kickNote with{Value = NoteValue.Eighth}, hihatNote with{Value = NoteValue.Eighth}]),
+                    new([hihatNote with{Value = NoteValue.Eighth}]),
                 ];
-                var testRythmicGroup = new RythmicGroup([..noteGroups]);
+                List<NoteGroup> noteGroupsWithSnare =
+                [
+                    new([snareNote with{Value = NoteValue.Eighth}, hihatNote with{Value = NoteValue.Eighth}]),
+                    new([hihatNote with{Value = NoteValue.Eighth}]),
+                ];
+                var testRythmicGroup = new RythmicGroup([..noteGroupsWithKick]);
+                if(_counter % 2 != 0)
+                    testRythmicGroup = new RythmicGroup([..noteGroupsWithSnare]);
                 DrawNotes(rythmicGroup); //modify to rythmicGroup
+                _counter++;
             });
     }
 

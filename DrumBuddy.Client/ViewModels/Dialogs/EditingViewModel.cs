@@ -86,12 +86,10 @@ public partial class EditingViewModel : ReactiveObject
         TimeElapsed = "0:0:0";
         IsRecording = false;
         HandleMeasureClick(0); //put pointer to first measure by default
-        // Existing constructor code...
         CanSave = false;
 
-        // Update CanSave when recording state changes or measures are filled
         this.WhenAnyValue(vm => vm.IsRecording)
-            .Subscribe(recording => CanSave = !recording && Measures.Any(m => !m.IsEmpty));
+            .Subscribe(recording => CanSave = !recording);
     }
 
     public IObservable<Drum> KeyboardBeats { get; set; }
@@ -238,7 +236,9 @@ public partial class EditingViewModel : ReactiveObject
 
         IsRecording = true;
     }
-
+    public IObservable<bool> CanNavigate => this.WhenAnyValue(
+        vm => vm.IsRecording,
+        recording => !recording);
     public Sheet Save()
     {
         var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToImmutableArray();
@@ -255,9 +255,6 @@ public partial class EditingViewModel : ReactiveObject
         IsRecording = false;
         TimeElapsed = "0:0:0";
         _firstMeasurePassedCount = 0;
-
-        // Update CanSave status
-        CanSave = Measures.Any(m => !m.IsEmpty);
     }
 
     private void ClearMeasures()

@@ -11,9 +11,6 @@
                           MinWidth="1250"
                           Title="Edit window"
                           x:Class="DrumBuddy.Client.Views.Dialogs.EditingView">
-    <Design.DataContext>
-        <dialogs:EditingViewModel />
-    </Design.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

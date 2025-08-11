@@ -91,6 +91,17 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 });
 
             ViewModel!.StopRecordingCommand.ThrownExceptions.Subscribe(ex => Debug.WriteLine(ex.Message));
+            ViewModel.WhenAnyValue(vm => vm.CurrentMeasure).Subscribe(measure =>
+            {
+                // Find the container for the current measure
+                var idx = MeasureControl.Items.IndexOf(measure);
+                var container = MeasureControl.ContainerFromIndex(idx+3);
+                if (container != null)
+                {
+                    // Scroll the container into view
+                    container.BringIntoView();
+                }
+            });
         });
 
         AvaloniaXamlLoader.Load(this);

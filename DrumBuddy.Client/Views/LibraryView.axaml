@@ -91,12 +91,12 @@
                                     Click="Button_OnClick">
                                 <Button.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedLeft">
-                                        <MenuItem Header="Edit" Click="EditMenuItem_OnClick">
+                                        <MenuItem Header="Edit sheet" Click="EditMenuItem_OnClick">
                                             <MenuItem.Icon>
                                                 <PathIcon Data="{StaticResource edit_regular}"></PathIcon>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Rename"
+                                        <MenuItem Header="Change name and description"
                                                   Click="MenuItem_OnClick">
                                             <MenuItem.Icon>
                                                 <PathIcon Data="{StaticResource rename_regular}"></PathIcon>
