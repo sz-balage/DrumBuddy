@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.DesignHelpers;
@@ -47,6 +49,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowEditDialog, HandleEdit)
                 .DisposeWith(d);
+            this.BindInteraction(ViewModel, vm => vm.ShowCompareDialog, HandleCompare)
+                .DisposeWith(d);
             
             // this.BindCommand(ViewModel, vm => vm.RemoveSheetCommand,
             //         v => v.DeleteSheetMenuItem)
@@ -54,6 +58,13 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         });
     }
 
+    private async Task HandleCompare(IInteractionContext<(Sheet, Sheet), Unit> arg)
+    {
+        var mainWindow = Locator.Current.GetService<MainWindow>();
+        var view = new Dialogs.CompareView(){ViewModel = new CompareViewModel(arg.Input)};
+        await view.ShowDialog(mainWindow);
+        arg.SetOutput(Unit.Default);
+    }
     private async Task HandleEdit(IInteractionContext<Sheet, Sheet?> arg)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
@@ -68,6 +79,36 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         var view = new Dialogs.RenameSheetView(){ViewModel = new RenameSheetViewModel(arg.Input)};
         var result = await view.ShowDialog<Sheet>(mainWindow);
         arg.SetOutput(result);
+    }
+    private void CompareButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        if (button.DataContext is not Sheet baseSheet) return;
+        if (ViewModel is null) return;
+
+        // Create flyout
+        var flyout = new MenuFlyout();
+
+        foreach (var sheet in ViewModel.Sheets)
+        {
+            if (sheet == baseSheet) continue; // don't compare with itself
+
+            var menuItem = new MenuItem { Header = sheet.Name, Tag = sheet };
+            menuItem.Click += async (s, args) =>
+            {
+                if (s is MenuItem mi && mi.Tag is Sheet selectedSheet)
+                {
+                    await ViewModel.CompareSheets(baseSheet, selectedSheet);
+                    // ViewModel?.FinishCompare(selectedSheet);
+                }
+            };
+
+
+            flyout.Items.Add(menuItem);
+        }
+
+        FlyoutBase.SetAttachedFlyout(button, flyout);
+        flyout.ShowAt(button);
     }
 
     private ListBox SheetsLB => this.FindControl<ListBox>("SheetsListBox");

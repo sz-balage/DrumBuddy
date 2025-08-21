@@ -1,0 +1,15 @@
+﻿<rxui:ReactiveWindow x:TypeArguments="dialogs:EditingViewModel"
+                     xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:rxui="http://reactiveui.net"
+                     xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
+                     xmlns:dialogs="clr-namespace:DrumBuddy.Client.ViewModels.Dialogs"
+                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                     MinHeight="500"       
+                     MinWidth="1250"
+                     Title="Compare sheets"
+                     x:Class="DrumBuddy.Client.Views.Dialogs.CompareView">
+    <TextBlock>Welcome to compare view!</TextBlock>
+</rxui:ReactiveWindow>

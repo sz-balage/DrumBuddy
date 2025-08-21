@@ -88,6 +88,10 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             _sheetSource.AddOrUpdate(editResult);
         }
     }
+    public async Task CompareSheets(Sheet baseSheet, Sheet comparedSheet)
+    {
+        var u = await ShowCompareDialog.Handle((baseSheet, comparedSheet));
+    }
     private async Task LoadSheets()
     {
         var sheets = await _sheetStorage.LoadSheetsAsync();
@@ -96,6 +100,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     }
     public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
+    public Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; } = new();
 
     public bool SheetExists(string sheetName)
     {
@@ -115,4 +120,6 @@ public interface ILibraryViewModel : IRoutableViewModel
     Task SaveSheet(Sheet sheet);
     Interaction<Sheet, Sheet?> ShowEditDialog { get; }
     Interaction<Sheet, Sheet> ShowRenameDialog { get; }
+    Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; }
+    Task CompareSheets(Sheet baseSheet, Sheet comparedSheet);
 }
