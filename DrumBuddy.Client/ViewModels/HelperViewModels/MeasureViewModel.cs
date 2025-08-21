@@ -12,7 +12,7 @@ namespace DrumBuddy.Client.ViewModels.HelperViewModels;
 public partial class MeasureViewModel : ReactiveObject
 {
     [Reactive] private bool _isPointerVisible;
-    private double _pointerPosition;
+    private double _pointerPosition = -1;
 
     [Reactive] private double _width = 1200;
     [Reactive] private double _height = 190;
@@ -36,7 +36,7 @@ public partial class MeasureViewModel : ReactiveObject
     {
         get => _pointerPosition;
         set => this.RaiseAndSetIfChanged(ref _pointerPosition, value);
-    }
+    } 
 
     public bool IsEmpty => Measure.IsEmpty;
     public ObservableCollection<RythmicGroupViewModel> RythmicGroups { get; } = new();
