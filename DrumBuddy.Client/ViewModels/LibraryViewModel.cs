@@ -83,7 +83,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         var editResult = await ShowEditDialog.Handle(SelectedSheet);
         if (editResult != null)
-        {
+        { 
             await _sheetStorage.UpdateSheetAsync(editResult);
             _sheetSource.AddOrUpdate(editResult);
         }

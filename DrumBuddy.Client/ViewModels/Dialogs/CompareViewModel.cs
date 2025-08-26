@@ -9,7 +9,7 @@ using ReactiveUI;
 
 namespace DrumBuddy.Client.ViewModels.Dialogs;
 
-public class CompareViewModel : ReactiveObject
+public class CompareViewModel : ReactiveObject, ICompareViewModel
 {
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _baseSheetMeasures;
     private readonly SourceList<MeasureViewModel> _baseSheetMeasureSource = new();
@@ -20,7 +20,8 @@ public class CompareViewModel : ReactiveObject
     public ReadOnlyObservableCollection<MeasureViewModel> ComparedSheetMeasures => _comparedSheetMeasures;
     private readonly Sheet _baseSheet;
     private readonly Sheet  _comparedSheet;
-
+    public string BaseSheetName => _baseSheet.Name;
+    public string ComparedSheetName => _comparedSheet.Name;
     public CompareViewModel((Sheet baseSheet, Sheet comparedSheet) argInput)
     {
         _baseSheet = argInput.baseSheet;
@@ -37,4 +38,12 @@ public class CompareViewModel : ReactiveObject
         _comparedSheetMeasureSource.AddRange(_comparedSheet.Measures.Select(m => new MeasureViewModel(m)));
         
     }
+}
+
+public interface ICompareViewModel
+{
+    ReadOnlyObservableCollection<MeasureViewModel> BaseSheetMeasures { get; }
+    ReadOnlyObservableCollection<MeasureViewModel> ComparedSheetMeasures { get; }
+    public string BaseSheetName { get; }
+    public string ComparedSheetName { get; }
 }

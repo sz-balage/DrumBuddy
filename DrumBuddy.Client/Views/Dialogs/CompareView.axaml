@@ -6,39 +6,56 @@
                      xmlns:rxui="http://reactiveui.net"
                      xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
                      xmlns:dialogs="clr-namespace:DrumBuddy.Client.ViewModels.Dialogs"
-                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                     xmlns:designHelpers="clr-namespace:DrumBuddy.Client.DesignHelpers"
+                     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="800"
                      MinHeight="500"       
                      MinWidth="1250"
                      Title="Compare sheets"
                      x:Class="DrumBuddy.Client.Views.Dialogs.CompareView">
-    <Grid RowDefinitions="0.5*,0.5*">
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="BaseSheetItemsControl">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <helperViews:MeasureView Width="600"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="ComparedSheetItemsControl">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <helperViews:MeasureView Width="600"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+    <Design.DataContext>
+        <designHelpers:DesignCompareViewModel/>
+    </Design.DataContext>
+    <rxui:ReactiveWindow.Styles>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+    </rxui:ReactiveWindow.Styles>
+    <Grid RowDefinitions="0.5*,0.5*" Margin="5">
+        <Grid Grid.Row="0" RowDefinitions="25,*">
+            <TextBlock Classes="header" x:Name="BaseSheetNameTB"></TextBlock>
+            <Border Grid.Row="1" BorderThickness="3" BorderBrush="#ff0073cf" CornerRadius="2">
+                <ScrollViewer  x:Name="BaseScrollViewer" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="BaseSheetItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <helperViews:MeasureView Width="600"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="1" RowDefinitions="25,*">
+            <TextBlock Classes="header" x:Name="ComparedSheetNameTB"></TextBlock>
+            <Border Grid.Row="1" BorderThickness="3" BorderBrush="#ff0073cf" CornerRadius="2">
+                <ScrollViewer  x:Name="ComparedScrollViewer" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="ComparedSheetItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <helperViews:MeasureView Width="600"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </Grid>
     </Grid>
 </rxui:ReactiveWindow>
