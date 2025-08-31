@@ -40,6 +40,8 @@
         </Grid>
         <Grid Grid.Row="1" RowDefinitions="25,*">
             <TextBlock Classes="header" x:Name="ComparedSheetNameTB"></TextBlock>
+            <TextBlock HorizontalAlignment="Right" Classes="header" x:Name="ComparedSheetPercentageTB"/>
+
             <Border Grid.Row="1" BorderThickness="3" BorderBrush="#ff0073cf" CornerRadius="2">
                 <ScrollViewer  x:Name="ComparedScrollViewer" VerticalScrollBarVisibility="Auto">
                     <ItemsControl x:Name="ComparedSheetItemsControl">
@@ -56,6 +58,7 @@
                     </ItemsControl>
                 </ScrollViewer>
             </Border>
+
         </Grid>
     </Grid>
 </rxui:ReactiveWindow>

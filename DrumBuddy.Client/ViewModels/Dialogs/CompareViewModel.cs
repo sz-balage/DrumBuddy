@@ -1,16 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.Core.Models;
 using DynamicData;
 using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 
 namespace DrumBuddy.Client.ViewModels.Dialogs;
 
-public class CompareViewModel : ReactiveObject, ICompareViewModel
+public partial class CompareViewModel : ReactiveObject, ICompareViewModel
 {
+    private List<EvaluationBox> EvaluationBoxes { get; } = new();
+    
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _baseSheetMeasures;
     private readonly SourceList<MeasureViewModel> _baseSheetMeasureSource = new();
     public ReadOnlyObservableCollection<MeasureViewModel> BaseSheetMeasures => _baseSheetMeasures;
@@ -22,6 +27,8 @@ public class CompareViewModel : ReactiveObject, ICompareViewModel
     private readonly Sheet  _comparedSheet;
     public string BaseSheetName => _baseSheet.Name;
     public string ComparedSheetName => _comparedSheet.Name;
+    [Reactive]
+    public double _correctPercentage;
     public CompareViewModel((Sheet baseSheet, Sheet comparedSheet) argInput)
     {
         _baseSheet = argInput.baseSheet;
@@ -36,8 +43,64 @@ public class CompareViewModel : ReactiveObject, ICompareViewModel
             .Subscribe();
         _baseSheetMeasureSource.AddRange(_baseSheet.Measures.Select(m => new MeasureViewModel(m)));
         _comparedSheetMeasureSource.AddRange(_comparedSheet.Measures.Select(m => new MeasureViewModel(m)));
-        
+        EvaluateSheets();
+        for (int i = 0; i < _comparedSheetMeasures.Count; i++)
+        {
+            _comparedSheetMeasures[i].EvaluateMeasure(EvaluationBoxes.Where(x => x.MeasureIndex == i).ToList());
+        }
     }
+    private void EvaluateSheets()
+    {
+        EvaluationBoxes.Clear();
+
+        int measureCount = Math.Min(_baseSheet.Measures.Length, _comparedSheet.Measures.Length);
+
+        int totalGroups = 0;
+        int correctGroups = 0;
+
+        for (int m = 0; m < measureCount; m++)
+        {
+            var baseMeasure = _baseSheet.Measures[m];
+            var comparedMeasure = _comparedSheet.Measures[m];
+
+            int rgCount = Math.Min(baseMeasure.Groups.Count, comparedMeasure.Groups.Count);
+
+            totalGroups += rgCount;
+
+            EvaluationState? currentState = null;
+            int startRg = 0;
+
+            for (int rg = 0; rg < rgCount; rg++)
+            {
+                var same = baseMeasure.Groups[rg].Equals(comparedMeasure.Groups[rg]);
+                var state = same ? EvaluationState.Correct : EvaluationState.Incorrect;
+
+                if (same) correctGroups++;
+
+                if (currentState == null)
+                {
+                    startRg = rg;
+                    currentState = state;
+                }
+                else if (state != currentState)
+                {
+                    EvaluationBoxes.Add(new EvaluationBox(m, startRg, rg - 1, currentState.Value));
+                    startRg = rg;
+                    currentState = state;
+                }
+            }
+
+            if (currentState != null)
+            {
+                EvaluationBoxes.Add(new EvaluationBox(m, startRg, rgCount - 1, currentState.Value));
+            }
+        }
+
+        CorrectPercentage = totalGroups == 0 
+            ? 0 
+            : (double)correctGroups / totalGroups * 100.0;
+    }
+
 }
 
 public interface ICompareViewModel
@@ -46,4 +109,5 @@ public interface ICompareViewModel
     ReadOnlyObservableCollection<MeasureViewModel> ComparedSheetMeasures { get; }
     public string BaseSheetName { get; }
     public string ComparedSheetName { get; }
+    public double CorrectPercentage { get; }
 }

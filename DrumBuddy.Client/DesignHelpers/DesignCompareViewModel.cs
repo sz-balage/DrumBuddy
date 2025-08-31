@@ -15,6 +15,7 @@ public class DesignCompareViewModel : ReactiveObject, ICompareViewModel
     public ReadOnlyObservableCollection<MeasureViewModel> ComparedSheetMeasures { get; }
     public string BaseSheetName { get; } = "A";
     public string ComparedSheetName { get; } = "B";
+    public double CorrectPercentage { get; } = 0;
 
     public DesignCompareViewModel()
     {

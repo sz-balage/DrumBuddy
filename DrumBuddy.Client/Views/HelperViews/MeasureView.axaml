@@ -27,6 +27,8 @@
                 <!-- Pointer -->
 
             </Canvas>
+            <!-- Evaluation overlays -->
+            <Canvas x:Name="EvalBoxesCanvas" IsHitTestVisible="False" />
             <Border HorizontalAlignment="Left">
                 <ItemsControl x:Name="ItemsControl" HorizontalAlignment="Center">
                     <ItemsControl.ItemsPanel>

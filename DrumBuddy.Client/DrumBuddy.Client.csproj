@@ -9,73 +9,69 @@
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
-        <AvaloniaXaml Remove="Converters\**"/>
-        <Compile Remove="Converters\**"/>
-        <EmbeddedResource Remove="Converters\**"/>
-        <None Remove="Converters\**"/>
     </ItemGroup>
     <ItemGroup>
-        <None Remove="Assets\Fonts\Nunito-Black.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-BlackItalic.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-Bold.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-BoldItalic.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-ExtraBold.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-ExtraBoldItalic.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-ExtraLight.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-ExtraLightItalic.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-Italic.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-Light.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-LightItalic.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-Medium.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-MediumItalic.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-Regular.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-SemiBold.ttf"/>
-        <None Remove="Assets\Fonts\Nunito-SemiBoldItalic.ttf"/>
-        <None Remove="Assets\snare-icon.jpg"/>
-        <None Remove="Assets\window.icon.png"/>
+        <None Remove="Assets\Fonts\Nunito-Black.ttf" />
+        <None Remove="Assets\Fonts\Nunito-BlackItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Bold.ttf" />
+        <None Remove="Assets\Fonts\Nunito-BoldItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-ExtraBold.ttf" />
+        <None Remove="Assets\Fonts\Nunito-ExtraBoldItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-ExtraLight.ttf" />
+        <None Remove="Assets\Fonts\Nunito-ExtraLightItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Italic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Light.ttf" />
+        <None Remove="Assets\Fonts\Nunito-LightItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Medium.ttf" />
+        <None Remove="Assets\Fonts\Nunito-MediumItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Regular.ttf" />
+        <None Remove="Assets\Fonts\Nunito-SemiBold.ttf" />
+        <None Remove="Assets\Fonts\Nunito-SemiBoldItalic.ttf" />
+        <None Remove="Assets\snare-icon.jpg" />
+        <None Remove="Assets\window.icon.png" />
     </ItemGroup>
     <ItemGroup>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-Black.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-BlackItalic.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-Bold.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-BoldItalic.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraBold.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraBoldItalic.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraLight.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraLightItalic.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-Italic.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-Light.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-LightItalic.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-Medium.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-MediumItalic.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-Regular.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-SemiBold.ttf"/>
-        <AvaloniaResource Include="Assets\Fonts\Nunito-SemiBoldItalic.ttf"/>
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Black.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-BlackItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Bold.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-BoldItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraBold.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraBoldItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraLight.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraLightItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Italic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Light.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-LightItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Medium.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-MediumItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Regular.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-SemiBold.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-SemiBoldItalic.ttf" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.1.0"/>
-        <PackageReference Include="Avalonia.Desktop" Version="11.1.0"/>
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.0"/>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0"/>
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0"/>
+        <PackageReference Include="Avalonia" Version="11.1.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.1.0" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.0" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.0"/>
-        <PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.0"/>
-        <PackageReference Include="Projektanker.Icons.Avalonia" Version="9.2.0"/>
-        <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.2.0"/>
-        <PackageReference Include="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.3.1"/>
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.0" />
+        <PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.0" />
+        <PackageReference Include="Projektanker.Icons.Avalonia" Version="9.2.0" />
+        <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.2.0" />
+        <PackageReference Include="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.3.1" />
         <PackageReference Include="ReactiveUI" Version="20.2.45" />
         <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.1.27">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ReactiveUI.Validation" Version="4.1.1" />
-        <PackageReference Include="System.Windows.Extensions" Version="8.0.0"/>
+        <PackageReference Include="System.Windows.Extensions" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj"/>
+        <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj" />
         <ProjectReference Include="..\DrumBuddy.IO\DrumBuddy.IO.csproj" />
     </ItemGroup>
 
@@ -86,6 +82,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Assets\Notation\"/>
+        <Folder Include="Assets\Notation\" />
     </ItemGroup>
 </Project>

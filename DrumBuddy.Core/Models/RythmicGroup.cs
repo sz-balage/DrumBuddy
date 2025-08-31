@@ -11,4 +11,24 @@ public record RythmicGroup(ImmutableArray<NoteGroup> NoteGroups)
 {
     [JsonIgnore]
     public bool IsEmpty => NoteGroups.All(n => n.IsRest);
+
+    public virtual bool Equals(RythmicGroup? other)
+    {
+        for (int i = 0; i < NoteGroups.Length; i++)
+        {
+            if(other.NoteGroups.Length < NoteGroups.Length) 
+                return false;
+            var thisNg = NoteGroups[i];
+            var otherNg = other.NoteGroups[i];
+            for (int j = 0; j < thisNg.Count; j++)
+            {
+                if (thisNg[j] != otherNg[j])
+                    return false;
+            }
+        }
+
+        return true;
+
+    }
+    
 }

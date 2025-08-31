@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
+using DrumBuddy.Client.Models;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using ReactiveUI;
@@ -32,6 +33,16 @@ public partial class MeasureViewModel : ReactiveObject
         IsPointerVisible = true;
     }
 
+    public ObservableCollection<EvaluationBox> EvaluationBoxes { get; } = new();
+
+    public void EvaluateMeasure(List<EvaluationBox> boxesToDraw)
+    {
+        EvaluationBoxes.Clear();
+        foreach (var box in boxesToDraw)
+        {
+            EvaluationBoxes.Add(box);
+        }
+    }
     public double PointerPosition
     {
         get => _pointerPosition;

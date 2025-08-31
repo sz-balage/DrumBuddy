@@ -79,7 +79,7 @@ public class App : Application
     private static void RegisterIOServices()
     {
         string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sheet_db.db");
-        string connectionString = "Data Source=\"C:\\Users\\szabo\\RiderProjects\\DrumBuddy\\DrumBuddy.Client\\sheet_db.db\";";
+        string connectionString = "Data Source=C:\\Users\\SBB3BP\\RiderProjects\\DrumBuddy\\DrumBuddy.Client\\sheet_db.db;"; //TODO: add to appsettings
         CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
         CurrentMutable.RegisterConstant<ISheetStorage>(new SheetStorage(Locator.Current.GetRequiredService<ISerializationService>(), connectionString));
     }
