@@ -36,7 +36,7 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
             this.OneWayBind(ViewModel, vm => vm.BaseSheetMeasures, v => v._baseSheetItemsControl.ItemsSource)
                 .DisposeWith(d);      
             this.OneWayBind(ViewModel, vm => vm.CorrectPercentage, v => v._comparedSheetPercentageTB.Text,
-                    d1 => $"{d1}% of the base sheet was played correctly.")
+                    d1 => $"{Math.Round(d1,1)}% of the base sheet was played correctly.")
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.ComparedSheetMeasures, v => v._comparedSheetItemsControl.ItemsSource)
                 .DisposeWith(d);

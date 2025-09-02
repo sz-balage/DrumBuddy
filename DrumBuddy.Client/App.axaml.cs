@@ -13,6 +13,7 @@ using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
+using Microsoft.Extensions.Configuration;
 using ReactiveUI;
 using static Splat.Locator;
 using Splat;
@@ -58,6 +59,7 @@ public class App : Application
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>()));
+        CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>()));
         CurrentMutable.Register(() =>
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<IMidiService>()));
@@ -68,6 +70,7 @@ public class App : Application
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() }, typeof(IViewFor<HomeViewModel>));
         CurrentMutable.Register(() => new RecordingView { ViewModel = Locator.Current.GetRequiredService<RecordingViewModel>() }, typeof(IViewFor<RecordingViewModel>));
         CurrentMutable.Register(() => new LibraryView { ViewModel = Locator.Current.GetRequiredService<LibraryViewModel>() }, typeof(IViewFor<ILibraryViewModel>));
+        CurrentMutable.Register(() => new ManualView() { ViewModel = Locator.Current.GetRequiredService<ManualViewModel>() }, typeof(IViewFor<ManualViewModel>));
     }
 
     private static void RegisterCoreServices()
@@ -78,9 +81,16 @@ public class App : Application
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
     private static void RegisterIOServices()
     {
-        string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sheet_db.db");
-        string connectionString = "Data Source=C:\\Users\\SBB3BP\\RiderProjects\\DrumBuddy\\DrumBuddy.Client\\sheet_db.db;"; //TODO: add to appsettings
+        string connectionString = Program.Configuration.GetConnectionString("Default")
+                                  ?? throw new InvalidOperationException("Missing DB connection string.");
+
         CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
-        CurrentMutable.RegisterConstant<ISheetStorage>(new SheetStorage(Locator.Current.GetRequiredService<ISerializationService>(), connectionString));
+        CurrentMutable.RegisterConstant<ISheetStorage>(
+            new SheetStorage(
+                Locator.Current.GetRequiredService<ISerializationService>(), 
+                connectionString
+            )
+        );
     }
+
 }

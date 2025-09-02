@@ -40,7 +40,8 @@ public partial class MainViewModel : ReactiveObject, IScreen
     {
         new NavigationMenuItemTemplate(typeof(HomeViewModel), "HomeIcon"),
         new NavigationMenuItemTemplate(typeof(RecordingViewModel), "RecordIcon"),
-        new NavigationMenuItemTemplate(typeof(LibraryViewModel), "LibraryIcon")
+        new NavigationMenuItemTemplate(typeof(LibraryViewModel), "LibraryIcon"),
+        new NavigationMenuItemTemplate(typeof(ManualViewModel), "EditorIcon")
     };
 
     public void NavigateFromCode(IRoutableViewModel viewModel)
