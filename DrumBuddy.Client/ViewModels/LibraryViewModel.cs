@@ -32,12 +32,9 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             .Subscribe();
         // _sheetSource.AddOrUpdate(new Sheet(new Bpm(100), ImmutableArray<Measure>.Empty, "New Sheet", "New Sheet"));
         _removeCanExecute = this.WhenAnyValue(vm => vm.SelectedSheet).Select(sheet => sheet != null!);
-        this.WhenNavigatedTo(() =>
-        {
-            return LoadSheets()
-                .ToObservable()
-                .Subscribe();
-        });
+        this.WhenNavigatedTo(() => LoadSheets()
+            .ToObservable()
+            .Subscribe());
     }
 
     [Reactive] private Sheet _selectedSheet;

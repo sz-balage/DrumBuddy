@@ -4,7 +4,58 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels"
                           xmlns:reactiveUi="http://reactiveui.net"
+                          xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Client.Views.ManualView">
-To be done!
+     <Grid>
+        <!-- Choice screen -->
+        <StackPanel x:Name="ChoicePanel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="16">
+            <TextBlock Text="What would you like to do?"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       TextAlignment="Center"/>
+            <Button x:Name="CreateNewButton"
+                    Content="Create a new sheet"/>
+            <Button x:Name="EditExistingButton"
+                    Content="Manually edit an existing sheet"/>
+        </StackPanel>
+
+        <!-- Edit existing -->
+        <StackPanel x:Name="EditPanel"
+                    IsVisible="False"
+                    Margin="16"
+                    Spacing="8">
+            <TextBlock Text="Select a sheet to edit"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+            <ListBox x:Name="SheetsLB">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="models:Sheet">
+                        <StackPanel Orientation="Vertical" Margin="4">
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Description}"
+                                       FontStyle="Italic"
+                                       FontSize="12"
+                                       Opacity="0.7"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+
+        <!-- Create new (stub) -->
+        <StackPanel x:Name="CreatePanel"
+                    IsVisible="False"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="10">
+            <TextBlock Text="Sheet editor will go here..."
+                       FontSize="18"
+                       FontStyle="Italic"/>
+        </StackPanel>
+    </Grid>
 </reactiveUi:ReactiveUserControl>
