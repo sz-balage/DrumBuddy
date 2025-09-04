@@ -59,7 +59,7 @@ public class App : Application
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>()));
-        CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>()));
+        CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.Register(() =>
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<IMidiService>()));

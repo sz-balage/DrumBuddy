@@ -1,61 +1,32 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:ManualViewModel"  xmlns="https://github.com/avaloniaui"
-                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                          xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels"
-                          xmlns:reactiveUi="http://reactiveui.net"
-                          xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
-                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                          x:Class="DrumBuddy.Client.Views.ManualView">
-     <Grid>
-        <!-- Choice screen -->
-        <StackPanel x:Name="ChoicePanel"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="16">
-            <TextBlock Text="What would you like to do?"
-                       FontSize="20"
-                       FontWeight="Bold"
-                       TextAlignment="Center"/>
-            <Button x:Name="CreateNewButton"
-                    Content="Create a new sheet"/>
-            <Button x:Name="EditExistingButton"
-                    Content="Manually edit an existing sheet"/>
-        </StackPanel>
-
-        <!-- Edit existing -->
-        <StackPanel x:Name="EditPanel"
-                    IsVisible="False"
-                    Margin="16"
-                    Spacing="8">
-            <TextBlock Text="Select a sheet to edit"
-                       FontSize="18"
-                       FontWeight="Bold"
-                       Margin="0,0,0,10"/>
-            <ListBox x:Name="SheetsLB">
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="models:Sheet">
-                        <StackPanel Orientation="Vertical" Margin="4">
-                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding Description}"
-                                       FontStyle="Italic"
-                                       FontSize="12"
-                                       Opacity="0.7"/>
-                        </StackPanel>
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:ManualViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="DrumBuddy.Client.Views.ManualView">
+    <Grid Margin="12" RowDefinitions="Auto,Auto,*" x:Name="Root">
+        <TextBlock Text="Manual editor — one measure (16 steps)"
+                   FontWeight="Bold"
+                   Margin="0,0,0,8" />
+        <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="MeasuresItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <helperViews:MeasureView Width="600" />
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
-
-        <!-- Create new (stub) -->
-        <StackPanel x:Name="CreatePanel"
-                    IsVisible="False"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="10">
-            <TextBlock Text="Sheet editor will go here..."
-                       FontSize="18"
-                       FontStyle="Italic"/>
-        </StackPanel>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Grid x:Name="MatrixGrid" />
+        </ScrollViewer>
     </Grid>
 </reactiveUi:ReactiveUserControl>
