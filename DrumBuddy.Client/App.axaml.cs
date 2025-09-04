@@ -81,9 +81,7 @@ public class App : Application
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
     private static void RegisterIOServices()
     {
-        string connectionString = Program.Configuration.GetConnectionString("Default")
-                                  ?? throw new InvalidOperationException("Missing DB connection string.");
-
+        var connectionString = $"Data Source={Path.Combine(Environment.CurrentDirectory,"sheet_db.db")};";
         CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
         CurrentMutable.RegisterConstant<ISheetStorage>(
             new SheetStorage(

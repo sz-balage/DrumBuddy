@@ -89,7 +89,8 @@
 
     <ItemGroup>
       <None Remove="appsettings.json" />
-      <Content Include="appsettings.json">
+      <None Remove="sheet_db.db" />
+      <Content Include="sheet_db.db">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
