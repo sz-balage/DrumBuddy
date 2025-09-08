@@ -4,10 +4,12 @@ using System.Collections.Immutable;
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Avalonia.VisualTree;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
@@ -56,11 +58,35 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
                         .DisposeWith(d);
                 })
                 .DisposeWith(d);
+            this.WhenAnyValue(x => x.ViewModel.CurrentMeasureIndex)
+                .Subscribe(currentIndex => UpdateMeasureBorders(currentIndex))
+                .DisposeWith(d);
+
         });
     }
 
     private Grid _matrixGrid => this.FindControl<Grid>("MatrixGrid");
-
+    private void UpdateMeasureBorders(int currentIndex)
+    { 
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            var itemsCount = MeasuresItemsControl.ItemCount;
+            for (int i = 0; i < itemsCount; i++)
+            {
+                var container = MeasuresItemsControl.ItemContainerGenerator.ContainerFromIndex(i);
+                if (container is ContentPresenter presenter)
+                {
+                    var border = presenter.FindDescendantOfType<Border>();
+                    if (border != null)
+                    {
+                        border.BorderBrush = i == currentIndex 
+                            ? new SolidColorBrush(new Color(0xFF, 0x00, 0x7A, 0xCC)) 
+                            : new SolidColorBrush(Colors.Transparent);
+                    }
+                }
+            }
+        }, Avalonia.Threading.DispatcherPriority.Loaded);
+    }
     private void BuildMatrix(ManualViewModel vm)
     {
         _matrixGrid.Children.Clear();

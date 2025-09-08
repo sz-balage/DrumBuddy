@@ -20,7 +20,12 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <helperViews:MeasureView Width="600" />
+                        <Border x:Name="MeasureBorder"
+                                BorderThickness="3"
+                                CornerRadius="8"
+                                BorderBrush="Transparent">
+                            <helperViews:MeasureView Width="600" />
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
