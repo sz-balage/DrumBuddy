@@ -7,8 +7,8 @@
                                 xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="DrumBuddy.Client.Views.ManualView">
-    <Grid Margin="12" RowDefinitions="0.1*,0.5*,0.4*" x:Name="Root">
-        <TextBlock Text="Manual editor — one measure (16 steps)"
+    <Grid Margin="12" RowDefinitions="Auto,0.5*,Auto,0.4*" x:Name="Root">
+        <TextBlock Text="Manual editor"
                    FontWeight="Bold"
                    Margin="0,0,0,8" />
         <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto" MinHeight="190">
@@ -25,7 +25,41 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-        <ScrollViewer VerticalAlignment="Bottom" Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+        <Grid Grid.Row="2" Margin="0,8" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+            <Button Grid.Column="0" 
+                    x:Name="AddMeasureButton"
+                    Content="+" 
+                    FontSize="16" 
+                    FontWeight="Bold"
+                    Width="32" 
+                    Height="32" 
+                    Margin="0,0,12,0"
+                    ToolTip.Tip="Add new measure" />
+
+            <TextBlock Grid.Column="1" 
+                       x:Name="MeasureDisplayText"
+                       VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"
+                       FontWeight="SemiBold" />
+
+            <Button Grid.Column="2" 
+                    x:Name="BackButton"
+                    Content="◀" 
+                    Width="32" 
+                    Height="32" 
+                    Margin="0,0,4,0"
+                    ToolTip.Tip="Previous measure" />
+
+            <Button Grid.Column="3" 
+                    x:Name="ForwardButton"
+                    Content="▶" 
+                    Width="32" 
+                    Height="32" 
+                    Margin="4,0,0,0"
+                    ToolTip.Tip="Next measure" />
+        </Grid>
+        <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Grid x:Name="MatrixGrid" />
         </ScrollViewer>
     </Grid>

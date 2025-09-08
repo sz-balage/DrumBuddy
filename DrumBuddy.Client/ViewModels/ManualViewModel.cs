@@ -10,17 +10,19 @@ using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DynamicData;
 using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 
 namespace DrumBuddy.Client.ViewModels;
 
 public sealed record ManualSheetDraft(IReadOnlyList<Drum> Drums, bool[,] Steps);
 
-public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
+public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
 {
     public const int Columns = 16; // one measure, 16 sixteenth steps
-    private readonly bool[,] _steps; // [row, col]
+    private readonly List<bool[,]> _measureSteps; 
     private ManualSheetDraft _draft;
     private Sheet? _currentSheet;
+    private int _currentMeasureIndex = 0;
 
     public Sheet? CurrentSheet
     {
@@ -28,8 +30,25 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
         private set => this.RaiseAndSetIfChanged(ref _currentSheet, value);
     }
 
+    public int CurrentMeasureIndex
+    {
+        get => _currentMeasureIndex;
+        private set 
+        {
+            this.RaiseAndSetIfChanged(ref _currentMeasureIndex, value);
+            this.RaisePropertyChanged(nameof(CanGoBack));
+            this.RaisePropertyChanged(nameof(CanGoForward));
+            this.RaisePropertyChanged(nameof(MeasureDisplayText));
+        }
+    }
+
+    public bool CanGoBack => CurrentMeasureIndex > 0;
+    public bool CanGoForward =>  CurrentMeasureIndex < _measureSteps?.Count - 1;
+    public string MeasureDisplayText => $"Measure {CurrentMeasureIndex + 1} of {_measureSteps.Count}";
+
     public readonly ReadOnlyObservableCollection<MeasureViewModel> Measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
+
     public ManualViewModel(IScreen host)
     {
         HostScreen = host;
@@ -38,12 +57,15 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
             .Bind(out Measures)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe();
-        _steps = new bool[Drums.Length, Columns];
+        
+        _measureSteps = new List<bool[,]>
+        {
+            new bool[Drums.Length, Columns]
+        };
         _draft = BuildDraft();
         CurrentSheet = BuildSheet(new Bpm(120), "Untitled", "");
-        
+        DrawMeasures();
     }
-
 
     public ManualSheetDraft Draft
     {
@@ -56,13 +78,12 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
 
     public void ToggleStep(int row, int col)
     {
-        //TODO: consider only swapping out changed measures, not whole sheet
         if (row < 0 || row >= Drums.Length) return;
         if (col < 0 || col >= Columns) return;
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
 
-        _steps[row, col] = !_steps[row, col];
+        _measureSteps[CurrentMeasureIndex][row, col] = !_measureSteps[CurrentMeasureIndex][row, col];
         Draft = BuildDraft();
-
         CurrentSheet = BuildSheet(new Bpm(120), "Untitled", "");
         DrawMeasures();
     }
@@ -71,7 +92,35 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
     {
         if (row < 0 || row >= Drums.Length) return false;
         if (col < 0 || col >= Columns) return false;
-        return _steps[row, col];
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return false;
+        return _measureSteps[CurrentMeasureIndex][row, col];
+    }
+    [ReactiveCommand]
+    private void AddMeasure()
+    {
+        var newMeasure = new bool[Drums.Length, Columns];
+        _measureSteps.Add(newMeasure);
+        CurrentMeasureIndex = _measureSteps.Count - 1; 
+        
+        Draft = BuildDraft();
+        CurrentSheet = BuildSheet(new Bpm(120), "Untitled", "");
+        DrawMeasures();
+    }
+    [ReactiveCommand]
+    public void GoToPreviousMeasure()
+    {
+        if (CanGoBack)
+        {
+            CurrentMeasureIndex--;
+        }
+    }
+    [ReactiveCommand]
+    public void GoToNextMeasure()
+    {
+        if (CanGoForward)
+        {
+            CurrentMeasureIndex++;
+        }
     }
 
     public void LoadMatrix(bool[,] matrix)
@@ -79,59 +128,76 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
         if (matrix.GetLength(0) != Drums.Length || matrix.GetLength(1) != Columns)
             throw new ArgumentException("Matrix size must be [drums x 16].");
 
-        Array.Clear(_steps, 0, _steps.Length);
-        Array.Copy(matrix, _steps, matrix.Length);
+        if (CurrentMeasureIndex >= 0 && CurrentMeasureIndex < _measureSteps.Count)
+        {
+            Array.Clear(_measureSteps[CurrentMeasureIndex], 0, _measureSteps[CurrentMeasureIndex].Length);
+            Array.Copy(matrix, _measureSteps[CurrentMeasureIndex], matrix.Length);
+        }
 
         Draft = BuildDraft();
         CurrentSheet = BuildSheet(new Bpm(120), "Untitled", "");
+        DrawMeasures();
     }
 
     public void LoadSheet(Sheet sheet)
     {
-        Array.Clear(_steps, 0, _steps.Length);
+        _measureSteps.Clear();
 
         if (sheet is null || sheet.Measures.Length == 0)
         {
+            _measureSteps.Add(new bool[Drums.Length, Columns]);
+            CurrentMeasureIndex = 0;
             Draft = BuildDraft();
             CurrentSheet = BuildSheet(new Bpm(120), "Untitled", "");
+            DrawMeasures();
             return;
         }
 
-        // populate _steps from first measure (same as before) ...
-        // [omitted here for brevity]
+        foreach (var measure in sheet.Measures)
+        {
+            var measureMatrix = new bool[Drums.Length, Columns];
+            _measureSteps.Add(measureMatrix);
+        }
 
+        CurrentMeasureIndex = 0;
         Draft = BuildDraft();
         CurrentSheet = BuildSheet(sheet.Tempo, sheet.Name, sheet.Description);
+        DrawMeasures();
     }
 
     private Sheet BuildSheet(Bpm tempo, string name, string description)
     {
-        var groups = new List<RythmicGroup>();
+        var allMeasures = new List<Measure>();
 
-        // 16 columns = 4 rhythmic groups
-        for (var g = 0; g < 4; g++)
+        foreach (var measureSteps in _measureSteps)
         {
-            var noteGroups = new List<NoteGroup>();
+            var groups = new List<RythmicGroup>();
 
-            for (var c = 0; c < 4; c++)
+            // 16 columns = 4 rhythmic groups
+            for (var g = 0; g < 4; g++)
             {
-                var col = g * 4 + c;
-                var notes = new List<Note>();
+                var noteGroups = new List<NoteGroup>();
 
-                for (var r = 0; r < Drums.Length; r++)
-                    if (_steps[r, col])
-                        notes.Add(new Note(Drums[r], NoteValue.Sixteenth));
+                for (var c = 0; c < 4; c++)
+                {
+                    var col = g * 4 + c;
+                    var notes = new List<Note>();
 
-                noteGroups.Add(notes.Count > 0 ? new NoteGroup(notes) : new NoteGroup());
+                    for (var r = 0; r < Drums.Length; r++)
+                        if (measureSteps[r, col])
+                            notes.Add(new Note(Drums[r], NoteValue.Sixteenth));
+
+                    noteGroups.Add(notes.Count > 0 ? new NoteGroup(notes) : new NoteGroup());
+                }
+
+                var upscaled = RecordingService.UpscaleNotes(noteGroups);
+                groups.Add(new RythmicGroup(upscaled.ToImmutableArray()));
             }
 
-            var upscaled = RecordingService.UpscaleNotes(noteGroups);
-
-            groups.Add(new RythmicGroup(upscaled.ToImmutableArray()));
+            allMeasures.Add(new Measure(groups));
         }
 
-        var measure = new Measure(groups);
-        return new Sheet(tempo, ImmutableArray.Create(measure), name, description);
+        return new Sheet(tempo, allMeasures.ToImmutableArray(), name, description);
     }
 
     private void DrawMeasures()
@@ -142,7 +208,11 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
 
     private ManualSheetDraft BuildDraft()
     {
-        return new ManualSheetDraft(Array.AsReadOnly(Drums), CloneMatrix(_steps));
+        var currentSteps = CurrentMeasureIndex >= 0 && CurrentMeasureIndex < _measureSteps.Count 
+            ? _measureSteps[CurrentMeasureIndex] 
+            : new bool[Drums.Length, Columns];
+        
+        return new ManualSheetDraft(Array.AsReadOnly(Drums), CloneMatrix(currentSteps));
     }
 
     private static bool[,] CloneMatrix(bool[,] src)

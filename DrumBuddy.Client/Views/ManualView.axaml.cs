@@ -19,7 +19,6 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
 {
     private const int StepCount = ManualViewModel.Columns;
 
-
     public ManualView()
     {
         if (Design.IsDesignMode)
@@ -32,12 +31,30 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
 
         this.WhenActivated(d =>
         { 
-            //TODO: figure out multiple measures
+            this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasuresItemsControl.ItemsSource)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.MeasureDisplayText, v => v.MeasureDisplayText.Text)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.CanGoBack, v => v.BackButton.IsEnabled)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.CanGoForward, v => v.ForwardButton.IsEnabled)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.AddMeasureCommand, v => v.AddMeasureButton)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.GoToPreviousMeasureCommand, v => v.BackButton)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.GoToNextMeasureCommand, v => v.ForwardButton)
+                .DisposeWith(d);
+
             this.WhenAnyValue(v => v.ViewModel)
                 .WhereNotNull()
-                .Subscribe(vm => BuildMatrix(vm))
-                .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasuresItemsControl.ItemsSource)
+                .Subscribe(vm => 
+                {
+                    BuildMatrix(vm);
+                    vm.WhenAnyValue(x => x.CurrentMeasureIndex)
+                        .Subscribe(_ => BuildMatrix(vm))
+                        .DisposeWith(d);
+                })
                 .DisposeWith(d);
         });
     }
