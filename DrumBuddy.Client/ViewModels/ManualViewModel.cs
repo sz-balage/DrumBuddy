@@ -204,6 +204,9 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     {
         _measureSource.Clear();
         _measureSource.AddRange(CurrentSheet?.Measures.Select(m => new MeasureViewModel(m)) ?? Array.Empty<MeasureViewModel>());
+        var idx = CurrentMeasureIndex;
+        CurrentMeasureIndex = -1;
+        CurrentMeasureIndex = idx;
     }
 
     private ManualSheetDraft BuildDraft()

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
@@ -10,10 +8,9 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DrumBuddy.Client.ViewModels;
-using DrumBuddy.Core.Enums;
-using DrumBuddy.Core.Models;
 using ReactiveUI;
 
 namespace DrumBuddy.Client.Views;
@@ -30,10 +27,11 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             vm.LoadSheet(Program.TestSheet);
             ViewModel = vm;
         }
+
         InitializeComponent();
 
         this.WhenActivated(d =>
-        { 
+        {
             this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasuresItemsControl.ItemsSource)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.MeasureDisplayText, v => v.MeasureDisplayText.Text)
@@ -51,7 +49,7 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
 
             this.WhenAnyValue(v => v.ViewModel)
                 .WhereNotNull()
-                .Subscribe(vm => 
+                .Subscribe(vm =>
                 {
                     BuildMatrix(vm);
                     vm.WhenAnyValue(x => x.CurrentMeasureIndex)
@@ -62,32 +60,35 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             this.WhenAnyValue(x => x.ViewModel.CurrentMeasureIndex)
                 .Subscribe(currentIndex => UpdateMeasureBorders(currentIndex))
                 .DisposeWith(d);
-
         });
     }
 
     private Grid _matrixGrid => this.FindControl<Grid>("MatrixGrid");
+
     private void UpdateMeasureBorders(int currentIndex)
-    { 
-        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+    {
+        Dispatcher.UIThread.Post(() =>
         {
             var itemsCount = MeasuresItemsControl.ItemCount;
-            for (int i = 0; i < itemsCount; i++)
+            for (var i = 0; i < itemsCount; i++)
             {
                 var container = MeasuresItemsControl.ItemContainerGenerator.ContainerFromIndex(i);
                 if (container is ContentPresenter presenter)
                 {
                     var border = presenter.FindDescendantOfType<Border>();
                     if (border != null)
-                    {
-                        border.BorderBrush = i == currentIndex 
-                            ? new SolidColorBrush(new Color(0xFF, 0x00, 0x7A, 0xCC)) 
+                        border.BorderBrush = i == currentIndex
+                            ? new SolidColorBrush(new Color(0xFF, 0x00, 0x7A, 0xCC))
                             : new SolidColorBrush(Colors.Transparent);
-                    }
+
+                    // 👇 Scroll the current measure into view
+                    if (i == currentIndex) presenter.BringIntoView();
                 }
             }
-        }, Avalonia.Threading.DispatcherPriority.Loaded);
+        }, DispatcherPriority.Loaded);
     }
+
+
     private void BuildMatrix(ManualViewModel vm)
     {
         _matrixGrid.Children.Clear();
@@ -129,7 +130,7 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             if (c % 4 == 0)
             {
                 label.FontWeight = FontWeight.Bold;
-                label.Foreground = new SolidColorBrush(new Color(0xFF, 0x00, 0x7A, 0xCC)) ;
+                label.Foreground = new SolidColorBrush(new Color(0xFF, 0x00, 0x7A, 0xCC));
             }
 
             Grid.SetRow(label, 0);
@@ -167,9 +168,9 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
                 };
 
                 var checkedStyle = new Style(x => x.OfType<ToggleButton>().Class(":checked"));
-                checkedStyle.Setters.Add(new Setter(ToggleButton.BackgroundProperty,
+                checkedStyle.Setters.Add(new Setter(BackgroundProperty,
                     new SolidColorBrush(Color.FromRgb(200, 80, 80))));
-                checkedStyle.Setters.Add(new Setter(ToggleButton.BorderBrushProperty,
+                checkedStyle.Setters.Add(new Setter(BorderBrushProperty,
                     new SolidColorBrush(Color.FromRgb(220, 100, 100))));
                 btn.Styles.Add(checkedStyle);
 
@@ -185,5 +186,4 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             }
         }
     }
-
 }
