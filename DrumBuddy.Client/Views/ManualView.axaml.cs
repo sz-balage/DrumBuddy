@@ -9,6 +9,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Avalonia.Styling;
 using Avalonia.VisualTree;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Core.Enums;
@@ -93,17 +94,22 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
         _matrixGrid.ColumnDefinitions.Clear();
         _matrixGrid.RowDefinitions.Clear();
 
-        _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(100))); // Drum labels
         for (var c = 0; c < StepCount; c++)
-            _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+            _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
 
-        _matrixGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        _matrixGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40))); // Header row
+        for (var r = 0; r < vm.Drums.Length; r++)
+            _matrixGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
 
         var header = new TextBlock
         {
             Text = "Drum \\ Step",
-            Margin = new Thickness(0, 0, 8, 8),
-            VerticalAlignment = VerticalAlignment.Bottom
+            Margin = new Thickness(2),
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            FontSize = 16,
+            FontWeight = FontWeight.SemiBold
         };
         Grid.SetRow(header, 0);
         Grid.SetColumn(header, 0);
@@ -114,30 +120,32 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             var label = new TextBlock
             {
                 Text = (c + 1).ToString(),
-                Margin = new Thickness(2, 0, 2, 8),
                 HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                Opacity = 0.75
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = 24,
+                Foreground = new SolidColorBrush(Colors.Black)
             };
 
-            if (c % 4 == 0) label.FontWeight = FontWeight.SemiBold;
+            if (c % 4 == 0)
+            {
+                label.FontWeight = FontWeight.Bold;
+                label.Foreground = new SolidColorBrush(new Color(0xFF, 0x00, 0x7A, 0xCC)) ;
+            }
 
             Grid.SetRow(label, 0);
             Grid.SetColumn(label, c + 1);
             _matrixGrid.Children.Add(label);
         }
 
-        var rows = vm.Drums.Length;
-
-        for (var r = 0; r < rows; r++)
+        for (var r = 0; r < vm.Drums.Length; r++)
         {
-            _matrixGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-
             var drumLabel = new TextBlock
             {
                 Text = vm.Drums[r].ToString(),
-                Margin = new Thickness(0, 4, 8, 4),
-                VerticalAlignment = VerticalAlignment.Center
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(4, 0, 4, 0),
+                FontSize = 20
             };
             Grid.SetRow(drumLabel, r + 1);
             Grid.SetColumn(drumLabel, 0);
@@ -147,12 +155,24 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             {
                 var btn = new ToggleButton
                 {
-                    Width = 28,
-                    Height = 28,
-                    Margin = new Thickness(c % 4 == 0 ? 6 : 2, 4, 2, 4), // little gap before each group of 4
-                    Content = null, // clean square
-                    IsChecked = vm.GetStep(r, c)
+                    Margin = new Thickness(2), // space between buttons
+                    Content = null,
+                    IsChecked = vm.GetStep(r, c),
+                    CornerRadius = new CornerRadius(3),
+                    Background = new SolidColorBrush(Color.FromRgb(60, 60, 60)), // default background
+                    BorderBrush = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
+                    BorderThickness = new Thickness(1),
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch
                 };
+
+                var checkedStyle = new Style(x => x.OfType<ToggleButton>().Class(":checked"));
+                checkedStyle.Setters.Add(new Setter(ToggleButton.BackgroundProperty,
+                    new SolidColorBrush(Color.FromRgb(200, 80, 80))));
+                checkedStyle.Setters.Add(new Setter(ToggleButton.BorderBrushProperty,
+                    new SolidColorBrush(Color.FromRgb(220, 100, 100))));
+                btn.Styles.Add(checkedStyle);
+
 
                 var rr = r;
                 var cc = c;
@@ -165,4 +185,5 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             }
         }
     }
+
 }
