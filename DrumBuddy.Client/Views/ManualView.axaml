@@ -11,7 +11,7 @@
         <TextBlock Text="Manual editor — one measure (16 steps)"
                    FontWeight="Bold"
                    Margin="0,0,0,8" />
-        <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto" MinHeight="190">
             <ItemsControl x:Name="MeasuresItemsControl">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

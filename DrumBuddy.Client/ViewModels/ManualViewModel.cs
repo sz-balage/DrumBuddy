@@ -18,8 +18,6 @@ public sealed record ManualSheetDraft(IReadOnlyList<Drum> Drums, bool[,] Steps);
 public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
 {
     public const int Columns = 16; // one measure, 16 sixteenth steps
-
-    private readonly Drum[] _drums;
     private readonly bool[,] _steps; // [row, col]
     private ManualSheetDraft _draft;
     private Sheet? _currentSheet;
@@ -32,7 +30,7 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
 
     public readonly ReadOnlyObservableCollection<MeasureViewModel> Measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
-    public ManualViewModel(IScreen host, IEnumerable<Drum>? drums = null)
+    public ManualViewModel(IScreen host)
     {
         HostScreen = host;
         UrlPathSegment = "manual-editor";
@@ -40,14 +38,12 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
             .Bind(out Measures)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe();
-        _drums = (drums ?? DefaultDrums).ToArray();
-        _steps = new bool[_drums.Length, Columns];
+        _steps = new bool[Drums.Length, Columns];
         _draft = BuildDraft();
         CurrentSheet = BuildSheet(new Bpm(120), "Untitled", "");
         
     }
 
-    public IReadOnlyList<Drum> Drums => Array.AsReadOnly(_drums);
 
     public ManualSheetDraft Draft
     {
@@ -61,7 +57,7 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
     public void ToggleStep(int row, int col)
     {
         //TODO: consider only swapping out changed measures, not whole sheet
-        if (row < 0 || row >= _drums.Length) return;
+        if (row < 0 || row >= Drums.Length) return;
         if (col < 0 || col >= Columns) return;
 
         _steps[row, col] = !_steps[row, col];
@@ -73,14 +69,14 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
 
     public bool GetStep(int row, int col)
     {
-        if (row < 0 || row >= _drums.Length) return false;
+        if (row < 0 || row >= Drums.Length) return false;
         if (col < 0 || col >= Columns) return false;
         return _steps[row, col];
     }
 
     public void LoadMatrix(bool[,] matrix)
     {
-        if (matrix.GetLength(0) != _drums.Length || matrix.GetLength(1) != Columns)
+        if (matrix.GetLength(0) != Drums.Length || matrix.GetLength(1) != Columns)
             throw new ArgumentException("Matrix size must be [drums x 16].");
 
         Array.Clear(_steps, 0, _steps.Length);
@@ -122,9 +118,9 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
                 var col = g * 4 + c;
                 var notes = new List<Note>();
 
-                for (var r = 0; r < _drums.Length; r++)
+                for (var r = 0; r < Drums.Length; r++)
                     if (_steps[r, col])
-                        notes.Add(new Note(_drums[r], NoteValue.Sixteenth));
+                        notes.Add(new Note(Drums[r], NoteValue.Sixteenth));
 
                 noteGroups.Add(notes.Count > 0 ? new NoteGroup(notes) : new NoteGroup());
             }
@@ -146,7 +142,7 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
 
     private ManualSheetDraft BuildDraft()
     {
-        return new ManualSheetDraft(Array.AsReadOnly(_drums), CloneMatrix(_steps));
+        return new ManualSheetDraft(Array.AsReadOnly(Drums), CloneMatrix(_steps));
     }
 
     private static bool[,] CloneMatrix(bool[,] src)
@@ -158,7 +154,7 @@ public sealed class ManualViewModel : ReactiveObject, IRoutableViewModel
         return dst;
     }
 
-    private static readonly Drum[] DefaultDrums = new[]
+    public readonly Drum[] Drums = new[]
     {
         Drum.Kick,
         Drum.Snare,

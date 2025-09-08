@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
@@ -7,6 +9,8 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.ViewModels;
+using DrumBuddy.Core.Enums;
+using DrumBuddy.Core.Models;
 using ReactiveUI;
 
 namespace DrumBuddy.Client.Views;
@@ -18,6 +22,12 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
 
     public ManualView()
     {
+        if (Design.IsDesignMode)
+        {
+            var vm = new ManualViewModel(null);
+            vm.LoadSheet(Program.TestSheet);
+            ViewModel = vm;
+        }
         InitializeComponent();
 
         this.WhenActivated(d =>
@@ -74,7 +84,7 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             _matrixGrid.Children.Add(label);
         }
 
-        var rows = vm.Drums.Count;
+        var rows = vm.Drums.Length;
 
         for (var r = 0; r < rows; r++)
         {
