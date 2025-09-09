@@ -6,6 +6,7 @@ using Avalonia;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
+using Note = DrumBuddy.Core.Models.Note;
 
 namespace DrumBuddy.Client.Services;
 
@@ -45,9 +46,9 @@ public class NoteDrawHelper
         //get start and endpoint for each note groups line -> the start point is the y position of the lowest note in the group, the endpoint is the y position of the highest note in the group + 3 * notehead height
         var lowestY = GetYPositionForDrum(noteGroup.First().Drum);
         //var highestY = GetYPositionForDrum(noteGroup.Last().Drum);
-        var startPointY = FromCentreBasedToTopLeftCoordinateY(lowestY); 
+        var startPointY = FromCentreBasedToTopLeftCoordinateY(lowestY);
         var endPointY = FromCentreBasedToTopLeftCoordinateY(highestY - 3 * NoteHeadSize.Height);
-        return new LineAndStroke(noteGroup,new Point(FromCentreBasedToTopLeftCoordinateX(xPosition) + 12, startPointY),
+        return new LineAndStroke(noteGroup, new Point(FromCentreBasedToTopLeftCoordinateX(xPosition) + 12, startPointY),
             new Point(FromCentreBasedToTopLeftCoordinateX(xPosition) + 12, endPointY), VerticalLineThickness);
     }
 
@@ -113,7 +114,9 @@ public class NoteDrawHelper
     {
         _canvasWidth = canvasWidth;
         _canvasHeight = canvasHeight;
-        _startingXPos = -1 * (_canvasWidth / 2) + 20; //since 0 is middle, we need to set it to left by decrementing it by half the width, and then add a minimal offset so it is not on the edge
+        _startingXPos =
+            -1 * (_canvasWidth / 2) +
+            20; //since 0 is middle, we need to set it to left by decrementing it by half the width, and then add a minimal offset so it is not on the edge
         _noteGroupWidth = _canvasWidth / 4;
     }
 
@@ -131,8 +134,8 @@ public class NoteDrawHelper
             RythmicGroup rythmicGroup)
     {
         //TODO: hunt bugs by looking at keyboard input values
-        double highestY = rythmicGroup.NoteGroups.Select(ng => GetYPositionForDrum(ng.First().Drum)).Min();
-        var linesAndStrokes = new List<LineAndStroke>(); //TODO: draw lines horizontally
+        var highestY = rythmicGroup.NoteGroups.Select(ng => ng.Select(n => GetYPositionForDrum(n.Drum)).Min()).Min();
+        var linesAndStrokes = new List<LineAndStroke>();
         var images = new List<NoteImageAndBounds>();
         var noteGroups = rythmicGroup.NoteGroups;
         var x = _startingXPos;
@@ -156,9 +159,11 @@ public class NoteDrawHelper
                 {
                     var firstLine = linesAndStrokes.First();
                     var lastLine = linesAndStrokes.Last();
-                    var lineAndStroke = new LineAndStroke(noteGroups[i],firstLine.EndPoint, lastLine.EndPoint, HorizontalLineThickness);
+                    var lineAndStroke = new LineAndStroke(noteGroups[i], firstLine.EndPoint, lastLine.EndPoint,
+                        HorizontalLineThickness);
                     linesAndStrokes.Add(lineAndStroke);
                 }
+
                 continue;
             }
 
@@ -172,42 +177,51 @@ public class NoteDrawHelper
                 var noteImage = getNoteImage(note, point);
                 images.Add(noteImage);
             }
+
             x += GetDisplacementForNoteValue(noteGroup.Value, _noteGroupWidth);
-            if (i == (noteGroups.Length-1) && linesAndStrokes.Count > 1)
+            if (i == noteGroups.Length - 1 && linesAndStrokes.Count > 1)
             {
                 var firstLine = linesAndStrokes.First();
                 var lastLine = linesAndStrokes.Last();
-                var lineAndStroke = new LineAndStroke(noteGroups[i],firstLine.EndPoint, lastLine.EndPoint, HorizontalLineThickness);
+                var lineAndStroke = new LineAndStroke(noteGroups[i], firstLine.EndPoint, lastLine.EndPoint,
+                    HorizontalLineThickness);
                 linesAndStrokes.Add(lineAndStroke);
             }
         }
+
         var sixteenthNotes = noteGroups.Where(ng => ng is { Value: NoteValue.Sixteenth, IsRest: false }).ToList();
         if (sixteenthNotes.Count == 1)
         {
             var sixteenthNoteGroup = sixteenthNotes.Single();
-            var lineOfGroup = linesAndStrokes.Single(line => line.NoteGroup == sixteenthNoteGroup && line.LineType == LineType.Vertical);
+            var lineOfGroup = linesAndStrokes.Single(line =>
+                line.NoteGroup == sixteenthNoteGroup && line.LineType == LineType.Vertical);
             var lastNonRest = noteGroups.Last(ng => !ng.IsRest);
             if (lineOfGroup == linesAndStrokes.First() && sixteenthNoteGroup == lastNonRest) //TODO: fix bug
             {
                 //draw two lines diagonally
                 //TODO: use curly lines instead of straight lines
                 var startPoint1 = lineOfGroup.EndPoint;
-                var endPoint1 = lineOfGroup.EndPoint.WithX(startPoint1.X+ 20).WithY(startPoint1.Y+40);
-                var lineAndStroke1 = new LineAndStroke(sixteenthNoteGroup, startPoint1, endPoint1, VerticalLineThickness);
-                var lineAndStroke2 = new LineAndStroke(sixteenthNoteGroup, startPoint1.WithY(startPoint1.Y+20), endPoint1.WithY(endPoint1.Y+20), VerticalLineThickness);
+                var endPoint1 = lineOfGroup.EndPoint.WithX(startPoint1.X + 20).WithY(startPoint1.Y + 40);
+                var lineAndStroke1 =
+                    new LineAndStroke(sixteenthNoteGroup, startPoint1, endPoint1, VerticalLineThickness);
+                var lineAndStroke2 = new LineAndStroke(sixteenthNoteGroup, startPoint1.WithY(startPoint1.Y + 20),
+                    endPoint1.WithY(endPoint1.Y + 20), VerticalLineThickness);
                 linesAndStrokes.Add(lineAndStroke1);
                 linesAndStrokes.Add(lineAndStroke2);
             }
             else
             {
                 //it is already connected by one line, so draw a little line below that line
-                bool isRightSided = noteGroups.First(ng => !ng.IsRest) == sixteenthNoteGroup;
-                
-                var startPoint = lineOfGroup.EndPoint.WithX(isRightSided ? lineOfGroup.EndPoint.X 
-                    : lineOfGroup.EndPoint.X-10).WithY(lineOfGroup.EndPoint.Y+10);
-                var endPoint = isRightSided ? lineOfGroup.EndPoint.WithX(lineOfGroup.EndPoint.X+10).WithY(lineOfGroup.EndPoint.Y+10) 
-                    : lineOfGroup.EndPoint.WithY(lineOfGroup.EndPoint.Y+10);
-                var lineAndStroke = new LineAndStroke(sixteenthNoteGroup, startPoint, endPoint, HorizontalLineThickness);
+                var isRightSided = noteGroups.First(ng => !ng.IsRest) == sixteenthNoteGroup;
+
+                var startPoint = lineOfGroup.EndPoint.WithX(isRightSided
+                    ? lineOfGroup.EndPoint.X
+                    : lineOfGroup.EndPoint.X - 10).WithY(lineOfGroup.EndPoint.Y + 10);
+                var endPoint = isRightSided
+                    ? lineOfGroup.EndPoint.WithX(lineOfGroup.EndPoint.X + 10).WithY(lineOfGroup.EndPoint.Y + 10)
+                    : lineOfGroup.EndPoint.WithY(lineOfGroup.EndPoint.Y + 10);
+                var lineAndStroke =
+                    new LineAndStroke(sixteenthNoteGroup, startPoint, endPoint, HorizontalLineThickness);
                 linesAndStrokes.Add(lineAndStroke);
             }
         }
@@ -220,28 +234,31 @@ public class NoteDrawHelper
                 .Single(line => line.NoteGroup == firstSixteenthNote && line.LineType == LineType.Vertical).EndPoint;
             var lastEndPoint = linesAndStrokes
                 .Single(line => line.NoteGroup == lastSixteenthNote && line.LineType == LineType.Vertical).EndPoint;
-            var startPoint = firstEndPoint.WithY(firstEndPoint.Y+10);
-            var endPoint = lastEndPoint.WithY(lastEndPoint.Y+10);
+            var startPoint = firstEndPoint.WithY(firstEndPoint.Y + 10);
+            var endPoint = lastEndPoint.WithY(lastEndPoint.Y + 10);
             var lineAndStroke = new LineAndStroke(noteGroups[0], startPoint, endPoint, HorizontalLineThickness);
             linesAndStrokes.Add(lineAndStroke);
         }
+
         //draw single line for single eighth note at end of rg
         var noteGroupsWithValue = noteGroups.Where(ng => !ng.IsRest).ToList();
-        if(noteGroupsWithValue.Count == 1)
+        if (noteGroupsWithValue.Count == 1)
         {
-            var noteGroup = noteGroupsWithValue.Single();//.Value == NoteValue.Eighth
+            var noteGroup = noteGroupsWithValue.Single(); //.Value == NoteValue.Eighth
             if (noteGroup.Value == NoteValue.Eighth)
             {
                 //TODO: use curly line instead of straight line
                 var lineOfNote = linesAndStrokes.Single(line => line.NoteGroup == noteGroup);
                 var startPoint = lineOfNote.EndPoint;
-                var endPoint = lineOfNote.EndPoint.WithX(startPoint.X+ 20).WithY(startPoint.Y+40);
+                var endPoint = lineOfNote.EndPoint.WithX(startPoint.X + 20).WithY(startPoint.Y + 40);
                 var lineAndStroke = new LineAndStroke(noteGroups[0], startPoint, endPoint, VerticalLineThickness);
                 linesAndStrokes.Add(lineAndStroke);
             }
         }
+
         return ([..images], [..linesAndStrokes]);
     }
+
     public (ImmutableArray<NoteImageAndBounds> Images, ImmutableArray<LineAndStroke> LineAndStrokes)
         GetLinesAndImagesToDraw(RythmicGroup rythmicGroup)
     {
