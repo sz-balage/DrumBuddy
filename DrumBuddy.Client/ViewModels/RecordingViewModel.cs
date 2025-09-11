@@ -89,7 +89,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
 
     public IObservable<Drum> KeyboardBeats { get; set; }
 
-    public Interaction<SheetCreationData, string?> ShowSaveDialog { get; } = new();
+    public Interaction<SheetCreationData, SheetNameAndDescription> ShowSaveDialog { get; } = new();
 
     public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
     public string? UrlPathSegment { get; } = "recording-view";
@@ -234,7 +234,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         // if (save is not null)
         //     await _library.SaveSheet(new Sheet(_bpm, measures, save));
         ClearMeasures();
-        if (dialogResult != null)
+        if (dialogResult.Name != null)
         {
             var mainVm = HostScreen as MainViewModel;
             mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<LibraryViewModel>());

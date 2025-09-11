@@ -119,11 +119,11 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
     private Grid _countDownGrid => this.FindControl<Grid>("CountdownGrid")!;
     private CheckBox _keyboardCheckBox => this.FindControl<CheckBox>("KeyboardInputCheckBox")!;
 
-    private async Task SaveHandler(IInteractionContext<SheetCreationData, string?> context)
+    private async Task SaveHandler(IInteractionContext<SheetCreationData, SheetNameAndDescription> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
         var saveView = new Dialogs.SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
-        var result = await saveView.ShowDialog<string>(mainWindow);
+        var result = await saveView.ShowDialog<SheetNameAndDescription>(mainWindow);
         context.SetOutput(result);
     }
 }

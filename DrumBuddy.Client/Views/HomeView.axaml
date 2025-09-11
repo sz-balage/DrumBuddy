@@ -9,29 +9,30 @@
     <Design.DataContext>
         <vm:HomeViewModel />
     </Design.DataContext>
-    <Grid>
-
-        <Image x:Name="HomeIcon"
-               VerticalAlignment="Center"
-               HorizontalAlignment="Center"
-               Opacity="0.5"
-               Width="800"
-               Height="800"
-               Source="avares://DrumBuddy.Client/Assets/snare-icon.jpg" />
-        <StackPanel VerticalAlignment="Center"
+    <Grid RowDefinitions="0.3*,0.7*">
+        <StackPanel Grid.Row="0" VerticalAlignment="Center"
                     HorizontalAlignment="Center">
             <Label x:Name="WelcomeLabel"
                    FontFamily="{StaticResource NunitoFont}"
                    FontSize="40"
                    FontWeight="Bold"
-                   HorizontalAlignment="Center" />
+                   HorizontalAlignment="Center">
+                Welcome to DrumBuddy client!
+            </Label>
             <Label x:Name="SubTextLabel"
                    FontFamily="{StaticResource NunitoFont}"
                    FontSize="20"
                    HorizontalAlignment="Center"
-                   FontWeight="Bold" />
+                   FontWeight="Bold">
+                To continue, please select an option from the menu on the left.
+            </Label>
         </StackPanel>
-
+        <Image Grid.Row="1" x:Name="HomeIcon"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Center" 
+               MaxHeight="1000" MaxWidth="1000"
+                Stretch="UniformToFill"
+               Source="avares://DrumBuddy.Client/Assets/snare-icon.jpg" />
     </Grid>
 
 </rxui:ReactiveUserControl>

@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels;
+using DrumBuddy.Client.ViewModels.Dialogs;
 using ReactiveUI;
+using Splat;
 
 namespace DrumBuddy.Client.Views;
 
@@ -39,14 +44,23 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             this.OneWayBind(ViewModel, vm => vm.CanGoBack, v => v.BackButton.IsEnabled)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.CanGoForward, v => v.ForwardButton.IsEnabled)
-                .DisposeWith(d);
+                .DisposeWith(d);  
+            this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text, s =>
+                {
+                    if (s is null)
+                    {
+                        return string.Empty;
+                    }
+                    return $"({s})";
+                }).DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.AddMeasureCommand, v => v.AddMeasureButton)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.GoToPreviousMeasureCommand, v => v.BackButton)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.GoToNextMeasureCommand, v => v.ForwardButton)
+                .DisposeWith(d);     
+            this.BindCommand(ViewModel, vm => vm.SaveCommand, v => v.SaveButton)
                 .DisposeWith(d);
-
             this.WhenAnyValue(v => v.ViewModel)
                 .WhereNotNull()
                 .Subscribe(vm =>
@@ -60,11 +74,19 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             this.WhenAnyValue(x => x.ViewModel.CurrentMeasureIndex)
                 .Subscribe(currentIndex => UpdateMeasureBorders(currentIndex))
                 .DisposeWith(d);
+            this.BindInteraction(ViewModel, vm => vm.ShowSaveDialog, SaveHandler);
+
         });
     }
 
     private Grid _matrixGrid => this.FindControl<Grid>("MatrixGrid");
-
+    private async Task SaveHandler(IInteractionContext<SheetCreationData, SheetNameAndDescription> context)
+    {
+        var mainWindow = Locator.Current.GetService<MainWindow>();
+        var saveView = new Dialogs.SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
+        var result = await saveView.ShowDialog<SheetNameAndDescription>(mainWindow);
+        context.SetOutput(result);
+    }
     private void UpdateMeasureBorders(int currentIndex)
     {
         Dispatcher.UIThread.Post(() =>
@@ -87,8 +109,6 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             }
         }, DispatcherPriority.Loaded);
     }
-
-
     private void BuildMatrix(ManualViewModel vm)
     {
         _matrixGrid.Children.Clear();
@@ -110,6 +130,7 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
             FontSize = 16,
+            FontFamily = new FontFamily("NunitoFont"),
             FontWeight = FontWeight.SemiBold
         };
         Grid.SetRow(header, 0);
@@ -123,7 +144,8 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
                 Text = (c + 1).ToString(),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 24,
+                FontSize = 16,
+                FontFamily = new FontFamily("NunitoFont"),
                 Foreground = new SolidColorBrush(Colors.Black)
             };
 
@@ -146,7 +168,8 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = new Thickness(4, 0, 4, 0),
-                FontSize = 20
+                FontSize = 16, 
+                FontFamily = new FontFamily("NunitoFont")
             };
             Grid.SetRow(drumLabel, r + 1);
             Grid.SetColumn(drumLabel, 0);

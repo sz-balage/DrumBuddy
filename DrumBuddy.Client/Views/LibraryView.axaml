@@ -26,7 +26,7 @@
         </Grid.ColumnDefinitions>
         <Border Background="LightGray" HorizontalAlignment="Stretch" >
             <TextBlock Text="Your Sheet Library" 
-                       Margin="16"
+                       Margin="18"
                        Classes="header"
                        VerticalAlignment="Center" />
         </Border>

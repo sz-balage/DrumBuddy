@@ -1,4 +1,4 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:ManualViewModel" xmlns="https://github.com/avaloniaui"
+﻿ <reactiveUi:ReactiveUserControl x:TypeArguments="vm:ManualViewModel" xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,10 +7,58 @@
                                 xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="DrumBuddy.Client.Views.ManualView">
-    <Grid Margin="12" RowDefinitions="Auto,0.5*,Auto,0.4*" x:Name="Root">
-        <TextBlock Text="Manual editor"
-                   FontWeight="Bold"
-                   Margin="0,0,0,8" />
+     <UserControl.Styles>
+         <StyleInclude Source="/Styles/AppStyles.axaml" />
+     </UserControl.Styles>
+     <Grid RowDefinitions="Auto,0.5*,Auto,0.4*" x:Name="Root">
+        <Border Margin="0,0,0,10" Grid.Row="0" Background="LightGray">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.3*" />
+                    <ColumnDefinition Width="0.3*" />
+                    <ColumnDefinition Width="0.3*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Manual editor"
+                               Classes="header"
+                               Margin="18"
+                               FontFamily="{StaticResource NunitoFont}"
+                               VerticalAlignment="Center"/>
+                    <TextBlock x:Name="NameTextBlock"
+                               Classes="header"
+                               Margin="18"
+                               FontFamily="{StaticResource NunitoFont}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Row="0"
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+                    <Label FontSize="24" FontFamily="{StaticResource NunitoFont}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                        BPM:
+                    </Label>
+                    <NumericUpDown x:Name="BpmNumeric"
+                                   Minimum="20"
+                                   Maximum="250"
+                                   Value="100"
+                                   FormatString="0"
+                                   FontSize="24"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                </StackPanel>
+                <Button Grid.Column="2" x:Name="SaveButton"
+                        Background="LightGray" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource Save}"/>
+                        <TextBlock Text="Save" FontFamily="{StaticResource NunitoFont}"
+                                   FontSize="24"
+                                   Margin="10" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
         <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto" MinHeight="190">
             <ItemsControl x:Name="MeasuresItemsControl">
                 <ItemsControl.ItemsPanel>
@@ -39,10 +87,12 @@
                     FontWeight="Bold"
                     Width="32" 
                     Height="32" 
-                    Margin="0,0,12,0"
+                    Margin="10,0,12,0"
                     ToolTip.Tip="Add new measure" />
 
             <TextBlock Grid.Column="1" 
+                       FontFamily="{StaticResource NunitoFont}"
+                       Classes="header"
                        x:Name="MeasureDisplayText"
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Center"
@@ -61,7 +111,7 @@
                     Content="▶" 
                     Width="32" 
                     Height="32" 
-                    Margin="4,0,0,0"
+                    Margin="4,0,10,0"
                     ToolTip.Tip="Next measure" />
         </Grid>
         <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">

@@ -22,7 +22,7 @@ public partial class RenameSheetView : ReactiveWindow<RenameSheetViewModel>
             ViewModel = new RenameSheetViewModel(new Sheet(new Bpm(100),ImmutableArray<Measure>.Empty, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "New Sheet"));
         this.WhenActivated(d =>
         {
-            OriginalNameTB.Text = $"Rename {ViewModel!.OriginalSheet}";
+            OriginalNameTB.Text = $"Rename {ViewModel!.OriginalSheet.Name}";
             this.BindValidation(ViewModel, vm => vm.NewName, v => v.NewNameValidation.Text).DisposeWith(d);
             this.Bind(ViewModel, vm => vm.NewName, v => v.NewNameTB.Text).DisposeWith(d);
             this.Bind(ViewModel, vm => vm.NewDescription, v => v.DescriptionTb.Text).DisposeWith(d);
