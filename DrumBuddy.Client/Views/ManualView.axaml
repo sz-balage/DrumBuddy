@@ -10,8 +10,8 @@
      <UserControl.Styles>
          <StyleInclude Source="/Styles/AppStyles.axaml" />
      </UserControl.Styles>
-     <Grid RowDefinitions="Auto,0.5*,Auto,0.4*" x:Name="Root">
-        <Border Margin="0,0,0,10" Grid.Row="0" Background="LightGray">
+     <Grid RowDefinitions="Auto,*,Auto,*" x:Name="Root">
+        <Border Height="66" Margin="0,0,0,10" Grid.Row="0" Background="LightGray">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.3*" />

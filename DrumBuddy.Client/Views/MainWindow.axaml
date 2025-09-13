@@ -25,7 +25,6 @@
         </Grid.RowDefinitions>
 
         <Border x:Name="NoConnection" x:DataType="vm:MainViewModel"
-
                 Background="DarkRed"
                 IsVisible="{Binding NoConnection}">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -50,8 +49,8 @@
                    DisplayMode="CompactInline"
                    PaneBackground="LightGray">
             <SplitView.Pane>
-                <StackPanel Spacing="5" Margin="5">
-                    <Button x:Name="TriggerPaneButton" Height="40" Width="41">
+                <StackPanel Spacing="11" Margin="5">
+                    <Button x:Name="TriggerPaneButton" Height="50" Width="41">
                         <PathIcon Data="{StaticResource Line_Horizontal_3}" />
                     </Button>
                     <ListBox x:Name="PaneListBox">

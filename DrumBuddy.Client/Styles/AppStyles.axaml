@@ -42,21 +42,18 @@
     <Style Selector="MenuItem[Foreground=IndianRed]:pressed /template/ ContentPresenter#PART_HeaderPresenter">
         <Setter Property="TextBlock.Foreground" Value="IndianRed" />
     </Style>
-    <!-- Text input controls -->
     <Style Selector="TextBox.form">
         <Setter Property="Margin" Value="0,8"/>
         <Setter Property="Padding" Value="10,8"/>
         <Setter Property="CornerRadius" Value="4"/>
     </Style>
     
-    <!-- Labels -->
     <Style Selector="TextBlock.label">
         <Setter Property="Margin" Value="0,12,0,2"/>
         <Setter Property="FontWeight" Value="Medium"/>
         <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
     </Style>
     
-    <!-- Standard buttons -->
     <Style Selector="Button.button">
         <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Padding" Value="16,10"/>
@@ -66,7 +63,6 @@
         <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
     </Style>
     
-    <!-- Confirm/Primary buttons -->
     <Style Selector="Button.confirm">
         <Setter Property="Background" Value="#ff0073cf"/>
         <Setter Property="Foreground" Value="White"/>
@@ -76,11 +72,36 @@
         <Setter Property="Background" Value="#0080e0"/>
     </Style>
     
-    <!-- Dialog title style -->
     <Style Selector="TextBlock.dialog-title">
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
         <Setter Property="Margin" Value="0,0,0,16"/>
     </Style>
+    <Style Selector="Button.card">
+        <Setter Property="Background">
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Offset="0" Color="#d2e3fc" />
+                <GradientStop Offset="1" Color="#f0f0f0" />
+            </LinearGradientBrush>
+        </Setter>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="24"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="Button.card:pointerover /template/ ContentPresenter">
+        <Setter Property="Background">
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="50%,50%">
+                <GradientStop Offset="0" Color="#d2e3fc" />
+                <GradientStop Offset="1" Color="#c0e3fc" />
+            </LinearGradientBrush>
+        </Setter>
+    </Style>
+
 </Styles>

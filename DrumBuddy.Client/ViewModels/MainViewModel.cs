@@ -38,10 +38,10 @@ public partial class MainViewModel : ReactiveObject, IScreen
 
     public ObservableCollection<NavigationMenuItemTemplate> PaneItems { get; } = new()
     {
-        new NavigationMenuItemTemplate(typeof(HomeViewModel), "HomeIcon"),
-        new NavigationMenuItemTemplate(typeof(RecordingViewModel), "RecordIcon"),
-        new NavigationMenuItemTemplate(typeof(LibraryViewModel), "LibraryIcon"),
-        new NavigationMenuItemTemplate(typeof(ManualViewModel), "EditorIcon")
+        new NavigationMenuItemTemplate(typeof(HomeViewModel), "HomeIcon",""),
+        new NavigationMenuItemTemplate(typeof(RecordingViewModel), "RecordIcon","Record your beats in a new sheet."),
+        new NavigationMenuItemTemplate(typeof(LibraryViewModel), "LibraryIcon","Review and manage your saved sheets."),
+        new NavigationMenuItemTemplate(typeof(ManualViewModel), "EditorIcon","Manually create a new sheet, or edit an existing one for a more precise structure."),
     };
 
     public void NavigateFromCode(IRoutableViewModel viewModel)

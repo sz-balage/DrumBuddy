@@ -115,11 +115,11 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
         _matrixGrid.ColumnDefinitions.Clear();
         _matrixGrid.RowDefinitions.Clear();
 
-        _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(100))); // Drum labels
+        _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(100))); 
         for (var c = 0; c < StepCount; c++)
             _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
 
-        _matrixGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40))); // Header row
+        _matrixGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40))); 
         for (var r = 0; r < vm.Drums.Length; r++)
             _matrixGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
 

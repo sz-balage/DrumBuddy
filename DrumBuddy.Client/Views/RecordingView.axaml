@@ -13,7 +13,7 @@
     </Design.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="66" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Background="LightGray">
