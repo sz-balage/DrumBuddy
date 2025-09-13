@@ -1,107 +1,73 @@
-<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-<Design.PreviewWith>
-    <Button Classes="confirm">asdasd</Button>
-</Design.PreviewWith>
-    <Style Selector="ListBox">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Margin" Value="0,10,0,0"/>
-    </Style>
-    <Style Selector="ListBoxItem">
-        <Setter Property="Padding" Value="12,16"/>
-        <Setter Property="Margin" Value="0,0,0,8"/>
-        <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Background" Value="#f5f5f5"/>
-    </Style>
-    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Background">
+<rxui:ReactiveUserControl x:TypeArguments="vm:HomeViewModel" xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:rxui="http://reactiveui.net"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels"
+                          xmlns:models="clr-namespace:DrumBuddy.Client.Models"
+                          xmlns:helperViewModels="clr-namespace:DrumBuddy.Client.ViewModels.HelperViewModels"
+                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                          x:Class="DrumBuddy.Client.Views.HomeView">
+    <Border>
+        <Border.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Offset="0" Color="#e8f0fe" />
                 <GradientStop Offset="1" Color="#f0f0f0" />
             </LinearGradientBrush>
-        </Setter>
-    </Style>
-    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-        <Setter Property="Background">
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="#d2e3fc" />
-                <GradientStop Offset="1" Color="#f0f0f0" />
-            </LinearGradientBrush>
-        </Setter>
-    </Style>
-    <Style Selector="TextBlock.header">
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="FontFamily" Value="{DynamicResource NunitoFont}"/>
-        <Setter Property="Margin" Value="8,0,0,0"/>
-    </Style>
-    <Style Selector="MenuItem[Foreground=IndianRed]:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
-        <Setter Property="TextBlock.Foreground" Value="IndianRed" />
-    </Style>
+        </Border.Background>
+        <Grid RowDefinitions="66,*">
+            <Border Background="LightGray">
+                <TextBlock x:Name="WelcomeLabel"
+                       FontFamily="{StaticResource NunitoFont}"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Margin="0,0,0,20"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center">
+                    Welcome to DrumBuddy client! Select an option below.
+                </TextBlock>
+            </Border>
+            <ItemsControl Grid.Row="1"
+                          x:Name="CardsItemsControl" x:DataType="vm:HomeViewModel"
+                          ItemsSource="{Binding Cards}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" Margin="10" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="helperViewModels:NavigationCardViewModel">
+                        <Button Classes="card" 
+                                Command="{Binding NavigateCommand}">
+                            <StackPanel Orientation="Vertical"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="12">
+                                <PathIcon Data="{Binding Template.Icon}"
+                                          Width="64"
+                                          Height="64"/>
+                                <TextBlock Text="{Binding Template.Label}"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"/>
+                                <TextBlock Text="{Binding Template.Description}"
+                                           FontSize="16"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Border>
+    <Design.DataContext>
+        <vm:HomeViewModel />
+    </Design.DataContext>
+    <UserControl.Styles>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+    </UserControl.Styles>
+   
 
-    <Style Selector="MenuItem[Foreground=IndianRed]:pressed /template/ ContentPresenter#PART_HeaderPresenter">
-        <Setter Property="TextBlock.Foreground" Value="IndianRed" />
-    </Style>
-    <Style Selector="TextBox.form">
-        <Setter Property="Margin" Value="0,8"/>
-        <Setter Property="Padding" Value="10,8"/>
-        <Setter Property="CornerRadius" Value="4"/>
-    </Style>
-    
-    <Style Selector="TextBlock.label">
-        <Setter Property="Margin" Value="0,12,0,2"/>
-        <Setter Property="FontWeight" Value="Medium"/>
-        <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
-    </Style>
-    
-    <Style Selector="Button.button">
-        <Setter Property="CornerRadius" Value="6"/>
-        <Setter Property="Padding" Value="16,10"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
-    </Style>
-    
-    <Style Selector="Button.confirm">
-        <Setter Property="Background" Value="#ff0073cf"/>
-        <Setter Property="Foreground" Value="White"/>
-    </Style>
-    
-    <Style Selector="Button.confirm:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="#0080e0"/>
-    </Style>
-    
-    <Style Selector="TextBlock.dialog-title">
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="FontFamily" Value="{StaticResource NunitoFont}"/>
-        <Setter Property="Margin" Value="0,0,0,16"/>
-    </Style>
-    <Style Selector="Button.card">
-        <Setter Property="Background">
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="#d2e3fc" />
-                <GradientStop Offset="1" Color="#f0f0f0" />
-            </LinearGradientBrush>
-        </Setter>
-        <Setter Property="CornerRadius" Value="12"/>
-        <Setter Property="Padding" Value="24"/>
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="VerticalAlignment" Value="Stretch"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-    </Style>
-
-    <Style Selector="Button.card:pointerover /template/ ContentPresenter">
-        <Setter Property="Background">
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="50%,50%">
-                <GradientStop Offset="0" Color="#d2e3fc" />
-                <GradientStop Offset="1" Color="#c0e3fc" />
-            </LinearGradientBrush>
-        </Setter>
-    </Style>
-
-</Styles>
+</rxui:ReactiveUserControl>
