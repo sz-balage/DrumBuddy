@@ -93,14 +93,21 @@
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="RenderTransform">
+            <ScaleTransform ScaleX="1" ScaleY="1"/>
+        </Setter>
     </Style>
 
     <Style Selector="Button.card:pointerover /template/ ContentPresenter">
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="50%,50%">
                 <GradientStop Offset="0" Color="#d2e3fc" />
-                <GradientStop Offset="1" Color="#c0e3fc" />
+                <GradientStop Offset="1" Color="#cce3ff" />
             </LinearGradientBrush>
+        </Setter>
+        <Setter Property="RenderTransform">
+            <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
         </Setter>
     </Style>
 
