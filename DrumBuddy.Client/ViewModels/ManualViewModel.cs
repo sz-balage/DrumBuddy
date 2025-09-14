@@ -22,14 +22,19 @@ namespace DrumBuddy.Client.ViewModels;
 public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
 {
     public const int Columns = 16; // one measure, 16 sixteenth steps
-    private readonly List<bool[,]> _measureSteps; 
+    private readonly List<bool[,]> _measureSteps;
     private readonly ISheetStorage _sheetStorage;
     private Sheet? _currentSheet;
-    private int _currentMeasureIndex = 0;
-    [Reactive] private string? _name = null;
-    [Reactive] private string? _description = null;
+    private int _currentMeasureIndex;
     private Bpm _bpm;
+    private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
+    public readonly ReadOnlyObservableCollection<Sheet> Sheets;
+
+    [Reactive] private string? _name;
+    [Reactive] private string? _description;
     [Reactive] private decimal _bpmDecimal;
+    [Reactive] private bool _editorVisible;
+
     public Sheet? CurrentSheet
     {
         get => _currentSheet;
@@ -39,7 +44,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     public int CurrentMeasureIndex
     {
         get => _currentMeasureIndex;
-        private set 
+        private set
         {
             this.RaiseAndSetIfChanged(ref _currentMeasureIndex, value);
             this.RaisePropertyChanged(nameof(CanGoBack));
@@ -49,7 +54,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     }
 
     public bool CanGoBack => CurrentMeasureIndex > 0;
-    public bool CanGoForward =>  CurrentMeasureIndex < _measureSteps?.Count - 1;
+    public bool CanGoForward => CurrentMeasureIndex < _measureSteps?.Count - 1;
     public string MeasureDisplayText => $"Measure {CurrentMeasureIndex + 1} of {_measureSteps.Count}";
 
     public readonly ReadOnlyObservableCollection<MeasureViewModel> Measures;
@@ -64,19 +69,24 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
             .Bind(out Measures)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe();
+        _sheetSource.Connect()
+            .SortBy(s => s.Name)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out Sheets)
+            .Subscribe();
         this.WhenAnyValue(vm => vm.BpmDecimal)
             .Skip(1)
             .Subscribe(i =>
             {
                 var value = Convert.ToInt32(i);
                 _bpm = new Bpm(value);
-            });
-        BpmDecimal = 100;
+            }); 
         _measureSteps = new List<bool[,]>
         {
             new bool[Drums.Length, Columns]
         };
         CurrentSheet = BuildSheet();
+        BpmDecimal = CurrentSheet.Tempo;
         DrawMeasures();
         SaveCommand.ThrownExceptions.Subscribe(ex => Console.WriteLine(ex.Message));
     }
@@ -105,11 +115,22 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     }
 
     [ReactiveCommand]
+    private void AddNewSheet()
+    {
+    }
+
+    [ReactiveCommand]
+    private void EditExistingSheet()
+    {
+    }
+
+    [ReactiveCommand]
     private async Task Save()
     {
         if (Name is null)
         {
-            var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm, [..CurrentSheet?.Measures ?? ImmutableArray<Measure>.Empty]));
+            var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm,
+                [..CurrentSheet?.Measures ?? ImmutableArray<Measure>.Empty]));
             Name = dialogResult.Name;
             Description = dialogResult.Description;
             CurrentSheet = BuildSheet();
@@ -119,6 +140,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
             await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
         }
     }
+
     [ReactiveCommand]
     private void AddMeasure()
     {
@@ -128,21 +150,17 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
         CurrentSheet = BuildSheet();
         DrawMeasures();
     }
+
     [ReactiveCommand]
     public void GoToPreviousMeasure()
     {
-        if (CanGoBack)
-        {
-            CurrentMeasureIndex--;
-        }
+        if (CanGoBack) CurrentMeasureIndex--;
     }
+
     [ReactiveCommand]
     public void GoToNextMeasure()
     {
-        if (CanGoForward)
-        {
-            CurrentMeasureIndex++;
-        }
+        if (CanGoForward) CurrentMeasureIndex++;
     }
 
     public void LoadMatrix(bool[,] matrix)
@@ -155,6 +173,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
             Array.Clear(_measureSteps[CurrentMeasureIndex], 0, _measureSteps[CurrentMeasureIndex].Length);
             Array.Copy(matrix, _measureSteps[CurrentMeasureIndex], matrix.Length);
         }
+
         CurrentSheet = BuildSheet();
         DrawMeasures();
     }
@@ -186,6 +205,14 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
         DrawMeasures();
     }
 
+    public async Task LoadExistingSheets()
+    {
+        var sheets = await _sheetStorage.LoadSheetsAsync();
+        foreach (var sheet in sheets)
+        {
+            _sheetSource.AddOrUpdate(sheet);
+        }
+    }
     private Sheet BuildSheet()
     {
         var allMeasures = new List<Measure>();
@@ -224,7 +251,8 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     private void DrawMeasures()
     {
         _measureSource.Clear();
-        _measureSource.AddRange(CurrentSheet?.Measures.Select(m => new MeasureViewModel(m)) ?? Array.Empty<MeasureViewModel>());
+        _measureSource.AddRange(CurrentSheet?.Measures.Select(m => new MeasureViewModel(m)) ??
+                                Array.Empty<MeasureViewModel>());
         var idx = CurrentMeasureIndex;
         CurrentMeasureIndex = -1;
         CurrentMeasureIndex = idx;

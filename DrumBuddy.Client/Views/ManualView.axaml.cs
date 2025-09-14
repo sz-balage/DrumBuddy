@@ -35,8 +35,13 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
 
         InitializeComponent();
 
-        this.WhenActivated(d =>
+        this.WhenActivated(async d =>
         {
+            await ViewModel.LoadExistingSheets();
+            this.OneWayBind(ViewModel, vm => vm.EditorVisible, v => v.CardGrid.IsVisible, b => !b)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.EditorVisible, v => v.Root.IsVisible, b => b)
+                .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasuresItemsControl.ItemsSource)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.MeasureDisplayText, v => v.MeasureDisplayText.Text)
@@ -75,7 +80,6 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
                 .Subscribe(currentIndex => UpdateMeasureBorders(currentIndex))
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowSaveDialog, SaveHandler);
-
         });
     }
 

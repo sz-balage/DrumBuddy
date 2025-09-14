@@ -85,28 +85,21 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         if (sender is not Button button) return;
         if (button.DataContext is not Sheet baseSheet) return;
         if (ViewModel is null) return;
-
-        // Create flyout
         var flyout = new MenuFlyout();
 
         foreach (var sheet in ViewModel.Sheets)
         {
             if (sheet == baseSheet) continue; // don't compare with itself
-
             var menuItem = new MenuItem { Header = sheet.Name, Tag = sheet };
             menuItem.Click += async (s, args) =>
             {
                 if (s is MenuItem mi && mi.Tag is Sheet selectedSheet)
                 {
                     await ViewModel.CompareSheets(baseSheet, selectedSheet);
-                    // ViewModel?.FinishCompare(selectedSheet);
                 }
             };
-
-
             flyout.Items.Add(menuItem);
         }
-
         FlyoutBase.SetAttachedFlyout(button, flyout);
         flyout.ShowAt(button);
     }
@@ -122,7 +115,6 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             button.Parent is Grid grid && 
             grid.Parent is ListBoxItem item)
         {
-            // Select the ListBoxItem
             SheetsListBox.SelectedItem = item.DataContext;
         }
     }
