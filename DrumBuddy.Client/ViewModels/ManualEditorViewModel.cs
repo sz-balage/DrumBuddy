@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
+using DrumBuddy.Client.ViewModels.Dialogs;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
@@ -31,7 +32,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     public readonly ReadOnlyObservableCollection<Sheet> Sheets;
 
-    [Reactive] private bool _isSaved;
+    [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
     [Reactive] private string? _description;
     [Reactive] private decimal _bpmDecimal;
@@ -98,14 +99,25 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     private async Task NavigateBack()
     {
         //TODO: handle unsaved changes
-        await _onClose();
+        if (!IsSaved)
+        {
+            var result = await ShowConfirmation.Handle(Unit.Default);
+            if (result == Confirmation.Close)
+                await _onClose();
+        }
+        else
+        { 
+            await _onClose();
+        }
     }
 
     public IScreen HostScreen { get; }
     public string? UrlPathSegment { get; }
     public Interaction<SheetCreationData, SheetNameAndDescription> ShowSaveDialog { get; } = new();
+    public Interaction<Unit, Confirmation> ShowConfirmation { get; } = new();
     public void ToggleStep(int row, int col)
     {
+        IsSaved = false;
         if (row < 0 || row >= Drums.Length) return;
         if (col < 0 || col >= Columns) return;
         if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
@@ -250,8 +262,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
             allMeasures.Add(new Measure(groups));
         }
-
-        IsSaved = false;
         return new Sheet(_bpm, [..allMeasures], Name ?? "Untitled", Description ?? "");
     }
 

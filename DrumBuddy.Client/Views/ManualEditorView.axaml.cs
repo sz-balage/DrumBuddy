@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Avalonia;
@@ -75,8 +76,18 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 .Subscribe(currentIndex => UpdateMeasureBorders(currentIndex))
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowSaveDialog, SaveHandler);
+            this.BindInteraction(ViewModel, vm => vm.ShowConfirmation, ConfirmationHandler);
         });
     }
+
+    private async Task ConfirmationHandler(IInteractionContext<Unit, Confirmation> context)
+    {
+        var mainWindow = Locator.Current.GetService<MainWindow>();
+        var saveView = new Dialogs.ConfirmationView();
+        var result = await saveView.ShowDialog<Confirmation>(mainWindow);
+        context.SetOutput(result);
+    }
+
     private Grid _matrixGrid => this.FindControl<Grid>("MatrixGrid");
     private async Task SaveHandler(IInteractionContext<SheetCreationData, SheetNameAndDescription> context)
     {

@@ -1,0 +1,38 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="150"
+        Width="450" Height="150"
+        WindowStartupLocation="CenterOwner"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaToDecorationsHint="True"
+        CanResize="False"
+        x:Class="DrumBuddy.Client.Views.Dialogs.ConfirmationView"
+        Title="User confirmation needed">
+    <Window.Styles>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+    </Window.Styles>
+    <Grid RowDefinitions="Auto,Auto" Margin="20">
+        <TextBlock Grid.Row="0"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Left"
+                   Classes="dialog-title"
+                   Text="You have unsaved changes, are you sure you want to close the editor?"/>
+        <Grid Grid.Row="1" Margin="0,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Content="Cancel"
+                    Classes="button"
+                    x:Name="Cancel" />
+            <Button Grid.Column="2"
+                    Classes="button confirm"
+                    Content="Close editor"
+                    x:Name="Confirm" />
+        </Grid>
+    </Grid></Window>
