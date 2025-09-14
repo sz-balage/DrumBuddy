@@ -50,7 +50,7 @@
                    PaneBackground="LightGray">
             <SplitView.Pane>
                 <StackPanel Spacing="11" Margin="5">
-                    <Button x:Name="TriggerPaneButton" Height="50" Width="41">
+                    <Button x:Name="TriggerPaneButton" Height="50" Width="41" Background="LightGray">
                         <PathIcon Data="{StaticResource Line_Horizontal_3}" />
                     </Button>
                     <ListBox x:Name="PaneListBox">

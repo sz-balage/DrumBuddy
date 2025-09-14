@@ -27,7 +27,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     {
         if (Design.IsDesignMode)
         {
-            var vm = new ManualEditorViewModel(null, () => {});
+            var vm = new ManualEditorViewModel(null, () => Task.CompletedTask);
             vm.LoadSheet(Program.TestSheet);
             ViewModel = vm;
         }
@@ -42,13 +42,14 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.CanGoForward, v => v.ForwardButton.IsEnabled)
                 .DisposeWith(d);  
+            this.Bind(ViewModel, vm => vm.BpmDecimal, v => v.BpmNumeric.Value);
             this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text, s =>
                 {
                     if (s is null)
                     {
-                        return string.Empty;
+                        return " - Unsaved sheet";
                     }
-                    return $"({s})";
+                    return $" - {s}";
                 }).DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.AddMeasureCommand, v => v.AddMeasureButton)
                 .DisposeWith(d);

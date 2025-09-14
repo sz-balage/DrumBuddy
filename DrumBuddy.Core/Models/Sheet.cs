@@ -10,7 +10,7 @@ public class Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, str
     public string Name { get; init; } = name;
     public string Description { get; init; } = description;
 
-    public Bpm Tempo { get; } = tempo;
+    public Bpm Tempo { get; set; } = tempo;
     public ImmutableArray<Measure> Measures { get; } = measures;
 
     private TimeSpan CalculateLength()

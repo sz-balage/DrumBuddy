@@ -57,7 +57,7 @@
                 <StackPanel x:Name="SheetChooserStackPanel">
                     <Border Height="66" Background="LightGray">
                         <StackPanel Orientation="Horizontal">
-                            <Button x:Name="CancelSheetChoosingButton" Height="66" Width="41">
+                            <Button x:Name="CancelSheetChoosingButton" Height="66" Width="41" Background="LightGray">
                                 <PathIcon Data="{StaticResource ArrowLeft}" />
                             </Button>
                             <TextBlock Text="Choose a sheet to edit"

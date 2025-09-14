@@ -78,9 +78,16 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     public IScreen HostScreen { get; }
     public string? UrlPathSegment { get; }
 
+    private async Task OnClose()
+    {
+        EditorVisible = false;
+        await LoadExistingSheets();
+    }
     [ReactiveCommand]
     private void AddNewSheet()
     {
+        Editor = new ManualEditorViewModel(HostScreen, () => OnClose()); //TODO: implement actual onclose action
+        EditorVisible = true;
     }
 
     [ReactiveCommand]
@@ -96,7 +103,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
 
     public void ChooseSheet(Sheet sheet)
     {
-        Editor = new ManualEditorViewModel(HostScreen, () => { EditorVisible = false; }); //TODO: implement actual onclose action
+        Editor = new ManualEditorViewModel(HostScreen, () => OnClose()); //TODO: implement actual onclose action
         Editor.LoadSheet(sheet);
         EditorVisible = true;
         SheetListVisible = false;

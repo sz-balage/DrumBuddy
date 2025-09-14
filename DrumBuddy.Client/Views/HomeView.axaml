@@ -17,15 +17,10 @@
         </Border.Background>
         <Grid RowDefinitions="66,*">
             <Border Background="LightGray">
-                <TextBlock x:Name="WelcomeLabel"
-                       FontFamily="{StaticResource NunitoFont}"
-                       FontSize="28"
-                       FontWeight="Bold"
-                       Margin="0,0,0,20"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center">
-                    Welcome to DrumBuddy client! Select an option below.
-                </TextBlock>
+                <TextBlock Text="Home" 
+                           Margin="18"
+                           Classes="header"
+                           VerticalAlignment="Center" />
             </Border>
             <ItemsControl Grid.Row="1"
                           x:Name="CardsItemsControl" x:DataType="vm:HomeViewModel"

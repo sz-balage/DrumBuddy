@@ -54,14 +54,14 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             this.RaisePropertyChanged(nameof(MeasureDisplayText));
         }
     }
-
+    private readonly Func<Task> _onClose;
     public bool CanGoBack => CurrentMeasureIndex > 0;
     public bool CanGoForward => CurrentMeasureIndex < _measureSteps?.Count - 1;
     public string MeasureDisplayText => $"Measure {CurrentMeasureIndex + 1} of {_measureSteps.Count}";
 
     public readonly ReadOnlyObservableCollection<MeasureViewModel> Measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
-    public ManualEditorViewModel(IScreen host, Action onClose)
+    public ManualEditorViewModel(IScreen host, Func<Task> onClose)
     {
         _sheetStorage = Locator.Current.GetRequiredService<ISheetStorage>();
         HostScreen = host;
@@ -81,28 +81,29 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             {
                 var value = Convert.ToInt32(i);
                 _bpm = new Bpm(value);
+                CurrentSheet!.Tempo = _bpm;
             }); 
         _measureSteps = new List<bool[,]>
         {
             new bool[Drums.Length, Columns]
         };
+        _bpm = 100;
         CurrentSheet = BuildSheet();
-        BpmDecimal = CurrentSheet.Tempo;
+        BpmDecimal = CurrentSheet.Tempo.Value;
         DrawMeasures();
         SaveCommand.ThrownExceptions.Subscribe(ex => Console.WriteLine(ex.Message));
-        NavigateBackCommand = ReactiveCommand.Create(() => NavigateBack(onClose));
+        _onClose = onClose;
     }
-
-    private void NavigateBack(Action onClose)
+    [ReactiveCommand]
+    private async Task NavigateBack()
     {
         //TODO: handle unsaved changes
-        onClose.Invoke();
+        await _onClose();
     }
 
     public IScreen HostScreen { get; }
     public string? UrlPathSegment { get; }
     public Interaction<SheetCreationData, SheetNameAndDescription> ShowSaveDialog { get; } = new();
-    public ReactiveCommand<Unit, Unit> NavigateBackCommand { get; }
     public void ToggleStep(int row, int col)
     {
         if (row < 0 || row >= Drums.Length) return;
@@ -150,13 +151,13 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     }
 
     [ReactiveCommand]
-    public void GoToPreviousMeasure()
+    private void GoToPreviousMeasure()
     {
         if (CanGoBack) CurrentMeasureIndex--;
     }
 
     [ReactiveCommand]
-    public void GoToNextMeasure()
+    private void GoToNextMeasure()
     {
         if (CanGoForward) CurrentMeasureIndex++;
     }
@@ -213,10 +214,10 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         }
 
         CurrentMeasureIndex = 0;
-        CurrentSheet = BuildSheet(); // rebuild to stay consistent
         Name = sheet.Name;
         Description = sheet.Description;
-        BpmDecimal = sheet.Tempo;
+        BpmDecimal = sheet.Tempo.Value;
+        CurrentSheet = BuildSheet(); // rebuild to stay consistent
         DrawMeasures();
     }
 

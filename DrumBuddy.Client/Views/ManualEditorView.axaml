@@ -21,17 +21,17 @@
                         <ColumnDefinition Width="0.3*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal">
-                        <Button x:Name="NavigateBackButton" Height="66" Width="41">
+                        <Button x:Name="NavigateBackButton" Height="66" Width="41" Margin="0,0,0,6" Background="LightGray">
                             <PathIcon Data="{StaticResource ArrowLeft}" />
                         </Button>
                         <TextBlock Text="Manual editor"
                                    Classes="header"
-                                   Margin="18"
+                                   Margin="18,18,0,18"
                                    FontFamily="{StaticResource NunitoFont}"
                                    VerticalAlignment="Center" />
                         <TextBlock x:Name="NameTextBlock"
                                    Classes="header"
-                                   Margin="18"
+                                   Margin="0,18,18,18"
                                    FontFamily="{StaticResource NunitoFont}"
                                    VerticalAlignment="Center" />
                     </StackPanel>
