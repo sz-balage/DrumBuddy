@@ -4,15 +4,22 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:vm="clr-namespace:DrumBuddy.Client.ViewModels"
                                 xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
+                                xmlns:views="clr-namespace:DrumBuddy.Client.Views"
+                                xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="DrumBuddy.Client.Views.ManualView">
     <UserControl.Styles>
         <StyleInclude Source="/Styles/AppStyles.axaml" />
     </UserControl.Styles>
-    <Grid>
-        <UniformGrid x:Name="CardGrid" Columns="2" Margin="10">
-            <Button Classes="card" x:Name="AddButton">
+    <Grid RowDefinitions="66,*">
+        <Border Background="LightGray" HorizontalAlignment="Stretch" >
+            <TextBlock Text="Manual editor" 
+                       Margin="18"
+                       Classes="header"
+                       VerticalAlignment="Center" />
+        </Border>
+        <UniformGrid Grid.Row="1" x:Name="CardGrid" Columns="2">
+            <Button Classes="card" CornerRadius="0" x:Name="AddButton">
                 <Border>
                     <StackPanel Orientation="Vertical"
                                 HorizontalAlignment="Center"
@@ -29,131 +36,76 @@
                     </StackPanel>
                 </Border>
             </Button>
-            <Button Classes="card" x:Name="EditButton">
-                <Border>
-                    <StackPanel Orientation="Vertical"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Spacing="12">
-                        <PathIcon Data="{StaticResource LibraryIcon}"
-                                  Width="64"
-                                  Height="64" />
-                        <TextBlock Text="Edit an existing sheet"
-                                   FontSize="22"
-                                   FontWeight="SemiBold"
-                                   HorizontalAlignment="Center"
-                                   TextAlignment="Center" />
-                    </StackPanel>
-                </Border>
-            </Button>
-        </UniformGrid>
-        <Grid RowDefinitions="Auto,*,Auto,*" x:Name="Root">
-            <Border Height="66" Margin="0,0,0,10" Grid.Row="0" Background="LightGray">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.3*" />
-                        <ColumnDefinition Width="0.3*" />
-                        <ColumnDefinition Width="0.3*" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Manual editor"
-                                   Classes="header"
-                                   Margin="18"
-                                   FontFamily="{StaticResource NunitoFont}"
-                                   VerticalAlignment="Center" />
-                        <TextBlock x:Name="NameTextBlock"
-                                   Classes="header"
-                                   Margin="18"
-                                   FontFamily="{StaticResource NunitoFont}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="0"
-                                Grid.Column="1"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Center">
-                        <Label FontSize="24" FontFamily="{StaticResource NunitoFont}"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center">
-                            BPM:
-                        </Label>
-                        <NumericUpDown x:Name="BpmNumeric"
-                                       Minimum="20"
-                                       Maximum="250"
-                                       Value="100"
-                                       FormatString="0"
-                                       FontSize="24"
+            <Grid>
+                <Button Classes="card" CornerRadius="0" x:Name="EditButton">
+                    <Border>
+                        <StackPanel Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="12">
+                            <PathIcon Data="{StaticResource LibraryIcon}"
+                                      Width="64"
+                                      Height="64" />
+                            <TextBlock Text="Edit an existing sheet"
+                                       FontSize="22"
+                                       FontWeight="SemiBold"
                                        HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" />
-                    </StackPanel>
-                    <Button Grid.Column="2" x:Name="SaveButton"
-                            Background="LightGray" HorizontalAlignment="Right">
-                        <StackPanel Orientation="Horizontal">
-                            <PathIcon Data="{StaticResource Save}" />
-                            <TextBlock Text="Save" FontFamily="{StaticResource NunitoFont}"
-                                       FontSize="24"
-                                       Margin="10" />
+                                       TextAlignment="Center" />
                         </StackPanel>
-                    </Button>
-                </Grid>
-            </Border>
-            <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto" MinHeight="190">
-                <ItemsControl x:Name="MeasuresItemsControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border x:Name="MeasureBorder"
-                                    BorderThickness="3"
-                                    CornerRadius="8"
-                                    BorderBrush="Transparent">
-                                <helperViews:MeasureView Width="600" />
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-
-            <Grid Grid.Row="2" Margin="0,8" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
-                <Button Grid.Column="0"
-                        x:Name="AddMeasureButton"
-                        Content="+"
-                        FontSize="16"
-                        FontWeight="Bold"
-                        Width="32"
-                        Height="32"
-                        Margin="10,0,12,0"
-                        ToolTip.Tip="Add new measure" />
-
-                <TextBlock Grid.Column="1"
-                           FontFamily="{StaticResource NunitoFont}"
-                           Classes="header"
-                           x:Name="MeasureDisplayText"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           FontWeight="SemiBold" />
-
-                <Button Grid.Column="2"
-                        x:Name="BackButton"
-                        Content="◀"
-                        Width="32"
-                        Height="32"
-                        Margin="0,0,4,0"
-                        ToolTip.Tip="Previous measure" />
-
-                <Button Grid.Column="3"
-                        x:Name="ForwardButton"
-                        Content="▶"
-                        Width="32"
-                        Height="32"
-                        Margin="4,0,10,0"
-                        ToolTip.Tip="Next measure" />
+                    </Border>
+                </Button>
+                <StackPanel x:Name="SheetChooserStackPanel">
+                    <Border Height="66" Background="LightGray">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="CancelSheetChoosingButton" Height="66" Width="41">
+                                <PathIcon Data="{StaticResource ArrowLeft}" />
+                            </Button>
+                            <TextBlock Text="Choose a sheet to edit"
+                                       Classes="header" 
+                                       HorizontalAlignment="Center"
+                                       FontFamily="{StaticResource NunitoFont}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <ListBox x:Name="SheetListBox" SelectionChanged="SheetListBox_OnSelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="models:Sheet">
+                                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
+                                    <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                             Data="{StaticResource music}"
+                                             Width="30"
+                                             Height="30"
+                                             Margin="5,0,20,0"
+                                             Foreground="#444444" />
+                                    <StackPanel Grid.Row="0" Grid.Column="1"
+                                               Orientation="Horizontal"
+                                               Margin="0,0,0,4">
+                                        <TextBlock Text="Name: " 
+                                                  FontWeight="SemiBold" 
+                                                  Opacity="0.8" />
+                                        <TextBlock Text="{Binding Name}"
+                                                  FontWeight="SemiBold"
+                                                  MaxWidth="320"
+                                                  TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.Column="1"
+                                               Orientation="Horizontal"
+                                               Margin="0,4,0,4">
+                                        <TextBlock Text="Description: "
+                                                  FontWeight="SemiBold"
+                                                  Opacity="0.8" />
+                                        <TextBlock Text="{Binding Description}"
+                                                   MaxWidth="800"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Grid> 
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            
             </Grid>
-            <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                <Grid x:Name="MatrixGrid" />
-            </ScrollViewer>
-        </Grid>
+        </UniformGrid>
+        <views:ManualEditorView Grid.Row="0" Grid.RowSpan="2" x:Name="EditorView"/>
     </Grid>
 </reactiveUi:ReactiveUserControl>

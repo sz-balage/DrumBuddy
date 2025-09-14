@@ -29,11 +29,12 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     private Bpm _bpm;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     public readonly ReadOnlyObservableCollection<Sheet> Sheets;
-
+    [Reactive] private ManualEditorViewModel? _editor;
     [Reactive] private string? _name;
     [Reactive] private string? _description;
     [Reactive] private decimal _bpmDecimal;
     [Reactive] private bool _editorVisible;
+    [Reactive] private bool _sheetListVisible;
 
     public Sheet? CurrentSheet
     {
@@ -65,54 +66,17 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
         _sheetStorage = Locator.Current.GetRequiredService<ISheetStorage>();
         HostScreen = host;
         UrlPathSegment = "manual-editor";
-        _measureSource.Connect()
-            .Bind(out Measures)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe();
         _sheetSource.Connect()
             .SortBy(s => s.Name)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out Sheets)
             .Subscribe();
-        this.WhenAnyValue(vm => vm.BpmDecimal)
-            .Skip(1)
-            .Subscribe(i =>
-            {
-                var value = Convert.ToInt32(i);
-                _bpm = new Bpm(value);
-            }); 
-        _measureSteps = new List<bool[,]>
-        {
-            new bool[Drums.Length, Columns]
-        };
-        CurrentSheet = BuildSheet();
-        BpmDecimal = CurrentSheet.Tempo;
-        DrawMeasures();
-        SaveCommand.ThrownExceptions.Subscribe(ex => Console.WriteLine(ex.Message));
+        EditorVisible = false;
+        SheetListVisible = false;
     }
 
     public IScreen HostScreen { get; }
     public string? UrlPathSegment { get; }
-    public Interaction<SheetCreationData, SheetNameAndDescription> ShowSaveDialog { get; } = new();
-
-    public void ToggleStep(int row, int col)
-    {
-        if (row < 0 || row >= Drums.Length) return;
-        if (col < 0 || col >= Columns) return;
-        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
-
-        _measureSteps[CurrentMeasureIndex][row, col] = !_measureSteps[CurrentMeasureIndex][row, col];
-        CurrentSheet = BuildSheet();
-        DrawMeasures();
-    }
-
-    public bool GetStep(int row, int col)
-    {
-        if (row < 0 || row >= Drums.Length) return false;
-        if (col < 0 || col >= Columns) return false;
-        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return false;
-        return _measureSteps[CurrentMeasureIndex][row, col];
-    }
 
     [ReactiveCommand]
     private void AddNewSheet()
@@ -122,89 +86,21 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     [ReactiveCommand]
     private void EditExistingSheet()
     {
-    }
-
+        SheetListVisible = true;
+    }   
     [ReactiveCommand]
-    private async Task Save()
+    private void CancelSheetChoosing()
     {
-        if (Name is null)
-        {
-            var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm,
-                [..CurrentSheet?.Measures ?? ImmutableArray<Measure>.Empty]));
-            Name = dialogResult.Name;
-            Description = dialogResult.Description;
-            CurrentSheet = BuildSheet();
-        }
-        else
-        {
-            await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
-        }
+        SheetListVisible = false;
     }
 
-    [ReactiveCommand]
-    private void AddMeasure()
+    public void ChooseSheet(Sheet sheet)
     {
-        var newMeasure = new bool[Drums.Length, Columns];
-        _measureSteps.Add(newMeasure);
-        CurrentMeasureIndex = _measureSteps.Count - 1;
-        CurrentSheet = BuildSheet();
-        DrawMeasures();
+        Editor = new ManualEditorViewModel(HostScreen, () => { EditorVisible = false; }); //TODO: implement actual onclose action
+        Editor.LoadSheet(sheet);
+        EditorVisible = true;
+        SheetListVisible = false;
     }
-
-    [ReactiveCommand]
-    public void GoToPreviousMeasure()
-    {
-        if (CanGoBack) CurrentMeasureIndex--;
-    }
-
-    [ReactiveCommand]
-    public void GoToNextMeasure()
-    {
-        if (CanGoForward) CurrentMeasureIndex++;
-    }
-
-    public void LoadMatrix(bool[,] matrix)
-    {
-        if (matrix.GetLength(0) != Drums.Length || matrix.GetLength(1) != Columns)
-            throw new ArgumentException("Matrix size must be [drums x 16].");
-
-        if (CurrentMeasureIndex >= 0 && CurrentMeasureIndex < _measureSteps.Count)
-        {
-            Array.Clear(_measureSteps[CurrentMeasureIndex], 0, _measureSteps[CurrentMeasureIndex].Length);
-            Array.Copy(matrix, _measureSteps[CurrentMeasureIndex], matrix.Length);
-        }
-
-        CurrentSheet = BuildSheet();
-        DrawMeasures();
-    }
-
-    public void LoadSheet(Sheet sheet)
-    {
-        _measureSteps.Clear();
-
-        if (sheet is null || sheet.Measures.Length == 0)
-        {
-            _measureSteps.Add(new bool[Drums.Length, Columns]);
-            CurrentMeasureIndex = 0;
-            CurrentSheet = BuildSheet();
-            DrawMeasures();
-            return;
-        }
-
-        foreach (var measure in sheet.Measures)
-        {
-            var measureMatrix = new bool[Drums.Length, Columns];
-            _measureSteps.Add(measureMatrix);
-        }
-
-        CurrentMeasureIndex = 0;
-        CurrentSheet = BuildSheet();
-        Name = sheet.Name;
-        Description = sheet.Description;
-        BpmDecimal = sheet.Tempo;
-        DrawMeasures();
-    }
-
     public async Task LoadExistingSheets()
     {
         var sheets = await _sheetStorage.LoadSheetsAsync();
@@ -213,60 +109,4 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
             _sheetSource.AddOrUpdate(sheet);
         }
     }
-    private Sheet BuildSheet()
-    {
-        var allMeasures = new List<Measure>();
-
-        foreach (var measureSteps in _measureSteps)
-        {
-            var groups = new List<RythmicGroup>();
-
-            // 16 columns = 4 rhythmic groups
-            for (var g = 0; g < 4; g++)
-            {
-                var noteGroups = new List<NoteGroup>();
-
-                for (var c = 0; c < 4; c++)
-                {
-                    var col = g * 4 + c;
-                    var notes = new List<Note>();
-
-                    for (var r = 0; r < Drums.Length; r++)
-                        if (measureSteps[r, col])
-                            notes.Add(new Note(Drums[r], NoteValue.Sixteenth));
-
-                    noteGroups.Add(notes.Count > 0 ? new NoteGroup(notes) : new NoteGroup());
-                }
-
-                var upscaled = RecordingService.UpscaleNotes(noteGroups);
-                groups.Add(new RythmicGroup([..upscaled]));
-            }
-
-            allMeasures.Add(new Measure(groups));
-        }
-
-        return new Sheet(_bpm, [..allMeasures], Name ?? "Untitled", Description ?? "");
-    }
-
-    private void DrawMeasures()
-    {
-        _measureSource.Clear();
-        _measureSource.AddRange(CurrentSheet?.Measures.Select(m => new MeasureViewModel(m)) ??
-                                Array.Empty<MeasureViewModel>());
-        var idx = CurrentMeasureIndex;
-        CurrentMeasureIndex = -1;
-        CurrentMeasureIndex = idx;
-    }
-
-    public readonly Drum[] Drums = new[]
-    {
-        Drum.Kick,
-        Drum.Snare,
-        Drum.HiHat,
-        Drum.Tom1,
-        Drum.Tom2,
-        Drum.FloorTom,
-        Drum.Ride,
-        Drum.Crash1
-    };
 }

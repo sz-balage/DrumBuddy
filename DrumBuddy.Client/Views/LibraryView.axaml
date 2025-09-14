@@ -127,7 +127,6 @@
                                 </StackPanel>
                             </Button>
                         </Grid> 
-                        <!-- TODO: make a popup with ... at the end of each list item, containing an Edit, Delete, and Rename menu point -->
                     </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
