@@ -24,7 +24,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
     [Reactive] private bool _noConnection;
 
     [Reactive] private NavigationMenuItemTemplate _selectedPaneItem;
-
+    public IRoutableViewModel CurrentViewModel { get; private set; }
     public MainViewModel(IMidiService midiService)
     {
         _midiService = midiService;
@@ -77,6 +77,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
         var navigateTo = Locator.Current.GetRequiredService(value.ModelType) as IRoutableViewModel;
         if (navigateTo is null)
             throw new Exception("ViewModel not found.");
+        CurrentViewModel = navigateTo;
         if (Router.GetCurrentViewModel() is RecordingViewModel rvm)
             rvm.Dispose();
         Router.NavigateAndReset.Execute(navigateTo);

@@ -41,9 +41,13 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.Bind(ViewModel, vm => vm.SelectedSheet,
                     v => v.SheetsLB.SelectedItem)
                 .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.SheetsStackPanel.IsVisible, count => count == 0)
+            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateGrid.IsVisible, count => count == 0)
+                .DisposeWith(d);       
+            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateTextBlock.IsVisible, count => count == 0)
                 .DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.NavigateToRecordingViewCommand, view => view.NavSheetButton)
+            this.BindCommand(ViewModel, vm => vm.NavigateToRecordingViewCommand, view => view.RecordButton)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.NavigateToManualViewCommand, view => view.ManualButton)
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowRenameDialog, HandleRename)
                 .DisposeWith(d);
@@ -106,7 +110,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
     private ListBox SheetsLB => this.FindControl<ListBox>("SheetsListBox");
     private Button NavSheetButton => this.FindControl<Button>("CreateFirstSheetButton");
-    private StackPanel SheetsStackPanel => this.FindControl<StackPanel>("ZeroStateStack");
+    private UniformGrid ZeroStateGrid => this.FindControl<UniformGrid>("ZeroStateStack");
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {

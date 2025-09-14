@@ -63,6 +63,13 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         var mainVm = HostScreen as MainViewModel;
         mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<RecordingViewModel>());
     }
+
+    [ReactiveCommand]
+    private void NavigateToManualView()
+    {
+        var mainVm = HostScreen as MainViewModel;
+        mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<ManualViewModel>());
+    }
     [ReactiveCommand]
     private async Task RenameSheet()
     {
@@ -112,6 +119,7 @@ public interface ILibraryViewModel : IRoutableViewModel
     ReactiveCommand<Unit, Unit> RenameSheetCommand { get; }
     ReactiveCommand<Unit, Unit> EditSheetCommand { get; }
     ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; }
+    ReactiveCommand<Unit, Unit> NavigateToManualViewCommand { get; }
     Sheet? SelectedSheet { get; set; } 
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);

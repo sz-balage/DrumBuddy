@@ -23,7 +23,7 @@ namespace DrumBuddy.Client.Views;
 
 public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewModel>
 {
-    private const int StepCount = ManualViewModel.Columns;
+    private const int StepCount = ManualEditorViewModel.Columns;
     public ManualEditorView()
     {
         if (Design.IsDesignMode)

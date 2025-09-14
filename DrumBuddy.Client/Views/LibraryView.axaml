@@ -24,12 +24,18 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        <Border Background="LightGray" HorizontalAlignment="Stretch" >
+        <Grid  Background="LightGray" HorizontalAlignment="Stretch">
             <TextBlock Text="Your Sheet Library" 
                        Margin="18"
                        Classes="header"
+                       VerticalAlignment="Center" /> 
+            <TextBlock Text="You haven't created any sheets yet. To get started choose below." 
+                       Margin="18"
+                       x:Name="ZeroStateTextBlock"
+                       Classes="header"
+                       HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
-        </Border>
+        </Grid>
         <ListBox Grid.Row="1" 
                  x:Name="SheetsListBox" 
                  Grid.ColumnSpan="2" Grid.Column="0">
@@ -130,27 +136,42 @@
                     </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <StackPanel Grid.Row="1"
-                    Background="Transparent"
-                    x:Name="ZeroStateStack"
-                    Grid.ColumnSpan="2"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="16">
-            <TextBlock Text="You haven't created any sheets yet. To get started, click below."
-                       TextAlignment="Center"
-                       FontSize="20"/>
-            <Button x:Name="CreateFirstSheetButton"
-                    HorizontalAlignment="Center"
-                    Classes="accent">
-                <StackPanel Orientation="Horizontal">
-                    <PathIcon Data="{StaticResource RecordIcon}" Foreground="White"/>
-                    <TextBlock Text="Create your first sheet"
-                               FontWeight="Bold"
-                               FontSize="18"
-                               Margin="10" />
-                </StackPanel>
+        <UniformGrid Grid.Row="1"  Grid.Column="0" x:Name="ZeroStateStack"
+                       Grid.ColumnSpan="2" Columns="2">
+            <Button Classes="card" CornerRadius="0" x:Name="RecordButton">
+                <Border>
+                    <StackPanel Orientation="Vertical"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="12">
+                        <PathIcon Data="{StaticResource RecordIcon}"
+                                  Width="64"
+                                  Height="64" />
+                        <TextBlock Text="Record your drum beats"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center" />
+                    </StackPanel>
+                </Border>
             </Button>
-        </StackPanel>
+            <Button Classes="card" CornerRadius="0" x:Name="ManualButton">
+                <Border>
+                    <StackPanel Orientation="Vertical"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="12">
+                        <PathIcon Data="{StaticResource EditorIcon}"
+                                  Width="64"
+                                  Height="64" />
+                        <TextBlock Text="Manually create a sheet"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Button>
+        </UniformGrid>
     </Grid>
 </rxui:ReactiveUserControl>

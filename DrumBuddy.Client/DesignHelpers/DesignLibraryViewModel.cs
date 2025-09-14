@@ -31,6 +31,7 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     public ReactiveCommand<Unit, Unit> RenameSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> EditSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<Unit, Unit> NavigateToManualViewCommand { get; } = ReactiveCommand.Create(() => { });
     public Sheet? SelectedSheet { get; set; }
     public bool SheetExists(string sheetName)
     {

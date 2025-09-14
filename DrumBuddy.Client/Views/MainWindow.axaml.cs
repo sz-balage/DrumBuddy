@@ -1,6 +1,9 @@
+using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.IO.Services;
 using ReactiveUI;
@@ -11,7 +14,7 @@ namespace DrumBuddy.Client.Views;
 public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
     private MidiService _midiService;
-
+    bool isClosingConfirmed = false;
     public MainWindow()
     {
         _midiService = Locator.Current.GetService<MidiService>();
@@ -35,6 +38,28 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.TryConnectCommand, v => v._retryButton)
                 .DisposeWith(d);
+          
+            Closing += async (_, e) =>
+            {
+                if (isClosingConfirmed)
+                    return; 
+                if (ViewModel?.CurrentViewModel is ManualViewModel manualVm)
+                {
+                    var editorVm = manualVm.Editor;
+                    if (!editorVm?.IsSaved ?? false)
+                    {
+                        e.Cancel = true; 
+
+                        var result = await editorVm.ShowConfirmation.Handle(Unit.Default);
+
+                        if (result == Confirmation.Close)
+                        {
+                            isClosingConfirmed = true; 
+                            Close(); 
+                        }
+                    }
+                }
+            };
         });
         InitializeComponent();
     }
