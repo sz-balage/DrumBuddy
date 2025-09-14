@@ -54,7 +54,7 @@
                         </StackPanel>
                     </Border>
                 </Button>
-                <StackPanel x:Name="SheetChooserStackPanel">
+                <Grid RowDefinitions="Auto,*" x:Name="SheetChooserStackPanel">
                     <Border Height="66" Background="LightGray">
                         <StackPanel Orientation="Horizontal">
                             <Button x:Name="CancelSheetChoosingButton" Height="66" Width="41" Background="LightGray">
@@ -67,45 +67,44 @@
                                        VerticalAlignment="Center" />
                         </StackPanel>
                     </Border>
-                    <!-- TODO check out why listbox isnt scrollable-->
-                    <ScrollViewer> 
-                        <ListBox x:Name="SheetListBox" SelectionChanged="SheetListBox_OnSelectionChanged">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="models:Sheet">
-                                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
-                                        <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-                                                 Data="{StaticResource music}"
-                                                 Width="30"
-                                                 Height="30"
-                                                 Margin="5,0,20,0"
-                                                 Foreground="#444444" />
-                                        <StackPanel Grid.Row="0" Grid.Column="1"
-                                                   Orientation="Horizontal"
-                                                   Margin="0,0,0,4">
-                                            <TextBlock Text="Name: " 
-                                                      FontWeight="SemiBold" 
-                                                      Opacity="0.8" />
-                                            <TextBlock Text="{Binding Name}"
-                                                      FontWeight="SemiBold"
-                                                      MaxWidth="320"
-                                                      TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
-                                        <StackPanel Grid.Row="1" Grid.Column="1"
-                                                   Orientation="Horizontal"
-                                                   Margin="0,4,0,4">
-                                            <TextBlock Text="Description: "
-                                                      FontWeight="SemiBold"
-                                                      Opacity="0.8" />
-                                            <TextBlock Text="{Binding Description}"
-                                                       MaxWidth="800"
-                                                       TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
-                                    </Grid> 
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </ScrollViewer>
-                </StackPanel>
+                     <ListBox Grid.Row="1" x:Name="SheetListBox" SelectionChanged="SheetListBox_OnSelectionChanged"
+                              VerticalAlignment="Stretch"
+                              HorizontalAlignment="Stretch">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="models:Sheet">
+                                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
+                                            <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                                     Data="{StaticResource music}"
+                                                     Width="30"
+                                                     Height="30"
+                                                     Margin="5,0,20,0"
+                                                     Foreground="#444444" />
+                                            <StackPanel Grid.Row="0" Grid.Column="1"
+                                                       Orientation="Horizontal"
+                                                       Margin="0,0,0,4">
+                                                <TextBlock Text="Name: " 
+                                                          FontWeight="SemiBold" 
+                                                          Opacity="0.8" />
+                                                <TextBlock Text="{Binding Name}"
+                                                          FontWeight="SemiBold"
+                                                          MaxWidth="320"
+                                                          TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Row="1" Grid.Column="1"
+                                                       Orientation="Horizontal"
+                                                       Margin="0,4,0,4">
+                                                <TextBlock Text="Description: "
+                                                          FontWeight="SemiBold"
+                                                          Opacity="0.8" />
+                                                <TextBlock Text="{Binding Description}"
+                                                           MaxWidth="800"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Grid> 
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                </Grid>
             
             </Grid>
         </UniformGrid>
