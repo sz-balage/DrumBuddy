@@ -60,6 +60,7 @@ public class App : Application
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
+        CurrentMutable.RegisterConstant(new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.Register(() =>
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<IMidiService>()));
@@ -71,6 +72,7 @@ public class App : Application
         CurrentMutable.Register(() => new RecordingView { ViewModel = Locator.Current.GetRequiredService<RecordingViewModel>() }, typeof(IViewFor<RecordingViewModel>));
         CurrentMutable.Register(() => new LibraryView { ViewModel = Locator.Current.GetRequiredService<LibraryViewModel>() }, typeof(IViewFor<ILibraryViewModel>));
         CurrentMutable.Register(() => new ManualView() { ViewModel = Locator.Current.GetRequiredService<ManualViewModel>() }, typeof(IViewFor<ManualViewModel>));
+        CurrentMutable.Register(() => new ConfigurationView() { ViewModel = Locator.Current.GetRequiredService<ConfigurationViewModel>() }, typeof(IViewFor<ConfigurationViewModel>));
     }
 
     private static void RegisterCoreServices()

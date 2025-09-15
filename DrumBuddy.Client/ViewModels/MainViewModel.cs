@@ -42,6 +42,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
         new NavigationMenuItemTemplate(typeof(RecordingViewModel), "RecordIcon","Record your beats in a new sheet."),
         new NavigationMenuItemTemplate(typeof(LibraryViewModel), "LibraryIcon","Review and manage your saved sheets."),
         new NavigationMenuItemTemplate(typeof(ManualViewModel), "EditorIcon","Manually create a new sheet, or edit an existing one for a more precise structure."),
+        new NavigationMenuItemTemplate(typeof(ConfigurationViewModel), "SettingsIcon","Add, or change your drum mapping configuration."),
     };
 
     public void NavigateFromCode(IRoutableViewModel viewModel)
