@@ -17,7 +17,7 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         List<Measure> measures = new()
         {
-            new Measure([new RythmicGroup([new NoteGroup([new Note(Drum.Crash1,NoteValue.Eighth)])])])
+            new Measure([new RythmicGroup([new NoteGroup([new Note(Drum.Crash,NoteValue.Eighth)])])])
         };
         Sheets = new ReadOnlyObservableCollection<Sheet>(new ObservableCollection<Sheet>
         {

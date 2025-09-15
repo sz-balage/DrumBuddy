@@ -60,7 +60,7 @@ public class App : Application
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
-        CurrentMutable.RegisterConstant(new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>()));
+        CurrentMutable.RegisterConstant(new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<IMidiService>(),Locator.Current.GetRequiredService<ConfigurationService>()));
         CurrentMutable.Register(() =>
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<IMidiService>()));
@@ -78,6 +78,7 @@ public class App : Application
     private static void RegisterCoreServices()
     {
         CurrentMutable.RegisterConstant<ISerializationService>(new SerializationService());
+        CurrentMutable.RegisterConstant(new ConfigurationService());
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]

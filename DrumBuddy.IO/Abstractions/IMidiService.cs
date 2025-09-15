@@ -7,6 +7,6 @@ public interface IMidiService
 {
     public bool IsConnected { get; }
     public IObservable<bool> InputDeviceDisconnected { get; }
-    public IObservable<Drum> GetBeatsObservable();
+    public IObservable<int> GetRawNoteObservable();
     public MidiDeviceConnectionResult TryConnect();
 }

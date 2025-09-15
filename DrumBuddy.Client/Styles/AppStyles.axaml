@@ -110,5 +110,13 @@
             <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
         </Setter>
     </Style>
+    <Style Selector="Button.Unmapped">
+        <Setter Property="Background" Value="Red"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
 
+    <Style Selector="Button.Highlight">
+        <Setter Property="Background" Value="Green"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
 </Styles>

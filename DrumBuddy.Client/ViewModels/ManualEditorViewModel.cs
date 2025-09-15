@@ -284,6 +284,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         Drum.Tom2,
         Drum.FloorTom,
         Drum.Ride,
-        Drum.Crash1
+        Drum.Crash
     };
 }

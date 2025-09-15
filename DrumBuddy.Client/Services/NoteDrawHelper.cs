@@ -68,7 +68,7 @@ public class NoteDrawHelper
             Drum.Tom2 => 15, // on line 4
             Drum.Ride => -5, // on line 5
             Drum.HiHat => -15, // above line 5 (between line 5 and the invisible line 6)
-            Drum.Crash1 => -25, // on line 6
+            Drum.Crash => -25, // on line 6
             _ => 35
         };
     }
@@ -78,7 +78,7 @@ public class NoteDrawHelper
         return note.Drum switch
         {
             Drum.HiHat or Drum.Ride => (new Uri(BaseNotationPath + "note_head_x" + ImageExtension), NoteHeadSize),
-            Drum.Crash1 => (new Uri(BaseNotationPath + "note_head_x_line" + ImageExtension), NoteHeadWithLineSize),
+            Drum.Crash => (new Uri(BaseNotationPath + "note_head_x_line" + ImageExtension), NoteHeadWithLineSize),
             Drum.Rest => note.Value switch
             {
                 NoteValue.Quarter => (new Uri(BaseNotationPath + "quarter_rest" + ImageExtension),

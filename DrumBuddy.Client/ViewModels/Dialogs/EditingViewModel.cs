@@ -30,6 +30,7 @@ public partial class EditingViewModel : ReactiveObject
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly IMidiService _midiService;
+    private readonly ConfigurationService _configService;
     private readonly SoundPlayer _normalBeepPlayer;
     private Bpm _bpm;
     [Reactive] private decimal _bpmDecimal;
@@ -56,6 +57,7 @@ public partial class EditingViewModel : ReactiveObject
     {
         _originalSheet = originalSheet;
         _midiService = Locator.Current.GetRequiredService<IMidiService>();
+        _configService = Locator.Current.GetRequiredService<ConfigurationService>();
         //init sound players
         _normalBeepPlayer =
             new SoundPlayer(FileSystemService.GetPathToRegularBeepSound()); //relative path should be used
@@ -92,7 +94,7 @@ public partial class EditingViewModel : ReactiveObject
             .Subscribe(recording => CanSave = !recording);
     }
 
-    public IObservable<Drum> KeyboardBeats { get; set; }
+    public IObservable<int> KeyboardBeats { get; set; }
     public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
     public string? UrlPathSegment { get; } = "recording-view";
     public IScreen HostScreen { get; }
@@ -137,7 +139,7 @@ public partial class EditingViewModel : ReactiveObject
 
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
-            .GetNotes(_bpm, KeyboardInputEnabled ? KeyboardBeats : _midiService.GetBeatsObservable())
+            .GetNotes(_bpm, KeyboardInputEnabled ? KeyboardBeats.GetMappedBeatsForKeyboard(_configService) : _midiService.GetMappedBeatsObservable(_configService))
             .ObserveOn(RxApp.MainThreadScheduler)
             .Select((notes, idx) => (notes, idx))
             .DelaySubscription(delay)

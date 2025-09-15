@@ -47,13 +47,13 @@ public class MidiService : IMidiService
 
     public IObservable<bool> InputDeviceDisconnected => _inputDeviceDisconnected;
 
-    public IObservable<Drum> GetBeatsObservable()
+    public IObservable<int> GetRawNoteObservable()
     {
         return IsConnected
-            ? _midiInput.Select(args => (Drum)int.Parse(args.NoteNumber.ToString()))
+            ? _midiInput.Select(evt => (int)evt.NoteNumber)
                 .Buffer(2)
                 .Select(list => list.First())
-            : Observable.Empty<Drum>();
+            : Observable.Empty<int>();
     }
 
     private void OnDeviceRemoved(object? sender, DeviceAddedRemovedEventArgs e)

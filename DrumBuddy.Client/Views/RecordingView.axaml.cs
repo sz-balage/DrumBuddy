@@ -79,15 +79,15 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => e.Key switch
                 {
-                    Key.A => Drum.HiHat,
-                    Key.S => Drum.Snare,
-                    Key.D => Drum.Kick,
-                    Key.F => Drum.FloorTom,
-                    Key.Q => Drum.Crash1,
-                    Key.W => Drum.Tom1,
-                    Key.E => Drum.Tom2,
-                    Key.R => Drum.Ride,
-                    _ => Drum.Rest
+                    Key.A => (int)Drum.HiHat,
+                    Key.S => (int)Drum.Snare,
+                    Key.D => (int)Drum.Kick,
+                    Key.F => (int)Drum.FloorTom,
+                    Key.Q => (int)Drum.Crash,
+                    Key.W => (int)Drum.Tom1,
+                    Key.E => (int)Drum.Tom2,
+                    Key.R => (int)Drum.Ride,
+                    _ => -2
                 });
 
             ViewModel!.StopRecordingCommand.ThrownExceptions.Subscribe(ex => Debug.WriteLine(ex.Message));
