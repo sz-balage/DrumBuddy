@@ -18,7 +18,7 @@
                    TextWrapping="Wrap"
                    HorizontalAlignment="Left"
                    Classes="dialog-title"
-                   Text="You have unsaved changes, are you sure you want to close the editor?"/>
+                   Text="You have unsaved changes. Are you sure you want to exit?"/>
         <Grid Grid.Row="1" Margin="0,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -32,7 +32,7 @@
                     x:Name="Cancel" />
             <Button Grid.Column="2"
                     Classes="button confirm"
-                    Content="Close editor"
+                    Content="Confirm"
                     x:Name="Confirm" />
         </Grid>
     </Grid></Window>
