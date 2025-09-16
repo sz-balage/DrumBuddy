@@ -1,7 +1,9 @@
+using System;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels;
@@ -19,6 +21,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
     {
         _midiService = Locator.Current.GetService<MidiService>();
         ViewModel = Locator.Current.GetService<MainViewModel>();
+        Icon = new WindowIcon(AssetLoader.Open(new Uri("avares://DrumBuddy.Client/Assets/app.ico")));
         this.WhenActivated(d =>
         {
             this.OneWayBind(ViewModel, vm => vm.PaneItems, v => v.PaneListBox.ItemsSource)
