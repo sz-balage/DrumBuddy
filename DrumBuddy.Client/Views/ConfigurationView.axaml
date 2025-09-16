@@ -1,21 +1,59 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="viewModels:ConfigurationViewModel" xmlns="https://github.com/avaloniaui"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="viewModels:ConfigurationViewModel"
+                                x:DataType="viewModels:ConfigurationViewModel"
+                                xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:viewModels="clr-namespace:DrumBuddy.Client.ViewModels"
+                                xmlns:converters="clr-namespace:DrumBuddy.Client.Converters"
+                                xmlns:models="clr-namespace:DrumBuddy.Client.Models"
+                                xmlns:views="clr-namespace:DrumBuddy.Client.Views"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="DrumBuddy.Client.Views.ConfigurationView">
     <UserControl.Styles>
         <StyleInclude Source="/Styles/AppStyles.axaml" />
+        <Style Selector="Border">
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Button">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Background" Value="#8ebce1"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#cce3ff"/>
+        </Style>
     </UserControl.Styles>
-    <Grid RowDefinitions="66,*">
+        <UserControl.Resources>
+                <converters:DrumHighlightConverter x:Key="DrumHighlightConverter"/>
+        </UserControl.Resources>
+    <Grid RowDefinitions="66,Auto,*,Auto">
         <Grid Background="LightGray">
-            <TextBlock Text="Configuration editor" 
+            <TextBlock Text="Configuration editor"
                        Margin="18"
                        Classes="header"
                        VerticalAlignment="Center" />
-            <CheckBox x:Name="KeyboardInputCheckBox" 
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBlock x:Name="ListeningDrumText"
+                           Classes="header"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <Button x:Name="CancelButton" Margin="10,0,0,0"
+                        Content="Cancel Mapping"
+                        IsVisible="False" />
+            </StackPanel>
+            <CheckBox x:Name="KeyboardInputCheckBox"
                       HorizontalAlignment="Right"
                       FontSize="20"
                       FontFamily="{StaticResource NunitoFont}"
@@ -24,25 +62,44 @@
                 Keyboard input
             </CheckBox>
         </Grid>
-        <StackPanel Grid.Row="1" Spacing="12" Margin="16">
-            <TextBlock x:Name="ListeningDrumText"
-                       FontSize="16"
-                       FontWeight="SemiBold" />
-            <UniformGrid Columns="4" Rows="2" x:Name="DrumGrid" Margin="0,12,0,12">
-                <Button x:Name="KickButton" Content="Kick" />
-                <Button x:Name="SnareButton" Content="Snare" />
-                <Button x:Name="HiHatButton" Content="Hi-Hat" />
-                <Button x:Name="Tom1Button" Content="Tom 1" />
-                <Button x:Name="Tom2Button" Content="Tom 2" />
-                <Button x:Name="FloorTomButton" Content="Floor Tom" />
-                <Button x:Name="RideButton" Content="Ride" />
-                <Button x:Name="CrashButton" Content="Crash" />
-            </UniformGrid>
+        <ScrollViewer Grid.Row="2">
+            <ItemsControl  ItemsSource="{Binding DrumMappings}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="0" Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:DrumMappingItem">
+                        <Border CornerRadius="6"  
+                                Background="LightGray"
+                                VerticalAlignment="Stretch">
+                            <Grid VerticalAlignment="Stretch" ColumnDefinitions="Auto,Auto,*">
+                                <TextBlock Text="{Binding DrumName}"
+                                           VerticalAlignment="Center"
+                                           Grid.Column="0"/>
+                                <Ellipse Margin="10,0,0,0" Grid.Column="1" Width="20" Height="20">
+                                    <Ellipse.Fill>
+                                        <MultiBinding Converter="{StaticResource DrumHighlightConverter}">
+                                            <Binding Path="IsUnmapped"/>
+                                            <Binding Path="IsHighlighted"/>
+                                        </MultiBinding>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <Button Content="Remap" Foreground="Black"
+                                        FontFamily="{StaticResource NunitoFont}"
+                                        Command="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).StartListeningCommand}"
+                                        CommandParameter="{Binding Drum}"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Grid.Column="2"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
-            <Button x:Name="CancelButton"
-                    Content="Cancel Mapping"
-                    IsVisible="False" />
-        </StackPanel>
     </Grid>
-    
+
 </reactiveUi:ReactiveUserControl>

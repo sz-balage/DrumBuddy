@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using DrumBuddy.Client.Extensions;
+using DrumBuddy.Client.Models;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Abstractions;
@@ -18,7 +21,8 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     private readonly ConfigurationService _config;
     private readonly IMidiService _midiService;
     private IDisposable? _beatsSubscription;
-    private readonly Subject<Drum> _highlightDrumSubject = new();
+
+    public ObservableCollection<DrumMappingItem> DrumMappings { get; } = new();
 
     public ConfigurationViewModel(IScreen hostScreen, IMidiService midiService, ConfigurationService config)
     {
@@ -26,10 +30,25 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         _midiService = midiService;
         _config = config;
         var mainVm = hostScreen as MainViewModel;
+        foreach (var kvp in _config.Mapping)
+            DrumMappings.Add(new DrumMappingItem(kvp.Key, kvp.Value));
+        MappingChanged.Subscribe(_ => UpdateDrumMappings());
+        
         this.WhenAnyValue(vm => vm.KeyboardInput)
-            .Subscribe(_ => ChangeSubscription(mainVm?.NoConnection ?? true));
-        mainVm?.WhenAnyValue(vm => vm.NoConnection).Subscribe(ChangeSubscription);
-    } 
+            .Subscribe(_ => ChangeSubscription(mainVm?.NoConnection ?? true)); 
+        mainVm?.WhenAnyValue(vm => vm.NoConnection)
+            .Subscribe(ChangeSubscription);
+    }
+
+    private void UpdateDrumMappings()
+    {
+        foreach (var item in DrumMappings)
+        {
+            if (_config.Mapping.TryGetValue(item.Drum, out var note))
+                item.Note = note;
+        }
+    }
+
     public IObservable<int> KeyboardBeats { get; set; }
     private void ChangeSubscription(bool noConnection)
     {
@@ -57,7 +76,6 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 
     public IReadOnlyDictionary<Drum, int> Mapping => _config.Mapping;
     public IObservable<Drum?> ListeningDrumChanged => _config.ListeningDrumChanged;
-    public IObservable<Drum> HighlightDrum => _highlightDrumSubject.AsObservable();
     private readonly Subject<Unit> _mappingChanged = new();
     public IObservable<Unit> MappingChanged => _mappingChanged.AsObservable();
 
@@ -67,11 +85,22 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         {
             var drum = _config.Mapping.FirstOrDefault(kvp => kvp.Value == noteNumber).Key;
             if (drum != default)
-                _highlightDrumSubject.OnNext(drum);
+            {
+                HighlightDrumTemporarily(drum);
+            }
             return;
         }
         _config.MapDrum(noteNumber); 
         _mappingChanged.OnNext(Unit.Default);
+    }
+
+    private void HighlightDrumTemporarily(Drum drum)
+    {
+        var item = DrumMappings.FirstOrDefault(d => d.Drum == drum);
+        if (item == null) return;
+
+        item.IsHighlighted = true;
+        Task.Delay(500).ContinueWith(_ => item.IsHighlighted = false);
     }
 
     public string? UrlPathSegment { get; }

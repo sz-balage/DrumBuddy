@@ -22,6 +22,8 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
 
         this.WhenActivated(d =>
         {
+            if(Design.IsDesignMode)
+                return;
             ViewModel?.ListeningDrumChanged
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(drum =>
@@ -47,28 +49,7 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
                     vm => vm.StopListeningCommand,
                     v => v.CancelButton)
                 .DisposeWith(d);
-            
-            this.BindCommand(ViewModel, vm => vm.StartListeningCommand, v => v.KickButton, 
-                Observable.Return(Drum.Kick)).DisposeWith(d);   
-            this.BindCommand(ViewModel, vm => vm.StartListeningCommand, v => v.SnareButton, 
-                    Observable.Return(Drum.Snare)).DisposeWith(d);     
-            this.BindCommand(ViewModel, vm => vm.StartListeningCommand, v => v.Tom1Button,
-                    Observable.Return(Drum.Tom1)).DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.StartListeningCommand, v => v.Tom2Button,
-                    Observable.Return(Drum.Tom2)).DisposeWith(d);  
-            this.BindCommand(ViewModel, vm => vm.StartListeningCommand, v => v.FloorTomButton,
-                    Observable.Return(Drum.FloorTom)).DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.StartListeningCommand, v => v.RideButton,
-                    Observable.Return(Drum.Ride)).DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.StartListeningCommand, v => v.CrashButton,
-                    Observable.Return(Drum.Crash)).DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.StartListeningCommand, v => v.HiHatButton,
-                    Observable.Return(Drum.HiHat)).DisposeWith(d);
-            ViewModel?.HighlightDrum.Subscribe(HighlightDrum)
-                .DisposeWith(d);
-            ViewModel.MappingChanged.Subscribe(_ => UpdateDrumButtonHighlights()).DisposeWith(d);
-            UpdateDrumButtonHighlights();
-            ViewModel!.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
+            ViewModel.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => e.Key switch
                 {
@@ -85,59 +66,4 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
 
         });
     }
-
-    private async void HighlightDrum(Drum drum)
-    {
-        var button = GetButtonForDrum(drum);
-        if (button is null) return;
-
-        button.Classes.Add("Highlight");
-        await Task.Delay(500);
-        button.Classes.Remove("Highlight");
-    }
-    private void UpdateDrumButtonHighlights()
-    {
-        var drumButtons = new Dictionary<Drum, Button>
-        {
-            { Drum.Kick, KickButton },
-            { Drum.Snare, SnareButton },
-            { Drum.HiHat, HiHatButton },
-            { Drum.Tom1, Tom1Button },
-            { Drum.Tom2, Tom2Button },
-            { Drum.FloorTom, FloorTomButton },
-            { Drum.Ride, RideButton },
-            { Drum.Crash, CrashButton }
-        };
-
-        foreach (var kvp in drumButtons)
-        {
-            var drum = kvp.Key;
-            var button = kvp.Value;
-
-            button.Classes.Remove("Unmapped");
-            button.Classes.Remove("Highlight");
-
-            if (ViewModel.Mapping.TryGetValue(drum, out var mappedNote))
-            {
-                if (mappedNote == -1)
-                    button.Classes.Add("Unmapped"); // red background for unmapped
-            }
-            else
-            {
-                button.Classes.Add("Unmapped");
-            }
-        }
-    }
-    private Button? GetButtonForDrum(Drum drum) => drum switch
-    {
-        Drum.Kick => KickButton,
-        Drum.Snare => SnareButton,
-        Drum.HiHat => HiHatButton,
-        Drum.Tom1 => Tom1Button,
-        Drum.Tom2 => Tom2Button,
-        Drum.FloorTom => FloorTomButton,
-        Drum.Ride => RideButton,
-        Drum.Crash => CrashButton,
-        _ => null
-    };
 }
