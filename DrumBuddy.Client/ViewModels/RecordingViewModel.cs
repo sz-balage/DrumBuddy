@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
+using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
@@ -26,6 +27,7 @@ namespace DrumBuddy.Client.ViewModels;
 public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
     private readonly ConfigurationService _configService;
+    private readonly NotificationManager _notificationManager;
     private readonly SoundPlayer _highBeepPlayer;
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
@@ -53,6 +55,8 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = Locator.Current.GetRequiredService<ConfigurationService>();
+        _notificationManager = Locator.Current.GetRequiredService<NotificationManager>();
+        
         //init sound players
         _normalBeepPlayer =
             new SoundPlayer(FileSystemService.GetPathToRegularBeepSound()); //relative path should be used
@@ -254,6 +258,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         ClearMeasures();
         if (dialogResult.Name != null)
         {
+            _notificationManager.ShowSuccessNotification($"The sheet {dialogResult.Name} successfully saved.");
             var mainVm = HostScreen as MainViewModel;
             mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<LibraryViewModel>());
         }

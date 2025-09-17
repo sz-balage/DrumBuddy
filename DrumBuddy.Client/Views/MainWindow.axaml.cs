@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.Models;
@@ -37,6 +38,11 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             this.Bind(ViewModel, vm => vm.ErrorMessage, v => v._errorTB.Text)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.ErrorMessage, v => v._errorBorder.IsVisible,
+                    str => !string.IsNullOrEmpty(str))
+                .DisposeWith(d);
+            this.Bind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessMessage.Text)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessBorder.IsVisible,
                     str => !string.IsNullOrEmpty(str))
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.TryConnectCommand, v => v._retryButton)

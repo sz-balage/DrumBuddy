@@ -7,6 +7,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using DrumBuddy.Client.DesignHelpers;
 using DrumBuddy.Client.Extensions;
+using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Client.Views;
 using DrumBuddy.Core.Abstractions;
@@ -56,24 +57,23 @@ public class App : Application
         RegisterCoreServices();
         RegisterIOServices();
         CurrentMutable.RegisterConstant(new MainViewModel(Locator.Current.GetRequiredService<IMidiService>()));
+        CurrentMutable.RegisterConstant(new NotificationManager(Locator.Current.GetRequiredService<MainViewModel>()));
         CurrentMutable.RegisterConstant<IScreen>(Locator.Current.GetService<MainViewModel>());
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
-        CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>()));
+        CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>(),Locator.Current.GetRequiredService<NotificationManager>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.RegisterConstant(new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<IMidiService>(),Locator.Current.GetRequiredService<ConfigurationService>()));
         CurrentMutable.Register(() =>
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<IMidiService>()));
         
-        // HomeViewModel context => new Views.HomeView { ViewModel = context },
-        // RecordingViewModel context => new RecordingView { ViewModel = context },
-        // ILibraryViewModel context => new LibraryView { ViewModel = context },
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() }, typeof(IViewFor<HomeViewModel>));
         CurrentMutable.Register(() => new RecordingView { ViewModel = Locator.Current.GetRequiredService<RecordingViewModel>() }, typeof(IViewFor<RecordingViewModel>));
         CurrentMutable.Register(() => new LibraryView { ViewModel = Locator.Current.GetRequiredService<LibraryViewModel>() }, typeof(IViewFor<ILibraryViewModel>));
         CurrentMutable.Register(() => new ManualView() { ViewModel = Locator.Current.GetRequiredService<ManualViewModel>() }, typeof(IViewFor<ManualViewModel>));
         CurrentMutable.Register(() => new ConfigurationView() { ViewModel = Locator.Current.GetRequiredService<ConfigurationViewModel>() }, typeof(IViewFor<ConfigurationViewModel>));
+        
     }
 
     private static void RegisterCoreServices()

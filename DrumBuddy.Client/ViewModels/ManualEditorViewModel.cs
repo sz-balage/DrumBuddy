@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
+using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
@@ -52,7 +53,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
-
+    private NotificationManager _notificationManager;
     public ManualEditorViewModel(IScreen host, Func<Task> onClose)
     {
         _sheetStorage = Locator.Current.GetRequiredService<ISheetStorage>();
@@ -85,6 +86,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         DrawMeasures();
         SaveCommand.ThrownExceptions.Subscribe(ex => Console.WriteLine(ex.Message));
         _onClose = onClose;
+        _notificationManager = Locator.Current.GetRequiredService<NotificationManager>();
     }
 
     public Sheet? CurrentSheet
@@ -165,7 +167,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         {
             await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
         }
-
+        _notificationManager.ShowSuccessNotification($"The sheet {Name} successfully saved.");
         IsSaved = true;
     }
 

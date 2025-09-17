@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
@@ -15,8 +17,12 @@ namespace DrumBuddy.Client.ViewModels;
 public partial class MainViewModel : ReactiveObject, IScreen
 {
     private readonly IMidiService _midiService;
+    private IDisposable? _successNotificationSub;
+    private IDisposable? _successfulConnectionSub;
+    private IDisposable? _connectionErrorSub;
     [Reactive] private bool _connectedSucc;
 
+    [Reactive] private string _successMessage;
     [Reactive] private string _errorMessage;
 
     [Reactive] private bool _isPaneOpen;
@@ -56,21 +62,33 @@ public partial class MainViewModel : ReactiveObject, IScreen
         SelectedPaneItem = navigateTo;
     }
 
+    public void ShowSuccessToastNotification(string message)
+    {
+        _successNotificationSub?.Dispose();
+
+        SuccessMessage = message;
+        _successNotificationSub = DelayedActionSubscription(() => SuccessMessage = string.Empty);
+    }
     private void SuccessfulConnection()
     {
+        _successfulConnectionSub?.Dispose();
         NoConnection = false;
         ConnectedSucc = true;
-        var timer = new Timer(_ => { Dispatcher.UIThread.Invoke(() => ConnectedSucc = false); }, null,
-            TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan);
+        _successfulConnectionSub = DelayedActionSubscription(() => ConnectedSucc = false);
     }
 
     private void ConnectionError(string message)
     {
         NoConnection = true;
         ErrorMessage = message;
-        var timer = new Timer(_ => { Dispatcher.UIThread.Invoke(() => ErrorMessage = string.Empty); }, null,
-            TimeSpan.FromSeconds(5), Timeout.InfiniteTimeSpan);
+        _connectionErrorSub = DelayedActionSubscription(() => ErrorMessage = string.Empty);
     }
+
+    private IDisposable DelayedActionSubscription(Action action) =>
+        Observable.Return(Unit.Default)
+            .Delay(DateTimeOffset.Now.AddSeconds(5))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(_ => action.Invoke());
 
     private void OnSelectedPaneItemChanged(NavigationMenuItemTemplate? value)
     {

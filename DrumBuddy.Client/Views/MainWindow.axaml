@@ -18,6 +18,11 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
+    <Window.Styles>
+        <Style Selector="Button.Retry:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </Window.Styles>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -31,7 +36,7 @@
                 <Label Foreground="White" VerticalAlignment="Center">
                     There are no MIDI devices connected. If you wish to use the client with keyboard controls, visit the Configuration page.
                 </Label>
-                <Button Background="DarkRed" Foreground="White" x:Name="RetryButton" Margin="10,0,0,0">
+                <Button Classes="Retry" Background="DarkRed" Foreground="White" x:Name="RetryButton" Margin="10,0,0,0">
                     <TextBlock>Retry connection</TextBlock>
                 </Button>
             </StackPanel>
@@ -79,16 +84,47 @@
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center" />
                         </rxui:RoutedViewHost.DefaultContent>
-                        <!-- <rxui:RoutedViewHost.ViewLocator> -->
-                        <!--     <app:AppViewLocator /> -->
-                        <!-- </rxui:RoutedViewHost.ViewLocator> -->
                     </rxui:RoutedViewHost>
                 </Border>
             </SplitView.Content>
         </SplitView>
-        <Border Grid.Row="1" x:Name="ErrorBorder" Background="Red" CornerRadius="5" Padding="10" Margin="10"
-                HorizontalAlignment="Right" VerticalAlignment="Bottom">
-            <TextBlock x:Name="ErrorMessage" Foreground="White" />
+        <Border Grid.Row="1" 
+                x:Name="ErrorBorder" 
+                IsVisible="False"
+                BorderThickness="2"
+                BorderBrush="#E53935"
+                Background="#EF5350"
+                CornerRadius="10"
+                Padding="15"
+                Margin="20"
+                Width="300"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+            <TextBlock x:Name="ErrorMessage"
+                       Foreground="Black"
+                       FontFamily="{StaticResource NunitoFont}"
+                       FontWeight="SemiBold"
+                       FontSize="16"
+                       TextWrapping="Wrap" />
+        </Border>  
+        <Border Grid.Row="1"
+                IsVisible="False"
+                BorderThickness="2"
+                BorderBrush="#8ebce1"
+                x:Name="SuccessBorder"
+                Background="#d2e3fc"
+                CornerRadius="10"
+                Padding="15"
+                Margin="20"
+                Width="300"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+            <TextBlock x:Name="SuccessMessage"
+                       Foreground="Black"
+                       FontFamily="{StaticResource NunitoFont}"
+                       FontWeight="SemiBold"
+                       FontSize="16"
+                       TextWrapping="Wrap" />
         </Border>
     </Grid>
 </rxui:ReactiveWindow>

@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
+using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Extensions;
@@ -59,6 +60,7 @@ public partial class EditingViewModel : ReactiveObject
         _originalSheet = originalSheet;
         _midiService = Locator.Current.GetRequiredService<IMidiService>();
         _configService = Locator.Current.GetRequiredService<ConfigurationService>();
+        
         //init sound players
         _normalBeepPlayer =
             new SoundPlayer(FileSystemService.GetPathToRegularBeepSound()); //relative path should be used
@@ -90,7 +92,7 @@ public partial class EditingViewModel : ReactiveObject
         IsRecording = false;
         HandleMeasureClick(0); //put pointer to first measure by default
         CanSave = false;
-
+        
         this.WhenAnyValue(vm => vm.IsRecording)
             .Subscribe(recording => CanSave = !recording);
     }
