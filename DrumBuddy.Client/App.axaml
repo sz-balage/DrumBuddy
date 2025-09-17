@@ -15,6 +15,8 @@
         <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml" />
     </Application.Styles>
     <Application.Resources>
-        <FontFamily x:Key="NunitoFont">avares://DrumBuddy.Client/Assets/Fonts#</FontFamily>
+        <FontFamily x:Key="NunitoFont">
+            avares://DrumBuddy.Client/Assets/Fonts/#Nunito
+        </FontFamily>
     </Application.Resources>
 </Application>
