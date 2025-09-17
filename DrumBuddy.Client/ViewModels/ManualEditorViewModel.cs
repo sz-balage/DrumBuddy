@@ -8,7 +8,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
-using DrumBuddy.Client.ViewModels.Dialogs;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
@@ -24,44 +23,36 @@ namespace DrumBuddy.Client.ViewModels;
 public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 {
     public const int Columns = 16; // one measure, 16 sixteenth steps
+    private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly List<bool[,]> _measureSteps;
-    private readonly ISheetStorage _sheetStorage;
-    private Sheet? _currentSheet;
-    private int _currentMeasureIndex;
-    private Bpm _bpm;
+    private readonly Func<Task> _onClose;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
+    private readonly ISheetStorage _sheetStorage;
+
+    public readonly Drum[] Drums = new[]
+    {
+        Drum.Kick,
+        Drum.Snare,
+        Drum.HiHat,
+        Drum.Tom1,
+        Drum.Tom2,
+        Drum.FloorTom,
+        Drum.Ride,
+        Drum.Crash
+    };
+
+    public readonly ReadOnlyObservableCollection<MeasureViewModel> Measures;
     public readonly ReadOnlyObservableCollection<Sheet> Sheets;
+    private Bpm _bpm;
+    [Reactive] private decimal _bpmDecimal;
+    private int _currentMeasureIndex;
+    private Sheet? _currentSheet;
+    [Reactive] private string? _description;
+    [Reactive] private bool _editorVisible;
 
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
-    [Reactive] private string? _description;
-    [Reactive] private decimal _bpmDecimal;
-    [Reactive] private bool _editorVisible;
 
-    public Sheet? CurrentSheet
-    {
-        get => _currentSheet;
-        private set => this.RaiseAndSetIfChanged(ref _currentSheet, value);
-    }
-
-    public int CurrentMeasureIndex
-    {
-        get => _currentMeasureIndex;
-        private set
-        {
-            this.RaiseAndSetIfChanged(ref _currentMeasureIndex, value);
-            this.RaisePropertyChanged(nameof(CanGoBack));
-            this.RaisePropertyChanged(nameof(CanGoForward));
-            this.RaisePropertyChanged(nameof(MeasureDisplayText));
-        }
-    }
-    private readonly Func<Task> _onClose;
-    public bool CanGoBack => CurrentMeasureIndex > 0;
-    public bool CanGoForward => CurrentMeasureIndex < _measureSteps?.Count - 1;
-    public string MeasureDisplayText => $"Measure {CurrentMeasureIndex + 1} of {_measureSteps.Count}";
-
-    public readonly ReadOnlyObservableCollection<MeasureViewModel> Measures;
-    private readonly SourceList<MeasureViewModel> _measureSource = new();
     public ManualEditorViewModel(IScreen host, Func<Task> onClose)
     {
         _sheetStorage = Locator.Current.GetRequiredService<ISheetStorage>();
@@ -83,7 +74,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
                 var value = Convert.ToInt32(i);
                 _bpm = new Bpm(value);
                 CurrentSheet!.Tempo = _bpm;
-            }); 
+            });
         _measureSteps = new List<bool[,]>
         {
             new bool[Drums.Length, Columns]
@@ -95,6 +86,34 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         SaveCommand.ThrownExceptions.Subscribe(ex => Console.WriteLine(ex.Message));
         _onClose = onClose;
     }
+
+    public Sheet? CurrentSheet
+    {
+        get => _currentSheet;
+        private set => this.RaiseAndSetIfChanged(ref _currentSheet, value);
+    }
+
+    public int CurrentMeasureIndex
+    {
+        get => _currentMeasureIndex;
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref _currentMeasureIndex, value);
+            this.RaisePropertyChanged(nameof(CanGoBack));
+            this.RaisePropertyChanged(nameof(CanGoForward));
+            this.RaisePropertyChanged(nameof(MeasureDisplayText));
+        }
+    }
+
+    public bool CanGoBack => CurrentMeasureIndex > 0;
+    public bool CanGoForward => CurrentMeasureIndex < _measureSteps?.Count - 1;
+    public string MeasureDisplayText => $"Measure {CurrentMeasureIndex + 1} of {_measureSteps.Count}";
+    public Interaction<SheetCreationData, SheetNameAndDescription> ShowSaveDialog { get; } = new();
+    public Interaction<Unit, Confirmation> ShowConfirmation { get; } = new();
+
+    public IScreen HostScreen { get; }
+    public string? UrlPathSegment { get; }
+
     [ReactiveCommand]
     private async Task NavigateBack()
     {
@@ -106,15 +125,11 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
                 await _onClose();
         }
         else
-        { 
+        {
             await _onClose();
         }
     }
 
-    public IScreen HostScreen { get; }
-    public string? UrlPathSegment { get; }
-    public Interaction<SheetCreationData, SheetNameAndDescription> ShowSaveDialog { get; } = new();
-    public Interaction<Unit, Confirmation> ShowConfirmation { get; } = new();
     public void ToggleStep(int row, int col)
     {
         IsSaved = false;
@@ -134,6 +149,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return false;
         return _measureSteps[CurrentMeasureIndex][row, col];
     }
+
     [ReactiveCommand]
     private async Task Save()
     {
@@ -149,6 +165,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         {
             await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
         }
+
         IsSaved = true;
     }
 
@@ -207,19 +224,18 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             var measureMatrix = new bool[Drums.Length, Columns];
 
             // Convert measure -> bool[,] matrix
-            int col = 0;
+            var col = 0;
             foreach (var group in measure.Groups)
+            foreach (var noteGroup in group.NoteGroups)
             {
-                foreach (var noteGroup in group.NoteGroups)
+                foreach (var note in noteGroup)
                 {
-                    foreach (var note in noteGroup)
-                    {
-                        int drumIndex = Array.IndexOf(Drums, note.Drum);
-                        if (drumIndex >= 0 && col < Columns)
-                            measureMatrix[drumIndex, col] = true;
-                    }
-                    col++;
+                    var drumIndex = Array.IndexOf(Drums, note.Drum);
+                    if (drumIndex >= 0 && col < Columns)
+                        measureMatrix[drumIndex, col] = true;
                 }
+
+                col++;
             }
 
             _measureSteps.Add(measureMatrix);
@@ -262,6 +278,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
             allMeasures.Add(new Measure(groups));
         }
+
         return new Sheet(_bpm, [..allMeasures], Name ?? "Untitled", Description ?? "");
     }
 
@@ -274,16 +291,4 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         CurrentMeasureIndex = -1;
         CurrentMeasureIndex = idx;
     }
-
-    public readonly Drum[] Drums = new[]
-    {
-        Drum.Kick,
-        Drum.Snare,
-        Drum.HiHat,
-        Drum.Tom1,
-        Drum.Tom2,
-        Drum.FloorTom,
-        Drum.Ride,
-        Drum.Crash
-    };
 }

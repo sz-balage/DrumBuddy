@@ -6,7 +6,6 @@ using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
 using DrumBuddy.IO.Abstractions;
-using DrumBuddy.IO.Services;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
@@ -24,7 +23,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
     [Reactive] private bool _noConnection;
 
     [Reactive] private NavigationMenuItemTemplate _selectedPaneItem;
-    public IRoutableViewModel CurrentViewModel { get; private set; }
+
     public MainViewModel(IMidiService midiService)
     {
         _midiService = midiService;
@@ -36,21 +35,26 @@ public partial class MainViewModel : ReactiveObject, IScreen
         ErrorMessage = string.Empty;
     }
 
+    public IRoutableViewModel CurrentViewModel { get; private set; }
+
     public ObservableCollection<NavigationMenuItemTemplate> PaneItems { get; } = new()
     {
-        new NavigationMenuItemTemplate(typeof(HomeViewModel), "HomeIcon",""),
-        new NavigationMenuItemTemplate(typeof(RecordingViewModel), "RecordIcon","Record your beats in a new sheet."),
-        new NavigationMenuItemTemplate(typeof(LibraryViewModel), "LibraryIcon","Review and manage your saved sheets."),
-        new NavigationMenuItemTemplate(typeof(ManualViewModel), "EditorIcon","Manually create a new sheet, or edit an existing one for a more precise structure."),
-        new NavigationMenuItemTemplate(typeof(ConfigurationViewModel), "SettingsIcon","Add, or change your drum mapping configuration."),
+        new NavigationMenuItemTemplate(typeof(HomeViewModel), "HomeIcon", ""),
+        new NavigationMenuItemTemplate(typeof(RecordingViewModel), "RecordIcon", "Record your beats in a new sheet."),
+        new NavigationMenuItemTemplate(typeof(LibraryViewModel), "LibraryIcon", "Review and manage your saved sheets."),
+        new NavigationMenuItemTemplate(typeof(ManualViewModel), "EditorIcon",
+            "Manually create a new sheet, or edit an existing one for a more precise structure."),
+        new NavigationMenuItemTemplate(typeof(ConfigurationViewModel), "SettingsIcon",
+            "Add, or change your drum mapping configuration.")
     };
+
+    public RoutingState Router { get; } = new();
 
     public void NavigateFromCode(IRoutableViewModel viewModel)
     {
         var navigateTo = PaneItems.Single(item => item.ModelType == viewModel.GetType());
         SelectedPaneItem = navigateTo;
     }
-    public RoutingState Router { get; } = new();
 
     private void SuccessfulConnection()
     {
@@ -85,7 +89,10 @@ public partial class MainViewModel : ReactiveObject, IScreen
     }
 
     [ReactiveCommand]
-    private void TogglePane() => IsPaneOpen = !IsPaneOpen;
+    private void TogglePane()
+    {
+        IsPaneOpen = !IsPaneOpen;
+    }
 
     [ReactiveCommand]
     private void TryConnect()

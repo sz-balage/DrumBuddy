@@ -18,8 +18,10 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 {
     private readonly ReadOnlyObservableCollection<Sheet> _sheets;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
-    private IObservable<bool> _removeCanExecute;
     private readonly ISheetStorage _sheetStorage;
+    private readonly IObservable<bool> _removeCanExecute;
+
+    [Reactive] private Sheet _selectedSheet;
 
     public LibraryViewModel(IScreen hostScreen, ISheetStorage sheetStorage)
     {
@@ -37,8 +39,6 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             .Subscribe());
     }
 
-    [Reactive] private Sheet _selectedSheet;
-
     public ReadOnlyObservableCollection<Sheet> Sheets => _sheets;
     public string? UrlPathSegment { get; } = "library";
     public IScreen HostScreen { get; }
@@ -48,8 +48,19 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         await _sheetStorage.SaveSheetAsync(sheet);
     }
 
-    //TODO: implement rename sheet
+    public async Task CompareSheets(Sheet baseSheet, Sheet comparedSheet)
+    {
+        _ = await ShowCompareDialog.Handle((baseSheet, comparedSheet));
+    }
 
+    public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
+    public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
+    public Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; } = new();
+
+    public bool SheetExists(string sheetName)
+    {
+        return _sheetStorage.SheetExists(sheetName);
+    }
     [ReactiveCommand(CanExecute = nameof(_removeCanExecute))]
     private async Task RemoveSheet()
     {
@@ -70,11 +81,12 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         var mainVm = HostScreen as MainViewModel;
         mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<ManualViewModel>());
     }
+
     [ReactiveCommand]
     private async Task RenameSheet()
     {
         var newSheet = await ShowRenameDialog.Handle(_selectedSheet);
-        if(newSheet != _selectedSheet)
+        if (newSheet != _selectedSheet)
         {
             await _sheetStorage.RenameSheetAsync(SelectedSheet.Name, newSheet);
             _sheetSource.Remove(SelectedSheet);
@@ -82,33 +94,23 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             //SelectedSheet.RenameSheet(dialogResult);
         }
     }
+
     [ReactiveCommand]
     private async Task EditSheet()
     {
         var editResult = await ShowEditDialog.Handle(SelectedSheet);
         if (editResult != null)
-        { 
+        {
             await _sheetStorage.UpdateSheetAsync(editResult);
             _sheetSource.AddOrUpdate(editResult);
         }
     }
-    public async Task CompareSheets(Sheet baseSheet, Sheet comparedSheet)
-    {
-        var u = await ShowCompareDialog.Handle((baseSheet, comparedSheet));
-    }
+
     private async Task LoadSheets()
     {
         var sheets = await _sheetStorage.LoadSheetsAsync();
         _sheetSource.Clear();
         _sheetSource.AddOrUpdate(sheets);
-    }
-    public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
-    public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
-    public Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; } = new();
-
-    public bool SheetExists(string sheetName)
-    {
-        return _sheetStorage.SheetExists(sheetName);
     }
 }
 
@@ -120,11 +122,11 @@ public interface ILibraryViewModel : IRoutableViewModel
     ReactiveCommand<Unit, Unit> EditSheetCommand { get; }
     ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; }
     ReactiveCommand<Unit, Unit> NavigateToManualViewCommand { get; }
-    Sheet? SelectedSheet { get; set; } 
-    bool SheetExists(string sheetName);
-    Task SaveSheet(Sheet sheet);
+    Sheet? SelectedSheet { get; set; }
     Interaction<Sheet, Sheet?> ShowEditDialog { get; }
     Interaction<Sheet, Sheet> ShowRenameDialog { get; }
     Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; }
+    bool SheetExists(string sheetName);
+    Task SaveSheet(Sheet sheet);
     Task CompareSheets(Sheet baseSheet, Sheet comparedSheet);
 }

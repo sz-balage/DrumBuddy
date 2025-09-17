@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DrumBuddy.Client.Extensions;
-using DrumBuddy.Client.Models;
-using DrumBuddy.Client.ViewModels.HelperViewModels;
-using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
-using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Abstractions;
 using DynamicData;
 using ReactiveUI;
@@ -21,9 +14,8 @@ namespace DrumBuddy.Client.ViewModels;
 
 public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
 {
-    private readonly ISheetStorage _sheetStorage;
-
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
+    private readonly ISheetStorage _sheetStorage;
     public readonly ReadOnlyObservableCollection<Sheet> Sheets;
     [Reactive] private ManualEditorViewModel? _editor;
     [Reactive] private bool _editorVisible;
@@ -51,6 +43,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
         EditorVisible = false;
         await LoadExistingSheets();
     }
+
     [ReactiveCommand]
     private void AddNewSheet()
     {
@@ -62,7 +55,8 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     private void EditExistingSheet()
     {
         SheetListVisible = true;
-    }   
+    }
+
     [ReactiveCommand]
     private void CancelSheetChoosing()
     {
@@ -76,16 +70,13 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
         EditorVisible = true;
         SheetListVisible = false;
     }
+
     public async Task LoadExistingSheets()
     {
         var sheets = await _sheetStorage.LoadSheetsAsync();
-        foreach (var sheet in sheets)
-        {
-            _sheetSource.AddOrUpdate(sheet);
-        }
+        foreach (var sheet in sheets) _sheetSource.AddOrUpdate(sheet);
 
         if (sheets.Length == 0)
             AddNewSheet();
-        
     }
 }
