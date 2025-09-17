@@ -10,7 +10,6 @@ using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
-using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
@@ -25,11 +24,11 @@ namespace DrumBuddy.Client.ViewModels;
 
 public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
+    private readonly ConfigurationService _configService;
     private readonly SoundPlayer _highBeepPlayer;
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly IMidiService _midiService;
-    private readonly ConfigurationService _configService;
     private readonly SoundPlayer _normalBeepPlayer;
     private Bpm _bpm;
     [Reactive] private decimal _bpmDecimal;
@@ -40,8 +39,8 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     [Reactive] private bool _isPaused;
     [Reactive] private bool _isRecording;
 
-    [Reactive] private bool _keyboardInputEnabled;
-    private IObservable<bool> _stopRecordingCanExecute;
+    private bool _keyboardInputEnabled => _configService.IsKeyboardEnabled;
+    private readonly IObservable<bool> _stopRecordingCanExecute;
     private CompositeDisposable _subs = new();
     private long _tick;
 
@@ -94,6 +93,19 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     public Interaction<SheetCreationData, SheetNameAndDescription> ShowSaveDialog { get; } = new();
 
     public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
+
+    public void Dispose()
+    {
+        _highBeepPlayer.Dispose();
+        _measureSource.Dispose();
+        _normalBeepPlayer.Dispose();
+        _subs.Dispose();
+        _startRecordingCommand?.Dispose();
+        _stopRecordingCommand?.Dispose();
+        _pauseRecordingCommand?.Dispose();
+        _resumeRecordingCommand?.Dispose();
+    }
+
     public string? UrlPathSegment { get; } = "recording-view";
     public IScreen HostScreen { get; }
 
@@ -125,7 +137,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
 
     private void InitBeatSub()
     {
-        //drum subn
+        //drum sub
         var measureIdx = -1;
         var rythmicGroupIndex = -1;
         var delay = 5 * _bpm.QuarterNoteDuration() -
@@ -133,7 +145,10 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
                     2.0; //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
-            .GetNotes(_bpm, KeyboardInputEnabled ? KeyboardBeats.GetMappedBeatsForKeyboard(_configService) : _midiService.GetMappedBeatsObservable(_configService))
+            .GetNotes(_bpm,
+                _keyboardInputEnabled
+                    ? KeyboardBeats.GetMappedBeatsForKeyboard(_configService)
+                    : _midiService.GetMappedBeatsObservable(_configService))
             .ObserveOn(RxApp.MainThreadScheduler)
             .Select((notes, idx) => (notes, idx))
             .DelaySubscription(delay)
@@ -265,17 +280,5 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     {
         CurrentMeasure.IsPointerVisible = false;
         CurrentMeasure = null;
-    }
-
-    public void Dispose()
-    {
-        _highBeepPlayer.Dispose();
-        _measureSource.Dispose();
-        _normalBeepPlayer.Dispose();
-        _subs.Dispose();
-        _startRecordingCommand?.Dispose();
-        _stopRecordingCommand?.Dispose();
-        _pauseRecordingCommand?.Dispose();
-        _resumeRecordingCommand?.Dispose();
     }
 }

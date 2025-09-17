@@ -50,7 +50,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.CountDownVisibility, v => v._countDownGrid.IsVisible)
                 .DisposeWith(d);
-            this.Bind(ViewModel, vm => vm.KeyboardInputEnabled, v => v._keyboardCheckBox.IsChecked);
             ViewModel!.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => e.Key switch

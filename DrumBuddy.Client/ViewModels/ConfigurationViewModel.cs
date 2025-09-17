@@ -6,7 +6,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Services;
@@ -18,38 +17,50 @@ namespace DrumBuddy.Client.ViewModels;
 
 public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 {
-    private readonly ConfigurationService _config;
+    private readonly ConfigurationService _configService;
+    private readonly Subject<Unit> _mappingChanged = new();
     private readonly IMidiService _midiService;
     private IDisposable? _beatsSubscription;
+    [Reactive] private bool _keyboardInput;
 
-    public ObservableCollection<DrumMappingItem> DrumMappings { get; } = new();
-
-    public ConfigurationViewModel(IScreen hostScreen, IMidiService midiService, ConfigurationService config)
+    public ConfigurationViewModel(IScreen hostScreen, IMidiService midiService, ConfigurationService configService)
     {
         HostScreen = hostScreen;
         _midiService = midiService;
-        _config = config;
+        _configService = configService;
         var mainVm = hostScreen as MainViewModel;
-        foreach (var kvp in _config.Mapping)
+        foreach (var kvp in _configService.Mapping)
             DrumMappings.Add(new DrumMappingItem(kvp.Key, kvp.Value));
         MappingChanged.Subscribe(_ => UpdateDrumMappings());
-        
+
         this.WhenAnyValue(vm => vm.KeyboardInput)
-            .Subscribe(_ => ChangeSubscription(mainVm?.NoConnection ?? true)); 
+            .Subscribe(ki =>
+            {
+                ChangeSubscription(mainVm?.NoConnection ?? true);
+                _configService.IsKeyboardEnabled = ki;
+            });
         mainVm?.WhenAnyValue(vm => vm.NoConnection)
             .Subscribe(ChangeSubscription);
     }
 
+    public ObservableCollection<DrumMappingItem> DrumMappings { get; } = new();
+
+    public IObservable<int> KeyboardBeats { get; set; }
+
+    public IReadOnlyDictionary<Drum, int> Mapping => _configService.Mapping;
+    public IObservable<Drum?> ListeningDrumChanged => _configService.ListeningDrumChanged;
+    public IObservable<Unit> MappingChanged => _mappingChanged.AsObservable();
+
+    public string? UrlPathSegment { get; }
+    public IScreen HostScreen { get; }
+
     private void UpdateDrumMappings()
     {
         foreach (var item in DrumMappings)
-        {
-            if (_config.Mapping.TryGetValue(item.Drum, out var note))
+            if (_configService.Mapping.TryGetValue(item.Drum, out var note))
                 item.Note = note;
-        }
     }
 
-    public IObservable<int> KeyboardBeats { get; set; }
     private void ChangeSubscription(bool noConnection)
     {
         _beatsSubscription?.Dispose();
@@ -58,39 +69,32 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
                 .GetRawNoteObservable()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(OnMidiNoteReceived);
-        else if (KeyboardInput == true)
+        else if (KeyboardInput)
             _beatsSubscription = KeyboardBeats!.ObserveOn(RxApp.MainThreadScheduler).Subscribe(OnMidiNoteReceived);
     }
-    [Reactive] private bool _keyboardInput;
+
     [ReactiveCommand]
     private void StartListening(Drum drum)
     {
-        _config.StartListening(drum);
+        _configService.StartListening(drum);
     }
 
     [ReactiveCommand]
     private void StopListening()
     {
-        _config.StopListening();
+        _configService.StopListening();
     }
-
-    public IReadOnlyDictionary<Drum, int> Mapping => _config.Mapping;
-    public IObservable<Drum?> ListeningDrumChanged => _config.ListeningDrumChanged;
-    private readonly Subject<Unit> _mappingChanged = new();
-    public IObservable<Unit> MappingChanged => _mappingChanged.AsObservable();
 
     private void OnMidiNoteReceived(int noteNumber)
     {
-        if (_config.ListeningDrum is null)
+        if (_configService.ListeningDrum is null)
         {
-            var drum = _config.Mapping.FirstOrDefault(kvp => kvp.Value == noteNumber).Key;
-            if (drum != default)
-            {
-                HighlightDrumTemporarily(drum);
-            }
+            var drum = _configService.Mapping.FirstOrDefault(kvp => kvp.Value == noteNumber).Key;
+            if (drum != default) HighlightDrumTemporarily(drum);
             return;
         }
-        _config.MapDrum(noteNumber); 
+
+        _configService.MapDrum(noteNumber);
         _mappingChanged.OnNext(Unit.Default);
     }
 
@@ -102,7 +106,4 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         item.IsHighlighted = true;
         Task.Delay(500).ContinueWith(_ => item.IsHighlighted = false);
     }
-
-    public string? UrlPathSegment { get; }
-    public IScreen HostScreen { get; }
 }

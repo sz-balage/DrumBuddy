@@ -17,6 +17,7 @@ public class ConfigurationService
                 _mapping[drum] = (int)drum;
     }
 
+    public bool IsKeyboardEnabled { get; set; } = false;
     public IReadOnlyDictionary<Drum, int> Mapping => _mapping;
 
     public Drum? ListeningDrum
@@ -27,25 +28,31 @@ public class ConfigurationService
 
     public IObservable<Drum?> ListeningDrumChanged => _listeningDrum.AsObservable();
 
-    public void StartListening(Drum drum) => ListeningDrum = drum;
+    public void StartListening(Drum drum)
+    {
+        ListeningDrum = drum;
+    }
 
-    public void StopListening() => ListeningDrum = null;
+    public void StopListening()
+    {
+        ListeningDrum = null;
+    }
 
     public void MapDrum(int receivedNote)
     {
         if (ListeningDrum is null || receivedNote < 0)
             return;
         var alreadyMappedDrum = _mapping.FirstOrDefault(kvp => kvp.Value == receivedNote).Key;
-        if (alreadyMappedDrum != default)
-        {
-            _mapping[alreadyMappedDrum] = -1; 
-        }
+        if (alreadyMappedDrum != default) _mapping[alreadyMappedDrum] = -1;
         _mapping[ListeningDrum.Value] = receivedNote;
         StopListening();
     }
 
-    public void SaveConfig(string path) => //TODO: call this
+    public void SaveConfig(string path)
+    {
+        //TODO: call this
         File.WriteAllText(path, JsonSerializer.Serialize(_mapping));
+    }
 
     public void LoadConfig(string path)
     {

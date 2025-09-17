@@ -57,7 +57,7 @@
                       HorizontalAlignment="Right"
                       FontSize="20"
                       FontFamily="{StaticResource NunitoFont}"
-                      Margin="10,0,0,0"
+                      Margin="0,0,8,0"
                       IsChecked="False">
                 Keyboard input
             </CheckBox>

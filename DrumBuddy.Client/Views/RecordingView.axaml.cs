@@ -74,7 +74,6 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             this.OneWayBind(ViewModel, vm => vm.CountDownVisibility, v => v._countDownGrid.IsVisible)
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowSaveDialog, SaveHandler);
-            this.Bind(ViewModel, vm => vm.KeyboardInputEnabled, v => v._keyboardCheckBox.IsChecked);
             ViewModel!.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => e.Key switch

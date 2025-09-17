@@ -44,7 +44,7 @@ public partial class EditingViewModel : ReactiveObject
 
     // Add new properties
     [Reactive] private bool _canSave;
-    [Reactive] private bool _keyboardInputEnabled;
+    private bool _keyboardInputEnabled => _configService.IsKeyboardEnabled;
     private IObservable<bool> _stopRecordingCanExecute;
     private CompositeDisposable _subs = new();
     private long _tick;
@@ -139,7 +139,7 @@ public partial class EditingViewModel : ReactiveObject
 
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
-            .GetNotes(_bpm, KeyboardInputEnabled ? KeyboardBeats.GetMappedBeatsForKeyboard(_configService) : _midiService.GetMappedBeatsObservable(_configService))
+            .GetNotes(_bpm, _keyboardInputEnabled ? KeyboardBeats.GetMappedBeatsForKeyboard(_configService) : _midiService.GetMappedBeatsObservable(_configService))
             .ObserveOn(RxApp.MainThreadScheduler)
             .Select((notes, idx) => (notes, idx))
             .DelaySubscription(delay)

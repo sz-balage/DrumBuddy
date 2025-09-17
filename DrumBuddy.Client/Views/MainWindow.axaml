@@ -29,10 +29,10 @@
                 IsVisible="{Binding NoConnection}">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <Label Foreground="White" VerticalAlignment="Center">
-                    There are no MIDI devices connected.
+                    There are no MIDI devices connected. If you wish to use the client with keyboard controls, visit the Configuration page.
                 </Label>
                 <Button Background="DarkRed" Foreground="White" x:Name="RetryButton" Margin="10,0,0,0">
-                    <TextBlock>Retry</TextBlock>
+                    <TextBlock>Retry connection</TextBlock>
                 </Button>
             </StackPanel>
         </Border>

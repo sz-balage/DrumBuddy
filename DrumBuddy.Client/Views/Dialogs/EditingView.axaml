@@ -73,14 +73,6 @@
                         <Button x:Name="CancelButton" Click="CancelButton_OnClick" Content="Cancel" Width="100" Height="40"/>
                         <Button x:Name="SaveButton" Click="SaveButton_OnClick" Content="Save" Width="100" Height="40"/>
                     </StackPanel>
-                    <CheckBox x:Name="KeyboardInputCheckBox"
-                              FontSize="24"
-                              FontWeight="Bold"
-                              FontFamily="{StaticResource NunitoFont}"
-                              Margin="10,0,0,0"
-                              IsChecked="False">
-                        Keyboard input
-                    </CheckBox>
                 </StackPanel>
             </Grid>
         </Border>

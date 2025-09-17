@@ -92,16 +92,8 @@
                     </Label>
                     <TextBlock x:Name="TimeElapsedTextBlock"
                                FontSize="24"
-                               HorizontalAlignment="Center"
+                               HorizontalAlignment="Right"
                                VerticalAlignment="Center" />
-                    <CheckBox x:Name="KeyboardInputCheckBox"
-                              FontSize="24"
-                              FontWeight="Bold"
-                              FontFamily="{StaticResource NunitoFont}"
-                              Margin="10,0,0,0"
-                              IsChecked="False">
-                        Keyboard input
-                    </CheckBox>
                 </StackPanel>
             </Grid>
         </Border>
