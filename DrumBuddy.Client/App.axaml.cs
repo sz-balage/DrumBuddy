@@ -11,6 +11,7 @@ using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Client.Views;
 using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Services;
+using DrumBuddy.IO;
 using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
 using Microsoft.Extensions.Configuration;
@@ -78,7 +79,6 @@ public class App : Application
     private static void RegisterCoreServices()
     {
         CurrentMutable.RegisterConstant<ISerializationService>(new SerializationService());
-        CurrentMutable.RegisterConstant(new ConfigurationService());
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
@@ -92,6 +92,9 @@ public class App : Application
                 connectionString
             )
         );
+        CurrentMutable.RegisterConstant<FileConfigurationStorage>(new FileConfigurationStorage(Locator.Current.GetRequiredService<ISerializationService>()));
+        CurrentMutable.RegisterConstant(new ConfigurationService(
+            Locator.Current.GetRequiredService<FileConfigurationStorage>()));
     }
 
 }

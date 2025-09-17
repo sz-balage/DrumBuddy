@@ -14,6 +14,7 @@ using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
+using DrumBuddy.IO;
 using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
 using DynamicData;

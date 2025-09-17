@@ -12,20 +12,12 @@ namespace DrumBuddy.IO.Services;
 public class SheetStorage : ISheetStorage
 {
     private readonly ISerializationService _serializationService;
-    private readonly string _saveDirectory;
-    private const string FileExtension = ".dby";
     private readonly string _connectionString;
     public SheetStorage(ISerializationService serializationService, string connectionString)
     {
         _serializationService = serializationService;
 
         _connectionString = connectionString;
-        _saveDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "DrumBuddy", "SavedFiles");
-
-        if (!Directory.Exists(_saveDirectory))
-            Directory.CreateDirectory(_saveDirectory);
     }
     public async Task SaveSheetAsync(Sheet sheet)
     {
@@ -64,8 +56,4 @@ public class SheetStorage : ISheetStorage
         var serialized = _serializationService.SerializeMeasurementData(sheet.Measures);
         return SheetDbCommands.UpdateSheetAsync(_connectionString, sheet.Name, sheet.Tempo.Value, serialized, sheet.Name, sheet.Description);
     }
-
-    private string DenormalizeFileName(string fileName) => fileName.Replace('_', ' ');
-
-    private string GetFullPath(string fileName) => Path.Combine(_saveDirectory, fileName + FileExtension);
 }

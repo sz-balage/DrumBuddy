@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Services;
+using DrumBuddy.IO;
 using DrumBuddy.IO.Abstractions;
 
 namespace DrumBuddy.Client.Extensions;

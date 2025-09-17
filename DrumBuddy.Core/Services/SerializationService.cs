@@ -3,6 +3,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.Json;
 using DrumBuddy.Core.Abstractions;
+using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Helpers;
 using DrumBuddy.Core.Models;
 
@@ -21,4 +22,8 @@ public class SerializationService : ISerializationService
             ?? throw new InvalidOperationException("Failed to deserialize sheet");
         return [..measures];
     }
+
+    public string SerializeDrumMappingData(Dictionary<Drum, int> mapping) => JsonSerializer.Serialize(mapping);
+
+    public Dictionary<Drum, int>? DeserializeDrumMappingData(string mappingJson) => JsonSerializer.Deserialize<Dictionary<Drum, int>>(mappingJson);
 }
