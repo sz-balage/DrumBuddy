@@ -16,7 +16,7 @@
             </LinearGradientBrush>
         </Border.Background>
         <Grid RowDefinitions="66,*">
-            <Border Background="LightGray">
+            <Border Background="{StaticResource HeaderGray}">
                 <TextBlock Text="Home" 
                            Margin="18"
                            Classes="header"

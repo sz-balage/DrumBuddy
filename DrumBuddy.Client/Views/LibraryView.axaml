@@ -24,7 +24,7 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        <Grid  Background="LightGray" HorizontalAlignment="Stretch">
+        <Grid  Background="{StaticResource HeaderGray}" HorizontalAlignment="Stretch">
             <TextBlock Text="Your Sheet Library" 
                        Margin="18"
                        Classes="header"

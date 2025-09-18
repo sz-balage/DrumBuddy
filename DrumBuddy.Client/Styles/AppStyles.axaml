@@ -24,8 +24,8 @@
     <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="#d2e3fc" />
-                <GradientStop Offset="1" Color="#f0f0f0" />
+                <GradientStop Offset="0" Color="{StaticResource Primary}" />
+                <GradientStop Offset="1" Color="Transparent" />
             </LinearGradientBrush>
         </Setter>
     </Style>
@@ -81,8 +81,8 @@
     <Style Selector="Button.card">
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="#d2e3fc" />
-                <GradientStop Offset="1" Color="#f0f0f0" />
+                <GradientStop Offset="0" Color="{StaticResource Primary}" />
+                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
             </LinearGradientBrush>
         </Setter>
         <Setter Property="CornerRadius" Value="12"/>
@@ -100,12 +100,7 @@
     </Style>
 
     <Style Selector="Button.card:pointerover /template/ ContentPresenter">
-        <Setter Property="Background">
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="50%,50%">
-                <GradientStop Offset="0" Color="#d2e3fc" />
-                <GradientStop Offset="1" Color="#cce3ff" />
-            </LinearGradientBrush>
-        </Setter>
+        <Setter Property="Background" Value="{StaticResource Secondary}"/>
         <Setter Property="RenderTransform">
             <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
         </Setter>
@@ -116,7 +111,7 @@
     </Style>
 
     <Style Selector="Button.Highlight">
-        <Setter Property="Background" Value="Green"/>
+        <Setter Property="Background" Value="{StaticResource AppGreen}"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
 </Styles>

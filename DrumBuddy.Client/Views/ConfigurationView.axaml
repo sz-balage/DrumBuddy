@@ -14,7 +14,7 @@
     <UserControl.Styles>
         <StyleInclude Source="/Styles/AppStyles.axaml" />
         <Style Selector="Border">
-            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="Background" Value="{StaticResource HeaderGray}"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="10"/>
             <Setter Property="Margin" Value="4"/>
@@ -37,7 +37,7 @@
                 <converters:DrumHighlightConverter x:Key="DrumHighlightConverter"/>
         </UserControl.Resources>
     <Grid RowDefinitions="66,Auto,*,Auto">
-        <Grid Background="LightGray">
+        <Grid Background="{StaticResource HeaderGray}">
             <TextBlock Text="Configuration editor"
                        Margin="18"
                        Classes="header"
@@ -72,7 +72,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="models:DrumMappingItem">
                         <Border CornerRadius="6"  
-                                Background="LightGray"
+                                Background="{StaticResource HeaderGray}"
                                 VerticalAlignment="Stretch">
                             <Grid VerticalAlignment="Stretch" ColumnDefinitions="Auto,Auto,*">
                                 <TextBlock Text="{Binding DrumName}"

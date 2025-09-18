@@ -18,5 +18,10 @@
         <FontFamily x:Key="NunitoFont">
             avares://DrumBuddy.Client/Assets/Fonts/#Nunito
         </FontFamily>
+        <Color x:Key="Primary">#d2e3fc</Color>
+        <Color x:Key="Secondary">#cce3ff</Color>
+        <Color x:Key="HeaderGray">LightGray</Color>
+        <Color x:Key="AppGreen">#9EA93F</Color>
+        <Color x:Key="Error">#EF5350</Color>
     </Application.Resources>
 </Application>

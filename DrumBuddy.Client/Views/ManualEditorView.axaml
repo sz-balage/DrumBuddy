@@ -13,7 +13,7 @@
     </UserControl.Styles>
     <Grid>
         <Grid RowDefinitions="Auto,*,Auto,*" x:Name="Root">
-            <Border Height="66" Margin="0,0,0,10" Grid.Row="0" Background="LightGray">
+            <Border Height="66" Margin="0,0,0,10" Grid.Row="0" Background="{StaticResource HeaderGray}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.3*" />
@@ -21,7 +21,7 @@
                         <ColumnDefinition Width="0.3*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal">
-                        <Button x:Name="NavigateBackButton" Height="66" Width="41" Margin="0,0,0,6" Background="LightGray">
+                        <Button x:Name="NavigateBackButton" Height="66" Width="41" Margin="0,0,0,6" Background="{StaticResource HeaderGray}">
                             <PathIcon Data="{StaticResource ArrowLeft}" />
                         </Button>
                         <TextBlock Text="Manual editor"
@@ -54,7 +54,7 @@
                                        VerticalAlignment="Center" />
                     </StackPanel>
                     <Button Grid.Column="2" x:Name="SaveButton"
-                            Background="LightGray" HorizontalAlignment="Right">
+                            Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource Save}" />
                             <TextBlock Text="Save" FontFamily="{StaticResource NunitoFont}"

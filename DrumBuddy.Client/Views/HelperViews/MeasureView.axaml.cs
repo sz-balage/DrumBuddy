@@ -60,20 +60,27 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
         {
             double left = box.StartRgIndex * groupWidth;
             double width = (box.EndRgIndex - box.StartRgIndex + 1) * groupWidth;
-
-            var rect = new Rectangle
+            if (Application.Current?.Resources.TryGetResource("AppGreen", null, out var appleGreenObj) == true &&
+                Application.Current?.Resources.TryGetResource("Error", null, out var errorObj) == true)
             {
-                Width = width,
-                Height = boxHeight,
-                Fill = box.State == EvaluationState.Correct
-                    ? Brushes.Green
-                    : Brushes.Red,
-                Opacity = 0.3
-            };
+                var appleGreenBrush = new SolidColorBrush((Color)appleGreenObj);
+                var errorBrush = new SolidColorBrush((Color)errorObj);
+                var rect = new Rectangle
+                {
+                    Width = width,
+                    Height = boxHeight,
+                    Fill = box.State == EvaluationState.Correct
+                        ? appleGreenBrush 
+                        : errorBrush,
+                    Opacity = 0.3
+                };
 
-            Canvas.SetLeft(rect, left);
-            Canvas.SetTop(rect, boxTop);
-            _evalBoxesCanvas.Children.Add(rect);
+                Canvas.SetLeft(rect, left);
+                Canvas.SetTop(rect, boxTop);
+                _evalBoxesCanvas.Children.Add(rect);
+            }
+
+    
         }
     }
 }

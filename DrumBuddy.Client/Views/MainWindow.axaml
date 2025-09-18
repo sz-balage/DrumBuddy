@@ -52,10 +52,10 @@
                    OpenPaneLength="200"
                    CompactPaneLength="50"
                    DisplayMode="CompactInline"
-                   PaneBackground="LightGray">
+                   PaneBackground="{StaticResource HeaderGray}">
             <SplitView.Pane>
                 <StackPanel Spacing="11" Margin="5">
-                    <Button x:Name="TriggerPaneButton" Height="50" Width="41" Background="LightGray">
+                    <Button x:Name="TriggerPaneButton" Height="50" Width="41" Background="{StaticResource HeaderGray}">
                         <PathIcon Data="{StaticResource Line_Horizontal_3}" />
                     </Button>
                     <ListBox x:Name="PaneListBox">
@@ -92,8 +92,7 @@
                 x:Name="ErrorBorder" 
                 IsVisible="False"
                 BorderThickness="2"
-                BorderBrush="#E53935"
-                Background="#EF5350"
+                Background="{StaticResource Error}"
                 CornerRadius="10"
                 Padding="15"
                 Margin="20"
@@ -109,10 +108,8 @@
         </Border>  
         <Border Grid.Row="1"
                 IsVisible="False"
-                BorderThickness="2"
-                BorderBrush="#8ebce1"
                 x:Name="SuccessBorder"
-                Background="#d2e3fc"
+                Background="{StaticResource Primary}"
                 CornerRadius="10"
                 Padding="15"
                 Margin="20"

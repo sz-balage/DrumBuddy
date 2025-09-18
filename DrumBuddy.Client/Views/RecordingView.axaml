@@ -16,7 +16,7 @@
             <RowDefinition Height="66" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Background="LightGray">
+        <Border Grid.Row="0" Background="{StaticResource HeaderGray}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.3*" />
@@ -26,7 +26,7 @@
                 <Button x:Name="StartRecordingButton"
                         Grid.Row="0"
                         Grid.Column="0"
-                        Background="LightGray">
+                        Background="{StaticResource HeaderGray}">
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource RecordIcon}" />
                         <TextBlock Text="Start Recording" FontFamily="{StaticResource NunitoFont}"
@@ -38,7 +38,7 @@
                             Grid.Column="0"
                             Orientation="Horizontal">
                     <Button x:Name="StopRecordingButton"
-                            Background="LightGray">
+                            Background="{StaticResource HeaderGray}">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource RecordIcon}"
                                       Foreground="Red" />
