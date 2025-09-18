@@ -96,6 +96,11 @@ public partial class CompareViewModel : ReactiveObject, ICompareViewModel
             }
         }
 
+        if (_baseSheet.Measures.Length > _comparedSheet.Measures.Length)
+        {
+            int extraMeasures = _baseSheet.Measures.Length - _comparedSheet.Measures.Length;
+            totalGroups += extraMeasures * 4;
+        }
         CorrectPercentage = totalGroups == 0 
             ? 0 
             : (double)correctGroups / totalGroups * 100.0;
