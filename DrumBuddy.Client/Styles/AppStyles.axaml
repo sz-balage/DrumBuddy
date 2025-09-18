@@ -1,7 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 <Design.PreviewWith>
-    <Button Classes="confirm">asdasd</Button>
+    <Button Classes="card" Width="200" Height="200">XYU</Button>
 </Design.PreviewWith>
     <Style Selector="ListBox">
         <Setter Property="Background" Value="Transparent"/>
@@ -16,8 +16,8 @@
     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="#e8f0fe" />
-                <GradientStop Offset="1" Color="#f0f0f0" />
+                <GradientStop Offset="0" Color="{StaticResource Primary}" />
+                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
             </LinearGradientBrush>
         </Setter>
     </Style>
@@ -25,7 +25,7 @@
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Offset="0" Color="{StaticResource Primary}" />
-                <GradientStop Offset="1" Color="Transparent" />
+                <GradientStop Offset="1" Color="{StaticResource Primary}" />
             </LinearGradientBrush>
         </Setter>
     </Style>
@@ -36,11 +36,11 @@
         <Setter Property="Margin" Value="8,0,0,0"/>
     </Style>
     <Style Selector="MenuItem[Foreground=IndianRed]:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
-        <Setter Property="TextBlock.Foreground" Value="IndianRed" />
+        <Setter Property="TextBlock.Foreground" Value="{StaticResource Error}" />
     </Style>
 
     <Style Selector="MenuItem[Foreground=IndianRed]:pressed /template/ ContentPresenter#PART_HeaderPresenter">
-        <Setter Property="TextBlock.Foreground" Value="IndianRed" />
+        <Setter Property="TextBlock.Foreground" Value="{StaticResource Error}" />
     </Style>
     <Style Selector="TextBox.form">
         <Setter Property="Margin" Value="0,8"/>
@@ -64,14 +64,13 @@
     </Style>
     
     <Style Selector="Button.confirm">
-        <Setter Property="Background" Value="#ff0073cf"/>
+        <Setter Property="Background" Value="{StaticResource AccentLighter}"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
-    
     <Style Selector="Button.confirm:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="#0080e0"/>
+        <Setter Property="Background" Value="{StaticResource Accent}"/>
+        <Setter Property="Foreground" Value="White"/>
     </Style>
-    
     <Style Selector="TextBlock.dialog-title">
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="FontWeight" Value="Bold"/>
@@ -79,34 +78,44 @@
         <Setter Property="Margin" Value="0,0,0,16"/>
     </Style>
     <Style Selector="Button.card">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Offset="0" Color="{StaticResource Primary}" />
                 <GradientStop Offset="1" Color="{StaticResource Secondary}" />
             </LinearGradientBrush>
         </Setter>
-        <Setter Property="CornerRadius" Value="12"/>
-        <Setter Property="Padding" Value="24"/>
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="VerticalAlignment" Value="Stretch"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-        <Setter Property="RenderTransform">
-            <ScaleTransform ScaleX="1" ScaleY="1"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.2"/>
+            </Transitions>
+        </Setter>
+        
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    Padding="{TemplateBinding Padding}">
+                    <ContentPresenter
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        Content="{TemplateBinding Content}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}" />
+                </Border>
+            </ControlTemplate>
         </Setter>
     </Style>
 
-    <Style Selector="Button.card:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource Secondary}"/>
-        <Setter Property="RenderTransform">
-            <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
-        </Setter>
+    <Style Selector="Button.card:pointerover">
+        <Setter Property="Background" Value="{StaticResource Primary}" />
     </Style>
+
     <Style Selector="Button.Unmapped">
-        <Setter Property="Background" Value="Red"/>
+        <Setter Property="Background" Value="{StaticResource Error}"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
 

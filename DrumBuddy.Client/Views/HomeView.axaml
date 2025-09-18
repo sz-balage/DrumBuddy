@@ -9,12 +9,6 @@
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Client.Views.HomeView">
     <Border>
-        <Border.Background>
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="#e8f0fe" />
-                <GradientStop Offset="1" Color="#f0f0f0" />
-            </LinearGradientBrush>
-        </Border.Background>
         <Grid RowDefinitions="66,*">
             <Border Background="{StaticResource HeaderGray}">
                 <TextBlock Text="Home" 
@@ -27,12 +21,12 @@
                           ItemsSource="{Binding Cards}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="2" Margin="10" />
+                        <UniformGrid Columns="2"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="helperViewModels:NavigationCardViewModel">
-                        <Button Classes="card" 
+                        <Button Classes="card"
                                 Command="{Binding NavigateCommand}">
                             <StackPanel Orientation="Vertical"
                                         HorizontalAlignment="Center"

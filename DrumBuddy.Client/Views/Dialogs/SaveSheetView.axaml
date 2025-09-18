@@ -29,7 +29,7 @@
         <StackPanel Grid.Row="1">
             <TextBlock Text="Title" Classes="label" />
             <TextBox Watermark="Enter sheet title" x:Name="NameTB" />
-            <TextBlock x:Name="SheetTitleValidation" Foreground="Red"/>
+            <TextBlock x:Name="SheetTitleValidation" Foreground="{StaticResource Error}"/>
         </StackPanel>
 
 

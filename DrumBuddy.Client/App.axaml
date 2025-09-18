@@ -4,24 +4,26 @@
              RequestedThemeVariant="Light">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
+    <Application.Resources>
+        <FontFamily x:Key="NunitoFont">
+            avares://DrumBuddy.Client/Assets/Fonts/#Nunito
+        </FontFamily>
+        <Color x:Key="Primary">#81C4EE</Color>
+        <Color x:Key="Secondary">#C9E6F8</Color>
+        <Color x:Key="Accent">#0D7AE7</Color>
+        <Color x:Key="AccentLighter">#3E99F4</Color>
+        <Color x:Key="HeaderGray">#D6D6D6</Color>
+        <Color x:Key="AppGreen">#77A690</Color>
+        <Color x:Key="Error">#D62828</Color>
+    </Application.Resources>
     <Application.Styles>
         <FluentTheme>
             <FluentTheme.Palettes>
-                <ColorPaletteResources x:Key="Light" Accent="#ff0073cf" AltHigh="White" AltLow="White" AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="#ffcccccc" BaseMedium="#ff898989" BaseMediumHigh="#ff5d5d5d" BaseMediumLow="#ff737373" ChromeAltLow="#ff5d5d5d" ChromeBlackHigh="Black" ChromeBlackLow="#ffcccccc" ChromeBlackMedium="#ff5d5d5d" ChromeBlackMediumLow="#ff898989" ChromeDisabledHigh="#ffcccccc" ChromeDisabledLow="#ff898989" ChromeGray="#ff737373" ChromeHigh="#ffcccccc" ChromeLow="#ffececec" ChromeMedium="#ffe6e6e6" ChromeMediumLow="#ffececec" ChromeWhite="White" ListLow="#ffe6e6e6" ListMedium="#ffcccccc" RegionColor="White" />
-                <ColorPaletteResources x:Key="Dark" Accent="#ff0073cf" AltHigh="Black" AltLow="Black" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff333333" BaseMedium="#ff9a9a9a" BaseMediumHigh="#ffb4b4b4" BaseMediumLow="#ff676767" ChromeAltLow="#ffb4b4b4" ChromeBlackHigh="Black" ChromeBlackLow="#ffb4b4b4" ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" ChromeDisabledHigh="#ff333333" ChromeDisabledLow="#ff9a9a9a" ChromeGray="Gray" ChromeHigh="Gray" ChromeLow="#ff151515" ChromeMedium="#ff1d1d1d" ChromeMediumLow="#ff2c2c2c" ChromeWhite="White" ListLow="#ff1d1d1d" ListMedium="#ff333333" RegionColor="Black" />
+                <ColorPaletteResources x:Key="Light" Accent="{StaticResource Accent}" AltHigh="White" AltLow="White" AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="#ffcccccc" BaseMedium="#ff898989" BaseMediumHigh="#ff5d5d5d" BaseMediumLow="#ff737373" ChromeAltLow="#ff5d5d5d" ChromeBlackHigh="Black" ChromeBlackLow="#ffcccccc" ChromeBlackMedium="#ff5d5d5d" ChromeBlackMediumLow="#ff898989" ChromeDisabledHigh="#ffcccccc" ChromeDisabledLow="#ff898989" ChromeGray="#ff737373" ChromeHigh="#ffcccccc" ChromeLow="#ffececec" ChromeMedium="#ffe6e6e6" ChromeMediumLow="#ffececec" ChromeWhite="White" ListLow="#ffe6e6e6" ListMedium="#ffcccccc" RegionColor="White" />
+                <ColorPaletteResources x:Key="Dark" Accent="{StaticResource Accent}" AltHigh="Black" AltLow="Black" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff333333" BaseMedium="#ff9a9a9a" BaseMediumHigh="#ffb4b4b4" BaseMediumLow="#ff676767" ChromeAltLow="#ffb4b4b4" ChromeBlackHigh="Black" ChromeBlackLow="#ffb4b4b4" ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" ChromeDisabledHigh="#ff333333" ChromeDisabledLow="#ff9a9a9a" ChromeGray="Gray" ChromeHigh="Gray" ChromeLow="#ff151515" ChromeMedium="#ff1d1d1d" ChromeMediumLow="#ff2c2c2c" ChromeWhite="White" ListLow="#ff1d1d1d" ListMedium="#ff333333" RegionColor="Black" />
             </FluentTheme.Palettes>
         </FluentTheme>
         <StyleInclude Source="avares://DrumBuddy.Client/Assets/Icons.axaml" />
         <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml" />
     </Application.Styles>
-    <Application.Resources>
-        <FontFamily x:Key="NunitoFont">
-            avares://DrumBuddy.Client/Assets/Fonts/#Nunito
-        </FontFamily>
-        <Color x:Key="Primary">#d2e3fc</Color>
-        <Color x:Key="Secondary">#cce3ff</Color>
-        <Color x:Key="HeaderGray">LightGray</Color>
-        <Color x:Key="AppGreen">#9EA93F</Color>
-        <Color x:Key="Error">#EF5350</Color>
-    </Application.Resources>
 </Application>

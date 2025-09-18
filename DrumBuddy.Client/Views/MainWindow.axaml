@@ -22,6 +22,31 @@
         <Style Selector="Button.Retry:pointerover /template/ ContentPresenter">
             <Setter Property="Foreground" Value="White"/>
         </Style>
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Background" Value="#f5f5f5"/>
+        </Style>
+        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="{StaticResource Primary}" />
+                    <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="{StaticResource Primary}" />
+                    <GradientStop Offset="1" Color="{StaticResource Primary}" />
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
     </Window.Styles>
     <Grid>
         <Grid.RowDefinitions>
@@ -30,19 +55,19 @@
         </Grid.RowDefinitions>
 
         <Border x:Name="NoConnection" x:DataType="vm:MainViewModel"
-                Background="DarkRed"
+                Background="{StaticResource Error}"
                 IsVisible="{Binding NoConnection}">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <Label Foreground="White" VerticalAlignment="Center">
                     There are no MIDI devices connected. If you wish to use the client with keyboard controls, visit the Configuration page.
                 </Label>
-                <Button Classes="Retry" Background="DarkRed" Foreground="White" x:Name="RetryButton" Margin="10,0,0,0">
+                <Button Classes="Retry" Background="{StaticResource Error}" Foreground="White" x:Name="RetryButton" Margin="10,0,0,0">
                     <TextBlock>Retry connection</TextBlock>
                 </Button>
             </StackPanel>
         </Border>
         <Grid x:Name="Connected" x:DataType="vm:MainViewModel"
-              Background="DarkGreen"
+              Background="{StaticResource AppGreen}"
               IsVisible="{Binding ConnectedSucc}">
             <Label HorizontalAlignment="Center" Foreground="White">
                 A MIDI device was connected successfully.
@@ -77,7 +102,7 @@
                 <Border CornerRadius="12,0,0,0">
                     <rxui:RoutedViewHost x:Name="RoutedViewHost">
                         <rxui:RoutedViewHost.DefaultContent>
-                            <progRing:ProgressRing Foreground="Gray"
+                            <progRing:ProgressRing Foreground="Black"
                                                    Width="80"
                                                    Height="80"
                                                    IsActive="True"

@@ -21,7 +21,7 @@
     <Grid RowDefinitions="0.5*,0.5*" Margin="5">
         <Grid Grid.Row="0" RowDefinitions="25,*">
             <TextBlock Classes="header" x:Name="BaseSheetNameTB"></TextBlock>
-            <Border Grid.Row="1" BorderThickness="3" BorderBrush="#ff0073cf" CornerRadius="2">
+            <Border Grid.Row="1" BorderThickness="3" BorderBrush="{StaticResource Accent}" CornerRadius="2">
                 <ScrollViewer  x:Name="BaseScrollViewer" VerticalScrollBarVisibility="Auto">
                     <ItemsControl x:Name="BaseSheetItemsControl">
                         <ItemsControl.ItemsPanel>
@@ -42,7 +42,7 @@
             <TextBlock Classes="header" x:Name="ComparedSheetNameTB"></TextBlock>
             <TextBlock HorizontalAlignment="Right" Classes="header" x:Name="ComparedSheetPercentageTB"/>
 
-            <Border Grid.Row="1" BorderThickness="3" BorderBrush="#ff0073cf" CornerRadius="2">
+            <Border Grid.Row="1" BorderThickness="3" BorderBrush="{StaticResource Accent}" CornerRadius="2">
                 <ScrollViewer  x:Name="ComparedScrollViewer" VerticalScrollBarVisibility="Auto">
                     <ItemsControl x:Name="ComparedSheetItemsControl">
                         <ItemsControl.ItemsPanel>
