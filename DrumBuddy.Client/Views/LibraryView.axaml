@@ -37,7 +37,7 @@
                        VerticalAlignment="Center" />
         </Grid>
         <ListBox Grid.Row="1" 
-                 x:Name="SheetsListBox" 
+                 x:Name="SheetsListBox"  Margin="0,10,0,0"
                  Grid.ColumnSpan="2" Grid.Column="0">
             <ListBox.ItemTemplate>
                     <DataTemplate DataType="models:Sheet">
