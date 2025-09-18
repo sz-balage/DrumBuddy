@@ -38,9 +38,6 @@
                            Classes="header"
                            FontSize="16"
                            FontWeight="SemiBold" />
-                <Button x:Name="CancelButton" Margin="10,0,0,0"
-                        Content="Cancel Mapping"
-                        IsVisible="False" />
             </StackPanel>
             <CheckBox x:Name="KeyboardInputCheckBox"
                       HorizontalAlignment="Right"
@@ -82,7 +79,16 @@
                                         CommandParameter="{Binding Drum}"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"
+                                        IsVisible="{Binding !IsListening}"
                                         Grid.Column="2"/>
+                                <Button Content="Cancel mapping"
+                                        Classes="confirm"
+                                        FontFamily="{StaticResource NunitoFont}"
+                                        Command="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).StopListeningCommand}"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Grid.Column="2"
+                                        IsVisible="{Binding IsListening}" />
                             </Grid>
                         </Border>
                     </DataTemplate>

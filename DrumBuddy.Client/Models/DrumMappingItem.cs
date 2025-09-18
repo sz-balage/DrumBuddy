@@ -25,7 +25,9 @@ public partial class DrumMappingItem : ReactiveObject
         }
     }
     [Reactive]
-    private bool _isHighlighted;
+    private bool _isHighlighted;   
+    [Reactive]
+    private bool _isListening;
 
     public bool IsUnmapped => Note == -1;
 }

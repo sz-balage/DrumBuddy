@@ -31,12 +31,10 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
                     if (drum is null)
                     {
                         ListeningDrumText.Text = "Not Listening";
-                        CancelButton.IsVisible = false;
                     }
                     else
                     {
                         ListeningDrumText.Text = $"Listening for: {drum}";
-                        CancelButton.IsVisible = true;
                     }
                 })
                 .DisposeWith(d);
@@ -45,10 +43,6 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
                     v => v.KeyboardInputCheckBox.IsChecked)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel,
-                    vm => vm.StopListeningCommand,
-                    v => v.CancelButton)
-                .DisposeWith(d);
             ViewModel.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => e.Key switch

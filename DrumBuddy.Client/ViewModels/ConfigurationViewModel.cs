@@ -42,6 +42,8 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
             });
         mainVm?.WhenAnyValue(vm => vm.NoConnection)
             .Subscribe(ChangeSubscription);
+        ListeningDrumChanged
+            .Subscribe(UpdateListeningDrum);
     }
 
     public ObservableCollection<DrumMappingItem> DrumMappings { get; } = new();
@@ -61,6 +63,11 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
             if (_configService.Mapping.TryGetValue(item.Drum, out var note))
                 item.Note = note;
     }
+    private void UpdateListeningDrum(Drum? drum)
+    {
+        foreach (var item in DrumMappings)
+            item.IsListening = item.Drum == drum;
+    }
 
     private void ChangeSubscription(bool noConnection)
     {
@@ -78,12 +85,14 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     private void StartListening(Drum drum)
     {
         _configService.StartListening(drum);
+        UpdateListeningDrum(drum);
     }
 
     [ReactiveCommand]
     private void StopListening()
     {
         _configService.StopListening();
+        UpdateListeningDrum(null);
     }
 
     private void OnMidiNoteReceived(int noteNumber)
