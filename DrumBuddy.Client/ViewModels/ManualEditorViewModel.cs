@@ -192,6 +192,13 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     {
         if (CanGoForward) CurrentMeasureIndex++;
     }
+    public void SelectMeasure(int index)
+    {
+        if (index < 0 || index >= _measureSteps.Count)
+            return;
+
+        CurrentMeasureIndex = index;
+    }
 
     public void LoadMatrix(bool[,] matrix)
     {

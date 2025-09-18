@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -213,6 +214,21 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 Grid.SetRow(btn, r + 1);
                 Grid.SetColumn(btn, c + 1);
                 _matrixGrid.Children.Add(btn);
+            }
+        }
+    }
+
+    private void MeasureBorder_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (ViewModel == null)
+            return;
+        if (sender is Border border)
+        {
+            var index = MeasuresItemsControl.ItemContainerGenerator.IndexFromContainer(
+                border.Parent as ContentPresenter);
+            if (index >= 0)
+            {
+                ViewModel.SelectMeasure(index);
             }
         }
     }

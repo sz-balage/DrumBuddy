@@ -73,7 +73,8 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border x:Name="MeasureBorder"
+                            <Border x:Name="MeasureBorder" 
+                                    PointerPressed="MeasureBorder_OnPointerPressed"
                                     BorderThickness="3"
                                     CornerRadius="8"
                                     BorderBrush="Transparent">
