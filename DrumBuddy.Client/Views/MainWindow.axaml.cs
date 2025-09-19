@@ -40,6 +40,9 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             this.OneWayBind(ViewModel, vm => vm.ErrorMessage, v => v._errorBorder.IsVisible,
                     str => !string.IsNullOrEmpty(str))
                 .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.ErrorMessage, v => v.RetryButton.IsEnabled,
+                    string.IsNullOrEmpty)
+                .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessMessage.Text)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessBorder.IsVisible,

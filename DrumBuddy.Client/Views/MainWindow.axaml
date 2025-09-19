@@ -19,10 +19,11 @@
         <vm:MainViewModel />
     </Design.DataContext>
     <Window.Styles>
-        <Style Selector="Button.Retry:pointerover /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="White"/>
-        </Style>
         <StyleInclude Source="/Styles/AppStyles.axaml" />
+        <Style Selector="Button.Retry:disabled">
+            <Setter Property="Background" Value="{StaticResource Error}" />
+            <Setter Property="Opacity" Value="0.5"/> 
+        </Style>
     </Window.Styles>
     <Grid>
         <Grid.RowDefinitions>
@@ -34,18 +35,21 @@
                 Background="{StaticResource Error}"
                 IsVisible="{Binding NoConnection}">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                <Label Foreground="White" VerticalAlignment="Center">
+                <Label  VerticalAlignment="Center">
                     There are no MIDI devices connected. If you wish to use the client with keyboard controls, visit the Configuration page.
                 </Label>
-                <Button Classes="Retry" Background="{StaticResource Error}" Foreground="White" x:Name="RetryButton" Margin="10,0,0,0">
-                    <TextBlock>Retry connection</TextBlock>
+                <Button Classes="Retry" Background="{StaticResource Error}" x:Name="RetryButton" Margin="10,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource SyncArrow}" Margin="0,2,10,0" />
+                        <TextBlock Margin="0,4,0,0">Retry connection</TextBlock>
+                    </StackPanel>
                 </Button>
             </StackPanel>
         </Border>
         <Grid x:Name="Connected" x:DataType="vm:MainViewModel"
               Background="{StaticResource AppGreen}"
               IsVisible="{Binding ConnectedSucc}">
-            <Label HorizontalAlignment="Center" Foreground="White">
+            <Label HorizontalAlignment="Center">
                 A MIDI device was connected successfully.
             </Label>
         </Grid>
