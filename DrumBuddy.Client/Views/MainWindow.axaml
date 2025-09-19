@@ -117,12 +117,15 @@
                 Width="300"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom">
-            <TextBlock x:Name="SuccessMessage"
-                       Foreground="Black"
-                       FontFamily="{StaticResource NunitoFont}"
-                       FontWeight="SemiBold"
-                       FontSize="16"
-                       TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="SuccessMessage"
+                           Foreground="Black"
+                           FontFamily="{StaticResource NunitoFont}"
+                           FontWeight="SemiBold"
+                           FontSize="16"
+                           TextWrapping="Wrap" />
+                <PathIcon Data="{StaticResource Checkmark}" Margin="10,0,0,2"/>
+            </StackPanel>
         </Border>
     </Grid>
 </rxui:ReactiveWindow>
