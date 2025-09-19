@@ -24,6 +24,7 @@ namespace DrumBuddy.Client.ViewModels;
 public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 {
     public const int Columns = 16; // one measure, 16 sixteenth steps
+    public const int MaxNotesPerColumn = 3; // maximum notes allowed per column (NoteGroup)
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly List<bool[,]> _measureSteps;
     private readonly Func<Task> _onClose;
@@ -138,9 +139,27 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         if (col < 0 || col >= Columns) return;
         if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
 
-        _measureSteps[CurrentMeasureIndex][row, col] = !_measureSteps[CurrentMeasureIndex][row, col];
+        // Enforce max notes per column when attempting to set a note (from false -> true)
+        var current = _measureSteps[CurrentMeasureIndex][row, col];
+        if (!current && CountCheckedInColumn(col) >= MaxNotesPerColumn)
+        {
+            return; // ignore attempt, UI will reflect disabled state
+        }
+
+        _measureSteps[CurrentMeasureIndex][row, col] = !current;
         CurrentSheet = BuildSheet();
         RedrawMeasureAt();
+    }
+
+    public int CountCheckedInColumn(int col)
+    {
+        if (col < 0 || col >= Columns) return 0;
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return 0;
+        var count = 0;
+        var matrix = _measureSteps[CurrentMeasureIndex];
+        for (var r = 0; r < Drums.Length; r++)
+            if (matrix[r, col]) count++;
+        return count;
     }
 
     public bool GetStep(int row, int col)

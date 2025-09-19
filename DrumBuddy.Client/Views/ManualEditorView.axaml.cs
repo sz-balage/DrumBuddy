@@ -26,6 +26,7 @@ namespace DrumBuddy.Client.Views;
 public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewModel>
 {
     private const int StepCount = ManualEditorViewModel.Columns;
+    private ToggleButton?[,] _stepButtons = new ToggleButton?[0,0];
     public ManualEditorView()
     {
         if (Design.IsDesignMode)
@@ -143,6 +144,8 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         for (var r = 0; r < vm.Drums.Length; r++)
             _matrixGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
 
+        _stepButtons = new ToggleButton[vm.Drums.Length, StepCount];
+
         var header = new TextBlock
         {
             Text = "Drum \\ Step",
@@ -199,11 +202,11 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             {
                 var btn = new ToggleButton
                 {
-                    Margin = new Thickness(2), // space between buttons
+                    Margin = new Thickness(2), 
                     Content = null,
                     IsChecked = vm.GetStep(r, c),
                     CornerRadius = new CornerRadius(3),
-                    Background = new SolidColorBrush(Color.FromRgb(60, 60, 60)), // default background
+                    Background = new SolidColorBrush(Color.FromRgb(60, 60, 60)), 
                     BorderBrush = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
                     BorderThickness = new Thickness(1),
                     HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -220,16 +223,46 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
 
                 var rr = r;
                 var cc = c;
-                btn.Checked += (_, __) => vm.ToggleStep(rr, cc);
-                btn.Unchecked += (_, __) => vm.ToggleStep(rr, cc);
+                btn.Checked += (_, __) =>
+                {
+                    vm.ToggleStep(rr, cc);
+                    UpdateColumnEnabledState(cc, vm);
+                };
+                btn.Unchecked += (_, __) =>
+                {
+                    vm.ToggleStep(rr, cc);
+                    UpdateColumnEnabledState(cc, vm);
+                };
 
                 Grid.SetRow(btn, r + 1);
                 Grid.SetColumn(btn, c + 1);
                 _matrixGrid.Children.Add(btn);
+                _stepButtons[r, c] = btn;
+            }
+        }
+        for (var c = 0; c < StepCount; c++)
+            UpdateColumnEnabledState(c, vm);
+    }
+
+    private void UpdateColumnEnabledState(int col, ManualEditorViewModel vm)
+    {
+        if (_stepButtons == null || _stepButtons.Length == 0) return;
+        var active = vm.CountCheckedInColumn(col);
+        var limitReached = active >= ManualEditorViewModel.MaxNotesPerColumn; // use constant from VM
+        for (var r = 0; r < vm.Drums.Length; r++)
+        {
+            var btn = _stepButtons[r, col];
+            if (btn == null) continue;
+            if (btn.IsChecked == true)
+            {
+                btn.IsEnabled = true; // allow unchecking
+            }
+            else
+            {
+                btn.IsEnabled = !limitReached;
             }
         }
     }
-
     private void MeasureBorder_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (ViewModel == null)
