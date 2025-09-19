@@ -83,7 +83,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         _bpm = 100;
         CurrentSheet = BuildSheet();
         BpmDecimal = CurrentSheet.Tempo.Value;
-        DrawMeasures();
+        DrawSheet();
         SaveCommand.ThrownExceptions.Subscribe(ex => Console.WriteLine(ex.Message));
         _onClose = onClose;
         _notificationManager = Locator.Current.GetRequiredService<NotificationManager>();
@@ -118,8 +118,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
     [ReactiveCommand]
     private async Task NavigateBack()
-    {
-        //TODO: handle unsaved changes
+    { 
         if (!IsSaved)
         {
             var result = await ShowConfirmation.Handle(Unit.Default);
@@ -141,7 +140,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
         _measureSteps[CurrentMeasureIndex][row, col] = !_measureSteps[CurrentMeasureIndex][row, col];
         CurrentSheet = BuildSheet();
-        DrawMeasures();
+        RedrawMeasureAt();
     }
 
     public bool GetStep(int row, int col)
@@ -178,7 +177,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         _measureSteps.Add(newMeasure);
         CurrentMeasureIndex = _measureSteps.Count - 1;
         CurrentSheet = BuildSheet();
-        DrawMeasures();
+        DrawSheet();
     }
 
     [ReactiveCommand]
@@ -212,7 +211,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         }
 
         CurrentSheet = BuildSheet();
-        DrawMeasures();
+        DrawSheet();
     }
 
     public void LoadSheet(Sheet sheet)
@@ -224,7 +223,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             _measureSteps.Add(new bool[Drums.Length, Columns]);
             CurrentMeasureIndex = 0;
             CurrentSheet = BuildSheet();
-            DrawMeasures();
+            DrawSheet();
             return;
         }
 
@@ -254,8 +253,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         Name = sheet.Name;
         Description = sheet.Description;
         BpmDecimal = sheet.Tempo.Value;
-        CurrentSheet = BuildSheet(); // rebuild to stay consistent
-        DrawMeasures();
+        CurrentSheet = BuildSheet();
+        DrawSheet();
     }
 
     private Sheet BuildSheet()
@@ -291,7 +290,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         return new Sheet(_bpm, [..allMeasures], Name ?? "Untitled", Description ?? "");
     }
 
-    private void DrawMeasures()
+    private void DrawSheet()
     {
         _measureSource.Clear();
         _measureSource.AddRange(CurrentSheet?.Measures.Select(m => new MeasureViewModel(m)) ??
@@ -299,5 +298,32 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         var idx = CurrentMeasureIndex;
         CurrentMeasureIndex = -1;
         CurrentMeasureIndex = idx;
+    }
+    private void RedrawMeasureAt()
+    {
+        if (CurrentSheet == null || CurrentMeasureIndex < 0 || CurrentMeasureIndex >= CurrentSheet.Measures.Length)
+            return;
+        var idx = CurrentMeasureIndex;
+        var updatedMeasure = new MeasureViewModel(CurrentSheet.Measures[CurrentMeasureIndex]);
+        _measureSource.ReplaceAt(CurrentMeasureIndex,updatedMeasure); 
+        
+        CurrentMeasureIndex = -1;
+        CurrentMeasureIndex = idx;
+    }
+    public void DeleteSelectedMeasure()
+    {
+        if (_measureSteps.Count <= 1) return; 
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
+        var idx = CurrentMeasureIndex;
+
+        _measureSteps.RemoveAt(CurrentMeasureIndex);
+
+        _measureSource.RemoveAt(CurrentMeasureIndex);
+        CurrentMeasureIndex = -1;
+        if (CurrentMeasureIndex >= _measureSteps.Count)
+            CurrentMeasureIndex = _measureSteps.Count - 1;
+        else
+            CurrentMeasureIndex = idx;
+        IsSaved = false;
     }
 }

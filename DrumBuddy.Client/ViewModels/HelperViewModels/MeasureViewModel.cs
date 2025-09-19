@@ -50,7 +50,7 @@ public partial class MeasureViewModel : ReactiveObject
     } 
 
     public bool IsEmpty => Measure.IsEmpty;
-    public ObservableCollection<RythmicGroupViewModel> RythmicGroups { get; } = new();
+    public ObservableCollection<RythmicGroupViewModel> RythmicGroups { get; private set; } = new();
 
     public void AddRythmicGroupFromNotes(List<NoteGroup> notes, int index)
     {
@@ -69,4 +69,12 @@ public partial class MeasureViewModel : ReactiveObject
     {
         PointerPosition = rythmicGroupIndex * (Width / 4) + 35;
     }
+
+    public void UpdateFrom(Measure measure)
+    {
+        RythmicGroups = new ObservableCollection<RythmicGroupViewModel>(
+            measure.Groups.Select(g => new RythmicGroupViewModel(g,Width,Height))
+        );
+    }
+
 }

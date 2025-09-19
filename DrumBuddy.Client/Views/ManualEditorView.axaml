@@ -73,13 +73,34 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border x:Name="MeasureBorder" 
-                                    PointerPressed="MeasureBorder_OnPointerPressed"
-                                    BorderThickness="3"
-                                    CornerRadius="8"
-                                    BorderBrush="Transparent">
-                                <helperViews:MeasureView Width="600" />
-                            </Border>
+                            <Grid>
+                                <Border x:Name="MeasureBorder" 
+                                        PointerPressed="MeasureBorder_OnPointerPressed"
+                                        BorderThickness="3"
+                                        CornerRadius="8"
+                                        BorderBrush="Transparent">
+                                    <helperViews:MeasureView Width="600" />
+                                </Border>
+                                <Button x:Name="DeleteMeasureButton" IsVisible="False"
+                                        Width="32"
+                                        Height="32"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Top"
+                                        Background="White"
+                                        Foreground="{StaticResource Error}"
+                                        BorderThickness="1"
+                                        BorderBrush="{StaticResource HeaderGray}"
+                                        Cursor="Hand"
+                                        Click="DeleteMeasureButton_OnClick">
+                                    <Button.Styles>
+                                        <Style Selector="Button:pointerover">
+                                            <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                        </Style>
+                                    </Button.Styles>
+                                    <PathIcon Foreground="{StaticResource Error}" Data="{StaticResource delete}"></PathIcon>
+                                </Button>
+                            </Grid>
+                           
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

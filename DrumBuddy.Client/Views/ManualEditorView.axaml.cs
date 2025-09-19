@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -43,7 +44,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             this.OneWayBind(ViewModel, vm => vm.CanGoBack, v => v.BackButton.IsEnabled)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.CanGoForward, v => v.ForwardButton.IsEnabled)
-                .DisposeWith(d);  
+                .DisposeWith(d); 
             this.Bind(ViewModel, vm => vm.BpmDecimal, v => v.BpmNumeric.Value);
             this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text, s =>
                 {
@@ -108,15 +109,26 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 if (container is ContentPresenter presenter)
                 {
                     var border = presenter.FindDescendantOfType<Border>();
+                    var deleteButton = presenter.FindDescendantOfType<Button>();
+
                     if (border != null)
+                    {
                         border.BorderBrush = i == currentIndex
                             ? new SolidColorBrush(new Color(0xFF, 0x00, 0x7A, 0xCC))
                             : new SolidColorBrush(Colors.Transparent);
+                    }
+
+                    if (deleteButton != null)
+                    {
+                        deleteButton.IsVisible = (i == currentIndex) && (itemsCount > 1);
+                    }
+
                     if (i == currentIndex) presenter.BringIntoView();
                 }
             }
         }, DispatcherPriority.Loaded);
     }
+
     private void BuildMatrix(ManualEditorViewModel vm)
     {
         _matrixGrid.Children.Clear();
@@ -225,11 +237,21 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         if (sender is Border border)
         {
             var index = MeasuresItemsControl.ItemContainerGenerator.IndexFromContainer(
-                border.Parent as ContentPresenter);
+                border.Parent.Parent as ContentPresenter);
             if (index >= 0)
             {
                 ViewModel.SelectMeasure(index);
             }
         }
     }
+
+    private void DeleteMeasureButton_OnClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (ViewModel is null)
+            return;
+
+        // Remove the currently selected measure
+        ViewModel.DeleteSelectedMeasure();
+    }
+
 }
