@@ -15,10 +15,9 @@ using DrumBuddy.Core.Services;
 using DrumBuddy.IO;
 using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
-using Microsoft.Extensions.Configuration;
 using ReactiveUI;
-using static Splat.Locator;
 using Splat;
+using static Splat.Locator;
 
 namespace DrumBuddy.Client;
 
@@ -58,10 +57,14 @@ public class App : Application
         RegisterIOServices();
         CurrentMutable.RegisterConstant(new MainViewModel(Locator.Current.GetRequiredService<IMidiService>()));
         CurrentMutable.RegisterConstant(new NotificationManager(Locator.Current.GetRequiredService<MainViewModel>()));
+        CurrentMutable.RegisterConstant(new PdfGenerator());
         CurrentMutable.RegisterConstant<IScreen>(Locator.Current.GetService<MainViewModel>());
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
-        CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<ISheetStorage>(),Locator.Current.GetRequiredService<NotificationManager>()));
+        CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
+            Locator.Current.GetRequiredService<ISheetStorage>(),
+            Locator.Current.GetRequiredService<NotificationManager>(),
+            Locator.Current.GetRequiredService<PdfGenerator>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.RegisterConstant(new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<IMidiService>(),Locator.Current.GetRequiredService<ConfigurationService>()));
         CurrentMutable.Register(() =>
