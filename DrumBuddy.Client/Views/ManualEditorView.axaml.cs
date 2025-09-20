@@ -9,15 +9,16 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using DrumBuddy.Client.DesignHelpers;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Client.ViewModels.Dialogs;
+using DrumBuddy.Client.Views.Dialogs;
 using ReactiveUI;
 using Splat;
 
@@ -32,7 +33,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         if (Design.IsDesignMode)
         {
             var vm = new ManualEditorViewModel(null, () => Task.CompletedTask);
-            vm.LoadSheet(Program.TestSheet);
+            vm.LoadSheet(TestSheetProvider.GetTestSheet());
             ViewModel = vm;
         }
         InitializeComponent();
@@ -86,7 +87,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     private async Task ConfirmationHandler(IInteractionContext<Unit, Confirmation> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var saveView = new Dialogs.ConfirmationView();
+        var saveView = new ConfirmationView();
         var result = await saveView.ShowDialog<Confirmation>(mainWindow);
         context.SetOutput(result);
     }
@@ -95,7 +96,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     private async Task SaveHandler(IInteractionContext<SheetCreationData, SheetNameAndDescription> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var saveView = new Dialogs.SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
+        var saveView = new SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
         var result = await saveView.ShowDialog<SheetNameAndDescription>(mainWindow);
         context.SetOutput(result);
     }
@@ -278,7 +279,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         }
     }
 
-    private void DeleteMeasureButton_OnClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void DeleteMeasureButton_OnClick(object? sender, RoutedEventArgs e)
     {
         if (ViewModel is null)
             return;

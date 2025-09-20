@@ -7,10 +7,13 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.DesignHelpers;
+using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Client.ViewModels.Dialogs;
 using DrumBuddy.Client.Views.Dialogs;
 using DrumBuddy.Core.Models;
+using DrumBuddy.IO;
+using DrumBuddy.IO.Abstractions;
 using ReactiveUI;
 using Splat;
 
@@ -18,15 +21,15 @@ namespace DrumBuddy.Client.Views;
 
 public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 {
+    private readonly IMidiService _midiService;
+    private readonly ConfigurationService _configurationService;
     public LibraryView()
     {
+        _midiService = Locator.Current.GetRequiredService<IMidiService>();
+        _configurationService = Locator.Current.GetRequiredService<ConfigurationService>();
         if(Design.IsDesignMode)
             ViewModel = new DesignLibraryViewModel();
         InitializeComponent();
-        // if (Design.IsDesignMode)
-        // {
-        //     SheetsLB.Items.Add(new Sheet(new Bpm(100), ImmutableArray<Measure>.Empty, "New Sheet", "New Sheet"));
-        // }
         
         this.WhenActivated(async d =>
         {
@@ -70,7 +73,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private async Task HandleEdit(IInteractionContext<Sheet, Sheet?> arg)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var view = new EditingView(){ViewModel = new EditingViewModel(arg.Input)};
+        var view = new EditingView { ViewModel = new EditingViewModel(arg.Input, _midiService, _configurationService) };
         var result = await view.ShowDialog<Sheet?>(mainWindow);
         arg.SetOutput(result);
     }
@@ -142,7 +145,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             grid.Parent is ListBoxItem item)
             SheetsListBox.SelectedItem = item.DataContext;
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var view = new EditingView { ViewModel = new EditingViewModel(ViewModel.SelectedSheet, true) };
+        var view = new EditingView
+            { ViewModel = new EditingViewModel(ViewModel.SelectedSheet, _midiService, _configurationService, true) };
         view.Show(mainWindow);
     }
 }

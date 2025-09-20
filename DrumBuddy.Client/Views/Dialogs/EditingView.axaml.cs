@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -6,12 +7,13 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using DrumBuddy.Client.DesignHelpers;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels.Dialogs;
 using DrumBuddy.Client.Views.HelperViews;
 using DrumBuddy.Core.Enums;
+using DrumBuddy.Core.Models;
 using ReactiveUI;
 using Splat;
 
@@ -23,10 +25,13 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
     public EditingView()
     {
         InitializeComponent();
+        if (Design.IsDesignMode)
+        {
+            var sheet = new Sheet(100, ImmutableArray<Measure>.Empty, "", "");
+            ViewModel = new EditingViewModel(TestSheetProvider.GetTestSheet(), null, null, true);
+        }
         this.WhenActivated(d =>
         {
-            if (Design.IsDesignMode)
-                return;
             this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
                 .DisposeWith(d);
             //editing stuff
@@ -77,8 +82,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                 });
             }
         });
-
-        AvaloniaXamlLoader.Load(this);
     }
 
     private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl")!;

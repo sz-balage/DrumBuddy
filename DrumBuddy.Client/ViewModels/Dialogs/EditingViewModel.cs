@@ -18,7 +18,6 @@ using DrumBuddy.IO.Services;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using Splat;
 
 namespace DrumBuddy.Client.ViewModels.Dialogs;
 
@@ -53,11 +52,12 @@ public partial class EditingViewModel : ReactiveObject
     private DispatcherTimer _timer;
     private readonly Sheet _originalSheet;
 
-    public EditingViewModel(Sheet originalSheet, bool isViewOnly = false)
+    public EditingViewModel(Sheet originalSheet, IMidiService midiService, ConfigurationService configService,
+        bool isViewOnly = false)
     {
         _originalSheet = originalSheet;
-        _midiService = Locator.Current.GetRequiredService<IMidiService>();
-        _configService = Locator.Current.GetRequiredService<ConfigurationService>();
+        _midiService = midiService;
+        _configService = configService;
         IsViewOnly = isViewOnly;
         //init sound players
         _normalBeepPlayer =
