@@ -50,12 +50,12 @@ public partial class EditingViewModel : ReactiveObject
 
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
-    private readonly Sheet _originalSheet;
+    public readonly Sheet OriginalSheet;
 
     public EditingViewModel(Sheet originalSheet, IMidiService midiService, ConfigurationService configService,
         bool isViewOnly = false)
     {
-        _originalSheet = originalSheet;
+        OriginalSheet = originalSheet;
         _midiService = midiService;
         _configService = configService;
         IsViewOnly = isViewOnly;
@@ -245,7 +245,7 @@ public partial class EditingViewModel : ReactiveObject
     public Sheet Save()
     {
         var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToImmutableArray();
-        return new Sheet(_bpm, measures, _originalSheet.Name, _originalSheet.Description);
+        return new Sheet(_bpm, measures, OriginalSheet.Name, OriginalSheet.Description);
     }
 
     [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]

@@ -56,7 +56,7 @@
                     <Button Grid.Column="2" x:Name="SaveButton"
                             Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
                         <StackPanel Orientation="Horizontal">
-                            <PathIcon Data="{StaticResource Save}" />
+                            <PathIcon Data="{StaticResource Save}" Margin="0,0,0,5" />
                             <TextBlock Text="Save" FontFamily="{StaticResource NunitoFont}"
                                        FontSize="24"
                                        Margin="10" />

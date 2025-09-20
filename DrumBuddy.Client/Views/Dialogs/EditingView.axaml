@@ -70,16 +70,27 @@
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center" />
                 </StackPanel>
-                <StackPanel Grid.Row="0"
-                            IsVisible="{Binding !IsViewOnly}"
-                            Grid.Column="2"
-                            Orientation="Horizontal" HorizontalAlignment="Center">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button x:Name="CancelButton" Click="CancelButton_OnClick" Content="Cancel" Width="100"
-                                Height="40" />
-                        <Button x:Name="SaveButton" Click="SaveButton_OnClick" Content="Save" Width="100" Height="40" />
+                <Button Grid.Column="2" x:Name="SaveButton"
+                        Click="SaveButton_OnClick"
+                        IsVisible="{Binding !IsViewOnly}"
+                        Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource Save}" Margin="0,0,0,5" />
+                        <TextBlock Text="Save" FontFamily="{StaticResource NunitoFont}"
+                                   FontSize="24"
+                                   Margin="10" />
                     </StackPanel>
-                </StackPanel>
+                </Button>
+                <Button Grid.Column="2" x:Name="Export"
+                        Click="Export_OnClick"
+                        Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource Pdf}" Margin="0,0,0,5" />
+                        <TextBlock Text="Export to pdf" FontFamily="{StaticResource NunitoFont}"
+                                   FontSize="24"
+                                   Margin="10" />
+                    </StackPanel>
+                </Button>
             </Grid>
         </Border>
         <Grid x:Name="CountdownGrid"
