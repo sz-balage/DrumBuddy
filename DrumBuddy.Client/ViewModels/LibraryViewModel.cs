@@ -20,14 +20,17 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private readonly ReadOnlyObservableCollection<Sheet> _sheets;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     private readonly ISheetStorage _sheetStorage;
+    private readonly PdfGenerator _pdfGenerator;
     private readonly IObservable<bool> _removeCanExecute;
 
     [Reactive] private Sheet _selectedSheet;
     private readonly NotificationManager _notificationManager;
 
-    public LibraryViewModel(IScreen hostScreen, ISheetStorage sheetStorage, NotificationManager notificationManager)
+    public LibraryViewModel(IScreen hostScreen, ISheetStorage sheetStorage, NotificationManager notificationManager,
+        PdfGenerator pdfGenerator)
     {
         _notificationManager = notificationManager;
+        _pdfGenerator = pdfGenerator;
         HostScreen = hostScreen;
         _sheetStorage = sheetStorage;
         _sheetSource.Connect()
@@ -55,6 +58,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         _ = await ShowCompareDialog.Handle((baseSheet, comparedSheet));
     }
+
 
     public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();

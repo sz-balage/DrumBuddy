@@ -6,12 +6,9 @@ using System.Linq;
 using System.Media;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
-using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
-using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
@@ -39,6 +36,7 @@ public partial class EditingViewModel : ReactiveObject
 
     [Reactive] private int _countDown;
     [Reactive] private bool _countDownVisibility;
+    [Reactive] private bool _isViewOnly;
     [Reactive] private MeasureViewModel _currentMeasure;
     private int _selectedEntryPointMeasureIndex;
 
@@ -55,12 +53,12 @@ public partial class EditingViewModel : ReactiveObject
     private DispatcherTimer _timer;
     private readonly Sheet _originalSheet;
 
-    public EditingViewModel(Sheet originalSheet)
+    public EditingViewModel(Sheet originalSheet, bool isViewOnly = false)
     {
         _originalSheet = originalSheet;
         _midiService = Locator.Current.GetRequiredService<IMidiService>();
         _configService = Locator.Current.GetRequiredService<ConfigurationService>();
-        
+        IsViewOnly = isViewOnly;
         //init sound players
         _normalBeepPlayer =
             new SoundPlayer(FileSystemService.GetPathToRegularBeepSound()); //relative path should be used

@@ -1,16 +1,17 @@
 ﻿<rxui:ReactiveWindow x:TypeArguments="dialogs:EditingViewModel"
-                          xmlns="https://github.com/avaloniaui"
-                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                          xmlns:rxui="http://reactiveui.net"
-                          xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
-                          xmlns:dialogs="clr-namespace:DrumBuddy.Client.ViewModels.Dialogs"
-                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                          MinHeight="500"       
-                          MinWidth="1250"
-                          Title="Edit window"
-                          x:Class="DrumBuddy.Client.Views.Dialogs.EditingView">
+                     x:DataType="dialogs:EditingViewModel"
+                     xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:rxui="http://reactiveui.net"
+                     xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
+                     xmlns:dialogs="clr-namespace:DrumBuddy.Client.ViewModels.Dialogs"
+                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                     MinHeight="500"
+                     MinWidth="1250"
+                     Title="Edit window"
+                     x:Class="DrumBuddy.Client.Views.Dialogs.EditingView">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -24,6 +25,7 @@
                     <ColumnDefinition Width="0.3*" />
                 </Grid.ColumnDefinitions>
                 <Button x:Name="StartRecordingButton"
+                        IsVisible="{Binding !IsViewOnly}"
                         Grid.Row="0"
                         Grid.Column="0"
                         Background="{StaticResource HeaderGray}">
@@ -35,6 +37,7 @@
                     </StackPanel>
                 </Button>
                 <StackPanel Grid.Row="0"
+                            IsVisible="{Binding !IsViewOnly}"
                             Grid.Column="0"
                             Orientation="Horizontal">
                     <Button x:Name="StopRecordingButton"
@@ -58,6 +61,7 @@
                         BPM:
                     </Label>
                     <NumericUpDown x:Name="BpmNumeric"
+                                   IsEnabled="{Binding !IsViewOnly}"
                                    Minimum="20"
                                    Maximum="250"
                                    Value="100"
@@ -67,16 +71,22 @@
                                    VerticalAlignment="Center" />
                 </StackPanel>
                 <StackPanel Grid.Row="0"
+                            IsVisible="{Binding !IsViewOnly}"
                             Grid.Column="2"
                             Orientation="Horizontal" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button x:Name="CancelButton" Click="CancelButton_OnClick" Content="Cancel" Width="100" Height="40"/>
-                        <Button x:Name="SaveButton" Click="SaveButton_OnClick" Content="Save" Width="100" Height="40"/>
+                        <Button x:Name="CancelButton" Click="CancelButton_OnClick" Content="Cancel" Width="100"
+                                Height="40" />
+                        <Button x:Name="SaveButton" Click="SaveButton_OnClick" Content="Save" Width="100" Height="40" />
                     </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
-        <Grid x:Name="CountdownGrid" Grid.Row="1" Background="#80000000" Opacity="0.7">
+        <Grid x:Name="CountdownGrid"
+              Grid.Row="1"
+              Background="#80000000"
+              Opacity="0.7"
+              IsVisible="{Binding !IsViewOnly}">
             <TextBlock x:Name="CountdownTextBlock" FontWeight="Bold"
                        FontSize="300"
                        FontFamily="{StaticResource NunitoFont}"

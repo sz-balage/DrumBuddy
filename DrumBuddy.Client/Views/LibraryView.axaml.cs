@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -12,6 +9,7 @@ using Avalonia.ReactiveUI;
 using DrumBuddy.Client.DesignHelpers;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Client.ViewModels.Dialogs;
+using DrumBuddy.Client.Views.Dialogs;
 using DrumBuddy.Core.Models;
 using ReactiveUI;
 using Splat;
@@ -65,22 +63,21 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private async Task HandleCompare(IInteractionContext<(Sheet, Sheet), Unit> arg)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var view = new Dialogs.CompareView(){ViewModel = new CompareViewModel(arg.Input)};
+        var view = new CompareView(){ViewModel = new CompareViewModel(arg.Input)};
         await view.ShowDialog(mainWindow);
         arg.SetOutput(Unit.Default);
     }
     private async Task HandleEdit(IInteractionContext<Sheet, Sheet?> arg)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var view = new Dialogs.EditingView(){ViewModel = new EditingViewModel(arg.Input)};
+        var view = new EditingView(){ViewModel = new EditingViewModel(arg.Input)};
         var result = await view.ShowDialog<Sheet?>(mainWindow);
         arg.SetOutput(result);
     }
-
     private async Task HandleRename(IInteractionContext<Sheet, Sheet> arg)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var view = new Dialogs.RenameSheetView(){ViewModel = new RenameSheetViewModel(arg.Input)};
+        var view = new RenameSheetView(){ViewModel = new RenameSheetViewModel(arg.Input)};
         var result = await view.ShowDialog<Sheet>(mainWindow);
         arg.SetOutput(result);
     }
@@ -136,5 +133,16 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private void EditMenuItem_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.EditSheetCommand.Execute().Subscribe();
+    }
+
+    private void ViewButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent is ListBoxItem item)
+            SheetsListBox.SelectedItem = item.DataContext;
+        var mainWindow = Locator.Current.GetService<MainWindow>();
+        var view = new EditingView { ViewModel = new EditingViewModel(ViewModel.SelectedSheet, true) };
+        view.Show(mainWindow);
     }
 }
