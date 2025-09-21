@@ -145,9 +145,9 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         //drum sub
         var measureIdx = -1;
         var rythmicGroupIndex = -1;
-        var delay = 5 * _bpm.QuarterNoteDuration() -
-                    _bpm.SixteenthNoteDuration() /
-                    2.0; //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
+        var delay = 5 * _bpm.QuarterNoteDuration() - _bpm.SixteenthNoteDuration() / 2.0
+                    + 2 * _bpm
+                        .SixteenthNoteDuration(); //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
             .GetNotes(_bpm,
@@ -198,6 +198,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         CountDown--;
     }
 
+    private static int _globalPointerIdx;
     private void MovePointerOnMetronomeBeeps(long idx)
     {
         if (idx == 0)
@@ -220,6 +221,9 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         }
 
         CurrentMeasure?.MovePointerToRg(idx);
+        if (_globalPointerIdx == 0)
+            _timer.Start();
+        _globalPointerIdx++;
     }
 
     [ReactiveCommand]
@@ -229,7 +233,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         CountDown = 5;
         InitMetronomeSubs();
         InitBeatSub();
-
+        _globalPointerIdx = 0;
         #region UI buttons
 
         IsRecording = true;

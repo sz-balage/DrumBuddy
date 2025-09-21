@@ -135,8 +135,9 @@ public partial class EditingViewModel : ReactiveObject
         var measureIdx =
             startMeasureIdx - 1; // Start one measure before so the first increment puts us at the right position
         var rythmicGroupIndex = -1;
-        var delay = 5 * _bpm.QuarterNoteDuration() -
-                    _bpm.SixteenthNoteDuration() / 2.0;
+        var delay = 5 * _bpm.QuarterNoteDuration() - _bpm.SixteenthNoteDuration() / 2.0
+                    + 2 * _bpm
+                        .SixteenthNoteDuration(); //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
 
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
@@ -187,6 +188,7 @@ public partial class EditingViewModel : ReactiveObject
 
     private bool _recordingJustStarted = true;
     private static int _firstMeasurePassedCount = 0;
+    private static int _globalPointerIdx;
     private void MovePointerOnMetronomeBeeps(long idx)
     {
         if (idx == 0)
@@ -208,8 +210,10 @@ public partial class EditingViewModel : ReactiveObject
         {
             _normalBeepPlayer.Play();
         }
-
         CurrentMeasure?.MovePointerToRg(idx);
+        if (_globalPointerIdx == 0)
+            _timer.Start();
+        _globalPointerIdx++;
     }
 
     public void HandleMeasureClick(int measureIndex)
@@ -236,6 +240,7 @@ public partial class EditingViewModel : ReactiveObject
         CountDown = 5;
         InitMetronomeSubs();
         InitBeatSub();
+        _globalPointerIdx = 0;
 
         IsRecording = true;
     }
