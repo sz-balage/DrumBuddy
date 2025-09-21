@@ -26,10 +26,6 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            //MeasureView.ViewModel= new MeasureViewModel();
-            // ViewModel.BeatObservableFromUI = Observable.FromEventPattern<RoutedEventArgs>(SnareButton, nameof(SnareButton.Click))
-            //     .Select(_ => new Drum(DateTime.Now, DrumType.Snare));
-
             this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.StartRecordingCommand, v => v._startRecordingButton)
@@ -92,12 +88,10 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             ViewModel!.StopRecordingCommand.ThrownExceptions.Subscribe(ex => Debug.WriteLine(ex.Message));
             ViewModel.WhenAnyValue(vm => vm.CurrentMeasure).Subscribe(measure =>
             {
-                // Find the container for the current measure
                 var idx = MeasureControl.Items.IndexOf(measure);
                 var container = MeasureControl.ContainerFromIndex(idx+3);
                 if (container != null)
                 {
-                    // Scroll the container into view
                     container.BringIntoView();
                 }
             });

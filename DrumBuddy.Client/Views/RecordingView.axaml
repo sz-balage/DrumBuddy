@@ -1,4 +1,5 @@
 ﻿<rxui:ReactiveUserControl x:TypeArguments="viewModels:RecordingViewModel"
+                          x:DataType="viewModels:RecordingViewModel"
                           xmlns="https://github.com/avaloniaui"
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -85,6 +86,14 @@
                 <StackPanel Grid.Row="0"
                             Grid.Column="2"
                             Orientation="Horizontal" HorizontalAlignment="Center">
+                    <ComboBox SelectedItem="{Binding SelectedSheetOption}"
+                              ItemsSource="{Binding SheetOptions}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayName}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                     <Label FontSize="24" FontFamily="{StaticResource NunitoFont}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center">
@@ -105,18 +114,34 @@
                        VerticalAlignment="Center" />
         </Grid>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="MeasuresItemControl">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <helperViews:MeasureView Width="600" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <Grid>
+                <ItemsControl x:Name="MeasuresItemControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <helperViews:MeasureView Width="600" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl x:Name="OverlayMeasureItemsControl" Opacity="0.3"
+                              ItemsSource="{Binding OverlayMeasures}"
+                              IsVisible="{Binding OverlayVisible}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <helperViews:MeasureView Width="600" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
         </ScrollViewer>
     </Grid>
 </rxui:ReactiveUserControl>

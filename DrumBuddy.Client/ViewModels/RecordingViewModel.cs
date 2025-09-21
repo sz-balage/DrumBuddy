@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
@@ -30,15 +31,49 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly IMidiService _midiService;
+    private readonly ISheetStorage _sheetStorage;
     private readonly MetronomePlayer _metronomePlayer;
     private Bpm _bpm;
-    [Reactive] private decimal _bpmDecimal;
+    private Sheet _selectedSheet;
 
+    public Sheet SelectedSheet
+    {
+        get => _selectedSheet;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedSheet, value);
+            if (value == null)
+            {
+                OverlayVisible = false;
+                OverlayMeasures.Clear();
+            }
+            else
+            {
+                OverlayVisible = true;
+                OverlayMeasures.Clear();
+                OverlayMeasures.Add(value.Measures.Select(m => new MeasureViewModel(m)));
+            }
+        }
+    }
+
+    private SheetOption _selectedSheetOption;
+
+    public SheetOption SelectedSheetOption
+    {
+        get => _selectedSheetOption;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedSheetOption, value);
+            SelectedSheet = value?.Sheet; // this will still trigger your overlay logic
+        }
+    }
+    [Reactive] private decimal _bpmDecimal;
     [Reactive] private int _countDown;
     [Reactive] private bool _countDownVisibility;
     [Reactive] private MeasureViewModel _currentMeasure;
     [Reactive] private bool _isPaused;
     [Reactive] private bool _isRecording;
+    [Reactive] private bool _overlayVisible;
 
     private bool _keyboardInputEnabled => _configService.IsKeyboardEnabled;
     private readonly IObservable<bool> _stopRecordingCanExecute;
@@ -47,12 +82,12 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
 
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
-
     public RecordingViewModel(IScreen hostScreen, IMidiService midiService)
     {
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = Locator.Current.GetRequiredService<ConfigurationService>();
+        _sheetStorage = Locator.Current.GetRequiredService<ISheetStorage>();
         _notificationManager = Locator.Current.GetRequiredService<NotificationManager>();
         _metronomePlayer = new MetronomePlayer(FileSystemService.GetPathToHighBeepSound(),
             FileSystemService.GetPathToRegularBeepSound());
@@ -86,14 +121,27 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         {
             _subs.Dispose(); //TODO: dispose disposables when navigating away from the viewmodel
         });
+        this.WhenNavigatedTo(() => LoadSheets()
+            .ToObservable()
+            .Subscribe());
+        SheetOptions = new ObservableCollection<SheetOption>();
+    }
+
+    private async Task LoadSheets()
+    {
+        var sheets = await _sheetStorage.LoadSheetsAsync();
+        SheetOptions.Clear();
+        SheetOptions.Add(new SheetOption("None", null)); // ✅ Add the "None" option
+        foreach (var sheet in sheets)
+            SheetOptions.Add(new SheetOption(sheet.Name, sheet));
     }
 
     public IObservable<int> KeyboardBeats { get; set; }
-
     public Interaction<SheetCreationData, SheetNameAndDescription> ShowSaveDialog { get; } = new();
 
     public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
-
+    public ObservableCollection<SheetOption> SheetOptions { get; } = new();
+    public ObservableCollection<MeasureViewModel> OverlayMeasures { get; } = new();
     public void Dispose()
     {
         _metronomePlayer.Dispose();
