@@ -1,6 +1,5 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using DrumBuddy.Core.Enums;
 using DrumBuddy.IO.Abstractions;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Multimedia;
@@ -12,7 +11,7 @@ public class MidiService : IMidiService
     private readonly DevicesWatcher _devicesWatcher;
     private readonly Subject<bool> _inputDeviceDisconnected = new();
 
-    private readonly IObservable<NoteOnEvent> _midiInput = Observable.Empty<NoteOnEvent>();
+    private IObservable<NoteOnEvent> _midiInput = Observable.Empty<NoteOnEvent>();
     private InputDevice _device;
     private bool _isConnected;
 
@@ -65,6 +64,10 @@ public class MidiService : IMidiService
     private void SetDevice(InputDevice newDevice)
     {
         _device = newDevice;
+        _device.StartEventsListening();
+        _midiInput = Observable.FromEventPattern<MidiEventReceivedEventArgs>(_device, nameof(_device.EventReceived))
+            .Where(ep => ep.EventArgs.Event is NoteOnEvent)
+            .Select(ep => (NoteOnEvent)ep.EventArgs.Event);
         IsConnected = true;
     }
 }
