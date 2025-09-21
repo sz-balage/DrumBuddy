@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Media;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Threading;
@@ -23,13 +22,12 @@ namespace DrumBuddy.Client.ViewModels.Dialogs;
 
 public partial class EditingViewModel : ReactiveObject
 {
-    private readonly SoundPlayer _highBeepPlayer;
     private readonly LibraryViewModel _library;
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly IMidiService _midiService;
     private readonly ConfigurationService _configService;
-    private readonly SoundPlayer _normalBeepPlayer;
+    private readonly MetronomePlayer _metronomePlayer;
     private Bpm _bpm;
     [Reactive] private decimal _bpmDecimal;
 
@@ -60,11 +58,8 @@ public partial class EditingViewModel : ReactiveObject
         _configService = configService;
         IsViewOnly = isViewOnly;
         //init sound players
-        _normalBeepPlayer =
-            new SoundPlayer(FileSystemService.GetPathToRegularBeepSound()); //relative path should be used
-        _highBeepPlayer = new SoundPlayer(FileSystemService.GetPathToHighBeepSound());
-        _normalBeepPlayer.Load();
-        _highBeepPlayer.Load();
+        _metronomePlayer = new MetronomePlayer(FileSystemService.GetPathToHighBeepSound(),
+            FileSystemService.GetPathToRegularBeepSound());
         //binding measuresource
         _measureSource.Connect()
             .Bind(out _measures)
@@ -136,7 +131,7 @@ public partial class EditingViewModel : ReactiveObject
             startMeasureIdx - 1; // Start one measure before so the first increment puts us at the right position
         var rythmicGroupIndex = -1;
         var delay = 5 * _bpm.QuarterNoteDuration() - _bpm.SixteenthNoteDuration() / 2.0
-                    + 2 * _bpm
+                    + _bpm
                         .SixteenthNoteDuration(); //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
 
         var tempNotes = new List<NoteGroup>();
@@ -176,11 +171,11 @@ public partial class EditingViewModel : ReactiveObject
         if (idx == 0)
         {
             CountDownVisibility = true;
-            _highBeepPlayer.Play();
+            _metronomePlayer.PlayHighBeep();
         }
         else
         {
-            _normalBeepPlayer.Play();
+            _metronomePlayer.PlayNormalBeep();
         }
 
         CountDown--;
@@ -193,7 +188,7 @@ public partial class EditingViewModel : ReactiveObject
     {
         if (idx == 0)
         {
-            _highBeepPlayer.Play();
+            _metronomePlayer.PlayHighBeep();
             if (CurrentMeasure == Measures[_selectedEntryPointMeasureIndex] && _firstMeasurePassedCount == 0)
             {
                 CountDownVisibility = false;
@@ -208,7 +203,7 @@ public partial class EditingViewModel : ReactiveObject
         }
         else
         {
-            _normalBeepPlayer.Play();
+            _metronomePlayer.PlayNormalBeep();
         }
         CurrentMeasure?.MovePointerToRg(idx);
         if (_globalPointerIdx == 0)

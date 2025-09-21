@@ -82,6 +82,7 @@
                     </StackPanel>
                 </Button>
                 <Button Grid.Column="2" x:Name="Export"
+                        IsVisible="{Binding IsViewOnly}"
                         Click="Export_OnClick"
                         Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">

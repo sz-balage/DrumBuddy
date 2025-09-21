@@ -10,6 +10,8 @@
     <ItemGroup>
         <PackageReference Include="Dapper" Version="2.1.66" />
         <PackageReference Include="Melanchall.DryWetMidi" Version="8.0.2" />
+        <PackageReference Include="NAudio" Version="2.2.1"/>
+        <PackageReference Include="NAudio.Extras" Version="2.2.1"/>
         <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
         <PackageReference Include="System.Management" Version="9.0.9" />
         <PackageReference Include="System.Reactive" Version="6.0.2" />
