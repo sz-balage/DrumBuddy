@@ -1,35 +1,39 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DrumBuddy.IO.Abstractions;
-using NAudio.Midi;
+using RtMidi.Core;
+using RtMidi.Core.Devices;
+using RtMidi.Core.Messages;
 
 namespace DrumBuddy.IO.Services;
 
 public class MidiService : IMidiService
 {
-    // private readonly Device _devicesWatcher;
     private readonly Subject<bool> _inputDeviceDisconnected = new();
-
-    private IObservable<NoteOnEvent> _midiInput = Observable.Empty<NoteOnEvent>();
-    // private InputDevice _device;
+    private readonly Subject<int> _notes = new();
+    private IMidiInputDevice _device;
     private bool _isConnected;
 
-    public MidiService()
+    public IObservable<int> GetRawNoteObservable()
     {
-        // _devicesWatcher = DevicesWatcher.Instance;
-        // _devicesWatcher.DeviceRemoved += OnDeviceRemoved;
+        return IsConnected
+            ? _notes
+            : Observable.Empty<int>();
     }
 
     public MidiDeviceConnectionResult TryConnect()
     {
-        // var devices = InputDevice.GetAll();
-        var devices = new List<string>();
-        if (devices.Count == 0)
+        var devices = MidiDeviceManager.Default.InputDevices.ToList();
+        if (!devices.Any())
             return new MidiDeviceConnectionResult(false, "No MIDI devices connected.");
-        if (devices.Count > 1)
+        if (devices.Count() > 1)
             return new MidiDeviceConnectionResult(false,
                 "Multiple MIDI devices connected. Please remove any additional devices.");
-        // SetDevice(devices.Single());
+
+        _device = devices.First().CreateDevice();
+        _device.NoteOn += OnNoteOn;
+        _device.Open();
+
         return new MidiDeviceConnectionResult(true, null);
     }
 
@@ -46,30 +50,10 @@ public class MidiService : IMidiService
 
     public IObservable<bool> InputDeviceDisconnected => _inputDeviceDisconnected;
 
-    public IObservable<int> GetRawNoteObservable()
+    private void OnNoteOn(IMidiInputDevice sender, in NoteOnMessage msg)
     {
-        return IsConnected
-            ? _midiInput.Select(evt => (int)evt.NoteNumber)
-                .Buffer(2)
-                .Select(list => list.First())
-            : Observable.Empty<int>();
+        _notes.OnNext((int)msg.Key);
     }
-
-    // private void OnDeviceRemoved(object? sender, DeviceAddedRemovedEventArgs e)
-    // {
-    //     if (e.Device is InputDevice device && device.Name == _device.Name)
-    //         IsConnected = false;
-    // }
-    //
-    // private void SetDevice(InputDevice newDevice)
-    // {
-    //     _device = newDevice;
-    //     _device.StartEventsListening();
-    //     _midiInput = Observable.FromEventPattern<MidiEventReceivedEventArgs>(_device, nameof(_device.EventReceived))
-    //         .Where(ep => ep.EventArgs.Event is NoteOnEvent)
-    //         .Select(ep => (NoteOnEvent)ep.EventArgs.Event);
-    //     IsConnected = true;
-    // }
 }
 
 public record MidiDeviceConnectionResult(bool IsSuccess, string? Message);
