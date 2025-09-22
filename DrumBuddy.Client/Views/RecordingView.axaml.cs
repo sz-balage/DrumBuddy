@@ -1,21 +1,20 @@
 using System;
 using System.Diagnostics;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Client.ViewModels.Dialogs;
+using DrumBuddy.Client.Views.Dialogs;
 using DrumBuddy.Client.Views.HelperViews;
 using DrumBuddy.Core.Enums;
-using DrumBuddy.Core.Models;
 using ReactiveUI;
 using Splat;
+
 // ReSharper disable InconsistentNaming
 
 namespace DrumBuddy.Client.Views;
@@ -24,8 +23,12 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
     public RecordingView()
     {
         InitializeComponent();
+        if (Design.IsDesignMode)
+            ViewModel = new RecordingViewModel(null, null, null, null, null);
         this.WhenActivated(d =>
         {
+            if (Design.IsDesignMode)
+                return;
             this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.StartRecordingCommand, v => v._startRecordingButton)
@@ -96,8 +99,6 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 }
             });
         });
-
-        AvaloniaXamlLoader.Load(this);
     }
 
     private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl")!;
@@ -115,7 +116,7 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
     private async Task SaveHandler(IInteractionContext<SheetCreationData, SheetNameAndDescription> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var saveView = new Dialogs.SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
+        var saveView = new SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
         var result = await saveView.ShowDialog<SheetNameAndDescription>(mainWindow);
         context.SetOutput(result);
     }

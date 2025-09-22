@@ -7,11 +7,8 @@
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
                           xmlns:viewModels="clr-namespace:DrumBuddy.Client.ViewModels"
-                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                          mc:Ignorable="d" d:DesignWidth="1250" d:DesignHeight="500"
                           x:Class="DrumBuddy.Client.Views.RecordingView">
-    <Design.DataContext>
-        <viewModels:RecordingViewModel />
-    </Design.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="66" />
@@ -69,11 +66,11 @@
                             Grid.Column="1"
                             Orientation="Horizontal"
                             HorizontalAlignment="Center">
-                    <Label FontSize="24" FontFamily="{StaticResource NunitoFont}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center">
+                    <TextBlock FontSize="24" FontFamily="{StaticResource NunitoFont}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center">
                         BPM:
-                    </Label>
+                    </TextBlock>
                     <NumericUpDown x:Name="BpmNumeric"
                                    Minimum="20"
                                    Maximum="250"
@@ -85,23 +82,16 @@
                 </StackPanel>
                 <StackPanel Grid.Row="0"
                             Grid.Column="2"
-                            Orientation="Horizontal" HorizontalAlignment="Center">
-                    <ComboBox SelectedItem="{Binding SelectedSheetOption}"
-                              ItemsSource="{Binding SheetOptions}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding DisplayName}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <Label FontSize="24" FontFamily="{StaticResource NunitoFont}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center">
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <TextBlock FontSize="24"
+                               FontFamily="{StaticResource NunitoFont}"
+                               VerticalAlignment="Center">
                         Time elapsed:
-                    </Label>
+                    </TextBlock>
                     <TextBlock x:Name="TimeElapsedTextBlock"
                                FontSize="24"
-                               HorizontalAlignment="Right"
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Grid>
@@ -109,7 +99,6 @@
         <Grid x:Name="CountdownGrid" Grid.Row="1" Background="#80000000" Opacity="0.7">
             <TextBlock x:Name="CountdownTextBlock" FontWeight="Bold"
                        FontSize="300"
-                       FontFamily="{StaticResource NunitoFont}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
         </Grid>
@@ -143,5 +132,27 @@
                 </ItemsControl>
             </Grid>
         </ScrollViewer>
+        <ComboBox Grid.Row="1" x:Name="OverlaySheetComboBox"
+                  IsEnabled="{Binding !IsRecording}"
+                  Background="{StaticResource HeaderGray}"
+                  HorizontalAlignment="Right"
+                  SelectedItem="{Binding SelectedSheetOption}"
+                  ItemsSource="{Binding SheetOptions}"
+                  Width="240">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" MaxWidth="240">
+                        <TextBlock Text="Overlay sheet: "
+                                   FontSize="16"
+                                   HorizontalAlignment="Left" />
+                        <TextBlock Text="{Binding DisplayName}" MaxWidth="80"
+                                   FontSize="16" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
     </Grid>
+    <UserControl.Styles>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+    </UserControl.Styles>
 </rxui:ReactiveUserControl>

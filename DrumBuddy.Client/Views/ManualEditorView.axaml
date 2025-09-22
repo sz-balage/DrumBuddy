@@ -31,6 +31,8 @@
                                    VerticalAlignment="Center" />
                         <TextBlock x:Name="NameTextBlock"
                                    Classes="header"
+                                   TextTrimming="CharacterEllipsis"
+                                   MaxWidth="240"
                                    Margin="0,18,18,18"
                                    FontFamily="{StaticResource NunitoFont}"
                                    VerticalAlignment="Center" />

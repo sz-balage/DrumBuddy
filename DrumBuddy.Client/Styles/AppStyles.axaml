@@ -3,6 +3,9 @@
 <Design.PreviewWith>
     <Button Classes="card" Width="200" Height="200">XYU</Button>
 </Design.PreviewWith>
+    <Style Selector="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource NunitoFont}" />
+    </Style>
     <Style Selector="ListBox">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Margin" Value="0,0,0,10"/>
@@ -119,5 +122,30 @@
     <Style Selector="Button.Highlight">
         <Setter Property="Background" Value="{StaticResource AppGreen}"/>
         <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="ComboBox">
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="FontFamily" Value="{StaticResource NunitoFont}" />
+        <Setter Property="Background" Value="#f5f5f5" />
+        <Setter Property="BorderBrush" Value="{StaticResource Primary}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="ComboBox:pointerover">
+        <Setter Property="Background">
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Offset="0" Color="{StaticResource Primary}" />
+                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+            </LinearGradientBrush>
+        </Setter>
+        <Setter Property="BorderBrush">
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Offset="0" Color="{StaticResource Primary}" />
+                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+            </LinearGradientBrush>
+        </Setter>
     </Style>
 </Styles>

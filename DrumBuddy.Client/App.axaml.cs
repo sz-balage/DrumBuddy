@@ -66,10 +66,16 @@ public class App : Application
             Locator.Current.GetRequiredService<NotificationManager>(),
             Locator.Current.GetRequiredService<PdfGenerator>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
-        CurrentMutable.RegisterConstant(new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),Locator.Current.GetRequiredService<IMidiService>(),Locator.Current.GetRequiredService<ConfigurationService>()));
+        CurrentMutable.RegisterConstant(
+            new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),
+                Locator.Current.GetRequiredService<IMidiService>(),
+                Locator.Current.GetRequiredService<ConfigurationService>()));
         CurrentMutable.Register(() =>
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
-                Locator.Current.GetRequiredService<IMidiService>()));
+                Locator.Current.GetRequiredService<IMidiService>(),
+                Locator.Current.GetRequiredService<ConfigurationService>(),
+                Locator.Current.GetRequiredService<ISheetStorage>(),
+                Locator.Current.GetRequiredService<NotificationManager>()));
         
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() }, typeof(IViewFor<HomeViewModel>));
         CurrentMutable.Register(() => new RecordingView { ViewModel = Locator.Current.GetRequiredService<RecordingViewModel>() }, typeof(IViewFor<RecordingViewModel>));

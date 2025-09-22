@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
@@ -82,16 +81,20 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
 
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
-    public RecordingViewModel(IScreen hostScreen, IMidiService midiService)
+
+    public RecordingViewModel(IScreen hostScreen,
+        IMidiService midiService,
+        ConfigurationService configService,
+        ISheetStorage sheetStorage,
+        NotificationManager notificationManager)
     {
         HostScreen = hostScreen;
         _midiService = midiService;
-        _configService = Locator.Current.GetRequiredService<ConfigurationService>();
-        _sheetStorage = Locator.Current.GetRequiredService<ISheetStorage>();
-        _notificationManager = Locator.Current.GetRequiredService<NotificationManager>();
+        _configService = configService;
+        _sheetStorage = sheetStorage;
+        _notificationManager = notificationManager;
         _metronomePlayer = new MetronomePlayer(FileSystemService.GetPathToHighBeepSound(),
             FileSystemService.GetPathToRegularBeepSound());
-        //init sound players
 
         //binding measuresource
         _measureSource.Connect()
@@ -117,23 +120,18 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         IsRecording = false;
         IsPaused = false;
         CurrentMeasure = null!;
-        this.WhenNavigatingFromObservable().Subscribe(_ =>
-        {
-            _subs.Dispose(); //TODO: dispose disposables when navigating away from the viewmodel
-        });
-        this.WhenNavigatedTo(() => LoadSheets()
-            .ToObservable()
-            .Subscribe());
+        this.WhenNavigatedTo(LoadSheets);
         SheetOptions = new ObservableCollection<SheetOption>();
     }
 
     private async Task LoadSheets()
     {
-        var sheets = await _sheetStorage.LoadSheetsAsync();
+        var sheets = await _sheetStorage?.LoadSheetsAsync();
         SheetOptions.Clear();
-        SheetOptions.Add(new SheetOption("None", null)); // ✅ Add the "None" option
+        SheetOptions.Add(new SheetOption("None", null));
         foreach (var sheet in sheets)
             SheetOptions.Add(new SheetOption(sheet.Name, sheet));
+        SelectedSheetOption = SheetOptions[0];
     }
 
     public IObservable<int> KeyboardBeats { get; set; }

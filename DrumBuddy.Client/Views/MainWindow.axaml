@@ -121,15 +121,21 @@
                 Width="300"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom">
-            <StackPanel Orientation="Horizontal">
+            <Grid ColumnDefinitions="*,Auto">
                 <TextBlock x:Name="SuccessMessage"
                            Foreground="Black"
                            FontFamily="{StaticResource NunitoFont}"
                            FontWeight="SemiBold"
                            FontSize="16"
-                           TextWrapping="Wrap" />
-                <PathIcon Data="{StaticResource Checkmark}" Margin="10,0,0,2"/>
-            </StackPanel>
+                           TextWrapping="Wrap"
+                           MaxWidth="260"
+                           VerticalAlignment="Center"
+                           Margin="0,0,10,0" />
+                <PathIcon Data="{StaticResource Checkmark}"
+                          Grid.Column="1"
+                          VerticalAlignment="Center"
+                          Margin="0,0,0,2" />
+            </Grid>
         </Border>
     </Grid>
 </rxui:ReactiveWindow>
