@@ -22,5 +22,6 @@
     </ItemGroup>
     <ItemGroup>
         <None Include="runtimes/linux-x64/native/libbass.so" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="runtimes/win-x64/native/bass.dll" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 </Project>
