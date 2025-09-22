@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="Dapper" Version="2.1.66" />
-        <PackageReference Include="Melanchall.DryWetMidi" Version="8.0.2" />
+        <PackageReference Include="ManagedBass" Version="4.0.1" />
         <PackageReference Include="NAudio" Version="2.2.1"/>
         <PackageReference Include="NAudio.Extras" Version="2.2.1"/>
         <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
@@ -20,5 +20,7 @@
     <ItemGroup>
         <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj" />
     </ItemGroup>
-
+    <ItemGroup>
+        <None Include="runtimes/linux-x64/native/libbass.so" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 </Project>

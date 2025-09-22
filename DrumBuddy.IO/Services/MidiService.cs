@@ -1,35 +1,35 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DrumBuddy.IO.Abstractions;
-using Melanchall.DryWetMidi.Core;
-using Melanchall.DryWetMidi.Multimedia;
+using NAudio.Midi;
 
 namespace DrumBuddy.IO.Services;
 
 public class MidiService : IMidiService
 {
-    private readonly DevicesWatcher _devicesWatcher;
+    // private readonly Device _devicesWatcher;
     private readonly Subject<bool> _inputDeviceDisconnected = new();
 
     private IObservable<NoteOnEvent> _midiInput = Observable.Empty<NoteOnEvent>();
-    private InputDevice _device;
+    // private InputDevice _device;
     private bool _isConnected;
 
     public MidiService()
     {
-        _devicesWatcher = DevicesWatcher.Instance;
-        _devicesWatcher.DeviceRemoved += OnDeviceRemoved;
+        // _devicesWatcher = DevicesWatcher.Instance;
+        // _devicesWatcher.DeviceRemoved += OnDeviceRemoved;
     }
 
     public MidiDeviceConnectionResult TryConnect()
     {
-        var devices = InputDevice.GetAll();
+        // var devices = InputDevice.GetAll();
+        var devices = new List<string>();
         if (devices.Count == 0)
             return new MidiDeviceConnectionResult(false, "No MIDI devices connected.");
         if (devices.Count > 1)
             return new MidiDeviceConnectionResult(false,
                 "Multiple MIDI devices connected. Please remove any additional devices.");
-        SetDevice(devices.Single());
+        // SetDevice(devices.Single());
         return new MidiDeviceConnectionResult(true, null);
     }
 
@@ -55,21 +55,21 @@ public class MidiService : IMidiService
             : Observable.Empty<int>();
     }
 
-    private void OnDeviceRemoved(object? sender, DeviceAddedRemovedEventArgs e)
-    {
-        if (e.Device is InputDevice device && device.Name == _device.Name)
-            IsConnected = false;
-    }
-
-    private void SetDevice(InputDevice newDevice)
-    {
-        _device = newDevice;
-        _device.StartEventsListening();
-        _midiInput = Observable.FromEventPattern<MidiEventReceivedEventArgs>(_device, nameof(_device.EventReceived))
-            .Where(ep => ep.EventArgs.Event is NoteOnEvent)
-            .Select(ep => (NoteOnEvent)ep.EventArgs.Event);
-        IsConnected = true;
-    }
+    // private void OnDeviceRemoved(object? sender, DeviceAddedRemovedEventArgs e)
+    // {
+    //     if (e.Device is InputDevice device && device.Name == _device.Name)
+    //         IsConnected = false;
+    // }
+    //
+    // private void SetDevice(InputDevice newDevice)
+    // {
+    //     _device = newDevice;
+    //     _device.StartEventsListening();
+    //     _midiInput = Observable.FromEventPattern<MidiEventReceivedEventArgs>(_device, nameof(_device.EventReceived))
+    //         .Where(ep => ep.EventArgs.Event is NoteOnEvent)
+    //         .Select(ep => (NoteOnEvent)ep.EventArgs.Event);
+    //     IsConnected = true;
+    // }
 }
 
 public record MidiDeviceConnectionResult(bool IsSuccess, string? Message);

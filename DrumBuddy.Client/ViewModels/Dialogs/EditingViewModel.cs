@@ -17,6 +17,7 @@ using DrumBuddy.IO.Services;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using Splat;
 
 namespace DrumBuddy.Client.ViewModels.Dialogs;
 
@@ -58,8 +59,7 @@ public partial class EditingViewModel : ReactiveObject
         _configService = configService;
         IsViewOnly = isViewOnly;
         //init sound players
-        _metronomePlayer = new MetronomePlayer(FileSystemService.GetPathToHighBeepSound(),
-            FileSystemService.GetPathToRegularBeepSound());
+        _metronomePlayer = Locator.Current.GetRequiredService<MetronomePlayer>();
         //binding measuresource
         _measureSource.Connect()
             .Bind(out _measures)

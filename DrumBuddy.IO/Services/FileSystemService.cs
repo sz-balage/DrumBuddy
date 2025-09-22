@@ -7,7 +7,7 @@ public static class FileSystemService //TODO: should be part of client, not IO, 
         var dir = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent;
         return dir is null
             ? ""
-            : Path.Combine(dir.FullName, "Assets\\metronomeup.wav");
+            : Path.Combine(dir.FullName, "Assets","metronomeup.wav");
     }
 
     public static string GetPathToRegularBeepSound()
@@ -15,6 +15,6 @@ public static class FileSystemService //TODO: should be part of client, not IO, 
         var dir = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent;
         return dir is null
             ? ""
-            : Path.Combine(dir.FullName, "Assets\\metronome.wav");
+            : Path.Combine(dir.FullName, "Assets","metronome.wav");
     }
 }

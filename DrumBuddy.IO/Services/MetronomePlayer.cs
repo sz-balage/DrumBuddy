@@ -1,43 +1,36 @@
-﻿using DrumBuddy.IO.Models;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
+﻿using ManagedBass;
 
 namespace DrumBuddy.IO.Services;
 
 public class MetronomePlayer : IDisposable
 {
-    private readonly CachedSound _highBeep;
-    private readonly CachedSound _normalBeep;
-    private readonly WaveOutEvent _outputDevice;
-    private readonly MixingSampleProvider _mixer;
+    private readonly int _highBeep;
+    private readonly int _normalBeep;
 
     public MetronomePlayer(string highBeepPath, string normalBeepPath)
     {
-        _highBeep = new CachedSound(highBeepPath);
-        _normalBeep = new CachedSound(normalBeepPath);
-
-        _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2))
+        if (!Bass.Init(-1, 44100, DeviceInitFlags.Default))
         {
-            ReadFully = true
-        };
+            throw new Exception($"Failed to initialize Bass. Error: {Bass.LastError}");
+        }
 
-        _outputDevice = new WaveOutEvent();
-        _outputDevice.Init(_mixer);
-        _outputDevice.Play();
+        _highBeep = Bass.CreateStream(highBeepPath, 0, 0, BassFlags.Default);
+        if (_highBeep == 0)
+            throw new Exception($"Failed to load high beep file. Error: {Bass.LastError}");
+
+        _normalBeep = Bass.CreateStream(normalBeepPath, 0, 0, BassFlags.Default);
+        if (_normalBeep == 0)
+            throw new Exception($"Failed to load normal beep file. Error: {Bass.LastError}");
     }
 
-    public void PlayHighBeep()
-    {
-        _mixer.AddMixerInput(new CachedSoundSampleProvider(_highBeep));
-    }
+    public void PlayHighBeep() => Bass.ChannelPlay(_highBeep,true);
 
-    public void PlayNormalBeep()
-    {
-        _mixer.AddMixerInput(new CachedSoundSampleProvider(_normalBeep));
-    }
+    public void PlayNormalBeep() => Bass.ChannelPlay(_normalBeep, true);
 
     public void Dispose()
     {
-        _outputDevice.Dispose();
+        Bass.StreamFree(_highBeep);
+        Bass.StreamFree(_normalBeep);
+        Bass.Free();
     }
 }

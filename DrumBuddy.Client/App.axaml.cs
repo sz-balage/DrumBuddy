@@ -75,7 +75,8 @@ public class App : Application
                 Locator.Current.GetRequiredService<IMidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>(),
                 Locator.Current.GetRequiredService<ISheetStorage>(),
-                Locator.Current.GetRequiredService<NotificationManager>()));
+                Locator.Current.GetRequiredService<NotificationManager>(),
+                Locator.Current.GetRequiredService<MetronomePlayer>()));
         
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() }, typeof(IViewFor<HomeViewModel>));
         CurrentMutable.Register(() => new RecordingView { ViewModel = Locator.Current.GetRequiredService<RecordingViewModel>() }, typeof(IViewFor<RecordingViewModel>));
@@ -95,6 +96,7 @@ public class App : Application
     {
         var connectionString = $"Data Source={Path.Combine(Environment.CurrentDirectory,"sheet_db.db")};";
         CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
+        CurrentMutable.RegisterConstant(new MetronomePlayer(FileSystemService.GetPathToHighBeepSound(),FileSystemService.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant<ISheetStorage>(
             new SheetStorage(
                 Locator.Current.GetRequiredService<ISerializationService>(), 

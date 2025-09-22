@@ -86,15 +86,15 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         IMidiService midiService,
         ConfigurationService configService,
         ISheetStorage sheetStorage,
-        NotificationManager notificationManager)
+        NotificationManager notificationManager,
+        MetronomePlayer metronomePlayer)
     {
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = configService;
         _sheetStorage = sheetStorage;
         _notificationManager = notificationManager;
-        _metronomePlayer = new MetronomePlayer(FileSystemService.GetPathToHighBeepSound(),
-            FileSystemService.GetPathToRegularBeepSound());
+        _metronomePlayer = metronomePlayer;
 
         //binding measuresource
         _measureSource.Connect()
@@ -142,7 +142,6 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     public ObservableCollection<MeasureViewModel> OverlayMeasures { get; } = new();
     public void Dispose()
     {
-        _metronomePlayer.Dispose();
         _measureSource.Dispose();
         _subs.Dispose();
         _startRecordingCommand?.Dispose();
@@ -188,8 +187,8 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         var delay = 5 * _bpm.QuarterNoteDuration() - _bpm.SixteenthNoteDuration() / 2.0
                     + 2 * _bpm
                         .SixteenthNoteDuration(); //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
-        var tempNotes = new List<NoteGroup>();
-        _subs.Add(RecordingService
+        var tempNotes = new List<NoteGroup>();          
+        _subs.Add(RecordingService  
             .GetNotes(_bpm,
                 _keyboardInputEnabled
                     ? KeyboardBeats.GetMappedBeatsForKeyboard(_configService)

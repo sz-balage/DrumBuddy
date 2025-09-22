@@ -24,7 +24,7 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
     {
         InitializeComponent();
         if (Design.IsDesignMode)
-            ViewModel = new RecordingViewModel(null, null, null, null, null);
+            ViewModel = new RecordingViewModel(null, null, null, null, null,null);
         this.WhenActivated(d =>
         {
             if (Design.IsDesignMode)
