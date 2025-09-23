@@ -63,7 +63,7 @@
                     <NumericUpDown x:Name="BpmNumeric"
                                    IsEnabled="{Binding !IsViewOnly}"
                                    Minimum="20"
-                                   Maximum="250"
+                                   Maximum="250" 
                                    Value="100"
                                    FormatString="0"
                                    FontSize="24"
@@ -71,7 +71,7 @@
                                    VerticalAlignment="Center" />
                 </StackPanel>
                 <Button Grid.Column="2" x:Name="SaveButton"
-                        Click="SaveButton_OnClick"
+                        Click="SaveButton_OnClick" 
                         IsVisible="{Binding !IsViewOnly}"
                         Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
@@ -83,11 +83,13 @@
                 </Button>
                 <Button Grid.Column="2" x:Name="Export"
                         IsVisible="{Binding IsViewOnly}"
-                        Click="Export_OnClick"
+                        IsEnabled="{Binding !IsExporting}"
+                        Click="Export_OnClick" 
                         Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource Pdf}" Margin="0,0,0,5" />
-                        <TextBlock Text="Export to pdf" FontFamily="{StaticResource NunitoFont}"
+                        <TextBlock x:Name="ExportTextBlock"
+                                   FontFamily="{StaticResource NunitoFont}"
                                    FontSize="24"
                                    Margin="10" />
                     </StackPanel>

@@ -30,6 +30,9 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
                 .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.IsExporting, v => v.ExportTextBlock.Text, isExporting => 
+                    isExporting ? "Exporting..." : "Export to pdf")
+                .DisposeWith(d);
             //editing stuff
             if (!ViewModel.IsViewOnly)
             {
@@ -116,10 +119,10 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
         Close(result);
     }
 
-    private void Export_OnClick(object? sender, RoutedEventArgs e)
+    private async void Export_OnClick(object? sender, RoutedEventArgs e)
     {
         var measures = MeasuresItemControl.GetVisualDescendants().OfType<MeasureView>()
             .Where(m => !m.ViewModel.Measure.IsEmpty).ToList();
-        ViewModel.ExportSheetToPdf(measures);
+        await ViewModel.ExportSheetToPdfAsync(measures);
     }
 }

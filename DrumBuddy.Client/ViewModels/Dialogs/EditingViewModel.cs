@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Services;
@@ -112,18 +113,16 @@ public partial class EditingViewModel : ReactiveObject
         vm => vm.IsRecording,
         recording => !recording);
 
-    public void ExportSheetToPdf(List<MeasureView> measures)
+    public async Task ExportSheetToPdfAsync(List<MeasureView> measures)
     {
         IsExporting = true;
         try
         {
-            _pdfGenerator.ExportSheetToPdf(measures, OriginalSheet.Name, OriginalSheet.Description,
-                OriginalSheet.Tempo);
+            await _pdfGenerator.ExportSheetToPdf(measures, OriginalSheet.Name, OriginalSheet.Description, OriginalSheet.Tempo);
         }
         catch (Exception e)
         {
-            //show noti
-            // _notificationManager.ShowErrorNotification();
+            Console.WriteLine($"PDF export failed: {e.Message}");
         }
         finally
         {
