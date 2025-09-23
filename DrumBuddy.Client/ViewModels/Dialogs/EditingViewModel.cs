@@ -23,33 +23,36 @@ namespace DrumBuddy.Client.ViewModels.Dialogs;
 
 public partial class EditingViewModel : ReactiveObject
 {
+    private static int _firstMeasurePassedCount;
+    private static int _globalPointerIdx;
+    private readonly ConfigurationService _configService;
     private readonly LibraryViewModel _library;
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
-    private readonly IMidiService _midiService;
-    private readonly ConfigurationService _configService;
     private readonly MetronomePlayer _metronomePlayer;
+    private readonly IMidiService _midiService;
+    public readonly Sheet OriginalSheet;
     private Bpm _bpm;
     [Reactive] private decimal _bpmDecimal;
 
-    [Reactive] private int _countDown;
-    [Reactive] private bool _countDownVisibility;
-    [Reactive] private bool _isViewOnly;
-    [Reactive] private MeasureViewModel _currentMeasure;
-    private int _selectedEntryPointMeasureIndex;
-
-    [Reactive] private bool _isRecording;
-
     // Add new properties
     [Reactive] private bool _canSave;
-    private bool _keyboardInputEnabled => _configService.IsKeyboardEnabled;
+
+    [Reactive] private int _countDown;
+    [Reactive] private bool _countDownVisibility;
+    [Reactive] private MeasureViewModel _currentMeasure;
+
+    [Reactive] private bool _isRecording;
+    [Reactive] private bool _isViewOnly;
+
+    private bool _recordingJustStarted = true;
+    private int _selectedEntryPointMeasureIndex;
     private IObservable<bool> _stopRecordingCanExecute;
     private CompositeDisposable _subs = new();
     private long _tick;
 
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
-    public readonly Sheet OriginalSheet;
 
     public EditingViewModel(Sheet originalSheet, IMidiService midiService, ConfigurationService configService,
         bool isViewOnly = false)
@@ -85,15 +88,21 @@ public partial class EditingViewModel : ReactiveObject
         IsRecording = false;
         HandleMeasureClick(0); //put pointer to first measure by default
         CanSave = false;
-        
+
         this.WhenAnyValue(vm => vm.IsRecording)
             .Subscribe(recording => CanSave = !recording);
     }
+
+    private bool _keyboardInputEnabled => _configService.IsKeyboardEnabled;
 
     public IObservable<int> KeyboardBeats { get; set; }
     public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
     public string? UrlPathSegment { get; } = "recording-view";
     public IScreen HostScreen { get; }
+
+    public IObservable<bool> CanNavigate => this.WhenAnyValue(
+        vm => vm.IsRecording,
+        recording => !recording);
 
     private void InitTimer()
     {
@@ -136,7 +145,10 @@ public partial class EditingViewModel : ReactiveObject
 
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
-            .GetNotes(_bpm, _keyboardInputEnabled ? KeyboardBeats.GetMappedBeatsForKeyboard(_configService) : _midiService.GetMappedBeatsObservable(_configService))
+            .GetNotes(_bpm,
+                _keyboardInputEnabled
+                    ? KeyboardBeats.GetMappedBeatsForKeyboard(_configService)
+                    : _midiService.GetMappedBeatsObservable(_configService))
             .ObserveOn(RxApp.MainThreadScheduler)
             .Select((notes, idx) => (notes, idx))
             .DelaySubscription(delay)
@@ -181,9 +193,6 @@ public partial class EditingViewModel : ReactiveObject
         CountDown--;
     }
 
-    private bool _recordingJustStarted = true;
-    private static int _firstMeasurePassedCount = 0;
-    private static int _globalPointerIdx;
     private void MovePointerOnMetronomeBeeps(long idx)
     {
         if (idx == 0)
@@ -205,6 +214,7 @@ public partial class EditingViewModel : ReactiveObject
         {
             _metronomePlayer.PlayNormalBeep();
         }
+
         CurrentMeasure?.MovePointerToRg(idx);
         if (_globalPointerIdx == 0)
             _timer.Start();
@@ -213,14 +223,12 @@ public partial class EditingViewModel : ReactiveObject
 
     public void HandleMeasureClick(int measureIndex)
     {
-        if (IsRecording)
+        if (IsRecording || IsViewOnly)
             return;
 
-        // Reset any existing pointer
         if (CurrentMeasure != null!)
             CurrentMeasure.IsPointerVisible = false;
 
-        // Set the new current measure
         _selectedEntryPointMeasureIndex = measureIndex;
         CurrentMeasure = Measures[_selectedEntryPointMeasureIndex];
         CurrentMeasure.IsPointerVisible = true;
@@ -239,9 +247,7 @@ public partial class EditingViewModel : ReactiveObject
 
         IsRecording = true;
     }
-    public IObservable<bool> CanNavigate => this.WhenAnyValue(
-        vm => vm.IsRecording,
-        recording => !recording);
+
     public Sheet Save()
     {
         var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToImmutableArray();
@@ -258,12 +264,6 @@ public partial class EditingViewModel : ReactiveObject
         IsRecording = false;
         TimeElapsed = "0:0:0";
         _firstMeasurePassedCount = 0;
-    }
-
-    private void ClearMeasures()
-    {
-        _measureSource.Clear();
-        _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(i => new MeasureViewModel()));
     }
 
     private void ResetPointer()
