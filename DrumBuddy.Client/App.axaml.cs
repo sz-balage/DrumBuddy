@@ -35,9 +35,10 @@ public class App : Application
             RegisterDesignTimeServices();
         }
         else
-        { 
+        {
             RegisterProdServices();
         }
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = Locator.Current.GetService<MainWindow>();
@@ -49,8 +50,11 @@ public class App : Application
 
     private static void RegisterDesignTimeServices()
     {
-        CurrentMutable.Register(() => new LibraryView { ViewModel = Locator.Current.GetRequiredService<DesignLibraryViewModel>() }, typeof(IViewFor<ILibraryViewModel>));
+        CurrentMutable.Register(
+            () => new LibraryView { ViewModel = Locator.Current.GetRequiredService<DesignLibraryViewModel>() },
+            typeof(IViewFor<ILibraryViewModel>));
     }
+
     private static void RegisterProdServices()
     {
         RegisterCoreServices();
@@ -77,13 +81,21 @@ public class App : Application
                 Locator.Current.GetRequiredService<ISheetStorage>(),
                 Locator.Current.GetRequiredService<NotificationManager>(),
                 Locator.Current.GetRequiredService<MetronomePlayer>()));
-        
-        CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() }, typeof(IViewFor<HomeViewModel>));
-        CurrentMutable.Register(() => new RecordingView { ViewModel = Locator.Current.GetRequiredService<RecordingViewModel>() }, typeof(IViewFor<RecordingViewModel>));
-        CurrentMutable.Register(() => new LibraryView { ViewModel = Locator.Current.GetRequiredService<LibraryViewModel>() }, typeof(IViewFor<ILibraryViewModel>));
-        CurrentMutable.Register(() => new ManualView() { ViewModel = Locator.Current.GetRequiredService<ManualViewModel>() }, typeof(IViewFor<ManualViewModel>));
-        CurrentMutable.Register(() => new ConfigurationView() { ViewModel = Locator.Current.GetRequiredService<ConfigurationViewModel>() }, typeof(IViewFor<ConfigurationViewModel>));
-        
+
+        CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() },
+            typeof(IViewFor<HomeViewModel>));
+        CurrentMutable.Register(
+            () => new RecordingView { ViewModel = Locator.Current.GetRequiredService<RecordingViewModel>() },
+            typeof(IViewFor<RecordingViewModel>));
+        CurrentMutable.Register(
+            () => new LibraryView { ViewModel = Locator.Current.GetRequiredService<LibraryViewModel>() },
+            typeof(IViewFor<ILibraryViewModel>));
+        CurrentMutable.Register(
+            () => new ManualView { ViewModel = Locator.Current.GetRequiredService<ManualViewModel>() },
+            typeof(IViewFor<ManualViewModel>));
+        CurrentMutable.Register(
+            () => new ConfigurationView { ViewModel = Locator.Current.GetRequiredService<ConfigurationViewModel>() },
+            typeof(IViewFor<ConfigurationViewModel>));
     }
 
     private static void RegisterCoreServices()
@@ -94,18 +106,19 @@ public class App : Application
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
     private static void RegisterIOServices()
     {
-        var connectionString = $"Data Source={Path.Combine(Environment.CurrentDirectory,"sheet_db.db")};";
+        var connectionString = $"Data Source={Path.Combine(Environment.CurrentDirectory, "sheet_db.db")};";
         CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
-        CurrentMutable.RegisterConstant(new MetronomePlayer(FileSystemService.GetPathToHighBeepSound(),FileSystemService.GetPathToRegularBeepSound()));
+        CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
+            FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant<ISheetStorage>(
             new SheetStorage(
-                Locator.Current.GetRequiredService<ISerializationService>(), 
+                Locator.Current.GetRequiredService<ISerializationService>(),
                 connectionString
             )
         );
-        CurrentMutable.RegisterConstant<FileConfigurationStorage>(new FileConfigurationStorage(Locator.Current.GetRequiredService<ISerializationService>()));
+        CurrentMutable.RegisterConstant(
+            new FileConfigurationStorage(Locator.Current.GetRequiredService<ISerializationService>()));
         CurrentMutable.RegisterConstant(new ConfigurationService(
             Locator.Current.GetRequiredService<FileConfigurationStorage>()));
     }
-
 }

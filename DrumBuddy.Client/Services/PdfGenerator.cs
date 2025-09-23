@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DrumBuddy.Client.Views.HelperViews;
 using DrumBuddy.Core.Models;
+using DrumBuddy.IO.Services;
 using PdfSharpCore;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
@@ -17,7 +18,14 @@ namespace DrumBuddy.Client.Services;
 
 public class PdfGenerator
 {
-    private const string Path = @"C:\Users\SBB3BP\Documents\DrumBuddy\SavedFiles";
+    private readonly string _saveDirectory;
+
+    public PdfGenerator()
+    {
+        _saveDirectory = Path.Combine(FilePathProvider.GetPathForFileStorage(), "pdfs");
+        if (!Directory.Exists(_saveDirectory))
+            Directory.CreateDirectory(_saveDirectory);
+    }
 
     public async Task ExportSheetToPdf(IEnumerable<MeasureView> measureViews,
         string sheetName,
@@ -64,7 +72,7 @@ public class PdfGenerator
         try
         {
             var fileName = $"{sheetName}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
-            var fullPath = System.IO.Path.Combine(Path, fileName);
+            var fullPath = Path.Combine(_saveDirectory, fileName);
             doc.Save(fullPath);
         }
         catch (Exception e)
