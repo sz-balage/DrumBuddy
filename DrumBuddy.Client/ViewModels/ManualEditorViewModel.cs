@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
@@ -17,7 +16,6 @@ using DrumBuddy.IO.Abstractions;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using Splat;
 
 namespace DrumBuddy.Client.ViewModels;
 
@@ -55,9 +53,12 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
     private NotificationManager _notificationManager;
-    public ManualEditorViewModel(IScreen host, Func<Task> onClose)
+
+    public ManualEditorViewModel(IScreen host, ISheetStorage sheetStorage, NotificationManager notificationManager,
+        Func<Task> onClose)
     {
-        _sheetStorage = Locator.Current.GetRequiredService<ISheetStorage>();
+        _sheetStorage = sheetStorage;
+        _notificationManager = notificationManager;
         HostScreen = host;
         UrlPathSegment = "manual-editor";
         _measureSource.Connect()
@@ -87,7 +88,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         DrawSheet();
         SaveCommand.ThrownExceptions.Subscribe(ex => Console.WriteLine(ex.Message));
         _onClose = onClose;
-        _notificationManager = Locator.Current.GetRequiredService<NotificationManager>();
     }
 
     public Sheet? CurrentSheet
@@ -119,7 +119,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
     [ReactiveCommand]
     private async Task NavigateBack()
-    { 
+    {
         if (!IsSaved)
         {
             var result = await ShowConfirmation.Handle(Unit.Default);
@@ -158,7 +158,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         var count = 0;
         var matrix = _measureSteps[CurrentMeasureIndex];
         for (var r = 0; r < Drums.Length; r++)
-            if (matrix[r, col]) count++;
+            if (matrix[r, col])
+                count++;
         return count;
     }
 
@@ -185,6 +186,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         {
             await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
         }
+
         _notificationManager.ShowSuccessNotification($"The sheet {Name} successfully saved.");
         IsSaved = true;
     }
@@ -210,6 +212,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     {
         if (CanGoForward) CurrentMeasureIndex++;
     }
+
     public void SelectMeasure(int index)
     {
         if (index < 0 || index >= _measureSteps.Count)
@@ -318,20 +321,22 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         CurrentMeasureIndex = -1;
         CurrentMeasureIndex = idx;
     }
+
     private void RedrawMeasureAt()
     {
         if (CurrentSheet == null || CurrentMeasureIndex < 0 || CurrentMeasureIndex >= CurrentSheet.Measures.Length)
             return;
         var idx = CurrentMeasureIndex;
         var updatedMeasure = new MeasureViewModel(CurrentSheet.Measures[CurrentMeasureIndex]);
-        _measureSource.ReplaceAt(CurrentMeasureIndex,updatedMeasure); 
-        
+        _measureSource.ReplaceAt(CurrentMeasureIndex, updatedMeasure);
+
         CurrentMeasureIndex = -1;
         CurrentMeasureIndex = idx;
     }
+
     public void DeleteSelectedMeasure()
     {
-        if (_measureSteps.Count <= 1) return; 
+        if (_measureSteps.Count <= 1) return;
         if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
         var idx = CurrentMeasureIndex;
 

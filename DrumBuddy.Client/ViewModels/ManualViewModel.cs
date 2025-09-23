@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DrumBuddy.Client.Extensions;
+using DrumBuddy.Client.Services;
 using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Abstractions;
 using DynamicData;
@@ -47,7 +48,9 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     [ReactiveCommand]
     private void AddNewSheet()
     {
-        Editor = new ManualEditorViewModel(HostScreen, () => OnClose()); //TODO: implement actual onclose action
+        Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<ISheetStorage>(),
+            Locator.Current.GetRequiredService<NotificationManager>(),
+            () => OnClose()); //TODO: implement actual onclose action
         EditorVisible = true;
     }
 
@@ -65,7 +68,9 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
 
     public void ChooseSheet(Sheet sheet)
     {
-        Editor = new ManualEditorViewModel(HostScreen, () => OnClose()); //TODO: implement actual onclose action
+        Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<ISheetStorage>(),
+            Locator.Current.GetRequiredService<NotificationManager>(),
+            () => OnClose()); //TODO: implement actual onclose action
         Editor.LoadSheet(sheet);
         EditorVisible = true;
         SheetListVisible = false;

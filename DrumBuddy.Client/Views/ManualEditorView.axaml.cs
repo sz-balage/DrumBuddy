@@ -27,15 +27,17 @@ namespace DrumBuddy.Client.Views;
 public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewModel>
 {
     private const int StepCount = ManualEditorViewModel.Columns;
-    private ToggleButton?[,] _stepButtons = new ToggleButton?[0,0];
+    private ToggleButton?[,] _stepButtons = new ToggleButton?[0, 0];
+
     public ManualEditorView()
     {
         if (Design.IsDesignMode)
         {
-            var vm = new ManualEditorViewModel(null, () => Task.CompletedTask);
+            var vm = new ManualEditorViewModel(null, null, null, () => Task.CompletedTask);
             vm.LoadSheet(TestSheetProvider.GetTestSheet());
             ViewModel = vm;
         }
+
         InitializeComponent();
         this.WhenActivated(async d =>
         {
@@ -46,16 +48,14 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             this.OneWayBind(ViewModel, vm => vm.CanGoBack, v => v.BackButton.IsEnabled)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.CanGoForward, v => v.ForwardButton.IsEnabled)
-                .DisposeWith(d); 
+                .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.BpmDecimal, v => v.BpmNumeric.Value);
             this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text, s =>
-                {
-                    if (s is null)
-                    {
-                        return " - Unsaved sheet";
-                    }
-                    return $" - {s}";
-                }).DisposeWith(d);
+            {
+                if (s is null) return " - Unsaved sheet";
+
+                return $" - {s}";
+            }).DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.AddMeasureCommand, v => v.AddMeasureButton)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.NavigateBackCommand, v => v.NavigateBackButton)
@@ -63,7 +63,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             this.BindCommand(ViewModel, vm => vm.GoToPreviousMeasureCommand, v => v.BackButton)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.GoToNextMeasureCommand, v => v.ForwardButton)
-                .DisposeWith(d);     
+                .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.SaveCommand, v => v.SaveButton)
                 .DisposeWith(d);
             this.WhenAnyValue(v => v.ViewModel)
@@ -84,6 +84,8 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         });
     }
 
+    private Grid _matrixGrid => this.FindControl<Grid>("MatrixGrid");
+
     private async Task ConfirmationHandler(IInteractionContext<Unit, Confirmation> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
@@ -92,7 +94,6 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         context.SetOutput(result);
     }
 
-    private Grid _matrixGrid => this.FindControl<Grid>("MatrixGrid");
     private async Task SaveHandler(IInteractionContext<SheetCreationData, SheetNameAndDescription> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
@@ -100,6 +101,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         var result = await saveView.ShowDialog<SheetNameAndDescription>(mainWindow);
         context.SetOutput(result);
     }
+
     private void UpdateMeasureBorders(int currentIndex)
     {
         Dispatcher.UIThread.Post(() =>
@@ -137,11 +139,11 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         _matrixGrid.ColumnDefinitions.Clear();
         _matrixGrid.RowDefinitions.Clear();
 
-        _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(100))); 
+        _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(100)));
         for (var c = 0; c < StepCount; c++)
             _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
 
-        _matrixGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40))); 
+        _matrixGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40)));
         for (var r = 0; r < vm.Drums.Length; r++)
             _matrixGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
 
@@ -192,7 +194,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = new Thickness(4, 0, 4, 0),
-                FontSize = 16, 
+                FontSize = 16,
                 FontFamily = new FontFamily("NunitoFont")
             };
             Grid.SetRow(drumLabel, r + 1);
@@ -203,11 +205,11 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             {
                 var btn = new ToggleButton
                 {
-                    Margin = new Thickness(2), 
+                    Margin = new Thickness(2),
                     Content = null,
                     IsChecked = vm.GetStep(r, c),
                     CornerRadius = new CornerRadius(3),
-                    Background = new SolidColorBrush(Color.FromRgb(60, 60, 60)), 
+                    Background = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
                     BorderBrush = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
                     BorderThickness = new Thickness(1),
                     HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -241,6 +243,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 _stepButtons[r, c] = btn;
             }
         }
+
         for (var c = 0; c < StepCount; c++)
             UpdateColumnEnabledState(c, vm);
     }
@@ -264,6 +267,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             }
         }
     }
+
     private void MeasureBorder_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (ViewModel == null)
@@ -287,5 +291,4 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         // Remove the currently selected measure
         ViewModel.DeleteSelectedMeasure();
     }
-
 }
