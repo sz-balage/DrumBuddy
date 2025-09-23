@@ -23,6 +23,7 @@ namespace DrumBuddy.Client.Views;
 public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 {
     private readonly ConfigurationService _configurationService;
+    private readonly MainWindow _mainWindow;
     private readonly IMidiService _midiService;
     private readonly PdfGenerator _pdfGenerator;
 
@@ -31,6 +32,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         _midiService = Locator.Current.GetRequiredService<IMidiService>();
         _configurationService = Locator.Current.GetRequiredService<ConfigurationService>();
         _pdfGenerator = Locator.Current.GetRequiredService<PdfGenerator>();
+        _mainWindow = Locator.Current.GetService<MainWindow>();
         if (Design.IsDesignMode)
             ViewModel = new DesignLibraryViewModel();
         InitializeComponent();
@@ -73,26 +75,23 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
     private async Task HandleCompare(IInteractionContext<(Sheet, Sheet), Unit> arg)
     {
-        var mainWindow = Locator.Current.GetService<MainWindow>();
         var view = new CompareView { ViewModel = new CompareViewModel(arg.Input) };
-        await view.ShowDialog(mainWindow);
+        await view.ShowDialog(_mainWindow);
         arg.SetOutput(Unit.Default);
     }
 
     private async Task HandleEdit(IInteractionContext<Sheet, Sheet?> arg)
     {
-        var mainWindow = Locator.Current.GetService<MainWindow>();
         var view = new EditingView
             { ViewModel = new EditingViewModel(arg.Input, _midiService, _configurationService, _pdfGenerator) };
-        var result = await view.ShowDialog<Sheet?>(mainWindow);
+        var result = await view.ShowDialog<Sheet?>(_mainWindow);
         arg.SetOutput(result);
     }
 
     private async Task HandleRename(IInteractionContext<Sheet, Sheet> arg)
     {
-        var mainWindow = Locator.Current.GetService<MainWindow>();
         var view = new RenameSheetView { ViewModel = new RenameSheetViewModel(arg.Input) };
-        var result = await view.ShowDialog<Sheet>(mainWindow);
+        var result = await view.ShowDialog<Sheet>(_mainWindow);
         arg.SetOutput(result);
     }
 
