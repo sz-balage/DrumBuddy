@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace DrumBuddy.Client.Views;
 public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewModel>
 {
     private const int StepCount = ManualEditorViewModel.Columns;
+    private readonly SolidColorBrush _borderBrush = new(new Color(0xFF, 0x00, 0x7A, 0xCC));
     private ToggleButton?[,] _stepButtons = new ToggleButton?[0, 0];
 
     public ManualEditorView()
@@ -37,6 +39,9 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             vm.LoadSheet(TestSheetProvider.GetTestSheet());
             ViewModel = vm;
         }
+
+        if (Application.Current?.Resources.TryGetResource("Accent", null, out var accentObj) == true)
+            _borderBrush = new SolidColorBrush((Color)accentObj);
 
         InitializeComponent();
         this.WhenActivated(async d =>
@@ -113,19 +118,21 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 if (container is ContentPresenter presenter)
                 {
                     var border = presenter.FindDescendantOfType<Border>();
-                    var deleteButton = presenter.FindDescendantOfType<Button>();
+                    var buttons = presenter.GetVisualDescendants().OfType<Button>().ToList();
+                    var deleteButton = buttons.FirstOrDefault(b => b.Name == "DeleteMeasureButton");
+                    var duplicateButton = buttons.FirstOrDefault(b => b.Name == "DuplicateMeasureButton");
 
                     if (border != null)
                     {
                         border.BorderBrush = i == currentIndex
-                            ? new SolidColorBrush(new Color(0xFF, 0x00, 0x7A, 0xCC))
+                            ? _borderBrush
                             : new SolidColorBrush(Colors.Transparent);
                     }
 
                     if (deleteButton != null)
-                    {
                         deleteButton.IsVisible = (i == currentIndex) && (itemsCount > 1);
-                    }
+                    if (duplicateButton != null)
+                        duplicateButton.IsVisible = i == currentIndex;
 
                     if (i == currentIndex) presenter.BringIntoView();
                 }
@@ -290,5 +297,14 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
 
         // Remove the currently selected measure
         ViewModel.DeleteSelectedMeasure();
+    }
+
+    private void DuplicateMeasureButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel is null)
+            return;
+
+        // Remove the currently selected measure
+        ViewModel.DuplicateSelectedMeasure();
     }
 }

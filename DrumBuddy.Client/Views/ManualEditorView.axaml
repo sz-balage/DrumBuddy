@@ -84,24 +84,43 @@
                                         BorderBrush="Transparent">
                                     <helperViews:MeasureView Width="600" />
                                 </Border>
-                                <Button x:Name="DeleteMeasureButton" IsVisible="False"
-                                        Width="32"
-                                        Height="32"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Top"
-                                        Background="White"
-                                        Foreground="{StaticResource Error}"
-                                        BorderThickness="1"
-                                        BorderBrush="{StaticResource HeaderGray}"
-                                        Cursor="Hand"
-                                        Click="DeleteMeasureButton_OnClick">
-                                    <Button.Styles>
-                                        <Style Selector="Button:pointerover">
-                                            <Setter Property="Background" Value="{StaticResource HeaderGray}" />
-                                        </Style>
-                                    </Button.Styles>
-                                    <PathIcon Foreground="{StaticResource Error}" Data="{StaticResource delete}"></PathIcon>
-                                </Button>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Top">
+                                    <Button x:Name="DeleteMeasureButton" IsVisible="False"
+                                            Width="32"
+                                            Height="32"
+                                            Background="White"
+                                            Foreground="{StaticResource Error}"
+                                            BorderThickness="1"
+                                            BorderBrush="{StaticResource HeaderGray}"
+                                            Cursor="Hand"
+                                            Click="DeleteMeasureButton_OnClick">
+                                        <Button.Styles>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                            </Style>
+                                        </Button.Styles>
+                                        <PathIcon Foreground="{StaticResource Error}" Data="{StaticResource delete}" />
+                                    </Button>
+                                    <Button x:Name="DuplicateMeasureButton"
+                                            IsVisible="False"
+                                            Width="32"
+                                            Height="32"
+                                            Background="White"
+                                            BorderThickness="1"
+                                            BorderBrush="{StaticResource HeaderGray}"
+                                            Cursor="Hand"
+                                            Click="DuplicateMeasureButton_OnClick">
+                                        <Button.Styles>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                            </Style>
+                                        </Button.Styles>
+                                        <PathIcon Foreground="{StaticResource Accent}"
+                                                  Data="{StaticResource Duplicate}" />
+                                    </Button>
+                                </StackPanel>
                             </Grid>
 
                         </DataTemplate>

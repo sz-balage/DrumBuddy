@@ -344,10 +344,28 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
         _measureSource.RemoveAt(CurrentMeasureIndex);
         CurrentMeasureIndex = -1;
-        if (CurrentMeasureIndex >= _measureSteps.Count)
-            CurrentMeasureIndex = _measureSteps.Count - 1;
+        if (idx != 0)
+            CurrentMeasureIndex = idx - 1;
         else
-            CurrentMeasureIndex = idx;
+            CurrentMeasureIndex = 0;
+        IsSaved = false;
+    }
+
+    public void DuplicateSelectedMeasure()
+    {
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count)
+            return;
+
+        var current = _measureSteps[CurrentMeasureIndex];
+        var copy = new bool[Drums.Length, Columns];
+        Array.Copy(current, copy, current.Length);
+
+        _measureSteps.Insert(CurrentMeasureIndex + 1, copy);
+
+        CurrentSheet = BuildSheet();
+        DrawSheet();
+
+        CurrentMeasureIndex = CurrentMeasureIndex + 1; // move selection to the new duplicate
         IsSaved = false;
     }
 }
