@@ -10,9 +10,7 @@ using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
 using DrumBuddy.Client.DesignHelpers;
-using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
-using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels.Dialogs;
 using DrumBuddy.Client.Views.HelperViews;
 using DrumBuddy.Core.Enums;
@@ -23,13 +21,11 @@ namespace DrumBuddy.Client.Views.Dialogs;
 
 public partial class EditingView : ReactiveWindow<EditingViewModel>
 {
-    private readonly PdfGenerator _pdfGenerator;
     public EditingView()
     {
-        _pdfGenerator = Locator.Current.GetRequiredService<PdfGenerator>();
         InitializeComponent();
-        if (Design.IsDesignMode) 
-            ViewModel = new EditingViewModel(TestSheetProvider.GetTestSheet(), null, null, true);
+        if (Design.IsDesignMode)
+            ViewModel = new EditingViewModel(TestSheetProvider.GetTestSheet(), null, null, null, true);
         this.WhenActivated(d =>
         {
             this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
@@ -114,11 +110,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
         }
     }
 
-    private void CancelButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        Close(null);
-    }
-
     private void SaveButton_OnClick(object? sender, RoutedEventArgs e)
     {
         var result = ViewModel.Save();
@@ -129,7 +120,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
     {
         var measures = MeasuresItemControl.GetVisualDescendants().OfType<MeasureView>()
             .Where(m => !m.ViewModel.Measure.IsEmpty).ToList();
-        var originalSheet = ViewModel.OriginalSheet;
-        _pdfGenerator.ExportSheetToPdf(measures, originalSheet.Name, originalSheet.Description, originalSheet.Tempo);
+        ViewModel.ExportSheetToPdf(measures);
     }
 }

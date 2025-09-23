@@ -7,7 +7,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
+using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
+using DrumBuddy.Client.Views.HelperViews;
 using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
@@ -31,16 +33,18 @@ public partial class EditingViewModel : ReactiveObject
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly MetronomePlayer _metronomePlayer;
     private readonly IMidiService _midiService;
+    private readonly PdfGenerator _pdfGenerator;
     public readonly Sheet OriginalSheet;
     private Bpm _bpm;
     [Reactive] private decimal _bpmDecimal;
-
-    // Add new properties
     [Reactive] private bool _canSave;
 
     [Reactive] private int _countDown;
     [Reactive] private bool _countDownVisibility;
     [Reactive] private MeasureViewModel _currentMeasure;
+
+    // Add new properties
+    [Reactive] private bool _isExporting;
 
     [Reactive] private bool _isRecording;
     [Reactive] private bool _isViewOnly;
@@ -54,12 +58,16 @@ public partial class EditingViewModel : ReactiveObject
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
 
-    public EditingViewModel(Sheet originalSheet, IMidiService midiService, ConfigurationService configService,
+    public EditingViewModel(Sheet originalSheet,
+        IMidiService midiService,
+        ConfigurationService configService,
+        PdfGenerator pdfGenerator,
         bool isViewOnly = false)
     {
         OriginalSheet = originalSheet;
         _midiService = midiService;
         _configService = configService;
+        _pdfGenerator = pdfGenerator;
         IsViewOnly = isViewOnly;
         //init sound players
         _metronomePlayer = Locator.Current.GetRequiredService<MetronomePlayer>();
@@ -103,6 +111,25 @@ public partial class EditingViewModel : ReactiveObject
     public IObservable<bool> CanNavigate => this.WhenAnyValue(
         vm => vm.IsRecording,
         recording => !recording);
+
+    public void ExportSheetToPdf(List<MeasureView> measures)
+    {
+        IsExporting = true;
+        try
+        {
+            _pdfGenerator.ExportSheetToPdf(measures, OriginalSheet.Name, OriginalSheet.Description,
+                OriginalSheet.Tempo);
+        }
+        catch (Exception e)
+        {
+            //show noti
+            // _notificationManager.ShowErrorNotification();
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
 
     private void InitTimer()
     {

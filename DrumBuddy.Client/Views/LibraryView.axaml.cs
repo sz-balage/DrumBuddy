@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.DesignHelpers;
 using DrumBuddy.Client.Extensions;
+using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels;
 using DrumBuddy.Client.ViewModels.Dialogs;
 using DrumBuddy.Client.Views.Dialogs;
@@ -21,20 +22,23 @@ namespace DrumBuddy.Client.Views;
 
 public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 {
-    private readonly IMidiService _midiService;
     private readonly ConfigurationService _configurationService;
+    private readonly IMidiService _midiService;
+    private readonly PdfGenerator _pdfGenerator;
+
     public LibraryView()
     {
         _midiService = Locator.Current.GetRequiredService<IMidiService>();
         _configurationService = Locator.Current.GetRequiredService<ConfigurationService>();
-        if(Design.IsDesignMode)
+        _pdfGenerator = Locator.Current.GetRequiredService<PdfGenerator>();
+        if (Design.IsDesignMode)
             ViewModel = new DesignLibraryViewModel();
         InitializeComponent();
-        
+
         this.WhenActivated(async d =>
         {
             //TODO: look at why design vm still dont work
-           
+
             this.OneWayBind(ViewModel,
                     vm => vm.Sheets,
                     v => v.SheetsLB.ItemsSource)
@@ -43,7 +47,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     v => v.SheetsLB.SelectedItem)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateGrid.IsVisible, count => count == 0)
-                .DisposeWith(d);       
+                .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateTextBlock.IsVisible, count => count == 0)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.NavigateToRecordingViewCommand, view => view.RecordButton)
@@ -56,34 +60,42 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowCompareDialog, HandleCompare)
                 .DisposeWith(d);
-            
+
             // this.BindCommand(ViewModel, vm => vm.RemoveSheetCommand,
             //         v => v.DeleteSheetMenuItem)
             //     .DisposeWith(d);
         });
     }
 
+    private ListBox SheetsLB => this.FindControl<ListBox>("SheetsListBox");
+    private Button NavSheetButton => this.FindControl<Button>("CreateFirstSheetButton");
+    private UniformGrid ZeroStateGrid => this.FindControl<UniformGrid>("ZeroStateStack");
+
     private async Task HandleCompare(IInteractionContext<(Sheet, Sheet), Unit> arg)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var view = new CompareView(){ViewModel = new CompareViewModel(arg.Input)};
+        var view = new CompareView { ViewModel = new CompareViewModel(arg.Input) };
         await view.ShowDialog(mainWindow);
         arg.SetOutput(Unit.Default);
     }
+
     private async Task HandleEdit(IInteractionContext<Sheet, Sheet?> arg)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var view = new EditingView { ViewModel = new EditingViewModel(arg.Input, _midiService, _configurationService) };
+        var view = new EditingView
+            { ViewModel = new EditingViewModel(arg.Input, _midiService, _configurationService, _pdfGenerator) };
         var result = await view.ShowDialog<Sheet?>(mainWindow);
         arg.SetOutput(result);
     }
+
     private async Task HandleRename(IInteractionContext<Sheet, Sheet> arg)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var view = new RenameSheetView(){ViewModel = new RenameSheetViewModel(arg.Input)};
+        var view = new RenameSheetView { ViewModel = new RenameSheetViewModel(arg.Input) };
         var result = await view.ShowDialog<Sheet>(mainWindow);
         arg.SetOutput(result);
     }
+
     private void CompareButton_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
@@ -104,19 +116,15 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             };
             flyout.Items.Add(menuItem);
         }
+
         FlyoutBase.SetAttachedFlyout(button, flyout);
         flyout.ShowAt(button);
     }
 
-    private ListBox SheetsLB => this.FindControl<ListBox>("SheetsListBox");
-    private Button NavSheetButton => this.FindControl<Button>("CreateFirstSheetButton");
-    private UniformGrid ZeroStateGrid => this.FindControl<UniformGrid>("ZeroStateStack");
-
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
-       
-        if (sender is Button button && 
-            button.Parent is Grid grid && 
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
             grid.Parent is ListBoxItem item)
         {
             SheetsListBox.SelectedItem = item.DataContext;
@@ -146,7 +154,10 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             SheetsListBox.SelectedItem = item.DataContext;
         var mainWindow = Locator.Current.GetService<MainWindow>();
         var view = new EditingView
-            { ViewModel = new EditingViewModel(ViewModel.SelectedSheet, _midiService, _configurationService, true) };
+        {
+            ViewModel = new EditingViewModel(ViewModel.SelectedSheet, _midiService, _configurationService,
+                _pdfGenerator, true)
+        };
         view.Show(mainWindow);
     }
 }
