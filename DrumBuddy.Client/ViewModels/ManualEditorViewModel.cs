@@ -75,6 +75,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             .Skip(1)
             .Subscribe(i =>
             {
+                IsSaved = false;
                 var value = Convert.ToInt32(i);
                 _bpm = new Bpm(value);
                 CurrentSheet!.Tempo = _bpm;
@@ -89,6 +90,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         DrawSheet();
         SaveCommand.ThrownExceptions.Subscribe(ex => Console.WriteLine(ex.Message));
         _onClose = onClose;
+        IsSaved = true;
     }
 
     public Sheet? CurrentSheet

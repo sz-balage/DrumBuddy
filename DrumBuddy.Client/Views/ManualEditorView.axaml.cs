@@ -53,6 +53,8 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             this.OneWayBind(ViewModel, vm => vm.CanGoBack, v => v.BackButton.IsEnabled)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.CanGoForward, v => v.ForwardButton.IsEnabled)
+                .DisposeWith(d);  
+            this.OneWayBind(ViewModel, vm => vm.IsSaved, v => v.SaveButton.IsEnabled, b => !b)
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.BpmDecimal, v => v.BpmNumeric.Value);
             this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text, s =>
