@@ -1,0 +1,189 @@
+<rxui:ReactiveUserControl x:TypeArguments="vm:LibraryViewModel" xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
+                          xmlns:rxui="http://reactiveui.net"
+                          xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
+                          xmlns:designHelpers="clr-namespace:DrumBuddy.DesignHelpers"
+                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                          x:Class="DrumBuddy.Views.LibraryView"
+                          x:DataType="vm:LibraryViewModel">
+    <Design.DataContext>
+        <designHelpers:DesignLibraryViewModel />
+    </Design.DataContext>
+    <UserControl.Styles>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+    </UserControl.Styles>
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="66" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+        <Grid Background="{StaticResource HeaderGray}" HorizontalAlignment="Stretch">
+            <TextBlock Text="Your Sheet Library"
+                       Margin="18"
+                       Classes="header"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="You haven't created any sheets yet. To get started choose below."
+                       Margin="18"
+                       x:Name="ZeroStateTextBlock"
+                       Classes="header"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+        </Grid>
+        <ListBox Grid.Row="1"
+                 x:Name="SheetsListBox" Margin="0,10,0,0"
+                 Grid.ColumnSpan="2" Grid.Column="0">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="models:Sheet">
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,*,Auto,Auto">
+                        <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                  Data="{StaticResource music}"
+                                  Width="30"
+                                  Height="30"
+                                  Margin="5,0,20,0"
+                                  Foreground="#444444" />
+                        <StackPanel Grid.Row="0" Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,4">
+                            <TextBlock Text="Name: "
+                                       FontWeight="SemiBold"
+                                       Opacity="0.8" />
+                            <TextBlock Text="{Binding Name}"
+                                       FontWeight="SemiBold"
+                                       MaxWidth="320"
+                                       TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Margin="0,4,0,4">
+                            <TextBlock Text="Description: "
+                                       FontWeight="SemiBold"
+                                       Opacity="0.8" />
+                            <TextBlock Text="{Binding Description}"
+                                       MaxWidth="800"
+                                       TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="2"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,50,0">
+                            <TextBlock Text="Length: "
+                                       FontWeight="SemiBold"
+                                       Opacity="0.8" />
+                            <TextBlock Text="{Binding Length, StringFormat={}{0:mm\\:ss\\.fff}}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="2"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,0">
+                            <TextBlock Text="Tempo: "
+                                       FontWeight="SemiBold"
+                                       Opacity="0.8" />
+                            <TextBlock Text="{Binding Tempo.Value, StringFormat='0 BPM'}" />
+                        </StackPanel>
+                        <Button Grid.Row="0" Grid.Column="3"
+                                VerticalAlignment="Center"
+                                Margin="8,-3,0,0"
+                                Padding="8,4"
+                                Background="Transparent"
+                                Click="CompareButton_OnClick">
+                            <StackPanel Orientation="Horizontal">
+                                <PathIcon Data="{StaticResource compare}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <TextBlock FontWeight="SemiBold"
+                                           Opacity="0.8" Text="Compare" />
+                            </StackPanel>
+                        </Button>
+                        <Button Grid.Row="1" Grid.Column="3"
+                                VerticalAlignment="Center"
+                                Margin="8,-3,0,0"
+                                Padding="8,4"
+                                Background="Transparent"
+                                Click="ViewButton_OnClick">
+                            <StackPanel Orientation="Horizontal">
+                                <PathIcon Data="{StaticResource View}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <TextBlock FontWeight="SemiBold"
+                                           Opacity="0.8" Text="View &amp; export" />
+                            </StackPanel>
+                        </Button>
+                        <Button Grid.Row="0" Grid.Column="5" Grid.RowSpan="2"
+                                VerticalAlignment="Center"
+                                Margin="8,0,0,0"
+                                Padding="8,8"
+                                Background="Transparent"
+                                Click="Button_OnClick">
+                            <Button.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                                    <MenuItem Header="Edit sheet" Click="EditMenuItem_OnClick">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource edit_regular}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Change name and description"
+                                              Click="MenuItem_OnClick">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource rename_regular}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem x:Name="DeleteMenuItem"
+                                              Click="DeleteMenuItem_OnClick"
+                                              Header="Delete"
+                                              Foreground="IndianRed">
+                                        <MenuItem.Icon>
+                                            <PathIcon Foreground="IndianRed" Data="{StaticResource delete}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                            <StackPanel Orientation="Vertical" Spacing="2">
+                                <Ellipse Width="4" Height="4" Fill="#444444" />
+                                <Ellipse Width="4" Height="4" Fill="#444444" />
+                                <Ellipse Width="4" Height="4" Fill="#444444" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <UniformGrid Grid.Row="1" Grid.Column="0" x:Name="ZeroStateStack"
+                     Grid.ColumnSpan="2" Columns="2">
+            <Button Classes="card" CornerRadius="0" x:Name="RecordButton">
+                <Border>
+                    <StackPanel Orientation="Vertical"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="12">
+                        <PathIcon Data="{StaticResource RecordIcon}"
+                                  Width="64"
+                                  Height="64" />
+                        <TextBlock Text="Record your drum beats"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Button>
+            <Button Classes="card" CornerRadius="0" x:Name="ManualButton">
+                <Border>
+                    <StackPanel Orientation="Vertical"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="12">
+                        <PathIcon Data="{StaticResource EditorIcon}"
+                                  Width="64"
+                                  Height="64" />
+                        <TextBlock Text="Manually create a sheet"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Button>
+        </UniformGrid>
+    </Grid>
+</rxui:ReactiveUserControl>

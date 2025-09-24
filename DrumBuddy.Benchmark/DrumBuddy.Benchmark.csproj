@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DrumBuddy.Client\DrumBuddy.Client.csproj" />
+      <ProjectReference Include="..\DrumBuddy\DrumBuddy.csproj" />
       <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj" />
     </ItemGroup>
 

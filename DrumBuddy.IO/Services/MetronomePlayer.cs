@@ -23,14 +23,20 @@ public class MetronomePlayer : IDisposable
             throw new Exception($"Failed to load normal beep file. Error: {Bass.LastError}");
     }
 
-    public void PlayHighBeep() => Bass.ChannelPlay(_highBeep,true);
-
-    public void PlayNormalBeep() => Bass.ChannelPlay(_normalBeep, true);
-
     public void Dispose()
     {
         Bass.StreamFree(_highBeep);
         Bass.StreamFree(_normalBeep);
         Bass.Free();
+    }
+
+    public void PlayHighBeep()
+    {
+        Bass.ChannelPlay(_highBeep, true);
+    }
+
+    public void PlayNormalBeep()
+    {
+        Bass.ChannelPlay(_normalBeep, true);
     }
 }

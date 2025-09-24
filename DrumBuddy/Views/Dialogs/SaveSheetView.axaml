@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="320"
+        x:Class="DrumBuddy.Views.Dialogs.SaveSheetView"
+        Title="Save Drum Sheet"
+        Width="450" Height="340"
+        WindowStartupLocation="CenterOwner"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaToDecorationsHint="True"
+        CanResize="False">
+    <Window.Styles>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+    </Window.Styles>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Save Your Recording"
+                   Classes="dialog-title" />
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="Title" Classes="label" />
+            <TextBox Watermark="Enter sheet title" x:Name="NameTB" />
+            <TextBlock x:Name="SheetTitleValidation" Foreground="{StaticResource Error}" />
+        </StackPanel>
+
+
+        <StackPanel Grid.Row="3">
+            <TextBlock Text="Description" Classes="label" />
+            <TextBox x:Name="DescriptionTb" Watermark="Enter sheet description"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Height="80" />
+        </StackPanel>
+
+        <Grid Grid.Row="4" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Content="Cancel"
+                    Classes="button"
+                    x:Name="Cancel" />
+
+            <Button Grid.Column="2"
+                    Classes="button confirm"
+                    Content="Save"
+                    x:Name="Save" />
+        </Grid>
+    </Grid>
+</Window>

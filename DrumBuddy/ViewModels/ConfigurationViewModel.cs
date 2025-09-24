@@ -1,0 +1,119 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading.Tasks;
+using DrumBuddy.Core.Enums;
+using DrumBuddy.IO;
+using DrumBuddy.IO.Abstractions;
+using DrumBuddy.Models;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
+
+namespace DrumBuddy.ViewModels;
+
+public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
+{
+    private readonly ConfigurationService _configService;
+    private readonly Subject<Unit> _mappingChanged = new();
+    private readonly IMidiService _midiService;
+    private IDisposable? _beatsSubscription;
+    [Reactive] private bool _keyboardInput;
+
+    public ConfigurationViewModel(IScreen hostScreen, IMidiService midiService, ConfigurationService configService)
+    {
+        HostScreen = hostScreen;
+        _midiService = midiService;
+        _configService = configService;
+        var mainVm = hostScreen as MainViewModel;
+        foreach (var kvp in _configService.Mapping)
+            DrumMappings.Add(new DrumMappingItem(kvp.Key, kvp.Value));
+        MappingChanged.Subscribe(_ => UpdateDrumMappings());
+
+        this.WhenAnyValue(vm => vm.KeyboardInput)
+            .Subscribe(ki =>
+            {
+                ChangeSubscription(mainVm?.NoConnection ?? true);
+                _configService.IsKeyboardEnabled = ki;
+            });
+        mainVm?.WhenAnyValue(vm => vm.NoConnection)
+            .Subscribe(ChangeSubscription);
+        ListeningDrumChanged
+            .Subscribe(UpdateListeningDrum);
+    }
+
+    public ObservableCollection<DrumMappingItem> DrumMappings { get; } = new();
+
+    public IObservable<int> KeyboardBeats { get; set; }
+
+    public IReadOnlyDictionary<Drum, int> Mapping => _configService.Mapping;
+    public IObservable<Drum?> ListeningDrumChanged => _configService.ListeningDrumChanged;
+    public IObservable<Unit> MappingChanged => _mappingChanged.AsObservable();
+
+    public string? UrlPathSegment { get; }
+    public IScreen HostScreen { get; }
+
+    private void UpdateDrumMappings()
+    {
+        foreach (var item in DrumMappings)
+            if (_configService.Mapping.TryGetValue(item.Drum, out var note))
+                item.Note = note;
+    }
+
+    private void UpdateListeningDrum(Drum? drum)
+    {
+        foreach (var item in DrumMappings)
+            item.IsListening = item.Drum == drum;
+    }
+
+    private void ChangeSubscription(bool noConnection)
+    {
+        _beatsSubscription?.Dispose();
+        if (!noConnection)
+            _beatsSubscription = _midiService
+                .GetRawNoteObservable()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(OnMidiNoteReceived);
+        else if (KeyboardInput)
+            _beatsSubscription = KeyboardBeats!.ObserveOn(RxApp.MainThreadScheduler).Subscribe(OnMidiNoteReceived);
+    }
+
+    [ReactiveCommand]
+    private void StartListening(Drum drum)
+    {
+        _configService.StartListening(drum);
+        UpdateListeningDrum(drum);
+    }
+
+    [ReactiveCommand]
+    private void StopListening()
+    {
+        _configService.StopListening();
+        UpdateListeningDrum(null);
+    }
+
+    private void OnMidiNoteReceived(int noteNumber)
+    {
+        if (_configService.ListeningDrum is null)
+        {
+            var drum = _configService.Mapping.FirstOrDefault(kvp => kvp.Value == noteNumber).Key;
+            if (drum != default) HighlightDrumTemporarily(drum);
+            return;
+        }
+
+        _configService.MapDrum(noteNumber);
+        _mappingChanged.OnNext(Unit.Default);
+    }
+
+    private void HighlightDrumTemporarily(Drum drum)
+    {
+        var item = DrumMappings.FirstOrDefault(d => d.Drum == drum);
+        if (item == null) return;
+
+        item.IsHighlighted = true;
+        Task.Delay(500).ContinueWith(_ => item.IsHighlighted = false);
+    }
+}

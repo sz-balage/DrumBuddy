@@ -1,0 +1,125 @@
+﻿<rxui:ReactiveWindow x:TypeArguments="dialogs:EditingViewModel"
+                     x:DataType="dialogs:EditingViewModel"
+                     xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:rxui="http://reactiveui.net"
+                     xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
+                     xmlns:dialogs="clr-namespace:DrumBuddy.ViewModels.Dialogs"
+                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                     MinHeight="500"
+                     MinWidth="1250"
+                     Title="Edit window"
+                     x:Class="DrumBuddy.Views.Dialogs.EditingView">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="{StaticResource HeaderGray}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.3*" />
+                    <ColumnDefinition Width="0.3*" />
+                    <ColumnDefinition Width="0.3*" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="StartRecordingButton"
+                        IsVisible="{Binding !IsViewOnly}"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Background="{StaticResource HeaderGray}">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource RecordIcon}" />
+                        <TextBlock Text="Start Recording" FontFamily="{StaticResource NunitoFont}"
+                                   FontSize="24"
+                                   Margin="10" />
+                    </StackPanel>
+                </Button>
+                <StackPanel Grid.Row="0"
+                            IsVisible="{Binding !IsViewOnly}"
+                            Grid.Column="0"
+                            Orientation="Horizontal">
+                    <Button x:Name="StopRecordingButton"
+                            Background="{StaticResource HeaderGray}">
+                        <StackPanel Orientation="Horizontal">
+                            <PathIcon Data="{StaticResource RecordIcon}"
+                                      Foreground="Red" />
+                            <TextBlock Text="Stop Recording" FontFamily="{StaticResource NunitoFont}"
+                                       FontSize="24"
+                                       Margin="10" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <StackPanel Grid.Row="0"
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+                    <Label FontSize="24" FontFamily="{StaticResource NunitoFont}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                        BPM:
+                    </Label>
+                    <NumericUpDown x:Name="BpmNumeric"
+                                   IsEnabled="{Binding !IsViewOnly}"
+                                   Minimum="20"
+                                   Maximum="250"
+                                   Value="100"
+                                   FormatString="0"
+                                   FontSize="24"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                </StackPanel>
+                <Button Grid.Column="2" x:Name="SaveButton"
+                        Click="SaveButton_OnClick"
+                        IsVisible="{Binding !IsViewOnly}"
+                        Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource Save}" Margin="0,0,0,5" />
+                        <TextBlock Text="Save" FontFamily="{StaticResource NunitoFont}"
+                                   FontSize="24"
+                                   Margin="10" />
+                    </StackPanel>
+                </Button>
+                <Button Grid.Column="2" x:Name="Export"
+                        IsVisible="{Binding IsViewOnly}"
+                        IsEnabled="{Binding !IsExporting}"
+                        Click="Export_OnClick"
+                        Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource Pdf}" Margin="0,0,0,5" />
+                        <TextBlock x:Name="ExportTextBlock"
+                                   FontFamily="{StaticResource NunitoFont}"
+                                   FontSize="24"
+                                   Margin="10" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+        <Grid x:Name="CountdownGrid"
+              Grid.Row="1"
+              Background="#80000000"
+              Opacity="0.7"
+              IsVisible="{Binding !IsViewOnly}">
+            <TextBlock x:Name="CountdownTextBlock" FontWeight="Bold"
+                       FontSize="300"
+                       FontFamily="{StaticResource NunitoFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+        </Grid>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="MeasuresItemControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <helperViews:MeasureView Width="600" PointerPressed="InputElement_OnPointerPressed" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</rxui:ReactiveWindow>

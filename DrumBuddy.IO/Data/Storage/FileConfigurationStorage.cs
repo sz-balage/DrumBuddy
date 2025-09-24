@@ -10,10 +10,11 @@ public class FileConfigurationStorage
     private readonly string _saveDirectory;
     private readonly ISerializationService _serializationService;
 
-    public FileConfigurationStorage(ISerializationService serializationService)
+    public FileConfigurationStorage(ISerializationService serializationService, string saveDirectory)
     {
         _serializationService = serializationService;
-        _saveDirectory = Path.Combine(FilePathProvider.GetPathForFileStorage(), "config");
+        _saveDirectory = saveDirectory;
+        // _saveDirectory = Path.Combine(FilePathProvider.GetPathForFileStorage(), "config");
 
         if (!Directory.Exists(_saveDirectory))
             Directory.CreateDirectory(_saveDirectory);

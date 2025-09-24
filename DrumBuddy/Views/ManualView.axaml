@@ -1,0 +1,114 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="vm:ManualViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:views="clr-namespace:DrumBuddy.Views"
+                                xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="DrumBuddy.Views.ManualView">
+    <UserControl.Styles>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+    </UserControl.Styles>
+    <Grid RowDefinitions="66,*">
+        <Border Background="{StaticResource HeaderGray}" HorizontalAlignment="Stretch">
+            <TextBlock Text="Manual editor"
+                       Margin="18"
+                       Classes="header"
+                       VerticalAlignment="Center" />
+        </Border>
+        <UniformGrid Grid.Row="1" x:Name="CardGrid" Columns="2">
+            <Button Classes="card" CornerRadius="0" x:Name="AddButton">
+                <Border>
+                    <StackPanel Orientation="Vertical"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="12">
+                        <PathIcon Data="{StaticResource Add}"
+                                  Width="64"
+                                  Height="64" />
+                        <TextBlock Text="Create new sheet"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Button>
+            <Grid>
+                <Button Classes="card" CornerRadius="0" x:Name="EditButton">
+                    <Border>
+                        <StackPanel Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="12">
+                            <PathIcon Data="{StaticResource LibraryIcon}"
+                                      Width="64"
+                                      Height="64" />
+                            <TextBlock Text="Edit an existing sheet"
+                                       FontSize="22"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </Button>
+                <Grid RowDefinitions="Auto,*" x:Name="SheetChooserStackPanel">
+                    <Border Height="66" Background="{StaticResource HeaderGray}">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="CancelSheetChoosingButton" Height="66" Width="41"
+                                    Background="{StaticResource HeaderGray}">
+                                <PathIcon Data="{StaticResource ArrowLeft}" />
+                            </Button>
+                            <TextBlock Text="Choose a sheet to edit"
+                                       Classes="header"
+                                       HorizontalAlignment="Center"
+                                       FontFamily="{StaticResource NunitoFont}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <ListBox Grid.Row="1" x:Name="SheetListBox" SelectionChanged="SheetListBox_OnSelectionChanged"
+                             VerticalAlignment="Stretch"
+                             HorizontalAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="models:Sheet">
+                                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
+                                    <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                              Data="{StaticResource music}"
+                                              Width="30"
+                                              Height="30"
+                                              Margin="5,0,20,0"
+                                              Foreground="#444444" />
+                                    <StackPanel Grid.Row="0" Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                Margin="0,0,0,4">
+                                        <TextBlock Text="Name: "
+                                                   FontWeight="SemiBold"
+                                                   Opacity="0.8" />
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontWeight="SemiBold"
+                                                   MaxWidth="320"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                Margin="0,4,0,4">
+                                        <TextBlock Text="Description: "
+                                                   FontWeight="SemiBold"
+                                                   Opacity="0.8" />
+                                        <TextBlock Text="{Binding Description}"
+                                                   MaxWidth="800"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+
+            </Grid>
+        </UniformGrid>
+        <views:ManualEditorView Grid.Row="0" Grid.RowSpan="2" x:Name="EditorView" />
+    </Grid>
+</reactiveUi:ReactiveUserControl>

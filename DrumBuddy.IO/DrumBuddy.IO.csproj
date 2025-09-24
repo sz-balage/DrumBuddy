@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.1.66" />
-        <PackageReference Include="ManagedBass" Version="4.0.1" />
-        <PackageReference Include="RtMidi.Core" Version="1.0.53"/>
-        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
-        <PackageReference Include="System.Management" Version="9.0.9" />
-        <PackageReference Include="System.Reactive" Version="6.0.2" />
+        <PackageReference Include="Dapper"/>
+        <PackageReference Include="ManagedBass"/>
+        <PackageReference Include="RtMidi.Core"/>
+        <PackageReference Include="System.Data.SQLite.Core"/>
+        <PackageReference Include="System.Management"/>
+        <PackageReference Include="System.Reactive"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,0 +1,103 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="Assets\Fonts\Nunito-Black.ttf" />
+        <None Remove="Assets\Fonts\Nunito-BlackItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Bold.ttf" />
+        <None Remove="Assets\Fonts\Nunito-BoldItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-ExtraBold.ttf" />
+        <None Remove="Assets\Fonts\Nunito-ExtraBoldItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-ExtraLight.ttf" />
+        <None Remove="Assets\Fonts\Nunito-ExtraLightItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Italic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Light.ttf" />
+        <None Remove="Assets\Fonts\Nunito-LightItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Medium.ttf" />
+        <None Remove="Assets\Fonts\Nunito-MediumItalic.ttf" />
+        <None Remove="Assets\Fonts\Nunito-Regular.ttf" />
+        <None Remove="Assets\Fonts\Nunito-SemiBold.ttf" />
+        <None Remove="Assets\Fonts\Nunito-SemiBoldItalic.ttf" />
+        <None Remove="Assets\snare-icon.jpg" />
+        <None Remove="Assets\window.icon.png" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="Assets\metronomeup.wav">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Assets\metronome.wav">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Black.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-BlackItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Bold.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-BoldItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraBold.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraBoldItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraLight.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-ExtraLightItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Italic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Light.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-LightItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Medium.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-MediumItalic.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-Regular.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-SemiBold.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Nunito-SemiBoldItalic.ttf" />
+        <AvaloniaResource Include="Assets\metronomeup.wav"/>
+        <AvaloniaResource Include="Assets\metronome.wav"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Desktop"/>
+        <PackageReference Include="Avalonia.ReactiveUI"/>
+        <PackageReference Include="Avalonia.Themes.Fluent"/>
+        <PackageReference Include="Avalonia.Fonts.Inter"/>
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics"/>
+        <PackageReference Include="Deadpikle.AvaloniaProgressRing"/>
+        <PackageReference Include="PdfSharpCore"/>
+        <PackageReference Include="Projektanker.Icons.Avalonia"/>
+        <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome"/>
+        <PackageReference Include="ReactiveMarbles.ObservableEvents.SourceGenerator"/>
+        <PackageReference Include="ReactiveUI"/>
+        <PackageReference Include="ReactiveUI.SourceGenerators">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Validation"/>
+        <PackageReference Include="System.Windows.Extensions"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj" />
+        <ProjectReference Include="..\DrumBuddy.IO\DrumBuddy.IO.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Assets\snare-icon.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Assets\Notation\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="appsettings.json" />
+      <None Remove="sheet_db.db" />
+      <Content Include="sheet_db.db">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+</Project>

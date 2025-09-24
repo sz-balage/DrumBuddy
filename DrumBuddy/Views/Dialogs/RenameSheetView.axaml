@@ -1,0 +1,54 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="DrumBuddy.Views.Dialogs.RenameSheetView"
+        xmlns:dialogVm="clr-namespace:DrumBuddy.ViewModels.Dialogs"
+        Title="Rename Drum Sheet"
+        Width="450" Height="340"
+        WindowStartupLocation="CenterOwner"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaToDecorationsHint="True"
+        CanResize="False"
+        x:DataType="dialogVm:RenameSheetViewModel">
+    <Window.Styles>
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
+    </Window.Styles>
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="20">
+        <TextBlock Grid.Row="0"
+                   x:Name="OriginalNameTB"
+                   MaxWidth="320"
+                   HorizontalAlignment="Left"
+                   TextTrimming="CharacterEllipsis"
+                   Classes="dialog-title" />
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="New Title" Classes="label" />
+            <TextBox Watermark="Enter the new title" x:Name="NewNameTB" />
+            <TextBlock x:Name="NewNameValidation" Foreground="{StaticResource Error}" />
+        </StackPanel>
+        <StackPanel Grid.Row="2">
+            <TextBlock Text="New Description" Classes="label" />
+            <TextBox x:Name="DescriptionTb" Watermark="Enter sheet description"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Height="80" />
+        </StackPanel>
+        <Grid Grid.Row="3" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Content="Cancel"
+                    Classes="button"
+                    x:Name="Cancel" />
+            <Button Grid.Column="2"
+                    Classes="button confirm"
+                    Content="Rename"
+                    x:Name="Save" />
+        </Grid>
+    </Grid>
+</Window>

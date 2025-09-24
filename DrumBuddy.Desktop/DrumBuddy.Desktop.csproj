@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Desktop"/>
+        <PackageReference Include="Avalonia.ReactiveUI"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj"/>
+        <ProjectReference Include="..\DrumBuddy.IO\DrumBuddy.IO.csproj"/>
+        <ProjectReference Include="..\DrumBuddy\DrumBuddy.csproj"/>
+    </ItemGroup>
+</Project>
