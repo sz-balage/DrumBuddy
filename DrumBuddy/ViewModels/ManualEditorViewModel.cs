@@ -224,21 +224,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         CurrentMeasureIndex = index;
     }
 
-    public void LoadMatrix(bool[,] matrix)
-    {
-        if (matrix.GetLength(0) != Drums.Length || matrix.GetLength(1) != Columns)
-            throw new ArgumentException("Matrix size must be [drums x 16].");
-
-        if (CurrentMeasureIndex >= 0 && CurrentMeasureIndex < _measureSteps.Count)
-        {
-            Array.Clear(_measureSteps[CurrentMeasureIndex], 0, _measureSteps[CurrentMeasureIndex].Length);
-            Array.Copy(matrix, _measureSteps[CurrentMeasureIndex], matrix.Length);
-        }
-
-        CurrentSheet = BuildSheet();
-        DrawSheet();
-    }
-
     public void LoadSheet(Sheet sheet)
     {
         _measureSteps.Clear();
@@ -280,6 +265,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         BpmDecimal = sheet.Tempo.Value;
         CurrentSheet = BuildSheet();
         DrawSheet();
+        IsSaved = true;
     }
 
     private Sheet BuildSheet()
