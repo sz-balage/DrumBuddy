@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Client.Services;
 using DrumBuddy.Client.ViewModels.HelperViewModels;
@@ -16,6 +17,7 @@ using DrumBuddy.IO.Abstractions;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using Splat;
 
 namespace DrumBuddy.Client.ViewModels;
 
@@ -52,13 +54,12 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
-    private NotificationManager _notificationManager;
-
-    public ManualEditorViewModel(IScreen host, ISheetStorage sheetStorage, NotificationManager notificationManager,
+    private NotificationService _notificationService;
+    public ManualEditorViewModel(IScreen host, ISheetStorage sheetStorage, NotificationService notificationService,
         Func<Task> onClose)
     {
         _sheetStorage = sheetStorage;
-        _notificationManager = notificationManager;
+        _notificationService = notificationService;
         HostScreen = host;
         UrlPathSegment = "manual-editor";
         _measureSource.Connect()
@@ -174,6 +175,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     [ReactiveCommand]
     private async Task Save()
     {
+        if(IsSaved) return;
         if (Name is null)
         {
             var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm,
@@ -186,8 +188,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         {
             await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
         }
-
-        _notificationManager.ShowSuccessNotification($"The sheet {Name} successfully saved.");
+        _notificationService.ShowNotification($"The sheet {Name} successfully saved.", NotificationType.Success);
         IsSaved = true;
     }
 

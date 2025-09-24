@@ -1,4 +1,5 @@
 <rxui:ReactiveWindow x:TypeArguments="vm:MainViewModel"
+                     x:DataType="vm:MainViewModel"
                      xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,14 +11,10 @@
                      MinHeight="500"
                      MinWidth="1250"
                      xmlns:models="clr-namespace:DrumBuddy.Client.Models"
+                     xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="DrumBuddy.Client.Views.MainWindow"
                      Title="DrumBuddy">
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
-    </Design.DataContext>
     <Window.Styles>
         <StyleInclude Source="/Styles/AppStyles.axaml" />
         <Style Selector="Button.Retry:disabled">
@@ -46,13 +43,6 @@
                 </Button>
             </StackPanel>
         </Border>
-        <Grid x:Name="Connected" x:DataType="vm:MainViewModel"
-              Background="{StaticResource AppGreen}"
-              IsVisible="{Binding ConnectedSucc}">
-            <Label HorizontalAlignment="Center">
-                A MIDI device was connected successfully.
-            </Label>
-        </Grid>
         <SplitView x:Name="SplitView" Grid.Row="1"
                    OpenPaneLength="200"
                    CompactPaneLength="50"
@@ -93,49 +83,10 @@
                 </Border>
             </SplitView.Content>
         </SplitView>
-        <Border Grid.Row="1" 
-                x:Name="ErrorBorder" 
-                IsVisible="False"
-                BorderThickness="2"
-                Background="{StaticResource Error}"
-                CornerRadius="10"
-                Padding="15"
-                Margin="20"
-                Width="300"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom">
-            <TextBlock x:Name="ErrorMessage"
-                       Foreground="Black"
-                       FontFamily="{StaticResource NunitoFont}"
-                       FontWeight="SemiBold"
-                       FontSize="16"
-                       TextWrapping="Wrap" />
-        </Border>  
-        <Border Grid.Row="1"
-                IsVisible="False"
-                x:Name="SuccessBorder"
-                Background="{StaticResource Primary}"
-                CornerRadius="10"
-                Padding="15"
-                Margin="20"
-                Width="300"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom">
-            <Grid ColumnDefinitions="*,Auto">
-                <TextBlock x:Name="SuccessMessage"
-                           Foreground="Black"
-                           FontFamily="{StaticResource NunitoFont}"
-                           FontWeight="SemiBold"
-                           FontSize="16"
-                           TextWrapping="Wrap"
-                           MaxWidth="260"
-                           VerticalAlignment="Center"
-                           Margin="0,0,10,0" />
-                <PathIcon Data="{StaticResource Checkmark}"
-                          Grid.Column="1"
-                          VerticalAlignment="Center"
-                          Margin="0,0,0,2" />
-            </Grid>
-        </Border>
+        <Grid x:Name="NotificationPlaceholder"
+              Grid.Row="1"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Bottom"
+              Margin="20"></Grid>
     </Grid>
 </rxui:ReactiveWindow>

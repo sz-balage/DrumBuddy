@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:helperViewModels="clr-namespace:DrumBuddy.Client.ViewModels.HelperViewModels"
+             xmlns:helperViews="clr-namespace:DrumBuddy.Client.Views.HelperViews"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="helperViewModels:NotificationHostViewModel"
+             x:Class="DrumBuddy.Client.Views.HelperViews.NotificationHost">
+    <ItemsControl ItemsSource="{Binding ActiveNotifications}">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Border Margin="0,0,0,10"
+                        Padding="10"
+                        CornerRadius="8"
+                        Width="340"
+                        Background="{StaticResource HeaderGray}"
+                        BorderBrush="LightSlateGray"
+                        BorderThickness="2">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <PathIcon Data="{Binding Icon}"
+                                      VerticalAlignment="Center"
+                                      Foreground="{Binding Foreground}"/>
+                            <TextBlock Text="{Binding Message}"
+                                       Margin="10,1,0,0"
+                                       Foreground="Black"
+                                       TextWrapping="Wrap"
+                                       MaxWidth="260"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                Content="✕"
+                                Command="{Binding $parent[helperViews:NotificationHost].((helperViewModels:NotificationHostViewModel)DataContext).DismissCommand}"
+                                CommandParameter="{Binding}" 
+                                Background="Transparent"
+                                BorderThickness="0"
+                                FontSize="14"
+                                Foreground="Black"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"/>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel VerticalAlignment="Bottom"
+                            HorizontalAlignment="Right"
+                            Margin="0,0,10,10"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+    </ItemsControl>
+</UserControl>

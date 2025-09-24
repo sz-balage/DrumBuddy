@@ -7,6 +7,8 @@ using System.Threading;
 using Avalonia.Threading;
 using DrumBuddy.Client.Extensions;
 using DrumBuddy.Client.Models;
+using DrumBuddy.Client.Services;
+using DrumBuddy.Client.ViewModels.HelperViewModels;
 using DrumBuddy.IO.Abstractions;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -17,30 +19,29 @@ namespace DrumBuddy.Client.ViewModels;
 public partial class MainViewModel : ReactiveObject, IScreen
 {
     private readonly IMidiService _midiService;
+    private readonly NotificationService _notificationService;
     private IDisposable? _successNotificationSub;
     private IDisposable? _successfulConnectionSub;
     private IDisposable? _connectionErrorSub;
-    [Reactive] private bool _connectedSucc;
 
     [Reactive] private string _successMessage;
-    [Reactive] private string _errorMessage;
 
     [Reactive] private bool _isPaneOpen;
+    [Reactive] private bool _canRetry;
     [Reactive] private bool _noConnection;
 
     [Reactive] private NavigationMenuItemTemplate _selectedPaneItem;
-
-    public MainViewModel(IMidiService midiService)
+    public MainViewModel(IMidiService midiService, NotificationService notificationService)
     {
         _midiService = midiService;
+        _notificationService = notificationService;
         _midiService!.InputDeviceDisconnected
             .Subscribe(connected => { NoConnection = true; });
         TryConnect();
         this.WhenAnyValue(vm => vm.SelectedPaneItem)
             .Subscribe(OnSelectedPaneItemChanged);
-        ErrorMessage = string.Empty;
+        CanRetry = true;
     }
-
     public IRoutableViewModel CurrentViewModel { get; private set; }
 
     public ObservableCollection<NavigationMenuItemTemplate> PaneItems { get; } = new()
@@ -61,34 +62,20 @@ public partial class MainViewModel : ReactiveObject, IScreen
         var navigateTo = PaneItems.Single(item => item.ModelType == viewModel.GetType());
         SelectedPaneItem = navigateTo;
     }
-
-    public void ShowSuccessToastNotification(string message)
+    private void SuccessfulConnection(string message)
     {
-        _successNotificationSub?.Dispose();
-
-        SuccessMessage = message;
-        _successNotificationSub = DelayedActionSubscription(() => SuccessMessage = string.Empty);
-    }
-    private void SuccessfulConnection()
-    {
-        _successfulConnectionSub?.Dispose();
         NoConnection = false;
-        ConnectedSucc = true;
-        _successfulConnectionSub = DelayedActionSubscription(() => ConnectedSucc = false);
+        _notificationService.ShowNotification(message, NotificationType.Success);
     }
 
     private void ConnectionError(string message)
     {
+        CanRetry = false;
         NoConnection = true;
-        ErrorMessage = message;
-        _connectionErrorSub = DelayedActionSubscription(() => ErrorMessage = string.Empty);
+        _notificationService.ShowNotification(message, 
+            NotificationType.Error,
+            onNotificationDismissed: () => CanRetry = true);
     }
-
-    private IDisposable DelayedActionSubscription(Action action) =>
-        Observable.Return(Unit.Default)
-            .Delay(DateTimeOffset.Now.AddSeconds(5))
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(_ => action.Invoke());
 
     private void OnSelectedPaneItemChanged(NavigationMenuItemTemplate? value)
     {
@@ -119,7 +106,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
         switch (connectionResult.IsSuccess)
         {
             case true:
-                SuccessfulConnection();
+                SuccessfulConnection(connectionResult.Message);
                 break;
             case false:
                 ConnectionError(connectionResult.Message!);

@@ -26,7 +26,7 @@ namespace DrumBuddy.Client.ViewModels;
 public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
     private readonly ConfigurationService _configService;
-    private readonly NotificationManager _notificationManager;
+    private readonly NotificationService _notificationService;
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly IMidiService _midiService;
@@ -86,14 +86,14 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         IMidiService midiService,
         ConfigurationService configService,
         ISheetStorage sheetStorage,
-        NotificationManager notificationManager,
+        NotificationService notificationService,
         MetronomePlayer metronomePlayer)
     {
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = configService;
         _sheetStorage = sheetStorage;
-        _notificationManager = notificationManager;
+        _notificationService = notificationService;
         _metronomePlayer = metronomePlayer;
 
         //binding measuresource
@@ -301,7 +301,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         ClearMeasures();
         if (dialogResult.Name != null)
         {
-            _notificationManager.ShowSuccessNotification($"The sheet {dialogResult.Name} successfully saved.");
+            _notificationService.ShowNotification($"The sheet {dialogResult.Name} successfully saved.", NotificationType.Success);
             var mainVm = HostScreen as MainViewModel;
             mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<LibraryViewModel>());
         }

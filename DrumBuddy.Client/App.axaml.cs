@@ -59,15 +59,17 @@ public class App : Application
     {
         RegisterCoreServices();
         RegisterIOServices();
-        CurrentMutable.RegisterConstant(new MainViewModel(Locator.Current.GetRequiredService<IMidiService>()));
-        CurrentMutable.RegisterConstant(new NotificationManager(Locator.Current.GetRequiredService<MainViewModel>()));
+        CurrentMutable.RegisterConstant(new NotificationService());
+        CurrentMutable.RegisterConstant(new MainViewModel(
+            Locator.Current.GetRequiredService<IMidiService>(),
+            Locator.Current.GetRequiredService<NotificationService>()));
         CurrentMutable.RegisterConstant(new PdfGenerator());
         CurrentMutable.RegisterConstant<IScreen>(Locator.Current.GetService<MainViewModel>());
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
             Locator.Current.GetRequiredService<ISheetStorage>(),
-            Locator.Current.GetRequiredService<NotificationManager>(),
+            Locator.Current.GetRequiredService<NotificationService>(),
             Locator.Current.GetRequiredService<PdfGenerator>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.RegisterConstant(
@@ -79,7 +81,7 @@ public class App : Application
                 Locator.Current.GetRequiredService<IMidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>(),
                 Locator.Current.GetRequiredService<ISheetStorage>(),
-                Locator.Current.GetRequiredService<NotificationManager>(),
+                Locator.Current.GetRequiredService<NotificationService>(),
                 Locator.Current.GetRequiredService<MetronomePlayer>()));
 
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() },

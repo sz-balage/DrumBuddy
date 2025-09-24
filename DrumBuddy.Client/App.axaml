@@ -15,6 +15,7 @@
         <Color x:Key="HeaderGray">#D6D6D6</Color>
         <Color x:Key="AppGreen">#77A690</Color>
         <Color x:Key="Error">#D62828</Color>
+        <Color x:Key="Warning">#F4E76E</Color>
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>

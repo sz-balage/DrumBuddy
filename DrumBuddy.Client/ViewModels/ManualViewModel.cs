@@ -49,7 +49,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     private void AddNewSheet()
     {
         Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<ISheetStorage>(),
-            Locator.Current.GetRequiredService<NotificationManager>(),
+            Locator.Current.GetRequiredService<NotificationService>(),
             () => OnClose()); //TODO: implement actual onclose action
         EditorVisible = true;
     }
@@ -69,7 +69,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     public void ChooseSheet(Sheet sheet)
     {
         Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<ISheetStorage>(),
-            Locator.Current.GetRequiredService<NotificationManager>(),
+            Locator.Current.GetRequiredService<NotificationService>(),
             () => OnClose()); //TODO: implement actual onclose action
         Editor.LoadSheet(sheet);
         EditorVisible = true;

@@ -8,6 +8,8 @@ using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Client.Models;
 using DrumBuddy.Client.ViewModels;
+using DrumBuddy.Client.ViewModels.HelperViewModels;
+using DrumBuddy.Client.Views.HelperViews;
 using DrumBuddy.IO.Services;
 using ReactiveUI;
 using Splat;
@@ -35,22 +37,17 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.Router, v => v.RoutedViewHost.Router)
                 .DisposeWith(d);
-            this.Bind(ViewModel, vm => vm.ErrorMessage, v => v._errorTB.Text)
-                .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.ErrorMessage, v => v._errorBorder.IsVisible,
-                    str => !string.IsNullOrEmpty(str))
-                .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.ErrorMessage, v => v.RetryButton.IsEnabled,
+            this.OneWayBind(ViewModel, vm => vm.CanRetry, v => v.RetryButton.IsEnabled,
                     string.IsNullOrEmpty)
                 .DisposeWith(d);
-            this.Bind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessMessage.Text)
-                .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessBorder.IsVisible,
-                    str => !string.IsNullOrEmpty(str))
-                .DisposeWith(d);
+            // this.Bind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessMessage.Text)
+            //     .DisposeWith(d);
+            // this.OneWayBind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessBorder.IsVisible,
+            //         str => !string.IsNullOrEmpty(str))
+            //     .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.TryConnectCommand, v => v._retryButton)
                 .DisposeWith(d);
-          
+            NotificationPlaceholder.Children.Add(new NotificationHost() { ViewModel = new NotificationHostViewModel()});
             Closing += async (_, e) =>
             {
                 if (isClosingConfirmed)
@@ -77,7 +74,5 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
     }
 
     private RoutedViewHost _routedViewHost => this.FindControl<RoutedViewHost>("RoutedViewHost");
-    private TextBlock _errorTB => this.FindControl<TextBlock>("ErrorMessage");
     private Button _retryButton => this.FindControl<Button>("RetryButton");
-    private Border _errorBorder => this.FindControl<Border>("ErrorBorder");
 }

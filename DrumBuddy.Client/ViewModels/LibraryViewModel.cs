@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using DrumBuddy.Client.Extensions;
+using DrumBuddy.Client.Models;
 using DrumBuddy.Client.Services;
 using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Abstractions;
@@ -24,12 +25,12 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private readonly IObservable<bool> _removeCanExecute;
 
     [Reactive] private Sheet _selectedSheet;
-    private readonly NotificationManager _notificationManager;
+    private readonly NotificationService _notificationService;
 
-    public LibraryViewModel(IScreen hostScreen, ISheetStorage sheetStorage, NotificationManager notificationManager,
+    public LibraryViewModel(IScreen hostScreen, ISheetStorage sheetStorage, NotificationService notificationService,
         PdfGenerator pdfGenerator)
     {
-        _notificationManager = notificationManager;
+        _notificationService = notificationService;
         _pdfGenerator = pdfGenerator;
         HostScreen = hostScreen;
         _sheetStorage = sheetStorage;
@@ -110,7 +111,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         {
             await _sheetStorage.UpdateSheetAsync(editResult);
             _sheetSource.AddOrUpdate(editResult);
-            _notificationManager.ShowSuccessNotification($"The sheet {editResult.Name} successfully saved.");
+            _notificationService.ShowNotification($"The sheet {editResult.Name} successfully saved.", NotificationType.Success);
         }
     }
 

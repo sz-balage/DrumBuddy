@@ -33,8 +33,7 @@ public class MidiService : IMidiService
         _device = devices.First().CreateDevice();
         _device.NoteOn += OnNoteOn;
         _device.Open();
-
-        return new MidiDeviceConnectionResult(true, null);
+        return new MidiDeviceConnectionResult(true, $"{_device.Name} connected successfully.");
     }
 
     public bool IsConnected
