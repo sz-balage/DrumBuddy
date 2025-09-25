@@ -121,5 +121,10 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+        <Grid x:Name="NotificationPlaceholder"
+              Grid.Row="1"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Bottom"
+              Margin="20" />
     </Grid>
 </rxui:ReactiveWindow>

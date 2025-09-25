@@ -9,6 +9,7 @@
                      xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
                      MinHeight="500"
                      MinWidth="1250"
+                     WindowState="Maximized"
                      xmlns:models="clr-namespace:DrumBuddy.Models"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="DrumBuddy.Views.MainWindow"

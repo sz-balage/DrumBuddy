@@ -14,6 +14,7 @@ using DrumBuddy.Extensions;
 using DrumBuddy.IO;
 using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
+using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.HelperViewModels;
 using DrumBuddy.Views.HelperViews;
@@ -35,6 +36,7 @@ public partial class EditingViewModel : ReactiveObject
     private readonly MetronomePlayer _metronomePlayer;
     private readonly IMidiService _midiService;
     private readonly PdfGenerator _pdfGenerator;
+    private readonly NotificationService _notificationService;
     public readonly Sheet OriginalSheet;
     private Bpm _bpm;
     [Reactive] private decimal _bpmDecimal;
@@ -72,6 +74,7 @@ public partial class EditingViewModel : ReactiveObject
         IsViewOnly = isViewOnly;
         //init sound players
         _metronomePlayer = Locator.Current.GetRequiredService<MetronomePlayer>();
+        _notificationService = Locator.Current.GetRequiredService<NotificationService>();
         //binding measuresource
         _measureSource.Connect()
             .Bind(out _measures)
@@ -106,9 +109,6 @@ public partial class EditingViewModel : ReactiveObject
 
     public IObservable<int> KeyboardBeats { get; set; }
     public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
-    public string? UrlPathSegment { get; } = "recording-view";
-    public IScreen HostScreen { get; }
-
     public IObservable<bool> CanNavigate => this.WhenAnyValue(
         vm => vm.IsRecording,
         recording => !recording);
@@ -120,10 +120,11 @@ public partial class EditingViewModel : ReactiveObject
         {
             await _pdfGenerator.ExportSheetToPdf(measures, OriginalSheet.Name, OriginalSheet.Description,
                 OriginalSheet.Tempo);
+            _notificationService.ShowNotification($"{OriginalSheet.Name} exported successfully.",NotificationType.Success);
         }
         catch (Exception e)
         {
-            Console.WriteLine($"PDF export failed: {e.Message}");
+            _notificationService.ShowNotification("Error while exporting sheet: " + e.Message,NotificationType.Error);
         }
         finally
         {
@@ -287,10 +288,15 @@ public partial class EditingViewModel : ReactiveObject
         _subs.Dispose();
         _timer.Stop();
         ResetPointer();
-        //do something with the done sheet
         IsRecording = false;
         TimeElapsed = "0:0:0";
         _firstMeasurePassedCount = 0;
+
+        var recordedCount = Measures.Count(m => !m.IsEmpty);
+        if (recordedCount > 0)
+            _notificationService.ShowNotification($"Recording stopped. Captured {recordedCount} measure(s).", NotificationType.Info);
+        else
+            _notificationService.ShowNotification("Recording stopped. No notes captured.", NotificationType.Warning);
     }
 
     private void ResetPointer()

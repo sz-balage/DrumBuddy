@@ -13,6 +13,7 @@ using DrumBuddy.Core.Enums;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Models;
 using DrumBuddy.ViewModels.Dialogs;
+using DrumBuddy.ViewModels.HelperViewModels;
 using DrumBuddy.Views.HelperViews;
 using ReactiveUI;
 using Splat;
@@ -33,6 +34,8 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
             this.OneWayBind(ViewModel, vm => vm.IsExporting, v => v.ExportTextBlock.Text, isExporting =>
                     isExporting ? "Exporting..." : "Export to pdf")
                 .DisposeWith(d);
+            NotificationPlaceholder.Children.Add(new NotificationHost
+                { ViewModel = new NotificationHostViewModel() });
             //editing stuff
             if (!ViewModel.IsViewOnly)
             {

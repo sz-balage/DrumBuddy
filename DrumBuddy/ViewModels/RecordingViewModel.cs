@@ -296,11 +296,16 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         TimeElapsed = "0:0:0";
 
         var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
+        ClearMeasures();
+        if (measures.Count == 0)
+        {
+            _notificationService.ShowNotification("Recording stopped. No notes captured.", NotificationType.Warning);
+            return;
+        }
         //ask user if sheet should be saved
         var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm, [..measures]));
         // if (save is not null)
         //     await _library.SaveSheet(new Sheet(_bpm, measures, save));
-        ClearMeasures();
         if (dialogResult.Name != null)
         {
             _notificationService.ShowNotification($"The sheet {dialogResult.Name} successfully saved.",
