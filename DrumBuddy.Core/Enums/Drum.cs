@@ -9,6 +9,9 @@ public enum Drum
     Tom1 = 48,
     Ride = 51,
     HiHat = 42,
-    Crash = 49,
+    HiHat_Open = 46,
+    HiHat_Pedal = 44,
+    Crash1 = 49,
+    Crash2 = 57,
     Rest
 }

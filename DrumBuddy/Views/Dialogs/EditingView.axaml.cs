@@ -12,6 +12,7 @@ using Avalonia.VisualTree;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Models;
+using DrumBuddy.Services;
 using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.ViewModels.HelperViewModels;
 using DrumBuddy.Views.HelperViews;
@@ -60,18 +61,7 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                     .DisposeWith(d);
                 ViewModel!.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
                     .Select(ep => ep.EventArgs as KeyEventArgs)
-                    .Select(e => e.Key switch
-                    {
-                        Key.A => (int)Drum.HiHat,
-                        Key.S => (int)Drum.Snare,
-                        Key.D => (int)Drum.Kick,
-                        Key.F => (int)Drum.FloorTom,
-                        Key.Q => (int)Drum.Crash,
-                        Key.W => (int)Drum.Tom1,
-                        Key.E => (int)Drum.Tom2,
-                        Key.R => (int)Drum.Ride,
-                        _ => -2
-                    });
+                    .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
                 ViewModel!.StopRecordingCommand.ThrownExceptions.Subscribe(ex => Debug.WriteLine(ex.Message));
                 ViewModel.WhenAnyValue(vm => vm.CurrentMeasure).Subscribe(measure =>
                 {

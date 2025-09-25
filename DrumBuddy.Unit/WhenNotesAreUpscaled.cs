@@ -11,7 +11,7 @@ public class WhenNotesAreUpscaled
     [InlineData(Drum.Snare)]
     [InlineData(Drum.Kick)]
     [InlineData(Drum.HiHat)]
-    [InlineData(Drum.Crash)]
+    [InlineData(Drum.Crash1)]
     [InlineData(Drum.Ride)]
     [InlineData(Drum.Tom1)]
     [InlineData(Drum.Tom2)]

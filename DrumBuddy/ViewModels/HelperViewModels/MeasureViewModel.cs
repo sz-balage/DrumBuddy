@@ -11,7 +11,7 @@ namespace DrumBuddy.ViewModels.HelperViewModels;
 
 public partial class MeasureViewModel : ReactiveObject
 {
-    [Reactive] private double _height = 190;
+    [Reactive] private double _height = 200;
     [Reactive] private bool _isPointerVisible;
     private double _pointerPosition = -1;
 

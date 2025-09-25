@@ -83,7 +83,9 @@ public class NoteDrawHelper
             Drum.Tom2 => 15, // on line 4
             Drum.Ride => -5, // on line 5
             Drum.HiHat => -15, // above line 5 (between line 5 and the invisible line 6)
-            Drum.Crash => -25, // on line 6
+            Drum.HiHat_Pedal => 90, // below line 1
+            Drum.Crash1 => -25, // on line 6
+            Drum.Crash2 => -25, // on line 6 TODO: Modify to different line
             _ => 35
         };
     }
@@ -92,8 +94,8 @@ public class NoteDrawHelper
     {
         return note.Drum switch
         {
-            Drum.HiHat or Drum.Ride => (new Uri(BaseNotationPath + "note_head_x" + ImageExtension), NoteHeadSize),
-            Drum.Crash => (new Uri(BaseNotationPath + "note_head_x_line" + ImageExtension), NoteHeadWithLineSize),
+            Drum.HiHat or Drum.HiHat_Open or Drum.HiHat_Pedal or Drum.Ride => (new Uri(BaseNotationPath + "note_head_x" + ImageExtension), NoteHeadSize),
+            Drum.Crash1 or Drum.Crash2 => (new Uri(BaseNotationPath + "note_head_x_line" + ImageExtension), NoteHeadWithLineSize),
             Drum.Rest => note.Value switch
             {
                 NoteValue.Quarter => (new Uri(BaseNotationPath + "quarter_rest" + ImageExtension),
@@ -104,7 +106,7 @@ public class NoteDrawHelper
             _ => (new Uri(BaseNotationPath + "note_head" + ImageExtension), NoteHeadSize)
         };
     }
-
+    
     private static (Uri Path, Size ImageSize) GetCircleImagePathAndSize()
     {
         return (new Uri(BaseNotationPath + "circle" + ".png"), CircleSize);
@@ -119,7 +121,6 @@ public class NoteDrawHelper
             _ => noteGroupWidth
         };
     }
-
     /// <summary>
     ///     Generates lines and note images for the given rythmic group.
     /// </summary>
@@ -137,6 +138,7 @@ public class NoteDrawHelper
         var highestY = rythmicGroup.NoteGroups.Select(ng => ng.Select(n => GetYPositionForDrum(n.Drum)).Min()).Min();
         var linesAndStrokes = new List<LineAndStroke>();
         var images = new List<NoteImageAndBounds>();
+        var openHihatIndicators = new List<NoteImageAndBounds>();
         var noteGroups = rythmicGroup.NoteGroups;
         var x = _startingXPos;
         for (var i = 0; i < noteGroups.Length; i++)
@@ -175,6 +177,11 @@ public class NoteDrawHelper
                 if (j == 1 && AreOneDrumAway(note.Drum, noteGroup[0].Drum))
                     point = point.WithX(x + NoteHeadSize.Width);
                 var noteImage = getNoteImage(note, point);
+                if (note.Drum == Drum.HiHat_Open)
+                {
+                    var openHihatIndicator = GetCircleForHiHatOpen(point, note);
+                    openHihatIndicators.Add(openHihatIndicator);
+                }
                 images.Add(noteImage);
             }
 
@@ -256,7 +263,16 @@ public class NoteDrawHelper
             }
         }
 
+        images.AddRange(openHihatIndicators);
         return ([..images], [..linesAndStrokes]);
+    }
+
+    private NoteImageAndBounds GetCircleForHiHatOpen(Point point, Note note)
+    {
+        (Uri Path, Size ImageSize) noteHeadPathAndSize = new (new Uri(BaseNotationPath + "circle_open" + ImageExtension), CircleSize);
+        var noteImage = new NoteImageAndBounds(noteHeadPathAndSize.Path,
+            new Rect(point.WithY(point.Y-120), noteHeadPathAndSize.ImageSize));
+        return noteImage;
     }
 
     public (ImmutableArray<NoteImageAndBounds> Images, ImmutableArray<LineAndStroke> LineAndStrokes)
