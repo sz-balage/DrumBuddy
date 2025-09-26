@@ -5,7 +5,10 @@ using System.Linq;
 using Avalonia;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
+using DrumBuddy.Extensions;
+using DrumBuddy.IO;
 using DrumBuddy.Models;
+using Splat;
 using Note = DrumBuddy.Core.Models.Note;
 
 namespace DrumBuddy.Services;
@@ -30,9 +33,10 @@ public class NoteDrawHelper
     private readonly double _canvasWidth;
     private readonly double _noteGroupWidth;
     private readonly double _startingXPos;
-
+    private ConfigurationService _configurationService;
     public NoteDrawHelper(double canvasWidth, double canvasHeight)
     {
+        _configurationService = Locator.Current.GetRequiredService<ConfigurationService>();
         _canvasWidth = canvasWidth;
         _canvasHeight = canvasHeight;
         _startingXPos =
@@ -51,7 +55,7 @@ public class NoteDrawHelper
         return coordinateY + _canvasHeight / 2;
     }
 
-    private static bool AreOneDrumAway(Drum drum, Drum otherDrum)
+    private bool AreOneDrumAway(Drum drum, Drum otherDrum)
     {
         return Math.Abs(GetYPositionForDrum(drum) - GetYPositionForDrum(otherDrum)) == NoteHeadSize.Height / 2;
     }
@@ -72,22 +76,12 @@ public class NoteDrawHelper
     /// </summary>
     /// <param name="drum">Drum to be drawn.</param>
     /// <returns></returns>
-    private static double GetYPositionForDrum(Drum drum)
+
+    private double GetYPositionForDrum(Drum drum)
     {
-        return drum switch
-        {
-            Drum.Kick => 60, // between line 1 and 2
-            Drum.Snare => 20, // between line 3 and 4
-            Drum.FloorTom => 40, // between line 2 and 3
-            Drum.Tom1 => 0, // between line 4 and 5
-            Drum.Tom2 => 10, // on line 4
-            Drum.Ride => -10, // on line 5
-            Drum.HiHat => -20, // above line 5 (between line 5 and the invisible line 6)
-            Drum.HiHat_Pedal => 85, // below line 1
-            Drum.Crash1 => -30, // on line 6
-            Drum.Crash2 => -30, // on line 6 TODO: Modify to different line
-            _ => 30
-        };
+        return _configurationService.DrumPositions.TryGetValue(drum, out var pos)
+            ? pos
+            : 30; // fallback
     }
 
     private static (Uri Path, Size ImageSize) NoteHeadImagePathAndSize(Note note)

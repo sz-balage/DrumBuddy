@@ -12,16 +12,27 @@ public class ConfigurationService
     private readonly FileConfigurationStorage _storage;
     private readonly Dictionary<Drum, int> _mapping = new();
     private readonly BehaviorSubject<Drum?> _listeningDrum = new(null);
+    private readonly Dictionary<Drum, double> _drumPositions = new();
+
+    public IReadOnlyDictionary<Drum, double> DrumPositions => _drumPositions;
 
     public ConfigurationService(FileConfigurationStorage storage)
     {
-        
         _storage = storage;
         _mapping = _storage.LoadConfig();
-        if (_mapping.Count != 0) return;
-        foreach (var drum in Enum.GetValues<Drum>())
-            if (drum != Drum.Rest)
-                _mapping[drum] = (int)drum;
+        if (_mapping.Count == 0)
+        {
+            foreach (var drum in Enum.GetValues<Drum>())
+                if (drum != Drum.Rest)
+                    _mapping[drum] = (int)drum;
+        }
+        _drumPositions = _storage.LoadDrumPositions();
+        if (_drumPositions.Count != 0) return;
+        {
+            foreach (var drum in Enum.GetValues<Drum>())
+                if (drum != Drum.Rest)
+                    _drumPositions[drum] = DefaultYPosition(drum);
+        }
     }
 
     public bool IsKeyboardEnabled { get; set; }
@@ -34,7 +45,27 @@ public class ConfigurationService
     }
 
     public IObservable<Drum?> ListeningDrumChanged => _listeningDrum.AsObservable();
+    public void UpdateDrumPosition(Drum drum, double newY)
+    {
+        if (drum == Drum.HiHat_Open) return; // cannot change hihat open position
+        _drumPositions[drum] = newY;
+        _storage.SaveDrumPositions(_drumPositions);
+    }
 
+    private static double DefaultYPosition(Drum drum) => drum switch
+    {
+        Drum.Kick => 60,
+        Drum.Snare => 20,
+        Drum.FloorTom => 40,
+        Drum.Tom1 => 0,
+        Drum.Tom2 => 10,
+        Drum.Ride => -10,
+        Drum.HiHat => -20,
+        Drum.HiHat_Pedal => 85,
+        Drum.Crash1 => -30,
+        Drum.Crash2 => -30,
+        _ => 30
+    };
     public void StartListening(Drum drum)
     {
         ListeningDrum = drum;

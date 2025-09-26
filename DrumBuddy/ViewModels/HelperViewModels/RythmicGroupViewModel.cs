@@ -27,11 +27,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
         RythmicGroup = rg;
         _drawHelper = new NoteDrawHelper(Width, hostScreenHeight);
         this.WhenAnyValue(x => x.RythmicGroup)
-            .Subscribe(rythmicGroup =>
-            {
-                _drawHelper = new NoteDrawHelper(Width, hostScreenHeight);
-                DrawNotes(rythmicGroup); 
-            });
+            .Subscribe(DrawNotes);
     }
 
     public ObservableCollection<LineAndStroke> LinesCollection { get; } = new();

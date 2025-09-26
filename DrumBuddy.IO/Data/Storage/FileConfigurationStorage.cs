@@ -39,4 +39,13 @@ public class FileConfigurationStorage
             return new();
         return _serializationService.DeserializeDrumMappingData(File.ReadAllText(path)) ?? new();
     }
+    public Dictionary<Drum, double> LoadDrumPositions()
+    {
+        return new();
+    }
+    public void SaveDrumPositions(Dictionary<Drum, double> drumPositions)
+    {
+    }
+
+  
 }
