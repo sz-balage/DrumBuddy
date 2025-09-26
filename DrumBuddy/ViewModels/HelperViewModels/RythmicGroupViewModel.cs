@@ -17,14 +17,12 @@ namespace DrumBuddy.ViewModels.HelperViewModels;
 
 public partial class RythmicGroupViewModel : ReactiveObject
 {
-    private static int _counter;
     private NoteDrawHelper _drawHelper;
     [Reactive] private RythmicGroup _rythmicGroup;
     [Reactive] private double _width;
 
     public RythmicGroupViewModel(RythmicGroup rg, double hostScreenWidth, double hostScreenHeight)
     {
-        //TODO: look at buggy note rendering when editing
         Width = hostScreenWidth / 4;
         RythmicGroup = rg;
         _drawHelper = new NoteDrawHelper(Width, hostScreenHeight);
@@ -32,29 +30,7 @@ public partial class RythmicGroupViewModel : ReactiveObject
             .Subscribe(rythmicGroup =>
             {
                 _drawHelper = new NoteDrawHelper(Width, hostScreenHeight);
-                var hihatNote = new Note(Drum.HiHat, NoteValue.Sixteenth);
-                var snareNote = new Note(Drum.Snare, NoteValue.Sixteenth);
-                var kickNote = new Note(Drum.Kick, NoteValue.Sixteenth);
-                var tom1Note = new Note(Drum.Tom1, NoteValue.Sixteenth);
-                var tom2Note = new Note(Drum.Tom2, NoteValue.Sixteenth);
-                var sixteenthRest = new Note(Drum.Rest, NoteValue.Sixteenth);
-                var eighthRest = new Note(Drum.Rest, NoteValue.Eighth);
-                var quarterRest = new Note(Drum.Rest, NoteValue.Quarter);
-                List<NoteGroup> noteGroupsWithKick =
-                [
-                    new([kickNote with { Value = NoteValue.Eighth }, hihatNote with { Value = NoteValue.Eighth }]),
-                    new([hihatNote with { Value = NoteValue.Eighth }])
-                ];
-                List<NoteGroup> noteGroupsWithSnare =
-                [
-                    new([snareNote with { Value = NoteValue.Eighth }, hihatNote with { Value = NoteValue.Eighth }]),
-                    new([hihatNote with { Value = NoteValue.Eighth }])
-                ];
-                var testRythmicGroup = new RythmicGroup([..noteGroupsWithKick]);
-                if (_counter % 2 != 0)
-                    testRythmicGroup = new RythmicGroup([..noteGroupsWithSnare]);
-                DrawNotes(rythmicGroup); //modify to rythmicGroup
-                _counter++;
+                DrawNotes(rythmicGroup); 
             });
     }
 
