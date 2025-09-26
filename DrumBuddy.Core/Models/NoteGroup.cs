@@ -7,7 +7,7 @@ namespace DrumBuddy.Core.Models;
 /// </summary>
 public class NoteGroup : List<Note>
 {
-    private const int MaxSize = 3;
+    private const int MaxSize = 4;
 
     public NoteGroup()
     {

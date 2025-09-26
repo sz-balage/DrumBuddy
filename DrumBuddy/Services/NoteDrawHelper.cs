@@ -76,17 +76,17 @@ public class NoteDrawHelper
     {
         return drum switch
         {
-            Drum.Kick => 65, // between line 1 and 2
-            Drum.Snare => 25, // between line 3 and 4
-            Drum.FloorTom => 45, // between line 2 and 3
-            Drum.Tom1 => 5, // between line 4 and 5
-            Drum.Tom2 => 15, // on line 4
-            Drum.Ride => -5, // on line 5
-            Drum.HiHat => -15, // above line 5 (between line 5 and the invisible line 6)
-            Drum.HiHat_Pedal => 90, // below line 1
-            Drum.Crash1 => -25, // on line 6
-            Drum.Crash2 => -25, // on line 6 TODO: Modify to different line
-            _ => 35
+            Drum.Kick => 60, // between line 1 and 2
+            Drum.Snare => 20, // between line 3 and 4
+            Drum.FloorTom => 40, // between line 2 and 3
+            Drum.Tom1 => 0, // between line 4 and 5
+            Drum.Tom2 => 10, // on line 4
+            Drum.Ride => -10, // on line 5
+            Drum.HiHat => -20, // above line 5 (between line 5 and the invisible line 6)
+            Drum.HiHat_Pedal => 85, // below line 1
+            Drum.Crash1 => -30, // on line 6
+            Drum.Crash2 => -30, // on line 6 TODO: Modify to different line
+            _ => 30
         };
     }
 
