@@ -2,8 +2,9 @@
 using DrumBuddy.Core.Enums;
 
 namespace DrumBuddy.Core.Models;
+
 /// <summary>
-/// Represents a group of notes that are played at the same time.
+///     Represents a group of notes that are played at the same time.
 /// </summary>
 public class NoteGroup : List<Note>
 {
@@ -20,14 +21,12 @@ public class NoteGroup : List<Note>
 
     public NoteGroup(IEnumerable<Note> notes) : base(notes)
     {
-        if (notes.Count() > MaxSize) throw new InvalidOperationException("How many limbs you got?"); 
+        if (notes.Count() > MaxSize) throw new InvalidOperationException("How many limbs you got?");
     }
 
     public NoteValue Value => this.First().Value;
-    
-    [JsonIgnore]
 
-    public bool IsRest => Count == 0 || (Count == 1 && this[0].Drum == Drum.Rest);
+    [JsonIgnore] public bool IsRest => Count == 0 || (Count == 1 && this[0].Drum == Drum.Rest);
 
     public new void Add(Note note)
     {
@@ -39,8 +38,9 @@ public class NoteGroup : List<Note>
     {
         return this.Any(note => note.Drum == drum);
     }
+
     public NoteGroup ChangeValues(NoteValue value)
-    { 
+    {
         return new NoteGroup(this.Select(note => new Note(note.Drum, value)));
     }
 }

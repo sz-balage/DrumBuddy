@@ -4,7 +4,6 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
-using DrumBuddy.Core.Enums;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using ReactiveUI;
@@ -26,13 +25,9 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
                 .Subscribe(drum =>
                 {
                     if (drum is null)
-                    {
                         ListeningDrumText.Text = "Not Listening";
-                    }
                     else
-                    {
                         ListeningDrumText.Text = $"Listening for: {drum}";
-                    }
                 })
                 .DisposeWith(d);
             this.Bind(ViewModel,

@@ -11,7 +11,7 @@ namespace DrumBuddy.Views.Dialogs;
 
 public partial class CompareView : ReactiveWindow<ICompareViewModel>
 {
-    private bool _isSyncingScroll = false;
+    private bool _isSyncingScroll;
     private double _lastBaseOffset;
     private double _lastComparedOffset;
 
@@ -78,9 +78,9 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
     }
 
     /// <summary>
-    /// Keeps two ScrollViewers in sync. 
-    /// If source is longer → move target by delta. 
-    /// If source is shorter → jump target to same offset.
+    ///     Keeps two ScrollViewers in sync.
+    ///     If source is longer → move target by delta.
+    ///     If source is shorter → jump target to same offset.
     /// </summary>
     private void SyncScroll(ScrollViewer source, ref double lastSourceOffset, ScrollViewer target,
         ref double lastTargetOffset)
@@ -88,15 +88,15 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
         if (source.Extent.Height <= 0 || target.Extent.Height <= 0)
             return;
 
-        double deltaY = source.Offset.Y - lastSourceOffset;
+        var deltaY = source.Offset.Y - lastSourceOffset;
         lastSourceOffset = source.Offset.Y;
 
-        bool sourceIsLonger = source.Extent.Height > target.Extent.Height;
+        var sourceIsLonger = source.Extent.Height > target.Extent.Height;
 
         if (sourceIsLonger)
         {
             // scroll step-by-step
-            double newTargetOffset = target.Offset.Y + deltaY;
+            var newTargetOffset = target.Offset.Y + deltaY;
             newTargetOffset = Math.Max(0, Math.Min(newTargetOffset, target.Extent.Height - target.Viewport.Height));
             target.Offset = new Vector(target.Offset.X, newTargetOffset);
 
@@ -105,7 +105,7 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
         else
         {
             // jump the longer one to match the shorter one
-            double targetY = Math.Min(source.Offset.Y, target.Extent.Height - target.Viewport.Height);
+            var targetY = Math.Min(source.Offset.Y, target.Extent.Height - target.Viewport.Height);
             target.Offset = new Vector(target.Offset.X, targetY);
 
             lastTargetOffset = target.Offset.Y;

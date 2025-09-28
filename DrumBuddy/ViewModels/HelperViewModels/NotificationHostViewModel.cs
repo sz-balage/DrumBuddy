@@ -8,7 +8,7 @@ using Splat;
 
 namespace DrumBuddy.ViewModels.HelperViewModels;
 
-public partial class NotificationHostViewModel : ReactiveObject
+public class NotificationHostViewModel : ReactiveObject
 {
     private readonly NotificationService _notificationService;
 

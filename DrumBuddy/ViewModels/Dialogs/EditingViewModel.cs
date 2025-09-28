@@ -35,8 +35,9 @@ public partial class EditingViewModel : ReactiveObject
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly MetronomePlayer _metronomePlayer;
     private readonly IMidiService _midiService;
-    private readonly PdfGenerator _pdfGenerator;
     private readonly NotificationService _notificationService;
+    private readonly PdfGenerator _pdfGenerator;
+    private readonly IObservable<bool> _stopRecordingCanExecute;
     public readonly Sheet OriginalSheet;
     private Bpm _bpm;
     [Reactive] private decimal _bpmDecimal;
@@ -54,7 +55,6 @@ public partial class EditingViewModel : ReactiveObject
 
     private bool _recordingJustStarted = true;
     private int _selectedEntryPointMeasureIndex;
-    private IObservable<bool> _stopRecordingCanExecute;
     private CompositeDisposable _subs = new();
     private long _tick;
 
@@ -109,6 +109,7 @@ public partial class EditingViewModel : ReactiveObject
 
     public IObservable<int> KeyboardBeats { get; set; }
     public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;
+
     public IObservable<bool> CanNavigate => this.WhenAnyValue(
         vm => vm.IsRecording,
         recording => !recording);
@@ -120,11 +121,12 @@ public partial class EditingViewModel : ReactiveObject
         {
             await _pdfGenerator.ExportSheetToPdf(measures, OriginalSheet.Name, OriginalSheet.Description,
                 OriginalSheet.Tempo);
-            _notificationService.ShowNotification($"{OriginalSheet.Name} exported successfully.",NotificationType.Success);
+            _notificationService.ShowNotification($"{OriginalSheet.Name} exported successfully.",
+                NotificationType.Success);
         }
         catch (Exception e)
         {
-            _notificationService.ShowNotification("Error while exporting sheet: " + e.Message,NotificationType.Error);
+            _notificationService.ShowNotification("Error while exporting sheet: " + e.Message, NotificationType.Error);
         }
         finally
         {
@@ -294,7 +296,8 @@ public partial class EditingViewModel : ReactiveObject
 
         var recordedCount = Measures.Count(m => !m.IsEmpty);
         if (recordedCount > 0)
-            _notificationService.ShowNotification($"Recording stopped. Captured {recordedCount} measure(s).", NotificationType.Info);
+            _notificationService.ShowNotification($"Recording stopped. Captured {recordedCount} measure(s).",
+                NotificationType.Info);
         else
             _notificationService.ShowNotification("Recording stopped. No notes captured.", NotificationType.Warning);
     }
@@ -304,7 +307,7 @@ public partial class EditingViewModel : ReactiveObject
         CurrentMeasure.IsPointerVisible = false;
         if (CurrentMeasure != Measures.Last())
         {
-            int nextIndex = Measures.IndexOf(CurrentMeasure) + 1;
+            var nextIndex = Measures.IndexOf(CurrentMeasure) + 1;
             CurrentMeasure = Measures[nextIndex];
             _selectedEntryPointMeasureIndex = nextIndex;
             CurrentMeasure.IsPointerVisible = true;

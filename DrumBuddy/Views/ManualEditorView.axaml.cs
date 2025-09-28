@@ -125,14 +125,12 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                     var duplicateButton = buttons.FirstOrDefault(b => b.Name == "DuplicateMeasureButton");
 
                     if (border != null)
-                    {
                         border.BorderBrush = i == currentIndex
                             ? _borderBrush
                             : new SolidColorBrush(Colors.Transparent);
-                    }
 
                     if (deleteButton != null)
-                        deleteButton.IsVisible = (i == currentIndex) && (itemsCount > 1);
+                        deleteButton.IsVisible = i == currentIndex && itemsCount > 1;
                     if (duplicateButton != null)
                         duplicateButton.IsVisible = i == currentIndex;
 
@@ -267,13 +265,9 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             var btn = _stepButtons[r, col];
             if (btn == null) continue;
             if (btn.IsChecked == true)
-            {
                 btn.IsEnabled = true; // allow unchecking
-            }
             else
-            {
                 btn.IsEnabled = !limitReached;
-            }
         }
     }
 
@@ -285,10 +279,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         {
             var index = MeasuresItemsControl.ItemContainerGenerator.IndexFromContainer(
                 border.Parent.Parent as ContentPresenter);
-            if (index >= 0)
-            {
-                ViewModel.SelectMeasure(index);
-            }
+            if (index >= 0) ViewModel.SelectMeasure(index);
         }
     }
 

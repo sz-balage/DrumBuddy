@@ -1,50 +1,51 @@
-﻿using System.Data;
-using System.Data.SQLite;
-using Dapper;
-using DrumBuddy.Core.Models;
-
-namespace DrumBuddy.IO.Data;
+﻿namespace DrumBuddy.IO.Data;
 
 public static class SheetDbQueries
 {
     private const string SelectSheetSql = """
-        SELECT id AS Id,
-               name AS Name,
-               description AS Description,
-               tempo AS Tempo,
-               measures_data AS MeasuresData
-        FROM Sheets
-        WHERE name = @Name
-        """;
-    
-    const string SelectAllSheetsSql = """
-        SELECT id AS Id,
-               name AS Name,
-               description AS Description,
-               tempo AS Tempo,
-               measures_data AS MeasuresData
-        FROM Sheets
-        """;
+                                          SELECT id AS Id,
+                                                 name AS Name,
+                                                 description AS Description,
+                                                 tempo AS Tempo,
+                                                 measures_data AS MeasuresData
+                                          FROM Sheets
+                                          WHERE name = @Name
+                                          """;
 
-    const string SheetExistsSql = """
-          SELECT COUNT(1)
-          FROM Sheets
-          WHERE name = @Name
-          """;
+    private const string SelectAllSheetsSql = """
+                                              SELECT id AS Id,
+                                                     name AS Name,
+                                                     description AS Description,
+                                                     tempo AS Tempo,
+                                                     measures_data AS MeasuresData
+                                              FROM Sheets
+                                              """;
+
+    private const string SheetExistsSql = """
+                                          SELECT COUNT(1)
+                                          FROM Sheets
+                                          WHERE name = @Name
+                                          """;
+
     public static async Task<IEnumerable<SheetDbRecord>> SelectAllSheetsAsync(string connectionString)
-        => await SqlQueryString.FromRawString(SelectAllSheetsSql)
+    {
+        return await SqlQueryString.FromRawString(SelectAllSheetsSql)
             .QueryAsync<SheetDbRecord>(connectionString);
-    
+    }
+
     public static async Task<SheetDbRecord?> SelectSheetAsync(string connectionString, string name)
     {
         var result = await SqlQueryString.FromRawString(SelectSheetSql)
             .QuerySingleOrDefaultAsync<SheetDbRecord>(connectionString, new { Name = name });
         return result;
     }
+
     public static bool SheetExists(string connectionString, string sheetName)
     {
-        return SqlQueryString.FromRawString(SheetExistsSql).QuerySingle<int>(connectionString, new { Name = sheetName }) > 0;
+        return SqlQueryString.FromRawString(SheetExistsSql)
+            .QuerySingle<int>(connectionString, new { Name = sheetName }) > 0;
     }
+
     public sealed record SheetDbRecord(
         long Id,
         string Name,
@@ -52,7 +53,4 @@ public static class SheetDbQueries
         long Tempo,
         byte[] MeasuresData
     );
-
-
-    
 }

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
-using DrumBuddy.Core.Enums;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
@@ -84,10 +83,7 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             {
                 var idx = MeasureControl.Items.IndexOf(measure);
                 var container = MeasureControl.ContainerFromIndex(idx + 3);
-                if (container != null)
-                {
-                    container.BringIntoView();
-                }
+                if (container != null) container.BringIntoView();
             });
         });
     }

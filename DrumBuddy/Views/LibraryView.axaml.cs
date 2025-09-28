@@ -109,9 +109,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             menuItem.Click += async (s, args) =>
             {
                 if (s is MenuItem mi && mi.Tag is Sheet selectedSheet)
-                {
                     await ViewModel.CompareSheets(baseSheet, selectedSheet);
-                }
             };
             flyout.Items.Add(menuItem);
         }
@@ -125,9 +123,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         if (sender is Button button &&
             button.Parent is Grid grid &&
             grid.Parent is ListBoxItem item)
-        {
             SheetsListBox.SelectedItem = item.DataContext;
-        }
     }
 
     private void DeleteMenuItem_OnClick(object? sender, RoutedEventArgs e)

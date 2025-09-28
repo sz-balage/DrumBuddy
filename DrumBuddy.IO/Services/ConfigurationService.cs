@@ -1,7 +1,5 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text.Json;
-using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.IO.Services;
 
@@ -9,23 +7,19 @@ namespace DrumBuddy.IO;
 
 public class ConfigurationService
 {
-    private readonly FileConfigurationStorage _storage;
-    private readonly Dictionary<Drum, int> _mapping = new();
-    private readonly BehaviorSubject<Drum?> _listeningDrum = new(null);
     private readonly Dictionary<Drum, double> _drumPositions = new();
-
-    public IReadOnlyDictionary<Drum, double> DrumPositions => _drumPositions;
+    private readonly BehaviorSubject<Drum?> _listeningDrum = new(null);
+    private readonly Dictionary<Drum, int> _mapping = new();
+    private readonly FileConfigurationStorage _storage;
 
     public ConfigurationService(FileConfigurationStorage storage)
     {
         _storage = storage;
         _mapping = _storage.LoadConfig();
         if (_mapping.Count == 0)
-        {
             foreach (var drum in Enum.GetValues<Drum>())
                 if (drum != Drum.Rest)
                     _mapping[drum] = (int)drum;
-        }
         _drumPositions = _storage.LoadDrumPositions();
         if (_drumPositions.Count != 0) return;
         {
@@ -34,6 +28,8 @@ public class ConfigurationService
                     _drumPositions[drum] = DefaultYPosition(drum);
         }
     }
+
+    public IReadOnlyDictionary<Drum, double> DrumPositions => _drumPositions;
 
     public bool IsKeyboardEnabled { get; set; }
     public IReadOnlyDictionary<Drum, int> Mapping => _mapping;
@@ -45,6 +41,7 @@ public class ConfigurationService
     }
 
     public IObservable<Drum?> ListeningDrumChanged => _listeningDrum.AsObservable();
+
     public void UpdateDrumPosition(Drum drum, double newY)
     {
         if (drum == Drum.HiHat_Open) return; // cannot change hihat open position
@@ -52,20 +49,24 @@ public class ConfigurationService
         _storage.SaveDrumPositions(_drumPositions);
     }
 
-    private static double DefaultYPosition(Drum drum) => drum switch
+    private static double DefaultYPosition(Drum drum)
     {
-        Drum.Kick => 60,
-        Drum.Snare => 20,
-        Drum.FloorTom => 40,
-        Drum.Tom1 => 0,
-        Drum.Tom2 => 10,
-        Drum.Ride => -10,
-        Drum.HiHat => -20,
-        Drum.HiHat_Pedal => 85,
-        Drum.Crash1 => -30,
-        Drum.Crash2 => -30,
-        _ => 30
-    };
+        return drum switch
+        {
+            Drum.Kick => 60,
+            Drum.Snare => 20,
+            Drum.FloorTom => 40,
+            Drum.Tom1 => 0,
+            Drum.Tom2 => 10,
+            Drum.Ride => -10,
+            Drum.HiHat => -20,
+            Drum.HiHat_Pedal => 85,
+            Drum.Crash1 => -30,
+            Drum.Crash2 => -30,
+            _ => 30
+        };
+    }
+
     public void StartListening(Drum drum)
     {
         ListeningDrum = drum;

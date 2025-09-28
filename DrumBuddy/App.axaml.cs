@@ -31,13 +31,9 @@ public class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         if (Design.IsDesignMode)
-        {
             RegisterDesignTimeServices();
-        }
         else
-        {
             RegisterProdServices();
-        }
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

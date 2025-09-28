@@ -18,7 +18,7 @@ namespace DrumBuddy.Views;
 public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
     private MidiService _midiService;
-    bool isClosingConfirmed = false;
+    private bool isClosingConfirmed;
 
     public MainWindow()
     {

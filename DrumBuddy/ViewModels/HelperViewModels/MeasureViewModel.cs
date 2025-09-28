@@ -22,13 +22,11 @@ public partial class MeasureViewModel : ReactiveObject
     public MeasureViewModel(Measure? measure = null)
     {
         if (measure is not null)
-        {
             foreach (var rg in measure.Groups)
             {
                 Measure.Groups.Add(rg);
                 RythmicGroups.Add(new RythmicGroupViewModel(rg, Width, Height));
             }
-        }
 
         IsPointerVisible = true;
     }

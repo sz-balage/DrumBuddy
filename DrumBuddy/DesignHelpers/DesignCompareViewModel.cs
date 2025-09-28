@@ -15,14 +15,14 @@ public class DesignCompareViewModel : ReactiveObject, ICompareViewModel
     {
         var baseMeasures = new List<Measure>
         {
-            new Measure([
+            new([
                 new RythmicGroup([
                     new NoteGroup([
                         new Note(Drum.Crash1, NoteValue.Eighth)
                     ])
                 ])
             ]),
-            new Measure([
+            new([
                 new RythmicGroup([
                     new NoteGroup([
                         new Note(Drum.Crash1, NoteValue.Quarter)
@@ -32,14 +32,14 @@ public class DesignCompareViewModel : ReactiveObject, ICompareViewModel
         };
         var comparedMeasures = new List<Measure>
         {
-            new Measure([
+            new([
                 new RythmicGroup([
                     new NoteGroup([
                         new Note(Drum.Crash1, NoteValue.Eighth)
                     ])
                 ])
             ]),
-            new Measure([
+            new([
                 new RythmicGroup([
                     new NoteGroup([
                         new Note(Drum.Crash1, NoteValue.Quarter)

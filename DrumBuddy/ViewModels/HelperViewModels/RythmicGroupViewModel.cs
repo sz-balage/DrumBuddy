@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
-using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
@@ -17,7 +15,7 @@ namespace DrumBuddy.ViewModels.HelperViewModels;
 
 public partial class RythmicGroupViewModel : ReactiveObject
 {
-    private NoteDrawHelper _drawHelper;
+    private readonly NoteDrawHelper _drawHelper;
     [Reactive] private RythmicGroup _rythmicGroup;
     [Reactive] private double _width;
 

@@ -25,6 +25,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     public const int MaxNotesPerColumn = 3; // maximum notes allowed per column (NoteGroup)
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly List<bool[,]> _measureSteps;
+    private readonly NotificationService _notificationService;
     private readonly Func<Task> _onClose;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     private readonly ISheetStorage _sheetStorage;
@@ -52,7 +53,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
-    private NotificationService _notificationService;
 
     public ManualEditorViewModel(IScreen host, ISheetStorage sheetStorage, NotificationService notificationService,
         Func<Task> onClose)
@@ -143,10 +143,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
         // Enforce max notes per column when attempting to set a note (from false -> true)
         var current = _measureSteps[CurrentMeasureIndex][row, col];
-        if (!current && CountCheckedInColumn(col) >= MaxNotesPerColumn)
-        {
-            return; // ignore attempt, UI will reflect disabled state
-        }
+        if (!current &&
+            CountCheckedInColumn(col) >= MaxNotesPerColumn) return; // ignore attempt, UI will reflect disabled state
 
         _measureSteps[CurrentMeasureIndex][row, col] = !current;
         CurrentSheet = BuildSheet();

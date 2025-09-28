@@ -72,7 +72,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
         NoConnection = true;
         _notificationService.ShowNotification(message,
             NotificationType.Error,
-            onNotificationDismissed: () => CanRetry = true);
+            () => CanRetry = true);
     }
 
     private void OnSelectedPaneItemChanged(NavigationMenuItemTemplate? value)

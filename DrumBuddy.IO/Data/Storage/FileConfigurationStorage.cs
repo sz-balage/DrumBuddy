@@ -36,16 +36,16 @@ public class FileConfigurationStorage
     {
         var path = GetFullConfigPath();
         if (!File.Exists(path))
-            return new();
-        return _serializationService.DeserializeDrumMappingData(File.ReadAllText(path)) ?? new();
+            return new Dictionary<Drum, int>();
+        return _serializationService.DeserializeDrumMappingData(File.ReadAllText(path)) ?? new Dictionary<Drum, int>();
     }
+
     public Dictionary<Drum, double> LoadDrumPositions()
     {
-        return new();
+        return new Dictionary<Drum, double>();
     }
+
     public void SaveDrumPositions(Dictionary<Drum, double> drumPositions)
     {
     }
-
-  
 }

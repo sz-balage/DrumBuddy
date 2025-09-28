@@ -8,6 +8,5 @@ namespace DrumBuddy.Core.Models;
 /// <param name="Groups">The 4 rythmic groups that make up the measure.</param>
 public record Measure(List<RythmicGroup> Groups)
 {
-    [JsonIgnore]
-    public bool IsEmpty => Groups.Count == 0;
+    [JsonIgnore] public bool IsEmpty => Groups.Count == 0;
 }

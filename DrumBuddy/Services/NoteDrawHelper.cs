@@ -31,9 +31,10 @@ public class NoteDrawHelper
     private readonly double _canvasHeight;
 
     private readonly double _canvasWidth;
+    private readonly ConfigurationService _configurationService;
     private readonly double _noteGroupWidth;
     private readonly double _startingXPos;
-    private ConfigurationService _configurationService;
+
     public NoteDrawHelper(double canvasWidth, double canvasHeight)
     {
         _configurationService = Locator.Current.GetRequiredService<ConfigurationService>();
@@ -76,7 +77,6 @@ public class NoteDrawHelper
     /// </summary>
     /// <param name="drum">Drum to be drawn.</param>
     /// <returns></returns>
-
     private double GetYPositionForDrum(Drum drum)
     {
         return _configurationService.DrumPositions.TryGetValue(drum, out var pos)
@@ -88,8 +88,10 @@ public class NoteDrawHelper
     {
         return note.Drum switch
         {
-            Drum.HiHat or Drum.HiHat_Open or Drum.HiHat_Pedal or Drum.Ride => (new Uri(BaseNotationPath + "note_head_x" + ImageExtension), NoteHeadSize),
-            Drum.Crash1 or Drum.Crash2 => (new Uri(BaseNotationPath + "note_head_x_line" + ImageExtension), NoteHeadWithLineSize),
+            Drum.HiHat or Drum.HiHat_Open or Drum.HiHat_Pedal or Drum.Ride => (
+                new Uri(BaseNotationPath + "note_head_x" + ImageExtension), NoteHeadSize),
+            Drum.Crash1 or Drum.Crash2 => (new Uri(BaseNotationPath + "note_head_x_line" + ImageExtension),
+                NoteHeadWithLineSize),
             Drum.Rest => note.Value switch
             {
                 NoteValue.Quarter => (new Uri(BaseNotationPath + "quarter_rest" + ImageExtension),
@@ -100,7 +102,7 @@ public class NoteDrawHelper
             _ => (new Uri(BaseNotationPath + "note_head" + ImageExtension), NoteHeadSize)
         };
     }
-    
+
     private static (Uri Path, Size ImageSize) GetCircleImagePathAndSize()
     {
         return (new Uri(BaseNotationPath + "circle" + ".png"), CircleSize);
@@ -115,6 +117,7 @@ public class NoteDrawHelper
             _ => noteGroupWidth
         };
     }
+
     /// <summary>
     ///     Generates lines and note images for the given rythmic group.
     /// </summary>
@@ -176,6 +179,7 @@ public class NoteDrawHelper
                     var openHihatIndicator = GetCircleForHiHatOpen(point, note);
                     openHihatIndicators.Add(openHihatIndicator);
                 }
+
                 images.Add(noteImage);
             }
 
@@ -263,9 +267,10 @@ public class NoteDrawHelper
 
     private NoteImageAndBounds GetCircleForHiHatOpen(Point point, Note note)
     {
-        (Uri Path, Size ImageSize) noteHeadPathAndSize = new (new Uri(BaseNotationPath + "circle_open" + ImageExtension), CircleSize);
+        (Uri Path, Size ImageSize) noteHeadPathAndSize =
+            new(new Uri(BaseNotationPath + "circle_open" + ImageExtension), CircleSize);
         var noteImage = new NoteImageAndBounds(noteHeadPathAndSize.Path,
-            new Rect(point.WithY(point.Y-120), noteHeadPathAndSize.ImageSize));
+            new Rect(point.WithY(point.Y - 120), noteHeadPathAndSize.ImageSize));
         return noteImage;
     }
 

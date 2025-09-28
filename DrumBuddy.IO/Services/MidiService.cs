@@ -42,7 +42,7 @@ public class MidiService : IMidiService
         private set
         {
             _isConnected = value;
-            if (value == false)
+            if (!value)
                 _inputDeviceDisconnected.OnNext(_isConnected);
         }
     }

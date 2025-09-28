@@ -301,7 +301,8 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
             _notificationService.ShowNotification("Recording stopped. No notes captured.", NotificationType.Warning);
             ClearMeasures();
             return;
-        } 
+        }
+
         //ask user if sheet should be saved
         var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm, [..measures]));
         ClearMeasures();

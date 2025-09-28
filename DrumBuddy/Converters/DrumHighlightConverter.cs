@@ -11,8 +11,8 @@ public class DrumHighlightConverter : IMultiValueConverter
 {
     public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
-        bool isUnmapped = values[0] is bool b1 && b1;
-        bool isHighlighted = values[1] is bool b2 && b2;
+        var isUnmapped = values[0] is bool b1 && b1;
+        var isHighlighted = values[1] is bool b2 && b2;
         var appGreenBrush = StyleProvider.GetBrushForKey("AppGreen");
         var errorBrush = StyleProvider.GetBrushForKey("Error");
         if (isHighlighted)

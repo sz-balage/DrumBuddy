@@ -9,16 +9,13 @@ public class MetronomePlayer : IDisposable
 
     public MetronomePlayer(string highBeepPath, string normalBeepPath)
     {
-        if (!Bass.Init(-1, 44100, DeviceInitFlags.Default))
-        {
-            throw new Exception($"Failed to initialize Bass. Error: {Bass.LastError}");
-        }
+        if (!Bass.Init()) throw new Exception($"Failed to initialize Bass. Error: {Bass.LastError}");
 
-        _highBeep = Bass.CreateStream(highBeepPath, 0, 0, BassFlags.Default);
+        _highBeep = Bass.CreateStream(highBeepPath);
         if (_highBeep == 0)
             throw new Exception($"Failed to load high beep file. Error: {Bass.LastError}");
 
-        _normalBeep = Bass.CreateStream(normalBeepPath, 0, 0, BassFlags.Default);
+        _normalBeep = Bass.CreateStream(normalBeepPath);
         if (_normalBeep == 0)
             throw new Exception($"Failed to load normal beep file. Error: {Bass.LastError}");
     }

@@ -22,8 +22,9 @@ public readonly record struct Bpm
     {
         return value.Value;
     }
+
     public static implicit operator Bpm(int value)
     {
-        return new(value);
+        return new Bpm(value);
     }
 }

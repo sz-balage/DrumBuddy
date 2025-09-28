@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Text.Json.Serialization;
 using DrumBuddy.Core.Extensions;
 
 namespace DrumBuddy.Core.Models;

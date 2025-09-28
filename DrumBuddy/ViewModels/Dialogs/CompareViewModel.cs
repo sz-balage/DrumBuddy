@@ -40,10 +40,8 @@ public partial class CompareViewModel : ReactiveObject, ICompareViewModel
         _baseSheetMeasureSource.AddRange(_baseSheet.Measures.Select(m => new MeasureViewModel(m)));
         _comparedSheetMeasureSource.AddRange(_comparedSheet.Measures.Select(m => new MeasureViewModel(m)));
         EvaluateSheets();
-        for (int i = 0; i < _comparedSheetMeasures.Count; i++)
-        {
+        for (var i = 0; i < _comparedSheetMeasures.Count; i++)
             _comparedSheetMeasures[i].EvaluateMeasure(EvaluationBoxes.Where(x => x.MeasureIndex == i).ToList());
-        }
     }
 
     private List<EvaluationBox> EvaluationBoxes { get; } = new();
@@ -56,24 +54,24 @@ public partial class CompareViewModel : ReactiveObject, ICompareViewModel
     {
         EvaluationBoxes.Clear();
 
-        int measureCount = Math.Min(_baseSheet.Measures.Length, _comparedSheet.Measures.Length);
+        var measureCount = Math.Min(_baseSheet.Measures.Length, _comparedSheet.Measures.Length);
 
-        int totalGroups = 0;
-        int correctGroups = 0;
+        var totalGroups = 0;
+        var correctGroups = 0;
 
-        for (int m = 0; m < measureCount; m++)
+        for (var m = 0; m < measureCount; m++)
         {
             var baseMeasure = _baseSheet.Measures[m];
             var comparedMeasure = _comparedSheet.Measures[m];
 
-            int rgCount = Math.Min(baseMeasure.Groups.Count, comparedMeasure.Groups.Count);
+            var rgCount = Math.Min(baseMeasure.Groups.Count, comparedMeasure.Groups.Count);
 
             totalGroups += rgCount;
 
             EvaluationState? currentState = null;
-            int startRg = 0;
+            var startRg = 0;
 
-            for (int rg = 0; rg < rgCount; rg++)
+            for (var rg = 0; rg < rgCount; rg++)
             {
                 var same = baseMeasure.Groups[rg].Equals(comparedMeasure.Groups[rg]);
                 var state = same ? EvaluationState.Correct : EvaluationState.Incorrect;
@@ -94,14 +92,12 @@ public partial class CompareViewModel : ReactiveObject, ICompareViewModel
             }
 
             if (currentState != null)
-            {
                 EvaluationBoxes.Add(new EvaluationBox(m, startRg, rgCount - 1, currentState.Value));
-            }
         }
 
         if (_baseSheet.Measures.Length > _comparedSheet.Measures.Length)
         {
-            int extraMeasures = _baseSheet.Measures.Length - _comparedSheet.Measures.Length;
+            var extraMeasures = _baseSheet.Measures.Length - _comparedSheet.Measures.Length;
             totalGroups += extraMeasures * 4;
         }
 
