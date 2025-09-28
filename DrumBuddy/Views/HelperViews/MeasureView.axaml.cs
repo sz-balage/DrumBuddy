@@ -17,31 +17,33 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
     public MeasureView()
     {
         InitializeComponent();
+
         this.WhenActivated(d =>
         {
             this.OneWayBind(ViewModel, vm => vm.RythmicGroups, v => v._itemsControl.ItemsSource)
                 .DisposeWith(d);
-
-            // redraw overlays whenever EvaluationBoxes changes
             ViewModel.EvaluationBoxes.ToObservableChangeSet()
                 .Subscribe(_ => DrawEvaluationBoxes())
                 .DisposeWith(d);
+
             ViewModel.WhenAnyValue(vm => vm.PointerPosition)
-                .Subscribe(d =>
+                .Subscribe(pos =>
                 {
-                    _pointer.StartPoint = Pointer.StartPoint.WithX(d);
-                    _pointer.EndPoint = Pointer.StartPoint.WithY(190);
+                    _pointer.StartPoint = _pointer.StartPoint.WithX(pos);
+                    _pointer.EndPoint = _pointer.StartPoint.WithY(190);
                 })
                 .DisposeWith(d);
+
             this.Bind(ViewModel, vm => vm.IsPointerVisible, v => v.Pointer.IsVisible)
                 .DisposeWith(d);
-            ;
-            this.Bind(ViewModel, vm => vm.Width, v => v.Width)
-                .DisposeWith(d);
-            ;
-            this.Bind(ViewModel, vm => vm.Height, v => v.Height)
-                .DisposeWith(d);
-            ;
+        });
+        this.GetObservable(BoundsProperty).Subscribe(bounds =>
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.Width = bounds.Width;
+                ViewModel.Height = bounds.Height;
+            }
         });
     }
 
@@ -55,15 +57,15 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
 
         _evalBoxesCanvas.Children.Clear();
 
-        double measureWidth = ViewModel.Width;
-        double groupWidth = measureWidth / 4.0;
+        double measureWidth = 1200; // internal logical width before scaling
+        var groupWidth = measureWidth / 4.0;
         double boxTop = 90;
-        double boxHeight = 80; // covers staff lines (90–170)
+        double boxHeight = 80;
 
         foreach (var box in ViewModel.EvaluationBoxes)
         {
-            double left = box.StartRgIndex * groupWidth;
-            double width = (box.EndRgIndex - box.StartRgIndex + 1) * groupWidth;
+            var left = box.StartRgIndex * groupWidth;
+            var width = (box.EndRgIndex - box.StartRgIndex + 1) * groupWidth;
             if (Application.Current?.Resources.TryGetResource("AppGreen", null, out var appleGreenObj) == true &&
                 Application.Current?.Resources.TryGetResource("Error", null, out var errorObj) == true)
             {

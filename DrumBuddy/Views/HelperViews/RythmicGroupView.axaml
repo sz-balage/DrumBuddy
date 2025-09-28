@@ -7,12 +7,14 @@
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:models="clr-namespace:DrumBuddy.Models"
                           mc:Ignorable="d"
-                          d:DesignWidth="500"
-                          d:DesignHeight="500"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
                           x:Class="DrumBuddy.Views.HelperViews.RythmicGroupView">
+
     <Design.DataContext>
         <vm:RythmicGroupViewModel />
     </Design.DataContext>
+
     <Grid>
         <ItemsControl x:Name="NoteImagesList">
             <ItemsControl.ItemsPanel>
@@ -43,11 +45,7 @@
                     <Line StartPoint="{Binding StartPoint}"
                           EndPoint="{Binding EndPoint}"
                           Stroke="{Binding StrokeColor}"
-                          StrokeThickness="{Binding StrokeThickness}">
-                        <Line.RenderTransform>
-                            <TranslateTransform />
-                        </Line.RenderTransform>
-                    </Line>
+                          StrokeThickness="{Binding StrokeThickness}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

@@ -7,11 +7,15 @@
                      xmlns:rxui="http://reactiveui.net"
                      xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
                      xmlns:dialogs="clr-namespace:DrumBuddy.ViewModels.Dialogs"
+                     xmlns:converters="clr-namespace:DrumBuddy.Converters"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      MinHeight="500"
-                     MinWidth="1250"
+                     MinWidth="400"
                      Title="Edit window"
                      x:Class="DrumBuddy.Views.Dialogs.EditingView">
+    <rxui:ReactiveWindow.Resources>
+        <converters:WidthToColumnsConverter x:Key="WidthToColumnsConverter" />
+    </rxui:ReactiveWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -107,20 +111,27 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
         </Grid>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="MeasuresScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <ItemsControl x:Name="MeasuresItemControl">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel />
+                        <UniformGrid
+                            Columns="{Binding ElementName=MeasuresScrollViewer, 
+                                                      Path=Bounds.Width, 
+                                                      Converter={StaticResource WidthToColumnsConverter}}" />
+
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <helperViews:MeasureView Width="600" PointerPressed="InputElement_OnPointerPressed" />
+                        <helperViews:MeasureView PointerPressed="InputElement_OnPointerPressed"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalAlignment="Top" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
         <Grid x:Name="NotificationPlaceholder"
               Grid.Row="1"
               HorizontalAlignment="Right"

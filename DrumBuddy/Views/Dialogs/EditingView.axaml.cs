@@ -9,7 +9,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
-using DrumBuddy.Core.Enums;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
