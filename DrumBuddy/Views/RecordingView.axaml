@@ -7,8 +7,12 @@
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
                           xmlns:viewModels="clr-namespace:DrumBuddy.ViewModels"
+                          xmlns:converters="clr-namespace:DrumBuddy.Converters"
                           mc:Ignorable="d" d:DesignWidth="1250" d:DesignHeight="500"
                           x:Class="DrumBuddy.Views.RecordingView">
+    <rxui:ReactiveUserControl.Resources>
+        <converters:WidthToColumnsConverter x:Key="WidthToColumnsConverter" />
+    </rxui:ReactiveUserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="66" />
@@ -102,17 +106,23 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
         </Grid>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto">
+
             <Grid>
                 <ItemsControl x:Name="MeasuresItemControl">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel />
+                            <UniformGrid
+                                Columns="{Binding ElementName=MeasuresScrollViewer, 
+                                                          Path=Bounds.Width, 
+                                                          Converter={StaticResource WidthToColumnsConverter}}" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <helperViews:MeasureView Width="600" />
+                            <helperViews:MeasureView
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Top" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -121,12 +131,17 @@
                               IsVisible="{Binding OverlayVisible}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel />
+                            <UniformGrid
+                                Columns="{Binding ElementName=MeasuresScrollViewer, 
+                                                          Path=Bounds.Width, 
+                                                          Converter={StaticResource WidthToColumnsConverter}}" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <helperViews:MeasureView Width="600" />
+                            <helperViews:MeasureView
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Top" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

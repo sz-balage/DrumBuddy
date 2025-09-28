@@ -21,6 +21,8 @@ public partial class RythmicGroupViewModel : ReactiveObject
 
     public RythmicGroupViewModel(RythmicGroup rg, double hostScreenWidth, double hostScreenHeight)
     {
+        hostScreenWidth = 1200;
+        hostScreenHeight = 200;
         Width = hostScreenWidth / 4;
         RythmicGroup = rg;
         _drawHelper = new NoteDrawHelper(Width, hostScreenHeight);
