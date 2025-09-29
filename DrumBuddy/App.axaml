@@ -3,8 +3,13 @@
              x:Class="DrumBuddy.App"
              RequestedThemeVariant="Light">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
     <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="/Controls/TabControl.axaml" />
+                <MergeResourceInclude Source="/Controls/TabItem.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
         <FontFamily x:Key="NunitoFont">
             avares://DrumBuddy/Assets/Fonts/#Nunito
         </FontFamily>
@@ -12,10 +17,16 @@
         <Color x:Key="Secondary">#C9E6F8</Color>
         <Color x:Key="Accent">#0D7AE7</Color>
         <Color x:Key="AccentLighter">#3E99F4</Color>
-        <Color x:Key="HeaderGray">#D6D6D6</Color>
+        <Color x:Key="HeaderGray">#CCCCCC</Color>
+        <Color x:Key="DarkerGray">#ADADAD</Color>
+        <Color x:Key="LighterGray">#EBEBEB</Color>
         <Color x:Key="AppGreen">#77A690</Color>
         <Color x:Key="Error">#D62828</Color>
         <Color x:Key="Warning">#BEAC0E</Color>
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Offset="0" Color="{StaticResource Primary}" />
+            <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+        </LinearGradientBrush>
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>
@@ -46,4 +57,5 @@
         <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml" />
         <StyleInclude Source="/Styles/AppStyles.axaml" />
     </Application.Styles>
+
 </Application>

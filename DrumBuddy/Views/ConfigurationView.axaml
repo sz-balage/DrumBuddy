@@ -12,19 +12,19 @@
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="DrumBuddy.Views.ConfigurationView">
     <UserControl.Styles>
-         <Style Selector="Border">
+        <Style Selector="Border.Drum">
             <Setter Property="Background" Value="{StaticResource HeaderGray}" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="10" />
-            <Setter Property="Margin" Value="4" />
-            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="Margin" Value="0,4,4,4" />
+            <Setter Property="BorderBrush" Value="{StaticResource DarkerGray}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
     </UserControl.Styles>
     <UserControl.Resources>
         <converters:DrumHighlightConverter x:Key="DrumHighlightConverter" />
     </UserControl.Resources>
-    <Grid RowDefinitions="66,Auto,*,Auto">
+    <Grid RowDefinitions="66,*">
         <Grid Background="{StaticResource HeaderGray}">
             <TextBlock Text="Configuration editor"
                        Margin="18"
@@ -38,77 +38,102 @@
                            FontSize="16"
                            FontWeight="SemiBold" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Margin="0,0,8,0"
-                        Spacing="8">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
-                    <TextBlock FontSize="20" Text="Metronome volume:" VerticalAlignment="Center" Margin="0,10,4,0" />
-                    <Slider x:Name="MetronomeVolumeSlider" Margin="0,0,0,10"
-                            Minimum="0"
-                            Maximum="10000"
-                            Value="{Binding MetronomeVolume}"
-                            Width="120"
-                            TickFrequency="1000"
-                            IsSnapToTickEnabled="True" />
-                </StackPanel>
-                <CheckBox x:Name="KeyboardInputCheckBox"
-                          FontSize="20"
-                          FontFamily="{StaticResource NunitoFont}"
-                          IsChecked="False">
-                    Keyboard input
-                </CheckBox>
-            </StackPanel>
         </Grid>
-        <ScrollViewer Grid.Row="2">
-            <ItemsControl ItemsSource="{Binding DrumMappings}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Spacing="0" Orientation="Vertical" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="models:DrumMappingItem">
-                        <Border CornerRadius="6"
-                                Background="{StaticResource HeaderGray}"
-                                VerticalAlignment="Stretch">
-                            <Grid VerticalAlignment="Stretch" ColumnDefinitions="Auto,Auto,*">
-                                <TextBlock Text="{Binding DrumName}"
-                                           VerticalAlignment="Center"
-                                           Grid.Column="0" />
-                                <Ellipse Margin="10,0,0,0" Grid.Column="1" Width="20" Height="20">
-                                    <Ellipse.Fill>
-                                        <MultiBinding Converter="{StaticResource DrumHighlightConverter}">
-                                            <Binding Path="IsUnmapped" />
-                                            <Binding Path="IsHighlighted" />
-                                        </MultiBinding>
-                                    </Ellipse.Fill>
-                                </Ellipse>
-                                <Button Content="Remap"
-                                        Classes="confirm"
-                                        FontFamily="{StaticResource NunitoFont}"
-                                        Command="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).StartListeningCommand}"
-                                        CommandParameter="{Binding Drum}"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        IsVisible="{Binding !IsListening}"
-                                        Grid.Column="2" />
-                                <Button Content="Cancel mapping"
-                                        Classes="confirm"
-                                        FontFamily="{StaticResource NunitoFont}"
-                                        Command="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).StopListeningCommand}"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Grid.Column="2"
-                                        IsVisible="{Binding IsListening}" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <TabControl Grid.Row="1">
+            <TabItem Header="Drum Mapping" FontSize="16">
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding DrumMappings}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="0" Orientation="Vertical" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:DrumMappingItem">
+                                <Border CornerRadius="6"
+                                        Classes="Drum"
+                                        Background="{StaticResource LighterGray}"
+                                        VerticalAlignment="Stretch">
+                                    <Grid VerticalAlignment="Stretch" ColumnDefinitions="Auto,Auto,*">
+                                        <TextBlock Text="{Binding DrumName}"
+                                                   VerticalAlignment="Center"
+                                                   Grid.Column="0" />
+                                        <Ellipse Margin="10,0,0,0" Grid.Column="1" Width="20" Height="20">
+                                            <Ellipse.Fill>
+                                                <MultiBinding Converter="{StaticResource DrumHighlightConverter}">
+                                                    <Binding Path="IsUnmapped" />
+                                                    <Binding Path="IsHighlighted" />
+                                                </MultiBinding>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <Button Content="Remap"
+                                                Classes="confirm"
+                                                FontFamily="{StaticResource NunitoFont}"
+                                                Command="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).StartListeningCommand}"
+                                                CommandParameter="{Binding Drum}"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"
+                                                IsVisible="{Binding !IsListening}"
+                                                Grid.Column="2" />
+                                        <Button Content="Cancel mapping"
+                                                Classes="confirm"
+                                                FontFamily="{StaticResource NunitoFont}"
+                                                Command="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).StopListeningCommand}"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"
+                                                Grid.Column="2"
+                                                IsVisible="{Binding IsListening}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Settings" FontSize="16">
+                <StackPanel Spacing="16" Margin="0,4,0,0">
+                    <Border CornerRadius="8"
+                            Padding="12"
+                            Background="{StaticResource LighterGray}"
+                            BorderBrush="{StaticResource DarkerGray}"
+                            BorderThickness="1">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Audio Settings"
+                                       FontWeight="SemiBold"
+                                       FontSize="16"
+                                       Margin="0,0,0,4" />
+                            <TextBlock Text="Metronome Volume"
+                                       FontWeight="Medium"
+                                       FontSize="14" />
+                            <Slider x:Name="MetronomeVolumeSlider" HorizontalAlignment="Left"
+                                    Minimum="0"
+                                    Maximum="10000"
+                                    Value="{Binding MetronomeVolume}"
+                                    TickFrequency="1000"
+                                    IsSnapToTickEnabled="True"
+                                    Width="200" />
+                        </StackPanel>
+                    </Border>
 
+                    <!-- Input Settings Group -->
+                    <Border CornerRadius="8" Background="#f5f5f5" Padding="12" BorderBrush="Gray"
+                            BorderThickness="1">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Input Settings"
+                                       FontWeight="SemiBold"
+                                       FontSize="16"
+                                       Margin="0,0,0,4" />
+                            <CheckBox x:Name="KeyboardInputCheckBox"
+                                      FontSize="16"
+                                      FontFamily="{StaticResource NunitoFont}"
+                                      IsChecked="{Binding KeyboardInput}">
+                                Keyboard input
+                            </CheckBox>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
     </Grid>
 
 </reactiveUi:ReactiveUserControl>
