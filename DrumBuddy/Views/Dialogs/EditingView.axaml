@@ -11,7 +11,7 @@
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      MinHeight="500"
                      MinWidth="400"
-                     Title="Edit window"
+                     Title="Edit window" WindowState="Maximized"
                      x:Class="DrumBuddy.Views.Dialogs.EditingView">
     <rxui:ReactiveWindow.Resources>
         <converters:WidthToColumnsConverter x:Key="WidthToColumnsConverter" />
@@ -112,24 +112,7 @@
                        VerticalAlignment="Center" />
         </Grid>
         <ScrollViewer x:Name="MeasuresScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="MeasuresItemControl">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid
-                            Columns="{Binding ElementName=MeasuresScrollViewer, 
-                                                      Path=Bounds.Width, 
-                                                      Converter={StaticResource WidthToColumnsConverter}}" />
-
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <helperViews:MeasureView PointerPressed="InputElement_OnPointerPressed"
-                                                 HorizontalAlignment="Stretch"
-                                                 VerticalAlignment="Top" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <helperViews:MeasuresPanel x:Name="MeasuresViewer" Measures="{Binding Measures}" />
         </ScrollViewer>
 
         <Grid x:Name="NotificationPlaceholder"

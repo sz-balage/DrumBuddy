@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
-using Avalonia.VisualTree;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
@@ -29,8 +27,8 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
             ViewModel = new EditingViewModel(TestSheetProvider.GetTestSheet(), null, null, null, true);
         this.WhenActivated(d =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
-                .DisposeWith(d);
+            // this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
+            //     .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.IsExporting, v => v.ExportTextBlock.Text, isExporting =>
                     isExporting ? "Exporting..." : "Export to pdf")
                 .DisposeWith(d);
@@ -65,17 +63,13 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                 ViewModel.WhenAnyValue(vm => vm.CurrentMeasure).Subscribe(measure =>
                 {
                     // Find the container for the current measure
-                    var idx = MeasureControl.Items.IndexOf(measure);
-                    var container = MeasureControl.ContainerFromIndex(idx + 3);
-                    if (container != null)
-                        // Scroll the container into view
-                        container.BringIntoView();
+                    MeasuresViewer.BringCurrentMeasureIntoView(measure);
                 });
             }
         });
     }
 
-    private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl")!;
+    // private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl")!;
     private Button _startRecordingButton => this.FindControl<Button>("StartRecordingButton")!;
     private Button _stopRecordingButton => this.FindControl<Button>("StopRecordingButton")!;
     private Button _pauseRecordingButton => this.FindControl<Button>("PauseRecordingButton")!;
@@ -94,16 +88,16 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
         context.SetOutput(result);
     }
 
-    private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (sender is MeasureView measureView)
-        {
-            var index = MeasureControl.ItemContainerGenerator.IndexFromContainer(
-                measureView.Parent as Control);
-
-            ViewModel?.HandleMeasureClick(index);
-        }
-    }
+    // private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    // {
+    //     if (sender is MeasureView measureView)
+    //     {
+    //         var index = MeasureControl.ItemContainerGenerator.IndexFromContainer(
+    //             measureView.Parent as Control);
+    //
+    //         ViewModel?.HandleMeasureClick(index);
+    //     }
+    // }
 
     private void SaveButton_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -113,8 +107,7 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
 
     private async void Export_OnClick(object? sender, RoutedEventArgs e)
     {
-        var measures = MeasuresItemControl.GetVisualDescendants().OfType<MeasureView>()
-            .Where(m => !m.ViewModel.Measure.IsEmpty).ToList();
+        var measures = MeasuresViewer.GetVisualDescendants();
         await ViewModel.ExportSheetToPdfAsync(measures);
     }
 }

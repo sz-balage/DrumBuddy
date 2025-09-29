@@ -30,8 +30,8 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
         {
             if (Design.IsDesignMode)
                 return;
-            this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
-                .DisposeWith(d);
+            // this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
+            //     .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.StartRecordingCommand, v => v._startRecordingButton)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.StopRecordingCommand, v => v._stopRecordingButton)
@@ -81,14 +81,12 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             ViewModel!.StopRecordingCommand.ThrownExceptions.Subscribe(ex => Debug.WriteLine(ex.Message));
             ViewModel.WhenAnyValue(vm => vm.CurrentMeasure).Subscribe(measure =>
             {
-                var idx = MeasureControl.Items.IndexOf(measure);
-                var container = MeasureControl.ContainerFromIndex(idx + 3);
-                if (container != null) container.BringIntoView();
+                MeasuresViewer.BringCurrentMeasureIntoView(measure);
             });
         });
     }
 
-    private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl")!;
+    // private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl")!;
     private MeasureView MeasureView => this.FindControl<MeasureView>("measure")!;
     private Button _startRecordingButton => this.FindControl<Button>("StartRecordingButton")!;
     private Button _stopRecordingButton => this.FindControl<Button>("StopRecordingButton")!;

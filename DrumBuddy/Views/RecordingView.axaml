@@ -109,42 +109,11 @@
         <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto">
 
             <Grid>
-                <ItemsControl x:Name="MeasuresItemControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid
-                                Columns="{Binding ElementName=MeasuresScrollViewer, 
-                                                          Path=Bounds.Width, 
-                                                          Converter={StaticResource WidthToColumnsConverter}}" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <helperViews:MeasureView
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Top" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <ItemsControl x:Name="OverlayMeasureItemsControl" Opacity="0.3"
-                              ItemsSource="{Binding OverlayMeasures}"
-                              IsVisible="{Binding OverlayVisible}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid
-                                Columns="{Binding ElementName=MeasuresScrollViewer, 
-                                                          Path=Bounds.Width, 
-                                                          Converter={StaticResource WidthToColumnsConverter}}" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <helperViews:MeasureView
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Top" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <helperViews:MeasuresPanel x:Name="MeasuresViewer"
+                                           Measures="{Binding Measures}" />
+                <helperViews:MeasuresPanel Measures="{Binding OverlayMeasures}"
+                                           IsVisible="{Binding OverlayVisible}"
+                                           Opacity="0.3" />
             </Grid>
         </ScrollViewer>
         <ComboBox Grid.Row="1" x:Name="OverlaySheetComboBox"
