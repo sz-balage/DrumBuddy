@@ -2,14 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:converters="clr-namespace:DrumBuddy.Converters"
              xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
              mc:Ignorable="d"
              x:Class="DrumBuddy.Views.HelperViews.MeasuresPanel">
-
-    <UserControl.Resources>
-        <converters:WidthToColumnsConverter x:Key="WidthToColumnsConverter" />
-    </UserControl.Resources>
     <ItemsControl x:Name="MeasuresItemControl">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>

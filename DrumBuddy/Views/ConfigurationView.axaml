@@ -6,7 +6,6 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:viewModels="clr-namespace:DrumBuddy.ViewModels"
-                                xmlns:converters="clr-namespace:DrumBuddy.Converters"
                                 xmlns:models="clr-namespace:DrumBuddy.Models"
                                 xmlns:views="clr-namespace:DrumBuddy.Views"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -21,9 +20,6 @@
             <Setter Property="BorderThickness" Value="1" />
         </Style>
     </UserControl.Styles>
-    <UserControl.Resources>
-        <converters:DrumHighlightConverter x:Key="DrumHighlightConverter" />
-    </UserControl.Resources>
     <Grid RowDefinitions="66,*">
         <Grid Background="{StaticResource HeaderGray}">
             <TextBlock Text="Configuration editor"

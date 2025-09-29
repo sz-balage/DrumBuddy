@@ -7,12 +7,8 @@
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
                           xmlns:viewModels="clr-namespace:DrumBuddy.ViewModels"
-                          xmlns:converters="clr-namespace:DrumBuddy.Converters"
                           mc:Ignorable="d" d:DesignWidth="1250" d:DesignHeight="500"
                           x:Class="DrumBuddy.Views.RecordingView">
-    <rxui:ReactiveUserControl.Resources>
-        <converters:WidthToColumnsConverter x:Key="WidthToColumnsConverter" />
-    </rxui:ReactiveUserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="66" />

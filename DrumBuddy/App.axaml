@@ -1,5 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:DrumBuddy.Converters"
              x:Class="DrumBuddy.App"
              RequestedThemeVariant="Light">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
@@ -28,6 +29,8 @@
             <GradientStop Offset="0" Color="{StaticResource Primary}" />
             <GradientStop Offset="1" Color="{StaticResource Secondary}" />
         </LinearGradientBrush>
+        <converters:DrumHighlightConverter x:Key="DrumHighlightConverter" />
+        <converters:WidthToColumnsConverter x:Key="WidthToColumnsConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>

@@ -7,15 +7,11 @@
                      xmlns:rxui="http://reactiveui.net"
                      xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
                      xmlns:dialogs="clr-namespace:DrumBuddy.ViewModels.Dialogs"
-                     xmlns:converters="clr-namespace:DrumBuddy.Converters"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      MinHeight="500"
                      MinWidth="400"
                      Title="Edit window" WindowState="Maximized"
                      x:Class="DrumBuddy.Views.Dialogs.EditingView">
-    <rxui:ReactiveWindow.Resources>
-        <converters:WidthToColumnsConverter x:Key="WidthToColumnsConverter" />
-    </rxui:ReactiveWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
