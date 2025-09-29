@@ -8,6 +8,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <MergeResourceInclude Source="/Controls/TabControl.axaml" />
                 <MergeResourceInclude Source="/Controls/TabItem.axaml" />
+                <MergeResourceInclude Source="/Controls/Expander.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
         <FontFamily x:Key="NunitoFont">
