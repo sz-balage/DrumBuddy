@@ -118,6 +118,7 @@ public class App : Application
             new FileConfigurationStorage(Locator.Current.GetRequiredService<ISerializationService>(),
                 Path.Combine(FilePathProvider.GetPathForFileStorage(), "config")));
         CurrentMutable.RegisterConstant(new ConfigurationService(
-            Locator.Current.GetRequiredService<FileConfigurationStorage>()));
+            Locator.Current.GetRequiredService<FileConfigurationStorage>(),
+            Locator.Current.GetRequiredService<MetronomePlayer>()));
     }
 }

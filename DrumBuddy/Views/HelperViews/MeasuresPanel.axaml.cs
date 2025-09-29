@@ -54,7 +54,7 @@ public partial class MeasuresPanel : UserControl
     public void BringCurrentMeasureIntoView(MeasureViewModel measure)
     {
         var idx = MeasuresItemControl.Items.IndexOf(measure);
-        var container = MeasuresItemControl.ContainerFromIndex(idx + 3);
+        var container = MeasuresItemControl.ContainerFromIndex(idx);
         if (container != null)
             // Scroll the container into view
             container.BringIntoView();

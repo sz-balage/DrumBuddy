@@ -27,6 +27,15 @@ public class MetronomePlayer : IDisposable
         Bass.Free();
     }
 
+    /// <summary>
+    ///     Sets volume of bass streams globally.
+    /// </summary>
+    /// <param name="volume">Level of volume, from 0 (silent) to 10000 (max)</param>
+    public void SetVolume(int volume)
+    {
+        Bass.GlobalStreamVolume = volume;
+    }
+
     public void PlayHighBeep()
     {
         Bass.ChannelPlay(_highBeep, true);

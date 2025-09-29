@@ -39,14 +39,28 @@
                            FontSize="16"
                            FontWeight="SemiBold" />
             </StackPanel>
-            <CheckBox x:Name="KeyboardInputCheckBox"
-                      HorizontalAlignment="Right"
-                      FontSize="20"
-                      FontFamily="{StaticResource NunitoFont}"
-                      Margin="0,0,8,0"
-                      IsChecked="False">
-                Keyboard input
-            </CheckBox>
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Margin="0,0,8,0"
+                        Spacing="8">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
+                    <TextBlock FontSize="20" Text="Metronome volume:" VerticalAlignment="Center" Margin="0,10,4,0" />
+                    <Slider x:Name="MetronomeVolumeSlider" Margin="0,0,0,10"
+                            Minimum="0"
+                            Maximum="10000"
+                            Value="{Binding MetronomeVolume}"
+                            Width="120"
+                            TickFrequency="1000"
+                            IsSnapToTickEnabled="True" />
+                </StackPanel>
+                <CheckBox x:Name="KeyboardInputCheckBox"
+                          FontSize="20"
+                          FontFamily="{StaticResource NunitoFont}"
+                          IsChecked="False">
+                    Keyboard input
+                </CheckBox>
+            </StackPanel>
         </Grid>
         <ScrollViewer Grid.Row="2">
             <ItemsControl ItemsSource="{Binding DrumMappings}">

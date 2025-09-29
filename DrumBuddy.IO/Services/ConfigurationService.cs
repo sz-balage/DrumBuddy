@@ -10,11 +10,14 @@ public class ConfigurationService
     private readonly Dictionary<Drum, double> _drumPositions = new();
     private readonly BehaviorSubject<Drum?> _listeningDrum = new(null);
     private readonly Dictionary<Drum, int> _mapping = new();
+    private readonly MetronomePlayer _metronomePlayer;
     private readonly FileConfigurationStorage _storage;
 
-    public ConfigurationService(FileConfigurationStorage storage)
+    public ConfigurationService(FileConfigurationStorage storage,
+        MetronomePlayer metronomePlayer)
     {
         _storage = storage;
+        _metronomePlayer = metronomePlayer;
         _mapping = _storage.LoadConfig();
         if (_mapping.Count == 0)
             foreach (var drum in Enum.GetValues<Drum>())
@@ -41,6 +44,11 @@ public class ConfigurationService
     }
 
     public IObservable<Drum?> ListeningDrumChanged => _listeningDrum.AsObservable();
+
+    public void ChangeVolume(int volume)
+    {
+        _metronomePlayer.SetVolume(volume);
+    }
 
     public void UpdateDrumPosition(Drum drum, double newY)
     {

@@ -22,8 +22,11 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     private readonly IMidiService _midiService;
     private IDisposable? _beatsSubscription;
     [Reactive] private bool _keyboardInput;
+    [Reactive] private int _metronomeVolume = 8000;
 
-    public ConfigurationViewModel(IScreen hostScreen, IMidiService midiService, ConfigurationService configService)
+    public ConfigurationViewModel(IScreen hostScreen,
+        IMidiService midiService,
+        ConfigurationService configService)
     {
         HostScreen = hostScreen;
         _midiService = midiService;
@@ -32,7 +35,8 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         foreach (var kvp in _configService.Mapping)
             DrumMappings.Add(new DrumMappingItem(kvp.Key, kvp.Value));
         MappingChanged.Subscribe(_ => UpdateDrumMappings());
-
+        this.WhenAnyValue(vm => vm.MetronomeVolume)
+            .Subscribe(vol => _configService.ChangeVolume(vol));
         this.WhenAnyValue(vm => vm.KeyboardInput)
             .Subscribe(ki =>
             {
