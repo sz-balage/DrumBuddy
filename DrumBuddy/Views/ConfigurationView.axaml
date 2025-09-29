@@ -12,8 +12,7 @@
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="DrumBuddy.Views.ConfigurationView">
     <UserControl.Styles>
-        <StyleInclude Source="/Styles/AppStyles.axaml" />
-        <Style Selector="Border">
+         <Style Selector="Border">
             <Setter Property="Background" Value="{StaticResource HeaderGray}" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="10" />

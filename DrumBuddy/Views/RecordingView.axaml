@@ -136,7 +136,4 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
     </Grid>
-    <UserControl.Styles>
-        <StyleInclude Source="/Styles/AppStyles.axaml" />
-    </UserControl.Styles>
 </rxui:ReactiveUserControl>

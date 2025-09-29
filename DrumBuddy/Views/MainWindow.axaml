@@ -15,8 +15,7 @@
                      x:Class="DrumBuddy.Views.MainWindow"
                      Title="DrumBuddy">
     <Window.Styles>
-        <StyleInclude Source="/Styles/AppStyles.axaml" />
-        <Style Selector="Button.Retry:disabled">
+         <Style Selector="Button.Retry:disabled">
             <Setter Property="Background" Value="{StaticResource Error}" />
             <Setter Property="Opacity" Value="0.5" />
         </Style>

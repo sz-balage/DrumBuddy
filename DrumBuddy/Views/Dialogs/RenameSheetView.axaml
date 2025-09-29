@@ -12,9 +12,6 @@
         ExtendClientAreaToDecorationsHint="True"
         CanResize="False"
         x:DataType="dialogVm:RenameSheetViewModel">
-    <Window.Styles>
-        <StyleInclude Source="/Styles/AppStyles.axaml" />
-    </Window.Styles>
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="20">
         <TextBlock Grid.Row="0"
                    x:Name="OriginalNameTB"

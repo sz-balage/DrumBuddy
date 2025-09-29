@@ -10,9 +10,6 @@
         ExtendClientAreaChromeHints="NoChrome"
         ExtendClientAreaToDecorationsHint="True"
         CanResize="False">
-    <Window.Styles>
-        <StyleInclude Source="/Styles/AppStyles.axaml" />
-    </Window.Styles>
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

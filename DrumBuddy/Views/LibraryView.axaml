@@ -12,9 +12,6 @@
     <Design.DataContext>
         <designHelpers:DesignLibraryViewModel />
     </Design.DataContext>
-    <UserControl.Styles>
-        <StyleInclude Source="/Styles/AppStyles.axaml" />
-    </UserControl.Styles>
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="66" />

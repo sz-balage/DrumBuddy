@@ -44,5 +44,6 @@
         </FluentTheme>
         <StyleInclude Source="avares://DrumBuddy/Assets/Icons.axaml" />
         <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml" />
+        <StyleInclude Source="/Styles/AppStyles.axaml" />
     </Application.Styles>
 </Application>

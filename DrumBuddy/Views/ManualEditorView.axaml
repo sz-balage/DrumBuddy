@@ -8,9 +8,6 @@
                                 xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
                                 mc:Ignorable="d" d:DesignWidth="1600" d:DesignHeight="800"
                                 x:Class="DrumBuddy.Views.ManualEditorView">
-    <UserControl.Styles>
-        <StyleInclude Source="/Styles/AppStyles.axaml" />
-    </UserControl.Styles>
     <Grid>
         <Grid RowDefinitions="Auto,*,Auto,*" x:Name="Root">
             <Border Height="66" Margin="0,0,0,10" Grid.Row="0" Background="{StaticResource HeaderGray}">

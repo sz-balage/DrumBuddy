@@ -15,9 +15,6 @@
     <Design.DataContext>
         <designHelpers:DesignCompareViewModel />
     </Design.DataContext>
-    <rxui:ReactiveWindow.Styles>
-        <StyleInclude Source="/Styles/AppStyles.axaml" />
-    </rxui:ReactiveWindow.Styles>
     <Grid RowDefinitions="0.5*,0.5*" Margin="5">
         <Grid Grid.Row="0" RowDefinitions="25,*">
             <TextBlock Classes="header" x:Name="BaseSheetNameTB" />

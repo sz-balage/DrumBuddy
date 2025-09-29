@@ -53,9 +53,5 @@
     <Design.DataContext>
         <vm:HomeViewModel />
     </Design.DataContext>
-    <UserControl.Styles>
-        <StyleInclude Source="/Styles/AppStyles.axaml" />
-    </UserControl.Styles>
-
 
 </rxui:ReactiveUserControl>
