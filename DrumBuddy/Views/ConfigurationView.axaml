@@ -92,16 +92,15 @@
             </TabItem>
             <TabItem Header="Settings" FontSize="16">
                 <StackPanel Spacing="16" Margin="0,4,0,0">
-                    <Border CornerRadius="8"
-                            Padding="12"
-                            Background="{StaticResource LighterGray}"
-                            BorderBrush="{StaticResource DarkerGray}"
-                            BorderThickness="1">
+                    <Expander Header="Audio Settings"
+                              Background="{StaticResource LighterGray}"
+                              HorizontalAlignment="Stretch"
+                              CornerRadius="8"
+                              FontSize="16"
+                              FontWeight="SemiBold"
+                              IsExpanded="True"
+                              Margin="0,0,0,4">
                         <StackPanel Spacing="8">
-                            <TextBlock Text="Audio Settings"
-                                       FontWeight="SemiBold"
-                                       FontSize="16"
-                                       Margin="0,0,0,4" />
                             <TextBlock Text="Metronome Volume"
                                        FontWeight="Medium"
                                        FontSize="14" />
@@ -113,24 +112,23 @@
                                     IsSnapToTickEnabled="True"
                                     Width="200" />
                         </StackPanel>
-                    </Border>
+                    </Expander>
+                    <Expander Header="Input Settings"
+                              Background="{StaticResource LighterGray}"
+                              HorizontalAlignment="Stretch"
+                              CornerRadius="8"
+                              FontSize="16"
+                              FontWeight="SemiBold"
+                              IsExpanded="True"
+                              Margin="0,0,0,4">
+                        <CheckBox x:Name="KeyboardInputCheckBox"
+                                  FontSize="16"
+                                  FontFamily="{StaticResource NunitoFont}"
+                                  IsChecked="{Binding KeyboardInput}">
+                            Keyboard input
+                        </CheckBox>
+                    </Expander>
 
-                    <!-- Input Settings Group -->
-                    <Border CornerRadius="8" Background="#f5f5f5" Padding="12" BorderBrush="Gray"
-                            BorderThickness="1">
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="Input Settings"
-                                       FontWeight="SemiBold"
-                                       FontSize="16"
-                                       Margin="0,0,0,4" />
-                            <CheckBox x:Name="KeyboardInputCheckBox"
-                                      FontSize="16"
-                                      FontFamily="{StaticResource NunitoFont}"
-                                      IsChecked="{Binding KeyboardInput}">
-                                Keyboard input
-                            </CheckBox>
-                        </StackPanel>
-                    </Border>
                 </StackPanel>
             </TabItem>
         </TabControl>
