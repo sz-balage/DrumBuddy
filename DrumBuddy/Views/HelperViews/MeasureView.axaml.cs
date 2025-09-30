@@ -14,6 +14,9 @@ namespace DrumBuddy.Views.HelperViews;
 
 public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
 {
+    public static readonly StyledProperty<bool> IsBeingEditedProperty =
+        AvaloniaProperty.Register<MeasureView, bool>(nameof(IsBeingEdited));
+
     public MeasureView()
     {
         InitializeComponent();
@@ -36,6 +39,9 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
 
             this.Bind(ViewModel, vm => vm.IsPointerVisible, v => v.Pointer.IsVisible)
                 .DisposeWith(d);
+            this.WhenAnyValue(v => v.IsBeingEdited)
+                .Subscribe(isEdited => _editIndicator.IsVisible = isEdited)
+                .DisposeWith(d);
         });
         this.GetObservable(BoundsProperty).Subscribe(bounds =>
         {
@@ -47,9 +53,18 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
         });
     }
 
+    public bool IsBeingEdited
+    {
+        get => GetValue(IsBeingEditedProperty);
+        set => SetValue(IsBeingEditedProperty, value);
+    }
+
     private ItemsControl _itemsControl => this.FindControl<ItemsControl>("ItemsControl");
     private Canvas _evalBoxesCanvas => this.FindControl<Canvas>("EvalBoxesCanvas");
     private Line _pointer => this.FindControl<Line>("Pointer");
+
+    private Grid _editIndicator => this.FindControl<Grid>("EditIndicator");
+    // private Line _editIndicator2 => this.FindControl<Line>("EditIndicator2");
 
     private void DrawEvaluationBoxes()
     {

@@ -11,50 +11,27 @@
                      MinHeight="500"
                      MinWidth="1250"
                      Title="Compare sheets"
-                     x:Class="DrumBuddy.Views.Dialogs.CompareView">
+                     x:Class="DrumBuddy.Views.Dialogs.CompareView"
+                     x:DataType="dialogs:CompareViewModel">
+    <!-- TODO: gridsplitter: double click should reset, and a min width should also be set for each column-->
     <Design.DataContext>
         <designHelpers:DesignCompareViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="0.5*,0.5*" Margin="5">
-        <Grid Grid.Row="0" RowDefinitions="25,*">
+    <Grid ColumnDefinitions="*,Auto,*" Margin="5">
+        <Grid Grid.Column="0" RowDefinitions="25,*">
             <TextBlock Classes="header" x:Name="BaseSheetNameTB" />
-            <Border Grid.Row="1" BorderThickness="3" BorderBrush="{StaticResource Accent}" CornerRadius="2">
-                <ScrollViewer x:Name="BaseScrollViewer" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl x:Name="BaseSheetItemsControl">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <helperViews:MeasureView Width="600" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Border>
+            <ScrollViewer Grid.Row="1" x:Name="BaseScrollViewer" VerticalScrollBarVisibility="Auto">
+                <helperViews:MeasuresPanel Measures="{Binding BaseSheetMeasures}" />
+            </ScrollViewer>
         </Grid>
-        <Grid Grid.Row="1" RowDefinitions="25,*">
+        <GridSplitter Grid.Column="1" Background="Black" ResizeDirection="Columns" />
+        <Grid Grid.Column="2" RowDefinitions="25,*">
             <TextBlock Classes="header" x:Name="ComparedSheetNameTB" />
             <TextBlock HorizontalAlignment="Right" Classes="header" x:Name="ComparedSheetPercentageTB" />
-
-            <Border Grid.Row="1" BorderThickness="3" BorderBrush="{StaticResource Accent}" CornerRadius="2">
-                <ScrollViewer x:Name="ComparedScrollViewer" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl x:Name="ComparedSheetItemsControl">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <helperViews:MeasureView Width="600" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Border>
+            <!-- TODO move this textblock elsewhere cause it overplay -->
+            <ScrollViewer Grid.Row="1" x:Name="ComparedScrollViewer" VerticalScrollBarVisibility="Auto">
+                <helperViews:MeasuresPanel Measures="{Binding ComparedSheetMeasures}" />
+            </ScrollViewer>
 
         </Grid>
     </Grid>

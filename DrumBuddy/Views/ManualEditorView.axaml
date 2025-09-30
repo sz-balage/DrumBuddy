@@ -64,11 +64,11 @@
                     </Button>
                 </Grid>
             </Border>
-            <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto" MinHeight="190">
+            <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto" MinHeight="200">
                 <ItemsControl x:Name="MeasuresItemsControl">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel />
+                            <helperViews:MeasureWrapPanel />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
@@ -76,10 +76,13 @@
                             <Grid>
                                 <Border x:Name="MeasureBorder"
                                         PointerPressed="MeasureBorder_OnPointerPressed"
-                                        BorderThickness="3"
+                                        BorderThickness="2"
                                         CornerRadius="8"
-                                        BorderBrush="Transparent">
-                                    <helperViews:MeasureView Width="600" />
+                                        BorderBrush="Transparent"
+                                        HorizontalAlignment="Stretch"
+                                        Margin="-3"
+                                        VerticalAlignment="Stretch">
+                                    <helperViews:MeasureView />
                                 </Border>
                                 <StackPanel Orientation="Horizontal"
                                             HorizontalAlignment="Center"

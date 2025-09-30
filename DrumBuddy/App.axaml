@@ -30,7 +30,6 @@
             <GradientStop Offset="1" Color="{StaticResource Secondary}" />
         </LinearGradientBrush>
         <converters:DrumHighlightConverter x:Key="DrumHighlightConverter" />
-        <converters:WidthToColumnsConverter x:Key="WidthToColumnsConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>

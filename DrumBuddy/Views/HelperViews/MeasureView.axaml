@@ -23,6 +23,20 @@
                     <Line StartPoint="0,170" EndPoint="1200,170" Stroke="Black" StrokeThickness="2" />
                     <Line StartPoint="1200,90" EndPoint="1200,170" Stroke="Black" StrokeThickness="2" />
                 </Canvas>
+                <Grid x:Name="EditIndicator">
+                    <Line StartPoint="0,90" EndPoint="0,170"
+                          Stroke="{StaticResource Accent}"
+                          StrokeThickness="4" />
+                    <Line StartPoint="0,90" EndPoint="1200,90"
+                          Stroke="{StaticResource Accent}"
+                          StrokeThickness="4" />
+                    <Line StartPoint="1200,90" EndPoint="1200,170"
+                          Stroke="{StaticResource Accent}"
+                          StrokeThickness="4" />
+                    <Line StartPoint="0,170" EndPoint="1200,170"
+                          Stroke="{StaticResource Accent}"
+                          StrokeThickness="4" />
+                </Grid>
                 <Canvas x:Name="EvalBoxesCanvas" IsHitTestVisible="False" />
                 <Border HorizontalAlignment="Left">
                     <ItemsControl x:Name="ItemsControl" HorizontalAlignment="Stretch">
@@ -39,6 +53,14 @@
                     </ItemsControl>
                 </Border>
                 <Line x:Name="Pointer" Stroke="Red" StrokeThickness="2" />
+                <!-- <Ellipse x:Name="EditIndicator" -->
+                <!--          Width="20" -->
+                <!--          Height="20" -->
+                <!--          Fill="{StaticResource Accent}" -->
+                <!--          HorizontalAlignment="Left" -->
+                <!--          VerticalAlignment="Top" -->
+                <!--          Margin="10,10,0,0" -->
+                <!--          IsVisible="False" /> -->
             </Grid>
         </Border>
     </Viewbox>

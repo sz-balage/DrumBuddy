@@ -26,21 +26,15 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
                                     ViewModel.BaseSheetMeasures.Count + ")";
             _comparedSheetNameTB.Text = "Compared Sheet: " + ViewModel.ComparedSheetName + " (Measure count: " +
                                         ViewModel.ComparedSheetMeasures.Count + ")";
-
-            this.OneWayBind(ViewModel, vm => vm.BaseSheetMeasures, v => v._baseSheetItemsControl.ItemsSource)
-                .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.CorrectPercentage, v => v._comparedSheetPercentageTB.Text,
                     d1 => $"{Math.Round(d1, 1)}% of the base sheet was played correctly.")
                 .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.ComparedSheetMeasures, v => v._comparedSheetItemsControl.ItemsSource)
-                .DisposeWith(d);
+
             _baseScrollViewer.ScrollChanged += BaseScrollChanged;
             _comparedScrollViewer.ScrollChanged += ComparedScrollChanged;
         });
     }
 
-    private ItemsControl _baseSheetItemsControl => this.FindControl<ItemsControl>("BaseSheetItemsControl")!;
-    private ItemsControl _comparedSheetItemsControl => this.FindControl<ItemsControl>("ComparedSheetItemsControl")!;
     private TextBlock _baseSheetNameTB => this.FindControl<TextBlock>("BaseSheetNameTB")!;
     private TextBlock _comparedSheetNameTB => this.FindControl<TextBlock>("ComparedSheetNameTB")!;
     private TextBlock _comparedSheetPercentageTB => this.FindControl<TextBlock>("ComparedSheetPercentageTB")!;

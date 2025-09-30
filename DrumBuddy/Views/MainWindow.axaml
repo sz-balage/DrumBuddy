@@ -7,15 +7,15 @@
                      xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
                      xmlns:rxui="http://reactiveui.net"
                      xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
-                     MinHeight="500"
-                     MinWidth="1250"
+                     MinHeight="600"
+                     MinWidth="1000"
                      WindowState="Maximized"
                      xmlns:models="clr-namespace:DrumBuddy.Models"
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="DrumBuddy.Views.MainWindow"
                      Title="DrumBuddy">
     <Window.Styles>
-         <Style Selector="Button.Retry:disabled">
+        <Style Selector="Button.Retry:disabled">
             <Setter Property="Background" Value="{StaticResource Error}" />
             <Setter Property="Opacity" Value="0.5" />
         </Style>

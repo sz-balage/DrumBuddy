@@ -20,6 +20,7 @@ using DrumBuddy.Models;
 using DrumBuddy.ViewModels;
 using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.Views.Dialogs;
+using DrumBuddy.Views.HelperViews;
 using ReactiveUI;
 using Splat;
 
@@ -119,15 +120,13 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 var container = MeasuresItemsControl.ItemContainerGenerator.ContainerFromIndex(i);
                 if (container is ContentPresenter presenter)
                 {
-                    var border = presenter.FindDescendantOfType<Border>();
+                    var measureView = presenter.FindDescendantOfType<MeasureView>();
                     var buttons = presenter.GetVisualDescendants().OfType<Button>().ToList();
                     var deleteButton = buttons.FirstOrDefault(b => b.Name == "DeleteMeasureButton");
                     var duplicateButton = buttons.FirstOrDefault(b => b.Name == "DuplicateMeasureButton");
 
-                    if (border != null)
-                        border.BorderBrush = i == currentIndex
-                            ? _borderBrush
-                            : new SolidColorBrush(Colors.Transparent);
+                    if (measureView != null)
+                        measureView.IsBeingEdited = i == currentIndex;
 
                     if (deleteButton != null)
                         deleteButton.IsVisible = i == currentIndex && itemsCount > 1;

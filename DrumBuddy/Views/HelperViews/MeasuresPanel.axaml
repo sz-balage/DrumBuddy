@@ -8,16 +8,14 @@
     <ItemsControl x:Name="MeasuresItemControl">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-                <UniformGrid
-                    Columns="{Binding ElementName=MeasuresItemControl, 
-                                                  Path=Bounds.Width, 
-                                                  Converter={StaticResource WidthToColumnsConverter}}" />
+                <helperViews:MeasureWrapPanel />
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
+
         <ItemsControl.ItemTemplate>
             <DataTemplate>
                 <helperViews:MeasureView PointerPressed="OnMeasurePointerPressed"
-                                         HorizontalAlignment="Stretch"
+                                         HorizontalAlignment="Left"
                                          VerticalAlignment="Top" />
             </DataTemplate>
         </ItemsControl.ItemTemplate>
