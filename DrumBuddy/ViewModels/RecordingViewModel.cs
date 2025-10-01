@@ -24,8 +24,6 @@ namespace DrumBuddy.ViewModels;
 
 public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
-    // TODO: when overlay is visible, add the option to evaluate on the spot (this requires adding option to only evaluate one rythmicgroup)
-    // TODO: delete overlay rg when passed
     private static int _globalPointerIdx;
     private readonly ConfigurationService _configService;
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
@@ -211,11 +209,45 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
                     if (rythmicGroupIndex == 0)
                     {
                         if (measureIdx != 0)
-                            Measures[measureIdx - 1].AddRythmicGroupFromNotes(tempNotes, 3);
+                        {
+                            var actualIdx = measureIdx - 1;
+                            var actualMeasure = Measures[actualIdx];
+                            actualMeasure.AddRythmicGroupFromNotes(tempNotes, 3);
+                            //add evaluation for the rythmicgroup and remove measure for overlay (if present, and overlay is enabled)
+                            if (OverlayVisible && OverlayMeasures.Count > actualIdx)
+                            {
+                                var overlayMeasure = OverlayMeasures[actualIdx];
+                                if (overlayMeasure.RythmicGroups.Count == 4)
+                                {
+                                    var overlayRg = overlayMeasure.RythmicGroups[3];
+                                    var eval = MeasureEvaluator.EvaluateGroup(actualIdx,
+                                        3,
+                                        overlayRg.RythmicGroup,
+                                        actualMeasure.RythmicGroups[3].RythmicGroup);
+                                    actualMeasure.EvaluationBoxes.Add(eval);
+                                    overlayMeasure.RythmicGroups[3].Hide();
+                                }
+                            }
+                        }
                     }
                     else
                     {
+                        //add evaluation for the rythmicgroup and remove measure for overlay (if present, and overlay is enabled)0
                         Measures[measureIdx].AddRythmicGroupFromNotes(tempNotes, rythmicGroupIndex);
+                        if (OverlayVisible && OverlayMeasures.Count > measureIdx)
+                        {
+                            var overlayMeasure = OverlayMeasures[measureIdx];
+                            if (overlayMeasure.RythmicGroups.Count >= rythmicGroupIndex)
+                            {
+                                var overlayRg = overlayMeasure.RythmicGroups[rythmicGroupIndex - 1];
+                                var eval = MeasureEvaluator.EvaluateGroup(measureIdx,
+                                    rythmicGroupIndex - 1,
+                                    overlayRg.RythmicGroup,
+                                    Measures[measureIdx].RythmicGroups[rythmicGroupIndex - 1].RythmicGroup);
+                                Measures[measureIdx].EvaluationBoxes.Add(eval);
+                                overlayMeasure.RythmicGroups[rythmicGroupIndex - 1].Hide();
+                            }
+                        }
                     }
 
                     tempNotes.Clear();
@@ -303,6 +335,10 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
             ClearMeasures();
             return;
         }
+
+        if (OverlayVisible)
+            foreach (var measureViewModel in OverlayMeasures)
+                measureViewModel.RythmicGroups.ToList().ForEach(rg => rg.Show());
 
         //ask user if sheet should be saved
         var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm, [..measures]));

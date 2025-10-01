@@ -45,13 +45,13 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            x:Name="ComparedSheetNameTB" />
-
+                <TextBlock HorizontalAlignment="Right"
+                           VerticalAlignment="Bottom"
+                           Classes="header"
+                           FontSize="16"
+                           x:Name="ComparedSheetPercentageTB" />
             </Grid>
-            <TextBlock Grid.Row="1" HorizontalAlignment="Left"
-                       VerticalAlignment="Top"
-                       Classes="header"
-                       FontSize="16"
-                       x:Name="ComparedSheetPercentageTB" />
+
             <ScrollViewer Grid.Row="1" x:Name="ComparedScrollViewer" VerticalScrollBarVisibility="Auto">
                 <helperViews:MeasuresPanel Measures="{Binding ComparedSheetMeasures}" />
             </ScrollViewer>

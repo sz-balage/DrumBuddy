@@ -16,6 +16,7 @@ namespace DrumBuddy.ViewModels.HelperViewModels;
 public partial class RythmicGroupViewModel : ReactiveObject
 {
     private readonly NoteDrawHelper _drawHelper;
+    [Reactive] private bool _isHidden;
     [Reactive] private RythmicGroup _rythmicGroup;
     [Reactive] private double _width;
 
@@ -38,5 +39,15 @@ public partial class RythmicGroupViewModel : ReactiveObject
         var data = _drawHelper.GetLinesAndImagesToDraw(rythmicGroup);
         LinesCollection.Add(data.LineAndStrokes);
         NotesImageAndBoundsList.AddRange(data.Images);
+    }
+
+    public void Hide()
+    {
+        IsHidden = true;
+    }
+
+    public void Show()
+    {
+        IsHidden = false;
     }
 }

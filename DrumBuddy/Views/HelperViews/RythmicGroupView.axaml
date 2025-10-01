@@ -9,13 +9,14 @@
                           mc:Ignorable="d"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
+                          x:DataType="vm:RythmicGroupViewModel"
                           x:Class="DrumBuddy.Views.HelperViews.RythmicGroupView">
 
     <Design.DataContext>
         <vm:RythmicGroupViewModel />
     </Design.DataContext>
 
-    <Grid>
+    <Grid IsVisible="{Binding !IsHidden}">
         <ItemsControl x:Name="NoteImagesList">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>

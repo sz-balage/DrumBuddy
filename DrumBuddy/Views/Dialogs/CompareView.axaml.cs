@@ -28,7 +28,7 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
             _comparedSheetNameTB.Text = "Compared Sheet: " + ViewModel.ComparedSheetName + " (Measure count: " +
                                         ViewModel.ComparedSheetMeasures.Count + ")";
             this.OneWayBind(ViewModel, vm => vm.CorrectPercentage, v => v._comparedSheetPercentageTB.Text,
-                    d1 => $"{Math.Round(d1, 1)}% of the base sheet was played correctly.")
+                    d1 => $"{Math.Round(d1, 1)}% played correctly.")
                 .DisposeWith(d);
 
             _baseScrollViewer.ScrollChanged += BaseScrollChanged;
