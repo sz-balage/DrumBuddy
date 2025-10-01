@@ -125,8 +125,16 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         if (!IsSaved)
         {
             var result = await ShowConfirmation.Handle(Unit.Default);
-            if (result == Confirmation.Close)
+            if (result == Confirmation.Discard)
+            {
                 await _onClose();
+                IsSaved = true;
+            }
+            else if (result == Confirmation.Save)
+            {
+                await Save();
+                await _onClose();
+            }
         }
         else
         {

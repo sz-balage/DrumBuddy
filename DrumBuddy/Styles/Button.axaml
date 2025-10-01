@@ -5,7 +5,7 @@
             <!-- Add Controls for Previewer Here -->
         </Border>
     </Design.PreviewWith>
-    <Style Selector="Button.button">
+    <Style Selector="Button.dialogbutton">
         <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Padding" Value="16,10" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -19,6 +19,12 @@
     </Style>
     <Style Selector="Button.confirm:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{StaticResource Accent}" />
+    </Style>
+    <Style Selector="Button.delete">
+        <Setter Property="Background" Value="{StaticResource Error}" />
+    </Style>
+    <Style Selector="Button.delete:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ErrorLighter}" />
     </Style>
 
     <Style Selector="Button.card">

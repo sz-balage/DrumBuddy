@@ -62,7 +62,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
 
                         var result = await editorVm.ShowConfirmation.Handle(Unit.Default);
 
-                        if (result == Confirmation.Close)
+                        if (result == Confirmation.Discard)
                         {
                             isClosingConfirmed = true;
                             Close();

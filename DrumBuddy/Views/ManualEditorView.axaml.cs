@@ -79,6 +79,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 .Subscribe(vm =>
                 {
                     BuildMatrix(vm);
+                    UpdateMeasureBorders(vm.CurrentMeasureIndex);
                     vm.WhenAnyValue(x => x.CurrentMeasureIndex)
                         .Subscribe(_ => BuildMatrix(vm))
                         .DisposeWith(d);

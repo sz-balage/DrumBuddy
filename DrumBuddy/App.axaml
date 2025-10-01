@@ -24,7 +24,8 @@
         <Color x:Key="LighterGray">#EBEBEB</Color>
         <Color x:Key="AppGreen">#77A690</Color>
         <Color x:Key="Error">#D62828</Color>
-        <Color x:Key="Warning">#BEAC0E</Color>
+        <Color x:Key="ErrorLighter">#D62828</Color>
+        <Color x:Key="Warning">#DF5353</Color>
         <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0%,0%" EndPoint="100%,100%">
             <GradientStop Offset="0" Color="{StaticResource Primary}" />
             <GradientStop Offset="1" Color="{StaticResource Secondary}" />

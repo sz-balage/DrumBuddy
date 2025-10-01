@@ -19,18 +19,37 @@
         <Grid Grid.Row="1" Margin="0,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0"
-                    Content="Cancel"
-                    Classes="button"
-                    x:Name="Cancel" />
+                    Margin="0,0,6,0"
+                    Classes="dialogbutton confirm"
+                    x:Name="Save">
+                <StackPanel Orientation="Horizontal">
+                    <PathIcon Data="{StaticResource Save}" />
+                    <TextBlock Margin="5,3,0,0">
+                        Save
+                    </TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="1"
+                    Margin="0,0,6,0"
+                    Classes="dialogbutton delete"
+                    x:Name="Discard">
+                <StackPanel Orientation="Horizontal">
+                    <PathIcon Data="{StaticResource delete}" />
+                    <TextBlock Margin="5,3,0,0">
+                        Discard
+                    </TextBlock>
+                </StackPanel>
+            </Button>
             <Button Grid.Column="2"
-                    Classes="button confirm"
-                    Content="Confirm"
-                    x:Name="Confirm" />
+                    Classes="dialogbutton"
+                    x:Name="Cancel">
+                <TextBlock Margin="0,3,0,0">Cancel</TextBlock>
+            </Button>
             <!-- TODO: modify to 3 buttons, Save, Discard, and Cancel -->
         </Grid>
     </Grid>

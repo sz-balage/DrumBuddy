@@ -47,11 +47,11 @@
 
             <Button Grid.Column="0"
                     Content="Cancel"
-                    Classes="button"
+                    Classes="dialogbutton"
                     x:Name="Cancel" />
 
             <Button Grid.Column="2"
-                    Classes="button confirm"
+                    Classes="dialogbutton confirm"
                     Content="Save"
                     x:Name="Save" />
         </Grid>

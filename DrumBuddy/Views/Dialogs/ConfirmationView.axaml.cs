@@ -1,5 +1,4 @@
-﻿using Avalonia.Input;
-using Avalonia.ReactiveUI;
+﻿using Avalonia.ReactiveUI;
 using DrumBuddy.Models;
 using DrumBuddy.ViewModels.Dialogs;
 using ReactiveUI;
@@ -14,13 +13,9 @@ public partial class ConfirmationView : ReactiveWindow<ConfirmationViewModel>
         this.WhenActivated(d =>
         {
             ViewModel = new ConfirmationViewModel();
-            Confirm.Click += (sender, e) => Close(Confirmation.Close);
+            Discard.Click += (sender, e) => Close(Confirmation.Discard);
             Cancel.Click += (sender, e) => Close(Confirmation.Cancel);
-            KeyDown += (sender, e) =>
-            {
-                if (e.Key == Key.Escape) Close(Confirmation.Cancel);
-                if (e.Key == Key.Enter) Close(Confirmation.Close);
-            };
+            Save.Click += (sender, e) => Close(Confirmation.Save);
         });
     }
 }
