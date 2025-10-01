@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.ViewModels.Dialogs;
@@ -53,6 +54,16 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
         finally
         {
             _isSyncingScroll = false;
+        }
+    }
+
+    private void GridSplitter_OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (Content is Grid grid && grid.ColumnDefinitions.Count >= 3)
+        {
+            // reset both sheet columns to equal widths
+            grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
+            grid.ColumnDefinitions[2].Width = new GridLength(1, GridUnitType.Star);
         }
     }
 

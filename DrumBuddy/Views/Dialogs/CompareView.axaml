@@ -13,26 +13,47 @@
                      Title="Compare sheets"
                      x:Class="DrumBuddy.Views.Dialogs.CompareView"
                      x:DataType="dialogs:CompareViewModel">
-    <!-- TODO: gridsplitter: double click should reset, and a min width should also be set for each column-->
+
     <Design.DataContext>
         <designHelpers:DesignCompareViewModel />
     </Design.DataContext>
-    <Grid ColumnDefinitions="*,Auto,*" Margin="5">
-        <Grid Grid.Column="0" RowDefinitions="25,*">
-            <TextBlock Classes="header" x:Name="BaseSheetNameTB" />
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="400" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" MinWidth="400" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" RowDefinitions="66,*">
+            <Grid Background="{StaticResource HeaderGray}">
+                <TextBlock Classes="header" HorizontalAlignment="Left" VerticalAlignment="Center"
+                           x:Name="BaseSheetNameTB" />
+            </Grid>
             <ScrollViewer Grid.Row="1" x:Name="BaseScrollViewer" VerticalScrollBarVisibility="Auto">
                 <helperViews:MeasuresPanel Measures="{Binding BaseSheetMeasures}" />
             </ScrollViewer>
         </Grid>
-        <GridSplitter Grid.Column="1" Background="Black" ResizeDirection="Columns" />
-        <Grid Grid.Column="2" RowDefinitions="25,*">
-            <TextBlock Classes="header" x:Name="ComparedSheetNameTB" />
-            <TextBlock HorizontalAlignment="Right" Classes="header" x:Name="ComparedSheetPercentageTB" />
-            <!-- TODO move this textblock elsewhere cause it overplay -->
+        <GridSplitter Grid.Column="1"
+                      Background="Black"
+                      BorderThickness="2"
+                      ResizeDirection="Columns"
+                      DoubleTapped="GridSplitter_OnDoubleTapped" />
+        <Grid Grid.Column="2" RowDefinitions="66,*">
+            <Grid Background="{StaticResource HeaderGray}">
+                <TextBlock Classes="header"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           x:Name="ComparedSheetNameTB" />
+
+            </Grid>
+            <TextBlock Grid.Row="1" HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Classes="header"
+                       FontSize="16"
+                       x:Name="ComparedSheetPercentageTB" />
             <ScrollViewer Grid.Row="1" x:Name="ComparedScrollViewer" VerticalScrollBarVisibility="Auto">
                 <helperViews:MeasuresPanel Measures="{Binding ComparedSheetMeasures}" />
             </ScrollViewer>
-
         </Grid>
     </Grid>
 </rxui:ReactiveWindow>

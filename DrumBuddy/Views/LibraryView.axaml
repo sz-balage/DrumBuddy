@@ -9,6 +9,7 @@
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Views.LibraryView"
                           x:DataType="vm:LibraryViewModel">
+    <!-- TODO: batch delete -->
     <Design.DataContext>
         <designHelpers:DesignLibraryViewModel />
     </Design.DataContext>
