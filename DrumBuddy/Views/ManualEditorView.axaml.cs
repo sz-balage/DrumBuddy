@@ -139,6 +139,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         }, DispatcherPriority.Loaded);
     }
 
+    // TODO: move most of this logic to axaml
     private void BuildMatrix(ManualEditorViewModel vm)
     {
         _matrixGrid.Children.Clear();
