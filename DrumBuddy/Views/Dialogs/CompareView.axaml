@@ -34,7 +34,8 @@
             </ScrollViewer>
         </Grid>
         <GridSplitter Grid.Column="1"
-                      Background="Black"
+                      Background="{StaticResource DarkerGray}"
+                      BorderBrush="{StaticResource DarkerGray}"
                       BorderThickness="2"
                       ResizeDirection="Columns"
                       DoubleTapped="GridSplitter_OnDoubleTapped" />
