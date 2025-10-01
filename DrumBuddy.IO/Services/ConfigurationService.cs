@@ -1,9 +1,8 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DrumBuddy.Core.Enums;
-using DrumBuddy.IO.Services;
 
-namespace DrumBuddy.IO;
+namespace DrumBuddy.IO.Services;
 
 public class ConfigurationService
 {

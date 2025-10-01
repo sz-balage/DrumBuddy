@@ -43,14 +43,6 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
                 .Subscribe(isEdited => _editIndicator.IsVisible = isEdited)
                 .DisposeWith(d);
         });
-        this.GetObservable(BoundsProperty).Subscribe(bounds =>
-        {
-            if (ViewModel != null)
-            {
-                ViewModel.Width = bounds.Width;
-                ViewModel.Height = bounds.Height;
-            }
-        });
     }
 
     public bool IsBeingEdited

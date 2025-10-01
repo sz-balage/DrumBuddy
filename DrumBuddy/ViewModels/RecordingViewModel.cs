@@ -10,7 +10,6 @@ using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO;
 using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
@@ -25,6 +24,8 @@ namespace DrumBuddy.ViewModels;
 
 public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
+    // TODO: when overlay is visible, add the option to evaluate on the spot (this requires adding option to only evaluate one rythmicgroup)
+    // TODO: delete overlay rg when passed
     private static int _globalPointerIdx;
     private readonly ConfigurationService _configService;
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;

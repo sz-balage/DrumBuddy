@@ -31,6 +31,7 @@
                     Classes="button confirm"
                     Content="Confirm"
                     x:Name="Confirm" />
+            <!-- TODO: modify to 3 buttons, Save, Discard, and Cancel -->
         </Grid>
     </Grid>
 </Window>

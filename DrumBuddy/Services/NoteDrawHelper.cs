@@ -6,7 +6,7 @@ using Avalonia;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO;
+using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using Splat;
 using Note = DrumBuddy.Core.Models.Note;
@@ -131,7 +131,6 @@ public class NoteDrawHelper
             Func<Point, NoteImageAndBounds> getCircleImage,
             RythmicGroup rythmicGroup)
     {
-        //TODO: hunt bugs by looking at keyboard input values
         var highestY = rythmicGroup.NoteGroups.Select(ng => ng.Select(n => GetYPositionForDrum(n.Drum)).Min()).Min();
         var linesAndStrokes = new List<LineAndStroke>();
         var images = new List<NoteImageAndBounds>();
@@ -150,7 +149,7 @@ public class NoteDrawHelper
                 var previousY = images[i - 1].Bounds.Y;
                 var point = new Point(previousX + 20, previousY);
                 var circleImage =
-                    getCircleImage(point); // TODO: find the rightmost note in notegroup and draw next to that
+                    getCircleImage(point);
                 images.Add(circleImage);
                 x += GetDisplacementForNoteValue(noteGroup.Value,
                     _noteGroupWidth);
@@ -201,7 +200,7 @@ public class NoteDrawHelper
             var lineOfGroup = linesAndStrokes.Single(line =>
                 line.NoteGroup == sixteenthNoteGroup && line.LineType == LineType.Vertical);
             var lastNonRest = noteGroups.Last(ng => !ng.IsRest);
-            if (lineOfGroup == linesAndStrokes.First() && sixteenthNoteGroup == lastNonRest) //TODO: fix bug
+            if (lineOfGroup == linesAndStrokes.First() && sixteenthNoteGroup == lastNonRest)
             {
                 //draw two lines diagonally
                 //TODO: use curly lines instead of straight lines

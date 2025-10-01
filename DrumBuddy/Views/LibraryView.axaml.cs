@@ -9,8 +9,8 @@ using Avalonia.ReactiveUI;
 using DrumBuddy.Core.Models;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO;
 using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.ViewModels.Dialogs;
@@ -39,8 +39,6 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
         this.WhenActivated(async d =>
         {
-            //TODO: look at why design vm still dont work
-
             this.OneWayBind(ViewModel,
                     vm => vm.Sheets,
                     v => v.SheetsLB.ItemsSource)

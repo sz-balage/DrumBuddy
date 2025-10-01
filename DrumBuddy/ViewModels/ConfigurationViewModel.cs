@@ -7,8 +7,8 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using DrumBuddy.Core.Enums;
-using DrumBuddy.IO;
 using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -17,6 +17,11 @@ namespace DrumBuddy.ViewModels;
 
 public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 {
+    // TODO: make every setting persistent
+    // TODO: make drum positions configurable (simple combobox will do)
+    // TODO: make config files importable/exportable
+    // TODO: make default save direction configurable
+    // TODO: add option to revert to default drum mappings, and drum positions
     private readonly ConfigurationService _configService;
     private readonly Subject<Unit> _mappingChanged = new();
     private readonly IMidiService _midiService;

@@ -14,8 +14,8 @@
                         Padding="10"
                         CornerRadius="8"
                         Width="340"
-                        Background="{StaticResource HeaderGray}"
-                        BorderBrush="LightSlateGray"
+                        Background="{StaticResource LighterGray}"
+                        BorderBrush="{StaticResource HeaderGray}"
                         BorderThickness="2">
                     <Grid ColumnDefinitions="*,Auto">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

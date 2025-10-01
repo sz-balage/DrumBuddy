@@ -50,7 +50,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     {
         Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<ISheetStorage>(),
             Locator.Current.GetRequiredService<NotificationService>(),
-            () => OnClose()); //TODO: implement actual onclose action
+            () => OnClose());
         EditorVisible = true;
     }
 
@@ -70,7 +70,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     {
         Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<ISheetStorage>(),
             Locator.Current.GetRequiredService<NotificationService>(),
-            () => OnClose()); //TODO: implement actual onclose action
+            () => OnClose());
         Editor.LoadSheet(sheet);
         EditorVisible = true;
         SheetListVisible = false;
