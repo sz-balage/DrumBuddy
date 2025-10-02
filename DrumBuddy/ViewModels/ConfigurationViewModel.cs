@@ -17,7 +17,6 @@ namespace DrumBuddy.ViewModels;
 
 public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 {
-    // TODO: make every setting persistent
     // TODO: make drum positions configurable (simple combobox will do)
     // TODO: make config files importable/exportable
     // TODO: make default save direction configurable

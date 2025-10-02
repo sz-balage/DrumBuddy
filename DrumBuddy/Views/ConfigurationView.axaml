@@ -51,7 +51,7 @@
                                         Classes="Drum"
                                         Background="{StaticResource LighterGray}"
                                         VerticalAlignment="Stretch">
-                                    <Grid VerticalAlignment="Stretch" ColumnDefinitions="Auto,Auto,*">
+                                    <Grid VerticalAlignment="Stretch" ColumnDefinitions="Auto,Auto,*,Auto">
                                         <TextBlock Text="{Binding DrumName}"
                                                    VerticalAlignment="Center"
                                                    Grid.Column="0" />
@@ -63,7 +63,14 @@
                                                 </MultiBinding>
                                             </Ellipse.Fill>
                                         </Ellipse>
+                                        <TextBlock  Grid.Column="2" 
+                                                    Margin="0,0,10,0"
+                                                    HorizontalAlignment="Right" 
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).KeyboardInput}"
+                                                    Text="{Binding Note, Converter={StaticResource NoteToKeyboardKeyConverter}}" />
                                         <Button Content="Remap"
+                                                Grid.Column="3" 
                                                 Classes="confirm"
                                                 FontFamily="{StaticResource NunitoFont}"
                                                 Command="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).StartListeningCommand}"
@@ -71,14 +78,14 @@
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Center"
                                                 IsVisible="{Binding !IsListening}"
-                                                Grid.Column="2" />
+                                                />
                                         <Button Content="Cancel mapping"
+                                                Grid.Column="3"
                                                 Classes="confirm"
                                                 FontFamily="{StaticResource NunitoFont}"
                                                 Command="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).StopListeningCommand}"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Center"
-                                                Grid.Column="2"
                                                 IsVisible="{Binding IsListening}" />
                                     </Grid>
                                 </Border>
