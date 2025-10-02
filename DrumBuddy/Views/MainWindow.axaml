@@ -14,6 +14,8 @@
                      mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                      x:Class="DrumBuddy.Views.MainWindow"
                      Title="DrumBuddy">
+    <!-- TODO add midi/keyboard mode indicator to pane at the bottom (midi or keyboard logo + when extended a text also indicating the current mode) 
+        when done delete mode indicator from config view-->
     <Window.Styles>
         <Style Selector="Button.Retry:disabled">
             <Setter Property="Background" Value="{StaticResource Error}" />
