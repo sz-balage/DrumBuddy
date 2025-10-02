@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using DrumBuddy.DesignHelpers;
+using DrumBuddy.Extensions;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.Dialogs;
@@ -56,9 +57,9 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                     .DisposeWith(d);
                 this.OneWayBind(ViewModel, vm => vm.CountDownVisibility, v => v._countDownGrid.IsVisible)
                     .DisposeWith(d);
-                ViewModel!.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
-                    .Select(ep => ep.EventArgs as KeyEventArgs)
-                    .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
+                
+                var mainView = Locator.Current.GetRequiredService<MainWindow>();
+                ViewModel.KeyboardBeats = mainView.KeyboardBeats;
                 ViewModel!.StopRecordingCommand.ThrownExceptions.Subscribe(ex => Debug.WriteLine(ex.Message));
                 ViewModel.WhenAnyValue(vm => vm.CurrentMeasure).Subscribe(measure =>
                 {

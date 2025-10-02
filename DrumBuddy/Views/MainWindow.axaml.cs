@@ -3,10 +3,12 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
+using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.ViewModels.HelperViewModels;
 using DrumBuddy.Views.HelperViews;
@@ -19,7 +21,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
     private MidiService _midiService;
     private bool isClosingConfirmed;
-
+    public IObservable<int>? KeyboardBeats { get; private set; }
     public MainWindow()
     {
         _midiService = Locator.Current.GetService<MidiService>();
@@ -70,6 +72,9 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                     }
                 }
             };
+            KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
+                .Select(ep => ep.EventArgs as KeyEventArgs)
+                .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
         });
         InitializeComponent();
     }

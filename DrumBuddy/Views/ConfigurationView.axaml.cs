@@ -4,9 +4,11 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
+using DrumBuddy.Extensions;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using ReactiveUI;
+using Splat;
 
 namespace DrumBuddy.Views;
 
@@ -34,10 +36,8 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
                     vm => vm.KeyboardInput,
                     v => v.KeyboardInputCheckBox.IsChecked)
                 .DisposeWith(d);
-
-            ViewModel.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
-                .Select(ep => ep.EventArgs as KeyEventArgs)
-                .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
+            var mainView = Locator.Current.GetRequiredService<MainWindow>();
+            ViewModel.KeyboardBeats = mainView.KeyboardBeats;
         });
     }
 }
