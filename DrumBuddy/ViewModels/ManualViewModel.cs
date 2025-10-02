@@ -21,6 +21,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] private ManualEditorViewModel? _editor;
     [Reactive] private bool _editorVisible;
     [Reactive] private bool _sheetListVisible;
+    [Reactive] private bool _isLoadingSheets;
 
     public ManualViewModel(IScreen host)
     {
@@ -42,7 +43,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     private async Task OnClose()
     {
         EditorVisible = false;
-        await LoadExistingSheets();
+        _ = LoadExistingSheets();
     }
 
     [ReactiveCommand]
@@ -75,13 +76,15 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
         EditorVisible = true;
         SheetListVisible = false;
     }
-
+    
     public async Task LoadExistingSheets()
     {
+        IsLoadingSheets = true;
         var sheets = await _sheetStorage.LoadSheetsAsync();
         foreach (var sheet in sheets) _sheetSource.AddOrUpdate(sheet);
-
+        IsLoadingSheets = false;
         if (sheets.Length == 0)
             AddNewSheet();
+        
     }
 }

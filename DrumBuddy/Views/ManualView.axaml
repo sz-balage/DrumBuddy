@@ -6,7 +6,9 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:views="clr-namespace:DrumBuddy.Views"
                                 xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
+                                xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:DataType="vm:ManualViewModel"
                                 x:Class="DrumBuddy.Views.ManualView">
     <Grid RowDefinitions="66,*">
         <Border Background="{StaticResource HeaderGray}" HorizontalAlignment="Stretch">
@@ -34,9 +36,10 @@
                 </Border>
             </Button>
             <Grid>
-                <Button Classes="card" CornerRadius="0" x:Name="EditButton">
-                    <Border>
-                        <StackPanel Orientation="Vertical"
+                <Button Classes="card" CornerRadius="0" x:Name="EditButton" IsEnabled="{Binding !IsLoadingSheets}">
+                    <Grid>
+                        <StackPanel Orientation="Vertical" 
+                                    IsVisible="{Binding !IsLoadingSheets}"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Spacing="12">
@@ -47,9 +50,25 @@
                                        FontSize="22"
                                        FontWeight="SemiBold"
                                        HorizontalAlignment="Center"
-                                       TextAlignment="Center" />
+                                       TextAlignment="Center" />                
                         </StackPanel>
-                    </Border>
+                        <StackPanel  Orientation="Vertical" 
+                                     IsVisible="{Binding IsLoadingSheets}" 
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Spacing="12">
+                            <avaloniaProgressRing:ProgressRing
+                                Width="64"
+                                Height="64" Margin="5"
+                                IsActive="True"
+                            />
+                            <TextBlock TextAlignment="Center"
+                                       FontWeight="SemiBold" 
+                                       FontSize="22" 
+                                       Text="Sheets are loading"
+                                       Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Grid>
                 </Button>
                 <Grid RowDefinitions="Auto,*" x:Name="SheetChooserStackPanel">
                     <Border Height="66" Background="{StaticResource HeaderGray}">

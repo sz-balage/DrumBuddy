@@ -15,7 +15,6 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
 
         this.WhenActivated(async d =>
         {
-            await ViewModel.LoadExistingSheets();
             this.OneWayBind(ViewModel, vm => vm.EditorVisible, v => v.CardGrid.IsVisible, b => !b)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.EditorVisible, v => v.EditorView.IsVisible)
@@ -36,6 +35,7 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.CancelSheetChoosingCommand, v => v.CancelSheetChoosingButton)
                 .DisposeWith(d);
+            _ = ViewModel.LoadExistingSheets();
         });
     }
 
