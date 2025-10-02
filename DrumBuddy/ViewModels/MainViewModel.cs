@@ -86,8 +86,11 @@ public partial class MainViewModel : ReactiveObject, IScreen
         if (navigateTo is null)
             throw new Exception("ViewModel not found.");
         CurrentViewModel = navigateTo;
-        if (Router.GetCurrentViewModel() is RecordingViewModel rvm)
+        var currentVm = Router.GetCurrentViewModel();
+        if (currentVm is RecordingViewModel rvm)
             rvm.Dispose();
+        if (currentVm is ConfigurationViewModel cvm)
+            cvm.CancelMapping();
         Router.NavigateAndReset.Execute(navigateTo);
     }
 

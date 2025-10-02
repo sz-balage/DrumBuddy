@@ -53,9 +53,11 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
             .Subscribe(vol => _configService.MetronomeVolume = vol);
         this.WhenAnyValue(vm => vm.KeyboardInput)
             .Subscribe(enabled => _configService.KeyboardInput = enabled);
-
     }
-
+    public void CancelMapping()
+    {
+        StopListening();
+    }
     private void InitConfig()
     {
         foreach (var kvp in _configService.Mapping)
