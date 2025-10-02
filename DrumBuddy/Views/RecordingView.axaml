@@ -82,6 +82,7 @@
                                    VerticalAlignment="Center" />
                 </StackPanel>
                 <StackPanel Grid.Row="0"
+                            Margin="0,0,10,0"
                             Grid.Column="2"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right"
@@ -134,15 +135,14 @@
         </ComboBox>
         <Border Grid.Row="1"
                 IsVisible="{Binding IsLoadingSheets}"
-            Background="{StaticResource HeaderGray}"
-            HorizontalAlignment="Right" VerticalAlignment="Top"
-            Width="240">
+                Background="{StaticResource HeaderGray}"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Width="240">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
                 <avaloniaProgressRing:ProgressRing
                     Width="25"
                     Height="25" Margin="5"
-                    IsActive="True"
-                />
+                    IsActive="True" />
                 <TextBlock Classes="header" Margin="0,5,0,0">Sheets are loading</TextBlock>
             </StackPanel>
         </Border>
