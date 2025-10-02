@@ -105,7 +105,7 @@ public partial class EditingViewModel : ReactiveObject
             .Subscribe(recording => CanSave = !recording);
     }
 
-    private bool _keyboardInputEnabled => _configService.IsKeyboardEnabled;
+    private bool _keyboardInputEnabled => _configService.KeyboardInput;
 
     public IObservable<int> KeyboardBeats { get; set; }
     public ReadOnlyObservableCollection<MeasureViewModel> Measures => _measures;

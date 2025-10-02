@@ -1,12 +1,12 @@
-﻿using DrumBuddy.Core.Abstractions;
-using DrumBuddy.Core.Enums;
+﻿using System.Text.Json;
+using DrumBuddy.Core.Abstractions;
+using DrumBuddy.Core.Models;
 
-namespace DrumBuddy.IO.Services;
+namespace DrumBuddy.IO.Data.Storage;
 
 public class FileConfigurationStorage
 {
-    private const string FileName = "config";
-    private const string FileExtension = ".txt";
+    private const string FileName = "config.json";
     private readonly string _saveDirectory;
     private readonly ISerializationService _serializationService;
 
@@ -14,38 +14,25 @@ public class FileConfigurationStorage
     {
         _serializationService = serializationService;
         _saveDirectory = saveDirectory;
-        // _saveDirectory = Path.Combine(FilePathProvider.GetPathForFileStorage(), "config");
-
         if (!Directory.Exists(_saveDirectory))
             Directory.CreateDirectory(_saveDirectory);
     }
 
-    private string GetFullConfigPath()
+    private string GetFullPath() => Path.Combine(_saveDirectory, FileName);
+
+    public void SaveConfig(AppConfiguration config)
     {
-        return Path.Combine(_saveDirectory, FileName + FileExtension);
+        var json = _serializationService.SerializeAppConfiguration(config);
+        File.WriteAllText(GetFullPath(), json);
     }
 
-    public void SaveConfig(Dictionary<Drum, int> mapping)
+    public AppConfiguration LoadConfig()
     {
-        var path = GetFullConfigPath();
-        var data = _serializationService.SerializeDrumMappingData(mapping);
-        File.WriteAllText(path, data);
-    }
-
-    public Dictionary<Drum, int> LoadConfig()
-    {
-        var path = GetFullConfigPath();
+        var path = GetFullPath();
         if (!File.Exists(path))
-            return new Dictionary<Drum, int>();
-        return _serializationService.DeserializeDrumMappingData(File.ReadAllText(path)) ?? new Dictionary<Drum, int>();
-    }
+            return new AppConfiguration();
 
-    public Dictionary<Drum, double> LoadDrumPositions()
-    {
-        return new Dictionary<Drum, double>();
-    }
-
-    public void SaveDrumPositions(Dictionary<Drum, double> drumPositions)
-    {
+        var json = File.ReadAllText(path);
+        return _serializationService.DeserializeAppConfiguration(json) ?? new AppConfiguration();
     }
 }

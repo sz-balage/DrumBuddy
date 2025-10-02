@@ -23,7 +23,6 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     // TODO: make default save direction configurable
     // TODO: add option to revert to default drum mappings, and drum positions
     private readonly ConfigurationService _configService;
-    private readonly Subject<Unit> _mappingChanged = new();
     private readonly IMidiService _midiService;
     private IDisposable? _beatsSubscription;
     [Reactive] private bool _keyboardInput;
@@ -37,30 +36,47 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         _midiService = midiService;
         _configService = configService;
         var mainVm = hostScreen as MainViewModel;
-        foreach (var kvp in _configService.Mapping)
-            DrumMappings.Add(new DrumMappingItem(kvp.Key, kvp.Value));
-        MappingChanged.Subscribe(_ => UpdateDrumMappings());
+        InitConfig();
         this.WhenAnyValue(vm => vm.MetronomeVolume)
-            .Subscribe(vol => _configService.ChangeVolume(vol));
+            .Subscribe(vol => _configService.MetronomeVolume = vol);
         this.WhenAnyValue(vm => vm.KeyboardInput)
             .Subscribe(ki =>
             {
                 ChangeSubscription(mainVm?.NoConnection ?? true);
-                _configService.IsKeyboardEnabled = ki;
+                _configService.KeyboardInput = ki;
             });
         mainVm?.WhenAnyValue(vm => vm.NoConnection)
             .Subscribe(ChangeSubscription);
         ListeningDrumChanged
             .Subscribe(UpdateListeningDrum);
+        this.WhenAnyValue(vm => vm.MetronomeVolume)
+            .Subscribe(vol => _configService.MetronomeVolume = vol);
+        this.WhenAnyValue(vm => vm.KeyboardInput)
+            .Subscribe(enabled => _configService.KeyboardInput = enabled);
+
     }
 
+    private void InitConfig()
+    {
+        foreach (var kvp in _configService.Mapping)
+            DrumMappings.Add(new DrumMappingItem(kvp.Key, kvp.Value));
+        _metronomeVolume = _configService.MetronomeVolume;
+        _keyboardInput = _configService.KeyboardInput;
+        UpdateDrumMappings();
+    }
     public ObservableCollection<DrumMappingItem> DrumMappings { get; } = new();
-
-    public IObservable<int> KeyboardBeats { get; set; }
-
+    private IObservable<int>? _keyboardBeats;
+    public IObservable<int>? KeyboardBeats
+    {
+        get => _keyboardBeats;
+        set
+        {
+            _keyboardBeats = value;
+            if (KeyboardInput) ChangeSubscription(true); // retrigger when beats source is ready
+        }
+    }
     public IReadOnlyDictionary<Drum, int> Mapping => _configService.Mapping;
     public IObservable<Drum?> ListeningDrumChanged => _configService.ListeningDrumChanged;
-    public IObservable<Unit> MappingChanged => _mappingChanged.AsObservable();
 
     public string? UrlPathSegment { get; }
     public IScreen HostScreen { get; }
@@ -86,8 +102,8 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
                 .GetRawNoteObservable()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(OnMidiNoteReceived);
-        else if (KeyboardInput)
-            _beatsSubscription = KeyboardBeats!.ObserveOn(RxApp.MainThreadScheduler).Subscribe(OnMidiNoteReceived);
+        else if (KeyboardInput && KeyboardBeats is not null)
+            _beatsSubscription = KeyboardBeats.ObserveOn(RxApp.MainThreadScheduler).Subscribe(OnMidiNoteReceived);
     }
 
     [ReactiveCommand]
@@ -114,7 +130,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         }
 
         _configService.MapDrum(noteNumber);
-        _mappingChanged.OnNext(Unit.Default);
+        UpdateDrumMappings();
     }
 
     private void HighlightDrumTemporarily(Drum drum)

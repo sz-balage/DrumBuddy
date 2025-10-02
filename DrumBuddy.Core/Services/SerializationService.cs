@@ -20,13 +20,16 @@ public class SerializationService : ISerializationService
         return [..measures];
     }
 
-    public string SerializeDrumMappingData(Dictionary<Drum, int> mapping)
+    public string SerializeAppConfiguration(AppConfiguration appConfig)
     {
-        return JsonSerializer.Serialize(mapping);
+        return JsonSerializer.Serialize(appConfig, new JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
     }
 
-    public Dictionary<Drum, int>? DeserializeDrumMappingData(string mappingJson)
+    public AppConfiguration? DeserializeAppConfiguration(string appConfigJson)
     {
-        return JsonSerializer.Deserialize<Dictionary<Drum, int>>(mappingJson);
+        return JsonSerializer.Deserialize<AppConfiguration>(appConfigJson);
     }
 }

@@ -128,7 +128,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         }
     }
 
-    private bool _keyboardInputEnabled => _configService.IsKeyboardEnabled;
+    private bool _keyboardInputEnabled => _configService.KeyboardInput;
 
     public IObservable<int> KeyboardBeats { get; set; }
     public Interaction<SheetCreationData, SheetNameAndDescription> ShowSaveDialog { get; } = new();

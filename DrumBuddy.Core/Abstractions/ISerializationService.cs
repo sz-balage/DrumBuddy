@@ -8,6 +8,6 @@ public interface ISerializationService
 {
     byte[] SerializeMeasurementData(ImmutableArray<Measure> measures);
     ImmutableArray<Measure> DeserializeMeasurementData(byte[] bytes);
-    string SerializeDrumMappingData(Dictionary<Drum, int> mapping);
-    Dictionary<Drum, int>? DeserializeDrumMappingData(string mappingJson);
+    string SerializeAppConfiguration(AppConfiguration appConfig);
+    AppConfiguration? DeserializeAppConfiguration(string appConfigJson);
 }
