@@ -43,6 +43,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
             {
                 ChangeSubscription(mainVm?.NoConnection ?? true);
                 _configService.KeyboardInput = ki;
+                UpdateDrumMappings();
             });
         mainVm?.WhenAnyValue(vm => vm.NoConnection)
             .Subscribe(ChangeSubscription);
@@ -86,9 +87,14 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 
     private void UpdateDrumMappings()
     {
+        var currentMapping = _keyboardInput 
+            ? _configService.GetKeyboardMapping() 
+            : _configService.GetDrumMapping();
         foreach (var item in DrumMappings)
-            if (_configService.Mapping.TryGetValue(item.Drum, out var note))
+        {
+            if (currentMapping.TryGetValue(item.Drum, out var note))
                 item.Note = note;
+        }
     }
 
     private void UpdateListeningDrum(Drum? drum)

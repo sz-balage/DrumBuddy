@@ -33,6 +33,22 @@
                        Classes="header"
                        FontSize="16"
                        FontWeight="SemiBold" />
+            <TextBlock IsVisible="{Binding KeyboardInput}"
+                       Margin="0,0,18,0"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Classes="header"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Text="Keyboard input mode"/>  
+            <TextBlock IsVisible="{Binding !KeyboardInput}"
+                       Margin="0,0,18,0"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Classes="header"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Text="MIDI input mode"/>
         </Grid>
         <TabControl Grid.Row="1">
             <TabItem Header="Drum Mapping" 
@@ -69,6 +85,12 @@
                                                     VerticalAlignment="Center"
                                                     IsVisible="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).KeyboardInput}"
                                                     Text="{Binding Note, Converter={StaticResource NoteToKeyboardKeyConverter}}" />
+                                        <TextBlock  Grid.Column="2" 
+                                                    Margin="0,0,10,0"
+                                                    HorizontalAlignment="Right" 
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding !$parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).KeyboardInput}"
+                                                    Text="{Binding Note}" />
                                         <Button Content="Remap"
                                                 Grid.Column="3" 
                                                 Classes="confirm"

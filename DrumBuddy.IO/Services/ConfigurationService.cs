@@ -24,6 +24,12 @@ public class ConfigurationService
                 if (drum != Drum.Rest)
                     _config.DrumMapping[drum] = (int)drum;
         }
+        if (_config.KeyboardMapping.Count == 0)
+        {
+            foreach (var drum in Enum.GetValues<Drum>())
+                if (drum != Drum.Rest)
+                    _config.KeyboardMapping[drum] = -1; // unmapped by default
+        }
         if (_config.DrumPositions.Count == 0)
         {
             foreach (var drum in Enum.GetValues<Drum>())
@@ -46,13 +52,15 @@ public class ConfigurationService
         get => _config.KeyboardInput;
         set { _config.KeyboardInput = value; Save(); }
     }
-    public IReadOnlyDictionary<Drum, int> Mapping => _config.DrumMapping;
+    public IReadOnlyDictionary<Drum, int> Mapping => 
+        _config.KeyboardInput ? _config.KeyboardMapping : _config.DrumMapping;
     public Drum? ListeningDrum
     {
         get => _listeningDrum.Value;
         private set => _listeningDrum.OnNext(value);
     }
-
+    public IReadOnlyDictionary<Drum, int> GetDrumMapping() => _config.DrumMapping;
+    public IReadOnlyDictionary<Drum, int> GetKeyboardMapping() => _config.KeyboardMapping;
     public IObservable<Drum?> ListeningDrumChanged => _listeningDrum.AsObservable();
 
     private static double DefaultYPosition(Drum drum)
@@ -87,9 +95,14 @@ public class ConfigurationService
     {
         if (ListeningDrum is null || receivedNote < 0)
             return;
-        var alreadyMappedDrum = Mapping.FirstOrDefault(kvp => kvp.Value == receivedNote).Key;
-        if (alreadyMappedDrum != default) _config.DrumMapping[alreadyMappedDrum] = -1;
-        _config.DrumMapping[ListeningDrum.Value] = receivedNote;
+        
+        var targetMapping = _config.KeyboardInput ? _config.KeyboardMapping : _config.DrumMapping;
+        
+        var alreadyMappedDrum = targetMapping.FirstOrDefault(kvp => kvp.Value == receivedNote).Key;
+        if (alreadyMappedDrum != default) 
+            targetMapping[alreadyMappedDrum] = -1;
+        
+        targetMapping[ListeningDrum.Value] = receivedNote;
         Save();
         StopListening();
     }
