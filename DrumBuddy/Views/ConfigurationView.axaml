@@ -149,12 +149,27 @@
                               FontWeight="SemiBold"
                               IsExpanded="True"
                               Margin="0,0,0,4">
-                        <CheckBox x:Name="KeyboardInputCheckBox"
-                                  FontSize="16"
-                                  FontFamily="{StaticResource NunitoFont}"
-                                  IsChecked="{Binding KeyboardInput}">
-                            Keyboard input
-                        </CheckBox>
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Input Mode"
+                                       FontWeight="Medium"
+                                       FontSize="14" />
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="MIDI Mode"
+                                           x:Name="MIDIModeText"
+                                           FontSize="16"
+                                           FontFamily="{StaticResource NunitoFont}"
+                                           VerticalAlignment="Center" />
+                                <ToggleSwitch x:Name="InputModeToggle"
+                                              IsChecked="{Binding KeyboardInput}"
+                                              OnContent=""
+                                              OffContent="" />
+                                <TextBlock Text="Keyboard Mode"
+                                           x:Name="KeyboardModeText"
+                                           FontSize="16"
+                                           FontFamily="{StaticResource NunitoFont}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
                     </Expander>
 
                 </StackPanel>

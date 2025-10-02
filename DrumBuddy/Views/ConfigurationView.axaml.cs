@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Extensions;
 using DrumBuddy.Services;
@@ -32,10 +33,19 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
                         ListeningDrumText.Text = $"Listening for: {drum}";
                 })
                 .DisposeWith(d);
+
             this.Bind(ViewModel,
                     vm => vm.KeyboardInput,
-                    v => v.KeyboardInputCheckBox.IsChecked)
+                    v => v.InputModeToggle.IsChecked) // Changed from KeyboardInputCheckBox
                 .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.MIDIModeText.Foreground, ki =>
+            {
+                return ki ? Brushes.Gray : Brushes.Black;
+            });     
+            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeText.Foreground, ki =>
+            {
+                return ki ? Brushes.Black : Brushes.Gray;
+            });
             var mainView = Locator.Current.GetRequiredService<MainWindow>();
             ViewModel.KeyboardBeats = mainView.KeyboardBeats;
             ViewModel.DrumMappingTabSelected = true;
