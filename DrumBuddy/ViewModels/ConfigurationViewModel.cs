@@ -80,6 +80,8 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 
     public string? UrlPathSegment { get; }
     public IScreen HostScreen { get; }
+    [Reactive]
+    private bool _drumMappingTabSelected;
 
     private void UpdateDrumMappings()
     {

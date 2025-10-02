@@ -26,17 +26,18 @@
                        Margin="18"
                        Classes="header"
                        VerticalAlignment="Center" />
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                <TextBlock x:Name="ListeningDrumText"
-                           Classes="header"
-                           FontSize="16"
-                           FontWeight="SemiBold" />
-            </StackPanel>
+            <TextBlock x:Name="ListeningDrumText"
+                       IsVisible="{Binding DrumMappingTabSelected}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Classes="header"
+                       FontSize="16"
+                       FontWeight="SemiBold" />
         </Grid>
         <TabControl Grid.Row="1">
-            <TabItem Header="Drum Mapping" FontSize="16">
+            <TabItem Header="Drum Mapping" 
+                     FontSize="16" 
+                     PointerPressed="DrumMappingTab_PointerPressed">
                 <ScrollViewer>
                     <ItemsControl ItemsSource="{Binding DrumMappings}">
                         <ItemsControl.ItemsPanel>
@@ -86,7 +87,9 @@
                     </ItemsControl>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Settings" FontSize="16">
+            <TabItem Header="Settings" 
+                     FontSize="16"
+                     PointerPressed="SettingsTab_PointerPressed">
                 <StackPanel Spacing="16" Margin="0,4,0,0">
                     <Expander Header="Audio Settings"
                               Background="{StaticResource LighterGray}"

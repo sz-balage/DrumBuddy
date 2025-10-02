@@ -38,6 +38,17 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
                 .DisposeWith(d);
             var mainView = Locator.Current.GetRequiredService<MainWindow>();
             ViewModel.KeyboardBeats = mainView.KeyboardBeats;
+            ViewModel.DrumMappingTabSelected = true;
         });
+    }
+
+    private void DrumMappingTab_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        ViewModel.DrumMappingTabSelected = true;
+    }
+
+    private void SettingsTab_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        ViewModel.DrumMappingTabSelected = false;
     }
 }
