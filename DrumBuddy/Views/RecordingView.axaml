@@ -7,6 +7,7 @@
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
                           xmlns:viewModels="clr-namespace:DrumBuddy.ViewModels"
+                          xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
                           mc:Ignorable="d" d:DesignWidth="1250" d:DesignHeight="500"
                           x:Class="DrumBuddy.Views.RecordingView">
     <Grid>
@@ -83,7 +84,7 @@
                 <StackPanel Grid.Row="0"
                             Grid.Column="2"
                             Orientation="Horizontal"
-                            HorizontalAlignment="Center"
+                            HorizontalAlignment="Right"
                             VerticalAlignment="Center">
                     <TextBlock FontSize="24"
                                FontFamily="{StaticResource NunitoFont}"
@@ -113,7 +114,7 @@
             </Grid>
         </ScrollViewer>
         <ComboBox Grid.Row="1" x:Name="OverlaySheetComboBox"
-                  IsEnabled="{Binding !IsRecording}"
+                  IsVisible="{Binding !IsLoadingSheets}"
                   Background="{StaticResource HeaderGray}"
                   HorizontalAlignment="Right"
                   SelectedItem="{Binding SelectedSheetOption}"
@@ -131,5 +132,19 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
+        <Border Grid.Row="1"
+                IsVisible="{Binding IsLoadingSheets}"
+            Background="{StaticResource HeaderGray}"
+            HorizontalAlignment="Right" VerticalAlignment="Top"
+            Width="240">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                <avaloniaProgressRing:ProgressRing
+                    Width="25"
+                    Height="25" Margin="5"
+                    IsActive="True"
+                />
+                <TextBlock Classes="header" Margin="0,5,0,0">Sheets are loading</TextBlock>
+            </StackPanel>
+        </Border>
     </Grid>
 </rxui:ReactiveUserControl>

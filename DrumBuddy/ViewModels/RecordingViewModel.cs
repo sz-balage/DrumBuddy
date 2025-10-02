@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -41,6 +42,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     [Reactive] private bool _isPaused;
     [Reactive] private bool _isRecording;
     [Reactive] private bool _overlayVisible;
+    [Reactive] private bool _isLoadingSheets;
     private Sheet _selectedSheet;
 
     private SheetOption _selectedSheetOption;
@@ -88,7 +90,11 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         IsRecording = false;
         IsPaused = false;
         CurrentMeasure = null!;
-        this.WhenNavigatedTo(LoadSheets);
+        // this.WhenNavigatedTo(() =>
+        // {
+        //    return Observable.StartAsync(LoadSheets)
+        //         .Subscribe(); // truly fire-and-forget
+        // });
         SheetOptions = new ObservableCollection<SheetOption>();
     }
 
@@ -144,15 +150,19 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     public string? UrlPathSegment { get; } = "recording-view";
     public IScreen HostScreen { get; }
 
-    private async Task LoadSheets()
+    public async Task LoadSheets()
     {
+        IsLoadingSheets = true;
         var sheets = await _sheetStorage?.LoadSheetsAsync();
         SheetOptions.Clear();
         SheetOptions.Add(new SheetOption("None", null));
         foreach (var sheet in sheets)
             SheetOptions.Add(new SheetOption(sheet.Name, sheet));
         SelectedSheetOption = SheetOptions[0];
+        IsLoadingSheets = false;
     }
+
+
 
     private void InitTimer()
     {

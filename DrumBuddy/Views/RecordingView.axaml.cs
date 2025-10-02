@@ -67,6 +67,14 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                         _resumeRecordingButton.IsVisible = false;
                 })
                 .DisposeWith(d);
+            ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsLoadingSheets)
+                .Subscribe(vals =>
+                {
+                    if (!vals.Item1 && !vals.Item2)
+                        OverlaySheetComboBox.IsEnabled = true;
+                    else
+                        OverlaySheetComboBox.IsEnabled = false;
+                });
             this.Bind(ViewModel, vm => vm.BpmDecimal, v => v._bpmNumeric.Value);
             this.Bind(ViewModel, vm => vm.TimeElapsed, v => v._timeElapsedTB.Text);
             this.OneWayBind(ViewModel, vm => vm.CountDown, v => v._countDownTB.Text)
@@ -83,6 +91,10 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             {
                 MeasuresViewer.BringCurrentMeasureIntoView(measure);
             });
+            // Observable.StartAsync(ViewModel.LoadSheets, RxApp.TaskpoolScheduler)
+            //     .ObserveOn(RxApp.MainThreadScheduler)
+            //     .Subscribe(); // truly fire-and-forget
+            _ = ViewModel.LoadSheets();
         });
     }
 
