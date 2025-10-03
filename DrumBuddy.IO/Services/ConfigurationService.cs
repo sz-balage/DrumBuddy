@@ -18,6 +18,7 @@ public class ConfigurationService
         _storage = storage;
         _metronomePlayer = metronomePlayer;
         _config = _storage.LoadConfig();
+
         if (_config.DrumMapping.Count == 0)
         {
             foreach (var drum in Enum.GetValues<Drum>())
@@ -28,82 +29,82 @@ public class ConfigurationService
         {
             foreach (var drum in Enum.GetValues<Drum>())
                 if (drum != Drum.Rest)
-                    _config.KeyboardMapping[drum] = -1; // unmapped by default
+                    _config.KeyboardMapping[drum] = -1; // unmapped
         }
         if (_config.DrumPositions.Count == 0)
         {
             foreach (var drum in Enum.GetValues<Drum>())
                 if (drum != Drum.Rest)
-                    _config.DrumPositions[drum] = DefaultYPosition(drum);
+                    _config.DrumPositions[drum] = DefaultPosition(drum);
         }
-        
-    }
-
-    public IReadOnlyDictionary<Drum, double> DrumPositions => _config.DrumPositions;
-    public int MetronomeVolume
-    {
-        get => _config.MetronomeVolume;
-        set { _config.MetronomeVolume = value; Save(); _metronomePlayer?.SetVolume(value);}
     }
 
     private void Save() => _storage.SaveConfig(_config);
-    public bool KeyboardInput 
+
+    public IReadOnlyDictionary<Drum, DrumPositionSlot> DrumPositions => _config.DrumPositions;
+    public int MetronomeVolume
+    {
+        get => _config.MetronomeVolume;
+        set { _config.MetronomeVolume = value; Save(); _metronomePlayer?.SetVolume(value); }
+    }
+    public bool KeyboardInput
     {
         get => _config.KeyboardInput;
         set { _config.KeyboardInput = value; Save(); }
     }
-    public IReadOnlyDictionary<Drum, int> Mapping => 
+    public IReadOnlyDictionary<Drum, int> Mapping =>
         _config.KeyboardInput ? _config.KeyboardMapping : _config.DrumMapping;
+    private static DrumPositionSlot DefaultPosition(Drum drum)
+    {
+        return drum switch
+        {
+            Drum.Kick     => DrumPositionSlot.BetweenLine1And2,
+            Drum.Snare    => DrumPositionSlot.BetweenLine3And4,
+            Drum.FloorTom => DrumPositionSlot.BetweenLine2And3,
+            Drum.Tom1     => DrumPositionSlot.BetweenLine4And5,
+            Drum.Tom2     => DrumPositionSlot.OnLine4,
+            Drum.Ride     => DrumPositionSlot.OnLine5,
+            Drum.HiHat    => DrumPositionSlot.BetweenLine5And6,
+            Drum.HiHat_Pedal  => DrumPositionSlot.BelowLine1,
+            Drum.Crash1   => DrumPositionSlot.OnLine6,
+            Drum.Crash2   => DrumPositionSlot.OnLine6,
+            _             => DrumPositionSlot.OnLine3
+        };
+    }
     public Drum? ListeningDrum
     {
         get => _listeningDrum.Value;
         private set => _listeningDrum.OnNext(value);
     }
+
     public IReadOnlyDictionary<Drum, int> GetDrumMapping() => _config.DrumMapping;
     public IReadOnlyDictionary<Drum, int> GetKeyboardMapping() => _config.KeyboardMapping;
     public IObservable<Drum?> ListeningDrumChanged => _listeningDrum.AsObservable();
 
-    private static double DefaultYPosition(Drum drum)
+    // === new drum position update ===
+    public void UpdateDrumPositions(Dictionary<Drum, DrumPositionSlot> newPositions)
     {
-        return drum switch
-        {
-            Drum.Kick => 60,
-            Drum.Snare => 20,
-            Drum.FloorTom => 40,
-            Drum.Tom1 => 0,
-            Drum.Tom2 => 10,
-            Drum.Ride => -10,
-            Drum.HiHat => -20,
-            Drum.HiHat_Pedal => 85,
-            Drum.Crash1 => -30,
-            Drum.Crash2 => -30,
-            _ => 30
-        };
+        _config.DrumPositions = newPositions;
+        Save();
     }
 
-    public void StartListening(Drum drum)
-    {
-        ListeningDrum = drum;
-    }
-
-    public void StopListening()
-    {
-        ListeningDrum = null;
-    }
+    public void StartListening(Drum drum) => ListeningDrum = drum;
+    public void StopListening() => ListeningDrum = null;
 
     public void MapDrum(int receivedNote)
     {
         if (ListeningDrum is null || receivedNote < 0)
             return;
-        
+
         var targetMapping = _config.KeyboardInput ? _config.KeyboardMapping : _config.DrumMapping;
-        
+
         var alreadyMappedDrum = targetMapping.FirstOrDefault(kvp => kvp.Value == receivedNote).Key;
-        if (alreadyMappedDrum != default) 
+        if (alreadyMappedDrum != default)
             targetMapping[alreadyMappedDrum] = -1;
-        
+
         targetMapping[ListeningDrum.Value] = receivedNote;
         Save();
         StopListening();
     }
 }
+

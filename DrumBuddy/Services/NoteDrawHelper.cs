@@ -80,7 +80,7 @@ public class NoteDrawHelper
     private double GetYPositionForDrum(Drum drum)
     {
         return _configurationService.DrumPositions.TryGetValue(drum, out var pos)
-            ? pos
+            ? (int)pos
             : 30; // fallback
     }
 
