@@ -195,6 +195,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         //drum sub
         var measureIdx = -1;
         var rythmicGroupIndex = -1;
+        //TODO: adjust delay, it still rushes about 1/16th of a measure
         var delay = 5 * _bpm.QuarterNoteDuration() - _bpm.SixteenthNoteDuration() / 2.0
                     + 2 * _bpm
                         .SixteenthNoteDuration(); //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
