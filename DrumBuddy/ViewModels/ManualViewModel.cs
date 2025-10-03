@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
 using DynamicData;
 using ReactiveUI;
@@ -16,7 +17,7 @@ namespace DrumBuddy.ViewModels;
 public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
 {
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
-    private readonly ISheetStorage _sheetStorage;
+    private readonly SheetStorage _sheetStorage;
     public readonly ReadOnlyObservableCollection<Sheet> Sheets;
     [Reactive] private ManualEditorViewModel? _editor;
     [Reactive] private bool _editorVisible;
@@ -25,7 +26,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
 
     public ManualViewModel(IScreen host)
     {
-        _sheetStorage = Locator.Current.GetRequiredService<ISheetStorage>();
+        _sheetStorage = Locator.Current.GetRequiredService<SheetStorage>();
         HostScreen = host;
         UrlPathSegment = "manual-editor";
         _sheetSource.Connect()
@@ -49,7 +50,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     [ReactiveCommand]
     private void AddNewSheet()
     {
-        Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<ISheetStorage>(),
+        Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<SheetStorage>(),
             Locator.Current.GetRequiredService<NotificationService>(),
             () => OnClose());
         EditorVisible = true;
@@ -69,7 +70,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
 
     public void ChooseSheet(Sheet sheet)
     {
-        Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<ISheetStorage>(),
+        Editor = new ManualEditorViewModel(HostScreen, Locator.Current.GetRequiredService<SheetStorage>(),
             Locator.Current.GetRequiredService<NotificationService>(),
             () => OnClose());
         Editor.LoadSheet(sheet);

@@ -32,7 +32,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     private readonly MetronomePlayer _metronomePlayer;
     private readonly IMidiService _midiService;
     private readonly NotificationService _notificationService;
-    private readonly ISheetStorage _sheetStorage;
+    private readonly SheetStorage _sheetStorage;
     private readonly IObservable<bool> _stopRecordingCanExecute;
     private Bpm _bpm;
     [Reactive] private decimal _bpmDecimal;
@@ -55,7 +55,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     public RecordingViewModel(IScreen hostScreen,
         IMidiService midiService,
         ConfigurationService configService,
-        ISheetStorage sheetStorage,
+        SheetStorage sheetStorage,
         NotificationService notificationService,
         MetronomePlayer metronomePlayer)
     {

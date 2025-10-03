@@ -65,7 +65,7 @@ public class App : Application
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
-            Locator.Current.GetRequiredService<ISheetStorage>(),
+            Locator.Current.GetRequiredService<SheetStorage>(),
             Locator.Current.GetRequiredService<NotificationService>(),
             Locator.Current.GetRequiredService<PdfGenerator>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
@@ -77,7 +77,7 @@ public class App : Application
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<IMidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>(),
-                Locator.Current.GetRequiredService<ISheetStorage>(),
+                Locator.Current.GetRequiredService<SheetStorage>(),
                 Locator.Current.GetRequiredService<NotificationService>(),
                 Locator.Current.GetRequiredService<MetronomePlayer>()));
 
@@ -109,7 +109,7 @@ public class App : Application
         CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
         CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
             FilePathProvider.GetPathToRegularBeepSound()));
-        CurrentMutable.RegisterConstant<ISheetStorage>(
+        CurrentMutable.RegisterConstant(
             new SheetStorage(
                 Locator.Current.GetRequiredService<ISerializationService>(),
                 connectionString

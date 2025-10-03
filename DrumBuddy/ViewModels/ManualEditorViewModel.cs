@@ -10,6 +10,7 @@ using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.HelperViewModels;
@@ -28,7 +29,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     private readonly NotificationService _notificationService;
     private readonly Func<Task> _onClose;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
-    private readonly ISheetStorage _sheetStorage;
+    private readonly SheetStorage _sheetStorage;
 
     public readonly Drum[] Drums = new[]
     {
@@ -54,7 +55,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
 
-    public ManualEditorViewModel(IScreen host, ISheetStorage sheetStorage, NotificationService notificationService,
+    public ManualEditorViewModel(IScreen host, SheetStorage sheetStorage, NotificationService notificationService,
         Func<Task> onClose)
     {
         _sheetStorage = sheetStorage;

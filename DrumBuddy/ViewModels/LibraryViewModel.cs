@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DynamicData;
@@ -25,11 +26,11 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private readonly IObservable<bool> _removeCanExecute;
     private readonly ReadOnlyObservableCollection<Sheet> _sheets;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
-    private readonly ISheetStorage _sheetStorage;
+    private readonly SheetStorage _sheetStorage;
 
     [Reactive] private Sheet _selectedSheet;
 
-    public LibraryViewModel(IScreen hostScreen, ISheetStorage sheetStorage, NotificationService notificationService,
+    public LibraryViewModel(IScreen hostScreen, SheetStorage sheetStorage, NotificationService notificationService,
         PdfGenerator pdfGenerator)
     {
         _notificationService = notificationService;

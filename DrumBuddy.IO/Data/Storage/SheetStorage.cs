@@ -6,7 +6,7 @@ using DrumBuddy.IO.Data;
 
 namespace DrumBuddy.IO.Services;
 
-public class SheetStorage : ISheetStorage
+public class SheetStorage
 {
     private readonly string _connectionString;
     private readonly ISerializationService _serializationService;
