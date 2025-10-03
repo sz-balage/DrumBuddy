@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -47,8 +48,16 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         this.WhenNavigatedTo(() => LoadSheets()
             .ToObservable()
             .Subscribe());
+        _sheetSource.CountChanged.Subscribe(count =>
+        {
+            if (count == 0)
+                IsBatchRemoveEnabled = false;
+            else
+                IsBatchRemoveEnabled = true;
+        });
     }
 
+    [Reactive] private bool _isBatchRemoveEnabled;
     public ReadOnlyObservableCollection<Sheet> Sheets => _sheets;
     public string? UrlPathSegment { get; } = "library";
     public IScreen HostScreen { get; }
@@ -61,6 +70,15 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     public async Task CompareSheets(Sheet baseSheet, Sheet comparedSheet)
     {
         _ = await ShowCompareDialog.Handle((baseSheet, comparedSheet));
+    }
+
+    public async Task BatchRemoveSheets(List<Sheet> sheetsToRemove)
+    {
+        foreach (var sheet in sheetsToRemove)
+        {
+            await _sheetStorage.RemoveSheetAsync(sheet);
+            _sheetSource.Remove(sheet);
+        }
     }
 
 
@@ -143,4 +161,5 @@ public interface ILibraryViewModel : IRoutableViewModel
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);
     Task CompareSheets(Sheet baseSheet, Sheet comparedSheet);
+    Task BatchRemoveSheets(List<Sheet> selected);
 }

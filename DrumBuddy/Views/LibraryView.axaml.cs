@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
@@ -25,15 +27,20 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private readonly MainWindow _mainWindow;
     private readonly MidiService _midiService;
     private readonly PdfGenerator _pdfGenerator;
-
+    private IEnumerable<Sheet> SelectedSheets => SheetsLB.SelectedItems.Cast<Sheet>();
     public LibraryView()
     {
-        _midiService = Locator.Current.GetRequiredService<MidiService>();
-        _configurationService = Locator.Current.GetRequiredService<ConfigurationService>();
-        _pdfGenerator = Locator.Current.GetRequiredService<PdfGenerator>();
-        _mainWindow = Locator.Current.GetService<MainWindow>();
-        if (Design.IsDesignMode)
+        if (!Design.IsDesignMode)
+        {
+            _midiService = Locator.Current.GetRequiredService<MidiService>();
+            _configurationService = Locator.Current.GetRequiredService<ConfigurationService>();
+            _pdfGenerator = Locator.Current.GetRequiredService<PdfGenerator>();
+            _mainWindow = Locator.Current.GetService<MainWindow>();
+        }
+        else
+        {
             ViewModel = new DesignLibraryViewModel();
+        }
         InitializeComponent();
 
         this.WhenActivated(async d =>
@@ -152,4 +159,15 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         };
         view.Show(mainWindow);
     }
+
+    private void BatchDeleteMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel is null) return;
+        var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
+        if (selected.Count > 0)
+        {
+            _ = ViewModel.BatchRemoveSheets(selected);
+        }
+    }
+
 }

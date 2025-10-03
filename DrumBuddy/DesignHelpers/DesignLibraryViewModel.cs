@@ -52,4 +52,9 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         return Task.CompletedTask;
     }
+
+    public Task BatchRemoveSheets(List<Sheet> selected)
+    {
+        return Task.CompletedTask;
+    }
 }
