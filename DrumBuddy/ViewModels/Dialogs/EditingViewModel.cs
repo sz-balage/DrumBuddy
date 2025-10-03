@@ -12,7 +12,6 @@ using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO;
-using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
@@ -34,7 +33,7 @@ public partial class EditingViewModel : ReactiveObject
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly MetronomePlayer _metronomePlayer;
-    private readonly IMidiService _midiService;
+    private readonly MidiService _midiService;
     private readonly NotificationService _notificationService;
     private readonly PdfGenerator _pdfGenerator;
     private readonly IObservable<bool> _stopRecordingCanExecute;
@@ -62,7 +61,7 @@ public partial class EditingViewModel : ReactiveObject
     private DispatcherTimer _timer;
 
     public EditingViewModel(Sheet originalSheet,
-        IMidiService midiService,
+        MidiService midiService,
         ConfigurationService configService,
         PdfGenerator pdfGenerator,
         bool isViewOnly = false)

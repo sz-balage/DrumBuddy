@@ -1,10 +1,8 @@
 ﻿using System.Collections.Immutable;
 using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Models;
-using DrumBuddy.IO.Abstractions;
-using DrumBuddy.IO.Data;
 
-namespace DrumBuddy.IO.Services;
+namespace DrumBuddy.IO.Data.Storage;
 
 public class SheetStorage
 {

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reactive.Linq;
 using DrumBuddy.Core.Enums;
-using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
 
 namespace DrumBuddy.Extensions;
@@ -10,7 +9,7 @@ namespace DrumBuddy.Extensions;
 public static class MidiExtensions
 {
     public static IObservable<Drum> GetMappedBeatsObservable(
-        this IMidiService midiService, ConfigurationService config)
+        this MidiService midiService, ConfigurationService config)
     {
         return midiService.GetRawNoteObservable() // returns int note numbers
             .Select(noteNumber =>

@@ -11,7 +11,7 @@ using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
@@ -30,7 +30,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly MetronomePlayer _metronomePlayer;
-    private readonly IMidiService _midiService;
+    private readonly MidiService _midiService;
     private readonly NotificationService _notificationService;
     private readonly SheetStorage _sheetStorage;
     private readonly IObservable<bool> _stopRecordingCanExecute;
@@ -53,7 +53,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     private DispatcherTimer _timer;
 
     public RecordingViewModel(IScreen hostScreen,
-        IMidiService midiService,
+        MidiService midiService,
         ConfigurationService configService,
         SheetStorage sheetStorage,
         NotificationService notificationService,

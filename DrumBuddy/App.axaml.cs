@@ -10,7 +10,6 @@ using DrumBuddy.Core.Services;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO;
-using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
@@ -58,7 +57,7 @@ public class App : Application
         RegisterIOServices();
         CurrentMutable.RegisterConstant(new NotificationService());
         CurrentMutable.RegisterConstant(new MainViewModel(
-            Locator.Current.GetRequiredService<IMidiService>(),
+            Locator.Current.GetRequiredService<MidiService>(),
             Locator.Current.GetRequiredService<NotificationService>()));
         CurrentMutable.RegisterConstant(new PdfGenerator());
         CurrentMutable.RegisterConstant<IScreen>(Locator.Current.GetService<MainViewModel>());
@@ -71,11 +70,11 @@ public class App : Application
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.RegisterConstant(
             new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),
-                Locator.Current.GetRequiredService<IMidiService>(),
+                Locator.Current.GetRequiredService<MidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>()));
         CurrentMutable.Register(() =>
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
-                Locator.Current.GetRequiredService<IMidiService>(),
+                Locator.Current.GetRequiredService<MidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>(),
                 Locator.Current.GetRequiredService<SheetStorage>(),
                 Locator.Current.GetRequiredService<NotificationService>(),
@@ -106,7 +105,7 @@ public class App : Application
     private static void RegisterIOServices()
     {
         var connectionString = $"Data Source={Path.Combine(Environment.CurrentDirectory, "sheet_db.db")};";
-        CurrentMutable.RegisterConstant<IMidiService>(new MidiService());
+        CurrentMutable.RegisterConstant(new MidiService());
         CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(

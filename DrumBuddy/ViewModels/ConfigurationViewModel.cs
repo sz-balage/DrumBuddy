@@ -7,7 +7,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using DrumBuddy.Core.Enums;
-using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using ReactiveUI;
@@ -22,14 +21,14 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     // TODO: make default save direction configurable
     // TODO: add option to revert to default drum mappings, and drum positions
     private readonly ConfigurationService _configService;
-    private readonly IMidiService _midiService;
+    private readonly MidiService _midiService;
     private IDisposable? _beatsSubscription;
     private MainViewModel _mainVm;
     [Reactive] private bool _keyboardInput;
     [Reactive] private int _metronomeVolume = 8000;
 
     public ConfigurationViewModel(IScreen hostScreen,
-        IMidiService midiService,
+        MidiService midiService,
         ConfigurationService configService)
     {
         HostScreen = hostScreen;

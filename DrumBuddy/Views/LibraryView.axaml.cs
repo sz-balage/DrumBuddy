@@ -9,7 +9,6 @@ using Avalonia.ReactiveUI;
 using DrumBuddy.Core.Models;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO.Abstractions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
@@ -24,12 +23,12 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 {
     private readonly ConfigurationService _configurationService;
     private readonly MainWindow _mainWindow;
-    private readonly IMidiService _midiService;
+    private readonly MidiService _midiService;
     private readonly PdfGenerator _pdfGenerator;
 
     public LibraryView()
     {
-        _midiService = Locator.Current.GetRequiredService<IMidiService>();
+        _midiService = Locator.Current.GetRequiredService<MidiService>();
         _configurationService = Locator.Current.GetRequiredService<ConfigurationService>();
         _pdfGenerator = Locator.Current.GetRequiredService<PdfGenerator>();
         _mainWindow = Locator.Current.GetService<MainWindow>();

@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using ReactiveUI;
@@ -13,7 +13,7 @@ namespace DrumBuddy.ViewModels;
 
 public partial class MainViewModel : ReactiveObject, IScreen
 {
-    private readonly IMidiService _midiService;
+    private readonly MidiService _midiService;
     private readonly NotificationService _notificationService;
     [Reactive] private bool _canRetry;
     private IDisposable? _connectionErrorSub;
@@ -28,7 +28,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
     [Reactive] private bool _isKeyboardInput;
     private IDisposable? _successNotificationSub;
 
-    public MainViewModel(IMidiService midiService, NotificationService notificationService)
+    public MainViewModel(MidiService midiService, NotificationService notificationService)
     {
         _midiService = midiService;
         _notificationService = notificationService;

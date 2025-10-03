@@ -4,7 +4,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO.Abstractions;
+using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
 using DynamicData;

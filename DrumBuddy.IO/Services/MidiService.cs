@@ -1,13 +1,12 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using DrumBuddy.IO.Abstractions;
 using RtMidi.Core;
 using RtMidi.Core.Devices;
 using RtMidi.Core.Messages;
 
 namespace DrumBuddy.IO.Services;
 
-public class MidiService : IMidiService
+public class MidiService
 {
     private readonly Subject<bool> _inputDeviceDisconnected = new();
     private readonly Subject<int> _notes = new();
