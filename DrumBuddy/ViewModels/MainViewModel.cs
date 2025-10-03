@@ -25,6 +25,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
     private IDisposable? _successfulConnectionSub;
 
     [Reactive] private string _successMessage;
+    [Reactive] private bool _isKeyboardInput;
     private IDisposable? _successNotificationSub;
 
     public MainViewModel(IMidiService midiService, NotificationService notificationService)

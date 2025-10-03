@@ -49,24 +49,41 @@
                    DisplayMode="CompactInline"
                    PaneBackground="{StaticResource HeaderGray}">
             <SplitView.Pane>
-                <StackPanel Spacing="11" Margin="5">
-                    <Button x:Name="TriggerPaneButton" Height="50" Width="41" Background="{StaticResource HeaderGray}">
-                        <PathIcon Data="{StaticResource Line_Horizontal_3}" />
-                    </Button>
-                    <ListBox x:Name="PaneListBox">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type models:NavigationMenuItemTemplate}">
-                                <StackPanel Spacing="15" Orientation="Horizontal">
-                                    <PathIcon VerticalAlignment="Center" Height="40" Data="{Binding Icon}" Width="15" />
-                                    <TextBlock Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"
-                                               FontWeight="Bold"
-                                               Text="{Binding Label}"
-                                               VerticalAlignment="Center" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
+                <Grid>
+                    <StackPanel Spacing="11" Margin="5">
+                        <Button x:Name="TriggerPaneButton" Height="50" Width="41" Background="{StaticResource HeaderGray}">
+                            <PathIcon Data="{StaticResource Line_Horizontal_3}" />
+                        </Button>
+                        <ListBox x:Name="PaneListBox">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type models:NavigationMenuItemTemplate}">
+                                    <StackPanel Spacing="15" Orientation="Horizontal">
+                                        <PathIcon VerticalAlignment="Center" Height="40" Data="{Binding Icon}" Width="15" />
+                                        <TextBlock Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"
+                                                   FontWeight="Bold"
+                                                   Text="{Binding Label}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                    <StackPanel x:Name="ModeIndicatorStack"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Bottom" 
+                                Spacing="15"
+                                Margin="15">
+                        <PathIcon x:Name="ModeIndicatorIcon" 
+                                  VerticalAlignment="Center"
+                                  Height="50" 
+                                  Width="20" />
+                        <TextBlock x:Name="ModeIndicatorText" 
+                                   Margin="0,2,0,0" 
+                                   FontFamily="{StaticResource NunitoFont}"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
             </SplitView.Pane>
             <SplitView.Content>
                 <Border CornerRadius="12,0,0,0">

@@ -24,6 +24,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     private readonly ConfigurationService _configService;
     private readonly IMidiService _midiService;
     private IDisposable? _beatsSubscription;
+    private MainViewModel _mainVm;
     [Reactive] private bool _keyboardInput;
     [Reactive] private int _metronomeVolume = 8000;
 
@@ -34,18 +35,19 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = configService;
-        var mainVm = hostScreen as MainViewModel;
+        _mainVm = hostScreen as MainViewModel;
         InitConfig();
         this.WhenAnyValue(vm => vm.MetronomeVolume)
             .Subscribe(vol => _configService.MetronomeVolume = vol);
         this.WhenAnyValue(vm => vm.KeyboardInput)
             .Subscribe(ki =>
             {
-                ChangeSubscription(mainVm?.NoConnection ?? true);
+                ChangeSubscription(_mainVm?.NoConnection ?? true);
+                _mainVm!.IsKeyboardInput = ki;
                 _configService.KeyboardInput = ki;
                 UpdateDrumMappings();
             });
-        mainVm?.WhenAnyValue(vm => vm.NoConnection)
+        _mainVm?.WhenAnyValue(vm => vm.NoConnection)
             .Subscribe(ChangeSubscription);
         ListeningDrumChanged
             .Subscribe(UpdateListeningDrum);

@@ -33,27 +33,11 @@
                        Classes="header"
                        FontSize="16"
                        FontWeight="SemiBold" />
-            <TextBlock IsVisible="{Binding KeyboardInput}"
-                       Margin="0,0,18,0"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Center"
-                       Classes="header"
-                       FontSize="16"
-                       FontWeight="SemiBold"
-                       Text="Keyboard input mode"/>  
-            <TextBlock IsVisible="{Binding !KeyboardInput}"
-                       Margin="0,0,18,0"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Center"
-                       Classes="header"
-                       FontSize="16"
-                       FontWeight="SemiBold"
-                       Text="MIDI input mode"/>
         </Grid>
         <TabControl Grid.Row="1">
             <TabItem Header="Drum Mapping" 
-                     FontSize="16" 
-                     PointerPressed="DrumMappingTab_PointerPressed">
+                     x:Name="DrumMappingTab"
+                     FontSize="16">
                 <ScrollViewer>
                     <ItemsControl ItemsSource="{Binding DrumMappings}">
                         <ItemsControl.ItemsPanel>
@@ -116,9 +100,9 @@
                     </ItemsControl>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Settings" 
-                     FontSize="16"
-                     PointerPressed="SettingsTab_PointerPressed">
+            <TabItem x:Name="SettingsTab"
+                Header="Settings" 
+                     FontSize="16">
                 <StackPanel Spacing="16" Margin="0,4,0,0">
                     <Expander Header="Audio Settings"
                               Background="{StaticResource LighterGray}"
@@ -154,20 +138,32 @@
                                        FontWeight="Medium"
                                        FontSize="14" />
                             <StackPanel Orientation="Horizontal" Spacing="12">
-                                <TextBlock Text="MIDI Mode"
-                                           x:Name="MIDIModeText"
-                                           FontSize="16"
-                                           FontFamily="{StaticResource NunitoFont}"
-                                           VerticalAlignment="Center" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="MIDI Mode"
+                                               x:Name="MIDIModeIcon"
+                                               FontSize="16"
+                                               FontFamily="{StaticResource NunitoFont}"
+                                               VerticalAlignment="Center" />
+                                    <PathIcon x:Name="MIDIModeText" 
+                                              Margin="10,0,0,2"
+                                              Data="{StaticResource music}"/>
+                                </StackPanel>
                                 <ToggleSwitch x:Name="InputModeToggle"
                                               IsChecked="{Binding KeyboardInput}"
                                               OnContent=""
                                               OffContent="" />
-                                <TextBlock Text="Keyboard Mode"
-                                           x:Name="KeyboardModeText"
-                                           FontSize="16"
-                                           FontFamily="{StaticResource NunitoFont}"
-                                           VerticalAlignment="Center" />
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Stretch">
+                                    <PathIcon x:Name="KeyboardModeIcon" 
+                                              Margin="-10,0,10,0"
+                                              HorizontalAlignment="Left"
+                                              Data="{StaticResource Keyboard}"/>
+                                    <TextBlock Text="Keyboard Mode"
+                                               x:Name="KeyboardModeText"
+                                               FontSize="16"
+                                               FontFamily="{StaticResource NunitoFont}"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
                     </Expander>

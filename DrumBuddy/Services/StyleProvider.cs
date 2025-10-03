@@ -12,6 +12,9 @@ public static class StyleProvider
     private static readonly StreamGeometry? WarningIcon = GetStreamGeometryForKey("WarningIcon");
     private static readonly StreamGeometry? InfoIcon = GetStreamGeometryForKey("InfoIcon");
     private static readonly StreamGeometry? SuccessIcon = GetStreamGeometryForKey("Checkmark");
+    
+    private static readonly StreamGeometry? MidiIcon = GetStreamGeometryForKey("music");
+    private static readonly StreamGeometry? KeyboardIcon = GetStreamGeometryForKey("Keyboard");
 
     private static readonly SolidColorBrush? ErrorForeground = GetBrushForKey("Error");
     private static readonly SolidColorBrush? WarningForeground = GetBrushForKey("Warning");
@@ -38,6 +41,8 @@ public static class StyleProvider
                 return InfoForeground;
         }
     }
+
+    public static StreamGeometry GetStreamGeometryForInputType(bool isKeyboardInput) => isKeyboardInput ? KeyboardIcon : MidiIcon;
 
     public static StreamGeometry GetStreamGeometryForNotificationType(NotificationType type)
     {

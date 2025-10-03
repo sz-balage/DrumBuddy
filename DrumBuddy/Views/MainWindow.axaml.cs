@@ -49,6 +49,10 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             //     .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.TryConnectCommand, v => v._retryButton)
                 .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.IsKeyboardInput, v => v.ModeIndicatorIcon.Data, 
+                StyleProvider.GetStreamGeometryForInputType);
+            this.OneWayBind(ViewModel, vm => vm.IsKeyboardInput, v => v.ModeIndicatorText.Text, 
+                ki => ki ? "Keyboard" : "MIDI");
             NotificationPlaceholder.Children.Add(new NotificationHost
                 { ViewModel = new NotificationHostViewModel() });
             Closing += async (_, e) =>

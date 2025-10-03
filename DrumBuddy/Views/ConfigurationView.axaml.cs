@@ -41,14 +41,24 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
             this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.MIDIModeText.Foreground, ki =>
             {
                 return ki ? Brushes.Gray : Brushes.Black;
+            });        
+            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.MIDIModeIcon.Foreground, ki =>
+            {
+                return ki ? Brushes.Gray : Brushes.Black;
             });     
             this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeText.Foreground, ki =>
+            {
+                return ki ? Brushes.Black : Brushes.Gray;
+            });  
+            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeIcon.Foreground, ki =>
             {
                 return ki ? Brushes.Black : Brushes.Gray;
             });
             var mainView = Locator.Current.GetRequiredService<MainWindow>();
             ViewModel.KeyboardBeats = mainView.KeyboardBeats;
             ViewModel.DrumMappingTabSelected = true;
+            DrumMappingTab.PointerPressed += DrumMappingTab_PointerPressed;
+            SettingsTab.PointerPressed += SettingsTab_PointerPressed;
         });
     }
 
