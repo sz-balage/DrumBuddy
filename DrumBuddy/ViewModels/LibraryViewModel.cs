@@ -9,8 +9,6 @@ using Avalonia.Controls.Notifications;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
-using DrumBuddy.IO.Services;
-using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.Views;
 using DynamicData;
@@ -52,16 +50,8 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         this.WhenNavigatedTo(() => LoadSheets()
             .ToObservable()
             .Subscribe());
-        _sheetSource.CountChanged.Subscribe(count =>
-        {
-            if (count == 0)
-                IsBatchRemoveEnabled = false;
-            else
-                IsBatchRemoveEnabled = true;
-        });
     }
 
-    [Reactive] private bool _isBatchRemoveEnabled;
     public ReadOnlyObservableCollection<Sheet> Sheets => _sheets;
     public string? UrlPathSegment { get; } = "library";
     public IScreen HostScreen { get; }
@@ -137,7 +127,8 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         {
             await _sheetStorage.UpdateSheetAsync(editResult);
             _sheetSource.AddOrUpdate(editResult);
-            _notificationService.ShowNotification(new Notification("Successful save.",$"The sheet {editResult.Name} successfully saved.",
+            _notificationService.ShowNotification(new Notification("Successful save.",
+                $"The sheet {editResult.Name} successfully saved.",
                 NotificationType.Success));
         }
     }
