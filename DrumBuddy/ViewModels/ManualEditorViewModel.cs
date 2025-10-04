@@ -28,7 +28,7 @@ namespace DrumBuddy.ViewModels;
 public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 {
     public const int Columns = 16; // one measure, 16 sixteenth steps
-    public const int MaxNotesPerColumn = 3; // maximum notes allowed per column (NoteGroup)
+    public const int MaxNotesPerColumn = 4; // maximum notes allowed per column (NoteGroup)
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly List<bool[,]> _measureSteps;
     private readonly NotificationService _notificationService;
