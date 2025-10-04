@@ -9,8 +9,6 @@
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Views.LibraryView"
                           x:DataType="vm:LibraryViewModel">
-    <!-- TODO add select all button-->
-    <!-- TODO disable delete selected button when there is no selected item-->
     <Design.DataContext>
         <designHelpers:DesignLibraryViewModel />
     </Design.DataContext>

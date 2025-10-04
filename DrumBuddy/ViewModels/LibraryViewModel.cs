@@ -23,7 +23,6 @@ namespace DrumBuddy.ViewModels;
 public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 {
     //TODO: make sheets exportable/importable to/from files
-    //TODO: sheet duplication
 
     private readonly NotificationService _notificationService;
     private readonly PdfGenerator _pdfGenerator;
