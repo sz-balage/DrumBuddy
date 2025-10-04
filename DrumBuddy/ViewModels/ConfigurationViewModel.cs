@@ -20,6 +20,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     // TODO: make config files importable/exportable
     // TODO: make default save direction configurable
     // TODO: add option to revert to default drum mappings, and drum positions
+    // TODO: add button to recheck midi devices
     private readonly ConfigurationService _configService;
     private readonly MidiService _midiService;
     private IDisposable? _beatsSubscription;
