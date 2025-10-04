@@ -27,7 +27,6 @@ namespace DrumBuddy.ViewModels;
 
 public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
-    //TODO: do not let user start recording if there is no midi device connected, AND keyboard input is disabled
     private static int _globalPointerIdx;
     private readonly ConfigurationService _configService;
     private readonly ReadOnlyObservableCollection<MeasureViewModel> _measures;
