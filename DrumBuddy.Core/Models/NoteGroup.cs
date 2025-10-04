@@ -14,6 +14,7 @@ public class NoteGroup : List<Note>
     {
     }
 
+    //TODO: constructor should not crash application
     public NoteGroup(List<Note> notes) : base(notes)
     {
         if (notes.Count > MaxSize) throw new InvalidOperationException("How many limbs you got?");
