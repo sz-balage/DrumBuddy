@@ -31,6 +31,11 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.PaneItems, v => v.PaneListBox.ItemsSource)
                 .DisposeWith(d);
+
+            ViewModel.WhenAnyValue(vm => vm.NoConnection, vm => vm.IsKeyboardInput).Subscribe(values =>
+            {
+                NoConnection.IsVisible = values.Item1 && !values.Item2;
+            });
             this.Bind(ViewModel, vm => vm.SelectedPaneItem, v => v.PaneListBox.SelectedItem)
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.IsPaneOpen, v => v.SplitView.IsPaneOpen)

@@ -270,7 +270,11 @@ public partial class EditingViewModel : ReactiveObject
     [ReactiveCommand]
     private void StartRecording()
     {
-        // Make sure a measure is selected
+        if (!_configService.KeyboardInput && !_midiService.IsConnected)
+        {
+            _notificationService.ShowNotification(new Notification("No input device found.", "Please connect your midi device and try again, or enable keyboard input in the settings.",NotificationType.Error));
+            return;
+        }
         InitTimer();
         CountDown = 5;
         InitMetronomeSubs();

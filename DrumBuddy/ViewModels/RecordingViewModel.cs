@@ -315,6 +315,11 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     [ReactiveCommand]
     private void StartRecording()
     {
+        if (!_configService.KeyboardInput && !_midiService.IsConnected)
+        {
+            _notificationService.ShowNotification(new Notification("No input device found.", "Please connect your midi device and try again, or enable keyboard input in the settings.",NotificationType.Error));
+            return;
+        }
         InitTimer();
         CountDown = 5;
         InitMetronomeSubs();
