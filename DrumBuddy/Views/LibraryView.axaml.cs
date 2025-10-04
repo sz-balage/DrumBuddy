@@ -48,6 +48,10 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.OneWayBind(ViewModel,
                     vm => vm.Sheets,
                     v => v.SheetsLB.ItemsSource)
+                .DisposeWith(d);    
+            this.OneWayBind(ViewModel,
+                    vm => vm.SelectedSheet,
+                    v => v.BatchDeleteMenuItem.IsEnabled, b => b != null)
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.SelectedSheet,
                     v => v.SheetsLB.SelectedItem)
