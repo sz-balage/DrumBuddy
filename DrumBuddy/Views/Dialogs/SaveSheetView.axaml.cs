@@ -29,6 +29,13 @@ public partial class SaveSheetView : ReactiveWindow<SaveSheetViewModel>
             {
                 if (e.Key == Key.Escape) Close(new SheetNameAndDescription(null, null));
             };
+            this.Closing += (sender, args) =>
+            {
+                if (!args.IsProgrammatic)
+                {
+                    Close(new SheetNameAndDescription(null, null));
+                }
+            };
         });
     }
 }

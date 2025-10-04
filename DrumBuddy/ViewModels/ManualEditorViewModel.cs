@@ -6,24 +6,29 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls.Notifications;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
+using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.HelperViewModels;
+using DrumBuddy.Views;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using Splat;
+using Notification = Avalonia.Controls.Notifications.Notification;
 
 namespace DrumBuddy.ViewModels;
 
 public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 {
     public const int Columns = 16; // one measure, 16 sixteenth steps
-    public const int MaxNotesPerColumn = 3; // maximum notes allowed per column (NoteGroup)
+    public const int MaxNotesPerColumn = 4; // maximum notes allowed per column (NoteGroup)
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly List<bool[,]> _measureSteps;
     private readonly NotificationService _notificationService;
@@ -55,11 +60,11 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
 
-    public ManualEditorViewModel(IScreen host, SheetStorage sheetStorage, NotificationService notificationService,
+    public ManualEditorViewModel(IScreen host, SheetStorage sheetStorage,
         Func<Task> onClose)
     {
         _sheetStorage = sheetStorage;
-        _notificationService = notificationService;
+        _notificationService = new(Locator.Current.GetRequiredService<MainWindow>());
         HostScreen = host;
         UrlPathSegment = "manual-editor";
         _measureSource.Connect()
@@ -188,17 +193,21 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         {
             var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm,
                 [..CurrentSheet?.Measures ?? ImmutableArray<Measure>.Empty]));
-            Name = dialogResult.Name;
-            Description = dialogResult.Description;
-            CurrentSheet = BuildSheet();
+            if (dialogResult.Name != null)
+            {
+                Name = dialogResult.Name;
+                Description = dialogResult.Description;
+                CurrentSheet = BuildSheet();
+                _notificationService.ShowNotification(new Notification("Sheet saved.",$"The sheet {Name} successfully saved.", NotificationType.Success));
+                IsSaved = true;
+            }
         }
         else
         {
             await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
+            _notificationService.ShowNotification(new Notification("Sheet saved.",$"The sheet {Name} successfully saved.", NotificationType.Success));
+            IsSaved = true;
         }
-
-        _notificationService.ShowNotification($"The sheet {Name} successfully saved.", NotificationType.Success);
-        IsSaved = true;
     }
 
     [ReactiveCommand]

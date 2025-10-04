@@ -38,7 +38,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     {
         if (Design.IsDesignMode)
         {
-            var vm = new ManualEditorViewModel(null, new SheetStorage(null,""), null, () => Task.CompletedTask);
+            var vm = new ManualEditorViewModel(null, new SheetStorage(null,""), () => Task.CompletedTask);
             vm.LoadSheet(TestSheetProvider.GetTestSheet());
             ViewModel = vm;
         }

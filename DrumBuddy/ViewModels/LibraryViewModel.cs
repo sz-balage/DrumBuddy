@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
+using Avalonia.Controls.Notifications;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
-using DrumBuddy.IO.Services;
-using DrumBuddy.Models;
 using DrumBuddy.Services;
+using DrumBuddy.Views;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
+using Notification = Avalonia.Controls.Notifications.Notification;
 
 namespace DrumBuddy.ViewModels;
 
@@ -31,10 +33,10 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     [Reactive] private Sheet _selectedSheet;
 
-    public LibraryViewModel(IScreen hostScreen, SheetStorage sheetStorage, NotificationService notificationService,
+    public LibraryViewModel(IScreen hostScreen, SheetStorage sheetStorage,
         PdfGenerator pdfGenerator)
     {
-        _notificationService = notificationService;
+        _notificationService = new(Locator.Current.GetRequiredService<MainWindow>());
         _pdfGenerator = pdfGenerator;
         HostScreen = hostScreen;
         _sheetStorage = sheetStorage;
@@ -48,16 +50,8 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         this.WhenNavigatedTo(() => LoadSheets()
             .ToObservable()
             .Subscribe());
-        _sheetSource.CountChanged.Subscribe(count =>
-        {
-            if (count == 0)
-                IsBatchRemoveEnabled = false;
-            else
-                IsBatchRemoveEnabled = true;
-        });
     }
 
-    [Reactive] private bool _isBatchRemoveEnabled;
     public ReadOnlyObservableCollection<Sheet> Sheets => _sheets;
     public string? UrlPathSegment { get; } = "library";
     public IScreen HostScreen { get; }
@@ -133,9 +127,29 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         {
             await _sheetStorage.UpdateSheetAsync(editResult);
             _sheetSource.AddOrUpdate(editResult);
-            _notificationService.ShowNotification($"The sheet {editResult.Name} successfully saved.",
-                NotificationType.Success);
+            _notificationService.ShowNotification(new Notification("Successful save.",
+                $"The sheet {editResult.Name} successfully saved.",
+                NotificationType.Success));
         }
+    }
+
+    [ReactiveCommand]
+    private async Task DuplicateSheet()
+    {
+        var original = SelectedSheet;
+        var allNames = _sheetSource.Items.Select(s => s.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var newName = SheetStorage.GenerateCopyName(original.Name, allNames);
+
+        // Duplicate the object (assuming Sheet is immutable or cloneable)
+        var duplicated = original.RenameSheet(newName, original.Description);
+
+        await _sheetStorage.SaveSheetAsync(duplicated);
+        _sheetSource.AddOrUpdate(duplicated);
+
+        _notificationService.ShowNotification(new Notification("Sheet duplicated.",
+            $"A copy named \"{newName}\" was created.",
+            NotificationType.Success));
     }
 
     private async Task LoadSheets()
@@ -158,6 +172,7 @@ public interface ILibraryViewModel : IRoutableViewModel
     Interaction<Sheet, Sheet?> ShowEditDialog { get; }
     Interaction<Sheet, Sheet> ShowRenameDialog { get; }
     Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; }
+    ReactiveCommand<Unit, Unit> DuplicateSheetCommand { get; }
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);
     Task CompareSheets(Sheet baseSheet, Sheet comparedSheet);

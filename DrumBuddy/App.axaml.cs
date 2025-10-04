@@ -55,17 +55,14 @@ public class App : Application
     {
         RegisterCoreServices();
         RegisterIOServices();
-        CurrentMutable.RegisterConstant(new NotificationService());
         CurrentMutable.RegisterConstant(new MainViewModel(
-            Locator.Current.GetRequiredService<MidiService>(),
-            Locator.Current.GetRequiredService<NotificationService>()));
+            Locator.Current.GetRequiredService<MidiService>()));
         CurrentMutable.RegisterConstant(new PdfGenerator());
         CurrentMutable.RegisterConstant<IScreen>(Locator.Current.GetService<MainViewModel>());
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
             Locator.Current.GetRequiredService<SheetStorage>(),
-            Locator.Current.GetRequiredService<NotificationService>(),
             Locator.Current.GetRequiredService<PdfGenerator>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.RegisterConstant(
@@ -77,7 +74,6 @@ public class App : Application
                 Locator.Current.GetRequiredService<MidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>(),
                 Locator.Current.GetRequiredService<SheetStorage>(),
-                Locator.Current.GetRequiredService<NotificationService>(),
                 Locator.Current.GetRequiredService<MetronomePlayer>()));
 
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() },

@@ -47,6 +47,7 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; }
+    public ReactiveCommand<Unit, Unit> DuplicateSheetCommand { get; set; }
 
     public Task CompareSheets(Sheet baseSheet, Sheet comparedSheet)
     {

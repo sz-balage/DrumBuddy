@@ -32,22 +32,38 @@
                        Classes="header"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
+            <Button x:Name="SelectAllButton"
+                    Margin="0,10,170,10"
+                    Background="{StaticResource HeaderGray}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Height="66"
+                    Click="SelectAllButton_OnClick">
+                <StackPanel Orientation="Horizontal">
+                    <PathIcon Data="{StaticResource Checkmark}" Foreground="{StaticResource Accent}" />
+                    <TextBlock Text="Select all"
+                               VerticalAlignment="Center"
+                               FontFamily="{StaticResource NunitoFont}"
+                               FontSize="16"
+                               Foreground="{StaticResource Accent}"
+                               Margin="5,3,0,0" />
+                </StackPanel>
+            </Button>
             <Button x:Name="BatchDeleteMenuItem"
-                    IsVisible="{Binding IsBatchRemoveEnabled}"
                     Margin="10,10,0,10"
                     Background="{StaticResource HeaderGray}"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Height="66"
-                    Click="BatchDeleteMenuItem_OnClick" >
+                    Click="BatchDeleteMenuItem_OnClick">
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource delete}"
                               Foreground="Red" />
-                    <TextBlock Text="Delete selected" 
+                    <TextBlock Text="Delete selected"
                                VerticalAlignment="Center"
                                FontFamily="{StaticResource NunitoFont}"
                                FontSize="16"
-                               Foreground="Red" 
+                               Foreground="Red"
                                Margin="5,3,0,0" />
                 </StackPanel>
             </Button>
@@ -137,6 +153,11 @@
                                     <MenuItem Header="Edit sheet" Click="EditMenuItem_OnClick">
                                         <MenuItem.Icon>
                                             <PathIcon Data="{StaticResource edit_regular}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Duplicate sheet" Click="DuplicateMenuItem_OnClick">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource Duplicate}" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="Change name and description"

@@ -27,8 +27,7 @@
         </Grid.RowDefinitions>
 
         <Border x:Name="NoConnection" x:DataType="vm:MainViewModel"
-                Background="{StaticResource Error}"
-                IsVisible="{Binding NoConnection}">
+                Background="{StaticResource Error}">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <Label VerticalAlignment="Center">
                     There are no MIDI devices connected. If you wish to use the client with keyboard controls, visit the Configuration page.

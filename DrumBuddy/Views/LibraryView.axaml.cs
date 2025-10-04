@@ -27,7 +27,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private readonly MainWindow _mainWindow;
     private readonly MidiService _midiService;
     private readonly PdfGenerator _pdfGenerator;
-    private IEnumerable<Sheet> SelectedSheets => SheetsLB.SelectedItems.Cast<Sheet>();
+
     public LibraryView()
     {
         if (!Design.IsDesignMode)
@@ -41,6 +41,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         {
             ViewModel = new DesignLibraryViewModel();
         }
+
         InitializeComponent();
 
         this.WhenActivated(async d =>
@@ -49,12 +50,20 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     vm => vm.Sheets,
                     v => v.SheetsLB.ItemsSource)
                 .DisposeWith(d);
+            this.OneWayBind(ViewModel,
+                    vm => vm.SelectedSheet,
+                    v => v.BatchDeleteMenuItem.IsEnabled, b => b != null)
+                .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.SelectedSheet,
                     v => v.SheetsLB.SelectedItem)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateGrid.IsVisible, count => count == 0)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateTextBlock.IsVisible, count => count == 0)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.SelectAllButton.IsVisible, count => count != 0)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.BatchDeleteMenuItem.IsVisible, count => count != 0)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.NavigateToRecordingViewCommand, view => view.RecordButton)
                 .DisposeWith(d);
@@ -72,6 +81,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             //     .DisposeWith(d);
         });
     }
+
+    private IEnumerable<Sheet> SelectedSheets => SheetsLB.SelectedItems.Cast<Sheet>();
 
     private ListBox SheetsLB => this.FindControl<ListBox>("SheetsListBox");
     private Button NavSheetButton => this.FindControl<Button>("CreateFirstSheetButton");
@@ -145,6 +156,11 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         ViewModel.EditSheetCommand.Execute().Subscribe();
     }
 
+    private void DuplicateMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.DuplicateSheetCommand.Execute().Subscribe();
+    }
+
     private void ViewButton_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button &&
@@ -160,14 +176,31 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         view.Show(mainWindow);
     }
 
+    private void SelectAllButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (SheetsLB.Items is null)
+            return;
+
+        // Select all sheets if not already all selected, otherwise clear selection
+        var allItems = SheetsLB.Items.Cast<object>().ToList();
+        var selectedCount = SheetsLB.SelectedItems?.Count ?? 0;
+
+        if (selectedCount < allItems.Count)
+        {
+            SheetsLB.SelectedItems.Clear();
+            foreach (var item in allItems)
+                SheetsLB.SelectedItems.Add(item);
+        }
+        else
+        {
+            SheetsLB.SelectedItems.Clear();
+        }
+    }
+
     private void BatchDeleteMenuItem_OnClick(object? sender, RoutedEventArgs e)
     {
         if (ViewModel is null) return;
         var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
-        if (selected.Count > 0)
-        {
-            _ = ViewModel.BatchRemoveSheets(selected);
-        }
+        if (selected.Count > 0) _ = ViewModel.BatchRemoveSheets(selected);
     }
-
 }

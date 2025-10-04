@@ -31,6 +31,11 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.PaneItems, v => v.PaneListBox.ItemsSource)
                 .DisposeWith(d);
+
+            ViewModel.WhenAnyValue(vm => vm.NoConnection, vm => vm.IsKeyboardInput).Subscribe(values =>
+            {
+                NoConnection.IsVisible = values.Item1 && !values.Item2;
+            });
             this.Bind(ViewModel, vm => vm.SelectedPaneItem, v => v.PaneListBox.SelectedItem)
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.IsPaneOpen, v => v.SplitView.IsPaneOpen)
@@ -53,8 +58,6 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 StyleProvider.GetStreamGeometryForInputType);
             this.OneWayBind(ViewModel, vm => vm.IsKeyboardInput, v => v.ModeIndicatorText.Text, 
                 ki => ki ? "Keyboard" : "MIDI");
-            NotificationPlaceholder.Children.Add(new NotificationHost
-                { ViewModel = new NotificationHostViewModel() });
             Closing += async (_, e) =>
             {
                 if (isClosingConfirmed)
@@ -79,6 +82,9 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
+            ViewModel.SetTopLevelWindow(this);
+            ViewModel.TryConnectCommand.Execute().Subscribe();
+
         });
         InitializeComponent();
     }

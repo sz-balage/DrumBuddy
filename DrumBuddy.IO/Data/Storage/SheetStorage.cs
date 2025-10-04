@@ -57,4 +57,20 @@ public class SheetStorage
         return SheetDbCommands.UpdateSheetAsync(_connectionString, sheet.Name, sheet.Tempo.Value, serialized,
             sheet.Name, sheet.Description);
     }
+
+    public static string GenerateCopyName(string originalName, HashSet<string> existingNames)
+    {
+        var baseName = $"{originalName} - Copy";
+        if (!existingNames.Contains(baseName))
+            return baseName;
+        var counter = 1;
+        string newName;
+        do
+        {
+            newName = $"{baseName} ({counter})";
+            counter++;
+        } while (existingNames.Contains(newName));
+
+        return newName;
+    }
 }

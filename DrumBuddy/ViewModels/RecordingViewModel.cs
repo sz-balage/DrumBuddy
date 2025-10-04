@@ -6,6 +6,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
 using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
@@ -16,6 +17,7 @@ using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.HelperViewModels;
+using DrumBuddy.Views;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -56,14 +58,13 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         MidiService midiService,
         ConfigurationService configService,
         SheetStorage sheetStorage,
-        NotificationService notificationService,
         MetronomePlayer metronomePlayer)
     {
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = configService;
         _sheetStorage = sheetStorage;
-        _notificationService = notificationService;
+        _notificationService = new(Locator.Current.GetRequiredService<MainWindow>());
         _metronomePlayer = metronomePlayer;
 
         //binding measuresource
@@ -313,6 +314,11 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     [ReactiveCommand]
     private void StartRecording()
     {
+        if (!_configService.KeyboardInput && !_midiService.IsConnected)
+        {
+            _notificationService.ShowNotification(new Notification("No input device found.", "Please connect your midi device and try again, or enable keyboard input in the settings.",NotificationType.Error));
+            return;
+        }
         InitTimer();
         CountDown = 5;
         InitMetronomeSubs();
@@ -342,7 +348,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
         if (measures.Count == 0)
         {
-            _notificationService.ShowNotification("Recording stopped. No notes captured.", NotificationType.Warning);
+            _notificationService.ShowNotification(new Notification("Recording stopped.","No notes captured.", NotificationType.Warning));
             ClearMeasures();
             return;
         }
@@ -358,8 +364,8 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         //     await _library.SaveSheet(new Sheet(_bpm, measures, save));
         if (dialogResult.Name != null)
         {
-            _notificationService.ShowNotification($"The sheet {dialogResult.Name} successfully saved.",
-                NotificationType.Success);
+            _notificationService.ShowNotification(new Notification("Successful save.",$"The sheet {dialogResult.Name} successfully saved.",
+                NotificationType.Success));
             var mainVm = HostScreen as MainViewModel;
             mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<LibraryViewModel>());
         }
