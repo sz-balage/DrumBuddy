@@ -36,6 +36,13 @@ public partial class RenameSheetView : ReactiveWindow<RenameSheetViewModel>
             {
                 if (e.Key == Key.Escape) Close(ViewModel!.OriginalSheet);
             };
+            this.Closing += (sender, args) =>
+            {
+                if (!args.IsProgrammatic)
+                {
+                    this.Close(ViewModel!.OriginalSheet);
+                }
+            };
         });
         InitializeComponent();
     }

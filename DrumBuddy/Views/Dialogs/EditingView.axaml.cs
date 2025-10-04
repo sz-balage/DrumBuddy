@@ -33,8 +33,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
             this.OneWayBind(ViewModel, vm => vm.IsExporting, v => v.ExportTextBlock.Text, isExporting =>
                     isExporting ? "Exporting..." : "Export to pdf")
                 .DisposeWith(d);
-            NotificationPlaceholder.Children.Add(new NotificationHost
-                { ViewModel = new NotificationHostViewModel() });
             //editing stuff
             if (!ViewModel.IsViewOnly)
             {
@@ -66,6 +64,7 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                     // Find the container for the current measure
                     MeasuresViewer.BringCurrentMeasureIntoView(measure);
                 });
+                ViewModel.SetTopLevelWindow(this);
             }
         });
     }

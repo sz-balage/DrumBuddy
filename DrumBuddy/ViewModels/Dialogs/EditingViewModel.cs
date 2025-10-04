@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
 using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
@@ -34,7 +36,7 @@ public partial class EditingViewModel : ReactiveObject
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly MetronomePlayer _metronomePlayer;
     private readonly MidiService _midiService;
-    private readonly NotificationService _notificationService;
+    private NotificationService _notificationService;
     private readonly PdfGenerator _pdfGenerator;
     private readonly IObservable<bool> _stopRecordingCanExecute;
     public readonly Sheet OriginalSheet;
@@ -46,7 +48,6 @@ public partial class EditingViewModel : ReactiveObject
     [Reactive] private bool _countDownVisibility;
     [Reactive] private MeasureViewModel _currentMeasure;
 
-    // Add new properties
     [Reactive] private bool _isExporting;
 
     [Reactive] private bool _isRecording;
@@ -59,7 +60,6 @@ public partial class EditingViewModel : ReactiveObject
 
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
-
     public EditingViewModel(Sheet originalSheet,
         MidiService midiService,
         ConfigurationService configService,
@@ -73,7 +73,6 @@ public partial class EditingViewModel : ReactiveObject
         IsViewOnly = isViewOnly;
         //init sound players
         _metronomePlayer = Locator.Current.GetRequiredService<MetronomePlayer>();
-        _notificationService = Locator.Current.GetRequiredService<NotificationService>();
         //binding measuresource
         _measureSource.Connect()
             .Bind(out _measures)
@@ -104,6 +103,10 @@ public partial class EditingViewModel : ReactiveObject
             .Subscribe(recording => CanSave = !recording);
     }
 
+    public void SetTopLevelWindow(Window window)
+    {
+        _notificationService = new(window);
+    }
     private bool _keyboardInputEnabled => _configService.KeyboardInput;
 
     public IObservable<int> KeyboardBeats { get; set; }
@@ -120,12 +123,12 @@ public partial class EditingViewModel : ReactiveObject
         {
             await _pdfGenerator.ExportSheetToPdf(measures, OriginalSheet.Name, OriginalSheet.Description,
                 OriginalSheet.Tempo);
-            _notificationService.ShowNotification($"{OriginalSheet.Name} exported successfully.",
-                NotificationType.Success);
+            var message = $"{OriginalSheet.Name} exported successfully.";
+            _notificationService.ShowNotification(new Notification("Successful export.", message));
         }
         catch (Exception e)
         {
-            _notificationService.ShowNotification("Error while exporting sheet: " + e.Message, NotificationType.Error);
+            _notificationService.ShowNotification(new Notification("Export error.","Error while exporting sheet: " + e.Message,NotificationType.Error));
         }
         finally
         {
@@ -295,10 +298,9 @@ public partial class EditingViewModel : ReactiveObject
 
         var recordedCount = Measures.Count(m => !m.IsEmpty);
         if (recordedCount > 0)
-            _notificationService.ShowNotification($"Recording stopped. Captured {recordedCount} measure(s).",
-                NotificationType.Info);
+            _notificationService.ShowNotification(new Notification("Recording stopped.",$"Captured {recordedCount} measure(s)."));
         else
-            _notificationService.ShowNotification("Recording stopped. No notes captured.", NotificationType.Warning);
+            _notificationService.ShowNotification(new Notification("Recording stopped.","No notes captured.", NotificationType.Warning));
     }
 
     private void ResetPointer()

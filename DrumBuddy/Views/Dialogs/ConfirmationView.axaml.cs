@@ -16,6 +16,13 @@ public partial class ConfirmationView : ReactiveWindow<ConfirmationViewModel>
             Discard.Click += (sender, e) => Close(Confirmation.Discard);
             Cancel.Click += (sender, e) => Close(Confirmation.Cancel);
             Save.Click += (sender, e) => Close(Confirmation.Save);
+            this.Closing += (sender, args) =>
+            {
+                if (!args.IsProgrammatic)
+                {
+                    Close(Confirmation.Cancel);
+                }
+            };
         });
     }
 }

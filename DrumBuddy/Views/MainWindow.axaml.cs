@@ -53,8 +53,6 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 StyleProvider.GetStreamGeometryForInputType);
             this.OneWayBind(ViewModel, vm => vm.IsKeyboardInput, v => v.ModeIndicatorText.Text, 
                 ki => ki ? "Keyboard" : "MIDI");
-            NotificationPlaceholder.Children.Add(new NotificationHost
-                { ViewModel = new NotificationHostViewModel() });
             Closing += async (_, e) =>
             {
                 if (isClosingConfirmed)
@@ -79,6 +77,9 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
+            ViewModel.SetTopLevelWindow(this);
+            ViewModel.TryConnectCommand.Execute().Subscribe();
+
         });
         InitializeComponent();
     }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
@@ -8,13 +10,12 @@ using DrumBuddy.Services;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
-
 namespace DrumBuddy.ViewModels;
 
 public partial class MainViewModel : ReactiveObject, IScreen
 {
     private readonly MidiService _midiService;
-    private readonly NotificationService _notificationService;
+    private NotificationService _notificationService;
     [Reactive] private bool _canRetry;
     private IDisposable? _connectionErrorSub;
 
@@ -28,18 +29,19 @@ public partial class MainViewModel : ReactiveObject, IScreen
     [Reactive] private bool _isKeyboardInput;
     private IDisposable? _successNotificationSub;
 
-    public MainViewModel(MidiService midiService, NotificationService notificationService)
+    public MainViewModel(MidiService midiService)
     {
         _midiService = midiService;
-        _notificationService = notificationService;
         _midiService!.InputDeviceDisconnected
             .Subscribe(connected => { NoConnection = true; });
-        TryConnect();
         this.WhenAnyValue(vm => vm.SelectedPaneItem)
             .Subscribe(OnSelectedPaneItemChanged);
         CanRetry = true;
     }
-
+    public void SetTopLevelWindow(Window window)
+    {
+        _notificationService = new(window);
+    }
     public IRoutableViewModel CurrentViewModel { get; private set; }
 
     public ObservableCollection<NavigationMenuItemTemplate> PaneItems { get; } = new()
@@ -64,16 +66,17 @@ public partial class MainViewModel : ReactiveObject, IScreen
     private void SuccessfulConnection(string message)
     {
         NoConnection = false;
-        _notificationService.ShowNotification(message, NotificationType.Success);
+        _notificationService.ShowNotification(new Notification("Successful connection.",message, NotificationType.Success));
+        WindowNotificationManager asd = new();
     }
 
     private void ConnectionError(string message)
     {
         CanRetry = false;
         NoConnection = true;
-        _notificationService.ShowNotification(message,
+        _notificationService.ShowNotification(new Notification("Connection error.",message,
             NotificationType.Error,
-            () => CanRetry = true);
+            onClose: () => CanRetry = true));
     }
 
     private void OnSelectedPaneItemChanged(NavigationMenuItemTemplate? value)
