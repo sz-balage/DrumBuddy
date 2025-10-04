@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -133,6 +134,25 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         }
     }
 
+    [ReactiveCommand]
+    private async Task DuplicateSheet()
+    {
+        var original = SelectedSheet;
+        var allNames = _sheetSource.Items.Select(s => s.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var newName = SheetStorage.GenerateCopyName(original.Name, allNames);
+
+        // Duplicate the object (assuming Sheet is immutable or cloneable)
+        var duplicated = original.RenameSheet(newName, original.Description);
+
+        await _sheetStorage.SaveSheetAsync(duplicated);
+        _sheetSource.AddOrUpdate(duplicated);
+
+        _notificationService.ShowNotification(new Notification("Sheet duplicated.",
+            $"A copy named \"{newName}\" was created.",
+            NotificationType.Success));
+    }
+
     private async Task LoadSheets()
     {
         var sheets = await _sheetStorage.LoadSheetsAsync();
@@ -153,6 +173,7 @@ public interface ILibraryViewModel : IRoutableViewModel
     Interaction<Sheet, Sheet?> ShowEditDialog { get; }
     Interaction<Sheet, Sheet> ShowRenameDialog { get; }
     Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; }
+    ReactiveCommand<Unit, Unit> DuplicateSheetCommand { get; }
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);
     Task CompareSheets(Sheet baseSheet, Sheet comparedSheet);

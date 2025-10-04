@@ -157,6 +157,11 @@
                                             <PathIcon Data="{StaticResource edit_regular}" />
                                         </MenuItem.Icon>
                                     </MenuItem>
+                                    <MenuItem Header="Duplicate sheet" Click="DuplicateMenuItem_OnClick">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource Duplicate}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                     <MenuItem Header="Change name and description"
                                               Click="MenuItem_OnClick">
                                         <MenuItem.Icon>

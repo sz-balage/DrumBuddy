@@ -156,6 +156,11 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         ViewModel.EditSheetCommand.Execute().Subscribe();
     }
 
+    private void DuplicateMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.DuplicateSheetCommand.Execute().Subscribe();
+    }
+
     private void ViewButton_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button &&
