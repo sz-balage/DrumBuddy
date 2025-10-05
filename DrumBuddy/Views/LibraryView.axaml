@@ -15,6 +15,7 @@
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="66" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -68,7 +69,60 @@
                 </StackPanel>
             </Button>
         </Grid>
-        <ListBox Grid.Row="1"
+        <Border Grid.Row="1" Margin="0"
+                Background="{StaticResource LighterGray}"
+                Padding="12,6">
+            <Grid ColumnDefinitions="Auto,*">
+                <StackPanel Grid.Column="0" Orientation="Horizontal"
+                            HorizontalAlignment="Left">
+                    <Button Command="{Binding SortByDescendingCommand}"
+                            Background="{StaticResource LighterGray}"
+                            BorderThickness="1"
+                            BorderBrush="{StaticResource HeaderGray}"
+                            CornerRadius="20"
+                            IsVisible="{Binding !IsSortDescending}">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="White" />
+                            </Style>
+                        </Button.Styles>
+                        <PathIcon Data="{StaticResource SortAscending}" />
+                    </Button>
+                    <Button IsVisible="{Binding IsSortDescending}"
+                            CornerRadius="20"
+                            Background="{StaticResource LighterGray}"
+                            BorderThickness="1"
+                            BorderBrush="{StaticResource HeaderGray}"
+                            Command="{Binding SortByAscendingCommand}">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="White" />
+                            </Style>
+                        </Button.Styles>
+                        <PathIcon Data="{StaticResource SortDescending}" />
+                    </Button>
+                    <ComboBox
+                        Width="100"
+                        CornerRadius="20"
+                        Margin="0"
+                        ItemsSource="{Binding SortOptions}"
+                        SelectedItem="{Binding SelectedSortOption}"
+                        Background="{StaticResource LighterGray}"
+                        BorderThickness="1"
+                        BorderBrush="{StaticResource HeaderGray}"
+                        ToolTip.Tip="Sort by" />
+                </StackPanel>
+                <TextBox Grid.Column="1" Width="220" CornerRadius="20"
+                         Background="{StaticResource LighterGray}"
+                         BorderThickness="1"
+                         BorderBrush="{StaticResource HeaderGray}"
+                         Watermark="Search by name or description..."
+                         HorizontalAlignment="Left"
+                         Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+        </Border>
+
+        <ListBox Grid.Row="2"
                  x:Name="SheetsListBox" Margin="0,10,0,0"
                  SelectionMode="Multiple"
                  Grid.ColumnSpan="2" Grid.Column="0">

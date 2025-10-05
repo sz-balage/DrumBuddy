@@ -10,9 +10,11 @@ using Avalonia.Controls.Notifications;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
+using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.Views;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
@@ -30,8 +32,11 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private readonly ReadOnlyObservableCollection<Sheet> _sheets;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     private readonly SheetStorage _sheetStorage;
-
+    private readonly ObservableAsPropertyHelper<SortOption> _sortOptionHelper;
+    [Reactive] private string _filterText = string.Empty;
+    [Reactive] private bool _isSortDescending;
     [Reactive] private Sheet _selectedSheet;
+    [Reactive] private SortOption _selectedSortOption = SortOption.Name;
 
     public LibraryViewModel(IScreen hostScreen, SheetStorage sheetStorage,
         PdfGenerator pdfGenerator)
@@ -40,10 +45,39 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         _pdfGenerator = pdfGenerator;
         HostScreen = hostScreen;
         _sheetStorage = sheetStorage;
+        var sortChanged = this.WhenAnyValue(vm => vm.SelectedSortOption, vm => vm.IsSortDescending)
+            .Select(tuple =>
+            {
+                var (option, descending) = tuple;
+                return option switch
+                {
+                    SortOption.Tempo => descending
+                        ? SortExpressionComparer<Sheet>.Descending(s => s.Tempo.Value)
+                        : SortExpressionComparer<Sheet>.Ascending(s => s.Tempo.Value),
+                    SortOption.Length => descending
+                        ? SortExpressionComparer<Sheet>.Descending(s => s.Length)
+                        : SortExpressionComparer<Sheet>.Ascending(s => s.Length),
+                    _ => descending
+                        ? SortExpressionComparer<Sheet>.Descending(s => s.Name)
+                        : SortExpressionComparer<Sheet>.Ascending(s => s.Name)
+                };
+            });
+        var filter = this.WhenAnyValue(vm => vm.FilterText)
+            .Throttle(TimeSpan.FromMilliseconds(200))
+            .DistinctUntilChanged()
+            .Select(text =>
+            {
+                if (string.IsNullOrWhiteSpace(text))
+                    return _ => true;
+
+                return new Func<Sheet, bool>(sheet =>
+                    (sheet.Name?.Contains(text, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (sheet.Description?.Contains(text, StringComparison.OrdinalIgnoreCase) ?? false));
+            });
         _sheetSource.Connect()
-            .SortBy(s => s.Name)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Bind(out _sheets)
+            .Filter(filter)
+            .SortAndBind(out _sheets, sortChanged)
             .Subscribe();
         // _sheetSource.AddOrUpdate(new Sheet(new Bpm(100), ImmutableArray<Measure>.Empty, "New Sheet", "New Sheet"));
         _removeCanExecute = this.WhenAnyValue(vm => vm.SelectedSheet).Select(sheet => sheet != null!);
@@ -51,6 +85,8 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             .ToObservable()
             .Subscribe());
     }
+
+    public IEnumerable<SortOption> SortOptions => Enum.GetValues<SortOption>();
 
     public ReadOnlyObservableCollection<Sheet> Sheets => _sheets;
     public string? UrlPathSegment { get; } = "library";
@@ -83,6 +119,18 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     public bool SheetExists(string sheetName)
     {
         return _sheetStorage.SheetExists(sheetName);
+    }
+
+    [ReactiveCommand]
+    private void SortByAscending()
+    {
+        IsSortDescending = false;
+    }
+
+    [ReactiveCommand]
+    private void SortByDescending()
+    {
+        IsSortDescending = true;
     }
 
     [ReactiveCommand(CanExecute = nameof(_removeCanExecute))]
