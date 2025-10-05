@@ -82,8 +82,9 @@
                             CornerRadius="20"
                             IsVisible="{Binding !IsSortDescending}">
                         <Button.Styles>
-                            <Style Selector="Button:pointerover">
+                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                                 <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
                             </Style>
                         </Button.Styles>
                         <PathIcon Data="{StaticResource SortAscending}" />
@@ -95,8 +96,9 @@
                             BorderBrush="{StaticResource HeaderGray}"
                             Command="{Binding SortByAscendingCommand}">
                         <Button.Styles>
-                            <Style Selector="Button:pointerover">
+                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                                 <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
                             </Style>
                         </Button.Styles>
                         <PathIcon Data="{StaticResource SortDescending}" />
@@ -110,7 +112,18 @@
                         Background="{StaticResource LighterGray}"
                         BorderThickness="1"
                         BorderBrush="{StaticResource HeaderGray}"
-                        ToolTip.Tip="Sort by" />
+                        ToolTip.Tip="Sort by">
+                        <ComboBox.Styles>
+                            <Style Selector="ComboBox:pointerover /template/ Border#Background">
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Style>
+                            <Style Selector="ComboBox:pressed /template/ Border#Background">
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Style>
+                        </ComboBox.Styles>
+                    </ComboBox>
                 </StackPanel>
                 <TextBox Grid.Column="1" Width="220" CornerRadius="20"
                          Background="{StaticResource LighterGray}"
@@ -118,7 +131,14 @@
                          BorderBrush="{StaticResource HeaderGray}"
                          Watermark="Search by name or description..."
                          HorizontalAlignment="Left"
-                         Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Styles>
+                        <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                            <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            <Setter Property="Background" Value="White" />
+                        </Style>
+                    </TextBox.Styles>
+                </TextBox>
             </Grid>
         </Border>
 
@@ -240,7 +260,8 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <UniformGrid Grid.Row="1" Grid.Column="0" x:Name="ZeroStateStack"
+        <UniformGrid Grid.Row="1" Grid.Column="0"
+                     Grid.RowSpan="2" x:Name="ZeroStateStack"
                      Grid.ColumnSpan="2" Columns="2">
             <Button Classes="card" CornerRadius="0" x:Name="RecordButton">
                 <Border>
