@@ -8,12 +8,9 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using DrumBuddy.DesignHelpers;
-using DrumBuddy.Extensions;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.Dialogs;
-using DrumBuddy.ViewModels.HelperViewModels;
-using DrumBuddy.Views.HelperViews;
 using ReactiveUI;
 using Splat;
 
@@ -30,6 +27,7 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
         {
             // this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
             //     .DisposeWith(d);
+            ViewModel.SetTopLevelWindow(this);
             this.OneWayBind(ViewModel, vm => vm.IsExporting, v => v.ExportTextBlock.Text, isExporting =>
                     isExporting ? "Exporting..." : "Export to pdf")
                 .DisposeWith(d);
@@ -55,16 +53,16 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                     .DisposeWith(d);
                 this.OneWayBind(ViewModel, vm => vm.CountDownVisibility, v => v._countDownGrid.IsVisible)
                     .DisposeWith(d);
-                
-                var mainView = Locator.Current.GetRequiredService<MainWindow>();
-                ViewModel.KeyboardBeats = mainView.KeyboardBeats;
+
+                ViewModel.KeyboardBeats = Observable.FromEventPattern(this, nameof(KeyDown))
+                    .Select(ep => ep.EventArgs as KeyEventArgs)
+                    .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
                 ViewModel!.StopRecordingCommand.ThrownExceptions.Subscribe(ex => Debug.WriteLine(ex.Message));
                 ViewModel.WhenAnyValue(vm => vm.CurrentMeasure).Subscribe(measure =>
                 {
-                    // Find the container for the current measure
                     MeasuresViewer.BringCurrentMeasureIntoView(measure);
                 });
-                ViewModel.SetTopLevelWindow(this);
+                MeasuresViewer.MeasurePressedIdx.Subscribe(idx => ViewModel.HandleMeasureClick(idx)).DisposeWith(d);
             }
         });
     }
@@ -87,17 +85,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
         var result = await saveView.ShowDialog<string>(mainWindow);
         context.SetOutput(result);
     }
-
-    // private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    // {
-    //     if (sender is MeasureView measureView)
-    //     {
-    //         var index = MeasureControl.ItemContainerGenerator.IndexFromContainer(
-    //             measureView.Parent as Control);
-    //
-    //         ViewModel?.HandleMeasureClick(index);
-    //     }
-    // }
 
     private void SaveButton_OnClick(object? sender, RoutedEventArgs e)
     {
