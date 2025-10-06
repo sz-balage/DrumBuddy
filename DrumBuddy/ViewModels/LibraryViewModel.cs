@@ -105,6 +105,9 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     public async Task BatchRemoveSheets(List<Sheet> sheetsToRemove)
     {
         // TODO ask for user confirmation first
+        var confirmation = await ShowConfirmationDialog.Handle(Unit.Default);
+        if (confirmation == Confirmation.Cancel)
+            return;
         foreach (var sheet in sheetsToRemove)
         {
             await _sheetStorage.RemoveSheetAsync(sheet);
@@ -116,6 +119,8 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
     public Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; } = new();
+    public Interaction<Unit, Confirmation> ShowConfirmationDialog { get; } = new();
+
 
     public bool SheetExists(string sheetName)
     {
@@ -221,6 +226,7 @@ public interface ILibraryViewModel : IRoutableViewModel
     Interaction<Sheet, Sheet?> ShowEditDialog { get; }
     Interaction<Sheet, Sheet> ShowRenameDialog { get; }
     Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; }
+    Interaction<Unit, Confirmation> ShowConfirmationDialog { get; }
     ReactiveCommand<Unit, Unit> DuplicateSheetCommand { get; }
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);

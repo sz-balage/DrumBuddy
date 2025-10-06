@@ -105,6 +105,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             {
                 Message = "You have unsaved changes. Are you sure you want to exit?",
                 ShowDiscard = true,
+                ShowConfirm = true,
                 ConfirmText = "Save",
                 DiscardText = "Discard",
                 CancelText = "Cancel"

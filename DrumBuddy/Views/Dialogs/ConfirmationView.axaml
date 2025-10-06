@@ -25,7 +25,8 @@
                          VerticalAlignment="Center"
                          ColumnSpacing="6">
                 <Button Classes="dialogbutton confirm"
-                        x:Name="Save">
+                        x:Name="Save"
+                        IsVisible="{Binding ShowConfirm}">
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource Save}" />
                         <TextBlock Margin="5,3,0,0" Text="{Binding ConfirmText}" />

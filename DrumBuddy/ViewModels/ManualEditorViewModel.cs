@@ -12,7 +12,6 @@ using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
-using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.HelperViewModels;
@@ -133,19 +132,19 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             var result = await ShowConfirmation.Handle(Unit.Default);
             if (result == Confirmation.Discard)
             {
-                await _onClose();
                 IsSaved = true;
             }
-            else if (result == Confirmation.Save)
+            else if (result == Confirmation.Confirm)
             {
                 await Save();
-                await _onClose();
+            }
+            else
+            {
+                return;
             }
         }
-        else
-        {
-            await _onClose();
-        }
+
+        await _onClose();
     }
 
     public void ToggleStep(int row, int col)
@@ -198,14 +197,16 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
                 Name = dialogResult.Name;
                 Description = dialogResult.Description;
                 CurrentSheet = BuildSheet();
-                _notificationService.ShowNotification(new Notification("Sheet saved.",$"The sheet {Name} successfully saved.", NotificationType.Success));
+                _notificationService.ShowNotification(new Notification("Sheet saved.",
+                    $"The sheet {Name} successfully saved.", NotificationType.Success));
                 IsSaved = true;
             }
         }
         else
         {
             await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
-            _notificationService.ShowNotification(new Notification("Sheet saved.",$"The sheet {Name} successfully saved.", NotificationType.Success));
+            _notificationService.ShowNotification(new Notification("Sheet saved.",
+                $"The sheet {Name} successfully saved.", NotificationType.Success));
             IsSaved = true;
         }
     }

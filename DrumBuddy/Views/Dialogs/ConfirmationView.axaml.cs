@@ -1,4 +1,4 @@
-﻿using System.Reactive.Disposables;
+﻿using System;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Models;
 using DrumBuddy.ViewModels.Dialogs;
@@ -13,11 +13,16 @@ public partial class ConfirmationView : ReactiveWindow<ConfirmationViewModel>
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            this.OneWayBind(ViewModel, vm => vm.ShowDiscard, v => v.ButtonGrid.Columns, b => b ? 3 : 2)
-                .DisposeWith(d);
+            ViewModel.WhenAnyValue(vm => vm.ShowConfirm, vm => vm.ShowDiscard).Subscribe(vals =>
+            {
+                if (!vals.Item1 || !vals.Item2)
+                    ButtonGrid.Columns = 2;
+                else
+                    ButtonGrid.Columns = 3;
+            });
             Discard.Click += (sender, e) => Close(Confirmation.Discard);
             Cancel.Click += (sender, e) => Close(Confirmation.Cancel);
-            Save.Click += (sender, e) => Close(Confirmation.Save);
+            Save.Click += (sender, e) => Close(Confirmation.Confirm);
             this.Closing += (sender, args) =>
             {
                 if (!args.IsProgrammatic)
