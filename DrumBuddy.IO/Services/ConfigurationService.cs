@@ -8,10 +8,12 @@ namespace DrumBuddy.IO.Services;
 
 public class ConfigurationService
 {
+    //TODO: change file type from json to ini 
     private readonly BehaviorSubject<Drum?> _listeningDrum = new(null);
     private readonly MetronomePlayer _metronomePlayer;
     private readonly FileConfigurationStorage _storage;
     private AppConfiguration _config;
+
     public ConfigurationService(FileConfigurationStorage storage,
         MetronomePlayer metronomePlayer)
     {
@@ -25,12 +27,14 @@ public class ConfigurationService
                 if (drum != Drum.Rest)
                     _config.DrumMapping[drum] = (int)drum;
         }
+
         if (_config.KeyboardMapping.Count == 0)
         {
             foreach (var drum in Enum.GetValues<Drum>())
                 if (drum != Drum.Rest)
                     _config.KeyboardMapping[drum] = -1; // unmapped
         }
+
         if (_config.DrumPositions.Count == 0)
         {
             foreach (var drum in Enum.GetValues<Drum>())
@@ -39,47 +43,65 @@ public class ConfigurationService
         }
     }
 
-    private void Save() => _storage.SaveConfig(_config);
-
     public IReadOnlyDictionary<Drum, DrumPositionSlot> DrumPositions => _config.DrumPositions;
+
     public int MetronomeVolume
     {
         get => _config.MetronomeVolume;
-        set { _config.MetronomeVolume = value; Save(); _metronomePlayer?.SetVolume(value); }
+        set
+        {
+            _config.MetronomeVolume = value;
+            Save();
+            _metronomePlayer?.SetVolume(value);
+        }
     }
+
     public bool KeyboardInput
     {
         get => _config.KeyboardInput;
-        set { _config.KeyboardInput = value; Save(); }
+        set
+        {
+            _config.KeyboardInput = value;
+            Save();
+        }
     }
+
     public IReadOnlyDictionary<Drum, int> Mapping =>
         _config.KeyboardInput ? _config.KeyboardMapping : _config.DrumMapping;
-    private static DrumPositionSlot DefaultPosition(Drum drum)
-    {
-        return drum switch
-        {
-            Drum.Kick     => DrumPositionSlot.BetweenLine1And2,
-            Drum.Snare    => DrumPositionSlot.BetweenLine3And4,
-            Drum.FloorTom => DrumPositionSlot.BetweenLine2And3,
-            Drum.Tom1     => DrumPositionSlot.BetweenLine4And5,
-            Drum.Tom2     => DrumPositionSlot.OnLine4,
-            Drum.Ride     => DrumPositionSlot.OnLine5,
-            Drum.HiHat    => DrumPositionSlot.BetweenLine5And6,
-            Drum.HiHat_Pedal  => DrumPositionSlot.BelowLine1,
-            Drum.Crash1   => DrumPositionSlot.OnLine6,
-            Drum.Crash2   => DrumPositionSlot.OnLine6,
-            _             => DrumPositionSlot.OnLine3
-        };
-    }
+
     public Drum? ListeningDrum
     {
         get => _listeningDrum.Value;
         private set => _listeningDrum.OnNext(value);
     }
 
+    public IObservable<Drum?> ListeningDrumChanged => _listeningDrum.AsObservable();
+
+    private void Save()
+    {
+        _storage.SaveConfig(_config);
+    }
+
+    private static DrumPositionSlot DefaultPosition(Drum drum)
+    {
+        return drum switch
+        {
+            Drum.Kick => DrumPositionSlot.BetweenLine1And2,
+            Drum.Snare => DrumPositionSlot.BetweenLine3And4,
+            Drum.FloorTom => DrumPositionSlot.BetweenLine2And3,
+            Drum.Tom1 => DrumPositionSlot.BetweenLine4And5,
+            Drum.Tom2 => DrumPositionSlot.OnLine4,
+            Drum.Ride => DrumPositionSlot.OnLine5,
+            Drum.HiHat => DrumPositionSlot.BetweenLine5And6,
+            Drum.HiHat_Pedal => DrumPositionSlot.BelowLine1,
+            Drum.Crash1 => DrumPositionSlot.OnLine6,
+            Drum.Crash2 => DrumPositionSlot.OnLine6,
+            _ => DrumPositionSlot.OnLine3
+        };
+    }
+
     public IReadOnlyDictionary<Drum, int> GetDrumMapping() => _config.DrumMapping;
     public IReadOnlyDictionary<Drum, int> GetKeyboardMapping() => _config.KeyboardMapping;
-    public IObservable<Drum?> ListeningDrumChanged => _listeningDrum.AsObservable();
 
     // === new drum position update ===
     public void UpdateDrumPositions(Dictionary<Drum, DrumPositionSlot> newPositions)
@@ -107,4 +129,3 @@ public class ConfigurationService
         StopListening();
     }
 }
-

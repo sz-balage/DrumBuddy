@@ -112,6 +112,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
     private void CompareButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        //TODO: if there are no other sheets, dont show anything
         if (sender is not Button button) return;
         if (button.DataContext is not Sheet baseSheet) return;
         if (ViewModel is null) return;
