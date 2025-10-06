@@ -13,8 +13,22 @@ public class MidiService
     private IMidiInputDevice _device;
     private bool _isConnected;
 
+    public bool IsConnected
+    {
+        get => _isConnected;
+        private set
+        {
+            _isConnected = value;
+            if (!value)
+                _inputDeviceDisconnected.OnNext(_isConnected);
+        }
+    }
+
+    public IObservable<bool> InputDeviceDisconnected => _inputDeviceDisconnected;
+
     public IObservable<int> GetRawNoteObservable()
     {
+        _ = TryConnect();
         return IsConnected
             ? _notes
             : Observable.Empty<int>();
@@ -34,19 +48,6 @@ public class MidiService
         _device.Open();
         return new MidiDeviceConnectionResult(true, $"{_device.Name} connected successfully.");
     }
-
-    public bool IsConnected
-    {
-        get => _isConnected;
-        private set
-        {
-            _isConnected = value;
-            if (!value)
-                _inputDeviceDisconnected.OnNext(_isConnected);
-        }
-    }
-
-    public IObservable<bool> InputDeviceDisconnected => _inputDeviceDisconnected;
 
     private void OnNoteOn(IMidiInputDevice sender, in NoteOnMessage msg)
     {
