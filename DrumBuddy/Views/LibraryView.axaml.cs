@@ -112,22 +112,25 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
     private void CompareButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        //TODO: if there are no other sheets, dont show anything
         if (sender is not Button button) return;
         if (button.DataContext is not Sheet baseSheet) return;
         if (ViewModel is null) return;
         var flyout = new MenuFlyout();
-
-        foreach (var sheet in ViewModel.Sheets)
+        var otherSheets = ViewModel.Sheets.Where(s => s != baseSheet).ToList();
+        if (!otherSheets.Any())
+            flyout.Items.Add(new MenuItem { Header = "No other sheets to compare with", IsEnabled = false });
+        else
         {
-            if (sheet == baseSheet) continue; // don't compare with itself
-            var menuItem = new MenuItem { Header = sheet.Name, Tag = sheet };
-            menuItem.Click += async (s, args) =>
+            foreach (var sheet in otherSheets)
             {
-                if (s is MenuItem mi && mi.Tag is Sheet selectedSheet)
-                    await ViewModel.CompareSheets(baseSheet, selectedSheet);
-            };
-            flyout.Items.Add(menuItem);
+                var menuItem = new MenuItem { Header = sheet.Name, Tag = sheet };
+                menuItem.Click += async (s, args) =>
+                {
+                    if (s is MenuItem mi && mi.Tag is Sheet selectedSheet)
+                        await ViewModel.CompareSheets(baseSheet, selectedSheet);
+                };
+                flyout.Items.Add(menuItem);
+            }
         }
 
         FlyoutBase.SetAttachedFlyout(button, flyout);
