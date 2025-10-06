@@ -1,4 +1,5 @@
-﻿using Avalonia.ReactiveUI;
+﻿using System.Reactive.Disposables;
+using Avalonia.ReactiveUI;
 using DrumBuddy.Models;
 using DrumBuddy.ViewModels.Dialogs;
 using ReactiveUI;
@@ -12,7 +13,8 @@ public partial class ConfirmationView : ReactiveWindow<ConfirmationViewModel>
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            ViewModel = new ConfirmationViewModel();
+            this.OneWayBind(ViewModel, vm => vm.ShowDiscard, v => v.ButtonGrid.Columns, b => b ? 3 : 2)
+                .DisposeWith(d);
             Discard.Click += (sender, e) => Close(Confirmation.Discard);
             Cancel.Click += (sender, e) => Close(Confirmation.Cancel);
             Save.Click += (sender, e) => Close(Confirmation.Save);

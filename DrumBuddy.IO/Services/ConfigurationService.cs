@@ -8,7 +8,6 @@ namespace DrumBuddy.IO.Services;
 
 public class ConfigurationService
 {
-    //TODO: change file type from json to ini 
     private readonly BehaviorSubject<Drum?> _listeningDrum = new(null);
     private readonly MetronomePlayer _metronomePlayer;
     private readonly FileConfigurationStorage _storage;
