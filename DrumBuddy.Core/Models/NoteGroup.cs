@@ -14,7 +14,6 @@ public class NoteGroup : List<Note>
     {
     }
 
-    //TODO: constructor should not crash application
     public NoteGroup(List<Note> notes) : base((notes.Count > MaxSize ? notes.Take(MaxSize) : notes).ToList())
     {
     }

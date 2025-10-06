@@ -104,7 +104,6 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public async Task BatchRemoveSheets(List<Sheet> sheetsToRemove)
     {
-        // TODO ask for user confirmation first
         var confirmation = await ShowConfirmationDialog.Handle(Unit.Default);
         if (confirmation == Confirmation.Cancel)
             return;

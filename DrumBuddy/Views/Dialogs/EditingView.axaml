@@ -12,7 +12,6 @@
                      MinWidth="400"
                      Title="Edit window" WindowState="Maximized"
                      x:Class="DrumBuddy.Views.Dialogs.EditingView">
-    <!-- TODO: Check why pointer pressed not working on measures -->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
