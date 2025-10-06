@@ -15,14 +15,12 @@ public class NoteGroup : List<Note>
     }
 
     //TODO: constructor should not crash application
-    public NoteGroup(List<Note> notes) : base(notes)
+    public NoteGroup(List<Note> notes) : base((notes.Count > MaxSize ? notes.Take(MaxSize) : notes).ToList())
     {
-        if (notes.Count > MaxSize) throw new InvalidOperationException("How many limbs you got?");
     }
 
-    public NoteGroup(IEnumerable<Note> notes) : base(notes)
+    public NoteGroup(IEnumerable<Note> notes) : base(notes.Take(MaxSize).ToList())
     {
-        if (notes.Count() > MaxSize) throw new InvalidOperationException("How many limbs you got?");
     }
 
     public NoteValue Value => this.First().Value;
@@ -31,7 +29,7 @@ public class NoteGroup : List<Note>
 
     public new void Add(Note note)
     {
-        if (Count == MaxSize) throw new InvalidOperationException("How many limbs you got?");
+        if (Count == MaxSize) return;
         base.Add(note);
     }
 
