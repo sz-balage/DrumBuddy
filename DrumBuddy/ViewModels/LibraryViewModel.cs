@@ -104,6 +104,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public async Task BatchRemoveSheets(List<Sheet> sheetsToRemove)
     {
+        // TODO ask for user confirmation first
         foreach (var sheet in sheetsToRemove)
         {
             await _sheetStorage.RemoveSheetAsync(sheet);
