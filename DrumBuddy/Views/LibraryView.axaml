@@ -140,17 +140,21 @@
                                 <Setter Property="Background" Value="White" />
                                 <Setter Property="BorderBrush" Value="{StaticResource Error}" />
                             </Style>
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Style>
                         </Button.Styles>
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource delete}"
-                                      Foreground="{StaticResource Error}" />
+                                      Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
                             <TextBlock Text="Delete selected"
                                        VerticalAlignment="Center"
                                        FontFamily="{StaticResource NunitoFont}"
-                                       Foreground="{StaticResource Error}"
+                                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                        Margin="5,3,0,0" />
                         </StackPanel>
                     </Button>
+
                 </StackPanel>
             </Grid>
         </Border>
