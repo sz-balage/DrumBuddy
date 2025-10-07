@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -41,10 +40,10 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     [Reactive] private int _countDown;
     [Reactive] private bool _countDownVisibility;
     [Reactive] private MeasureViewModel _currentMeasure;
+    [Reactive] private bool _isLoadingSheets;
     [Reactive] private bool _isPaused;
     [Reactive] private bool _isRecording;
     [Reactive] private bool _overlayVisible;
-    [Reactive] private bool _isLoadingSheets;
     private Sheet _selectedSheet;
 
     private SheetOption _selectedSheetOption;
@@ -164,7 +163,6 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     }
 
 
-
     private void InitTimer()
     {
         _tick = 0;
@@ -196,9 +194,8 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         //drum sub
         var measureIdx = -1;
         var rythmicGroupIndex = -1;
-        //TODO: adjust delay, it still rushes about 1/16th of a measure
         var delay = 5 * _bpm.QuarterNoteDuration() - _bpm.SixteenthNoteDuration() / 2.0
-                    + 2 * _bpm
+                    + _bpm
                         .SixteenthNoteDuration(); //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
@@ -316,9 +313,12 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     {
         if (!_configService.KeyboardInput && !_midiService.IsConnected)
         {
-            _notificationService.ShowNotification(new Notification("No input device found.", "Please connect your midi device and try again, or enable keyboard input in the settings.",NotificationType.Error));
+            _notificationService.ShowNotification(new Notification("No input device found.",
+                "Please connect your midi device and try again, or enable keyboard input in the settings.",
+                NotificationType.Error));
             return;
         }
+
         InitTimer();
         CountDown = 5;
         InitMetronomeSubs();
@@ -348,7 +348,8 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToList();
         if (measures.Count == 0)
         {
-            _notificationService.ShowNotification(new Notification("Recording stopped.","No notes captured.", NotificationType.Warning));
+            _notificationService.ShowNotification(new Notification("Recording stopped.", "No notes captured.",
+                NotificationType.Warning));
             ClearMeasures();
             return;
         }
@@ -364,7 +365,8 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         //     await _library.SaveSheet(new Sheet(_bpm, measures, save));
         if (dialogResult.Name != null)
         {
-            _notificationService.ShowNotification(new Notification("Successful save.",$"The sheet {dialogResult.Name} successfully saved.",
+            _notificationService.ShowNotification(new Notification("Successful save.",
+                $"The sheet {dialogResult.Name} successfully saved.",
                 NotificationType.Success));
             var mainVm = HostScreen as MainViewModel;
             mainVm!.NavigateFromCode(Locator.Current.GetRequiredService<LibraryViewModel>());
