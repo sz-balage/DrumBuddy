@@ -187,6 +187,15 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     }
 
     [ReactiveCommand]
+    private async Task ManuallyEditSheet()
+    {
+        var mainVm = HostScreen as MainViewModel;
+        var manualVm = Locator.Current.GetRequiredService<ManualViewModel>();
+        mainVm!.NavigateFromCode(manualVm);
+        manualVm.ChooseSheet(SelectedSheet);
+    }
+
+    [ReactiveCommand]
     private async Task DuplicateSheet()
     {
         var original = SelectedSheet;
@@ -219,6 +228,7 @@ public interface ILibraryViewModel : IRoutableViewModel
     ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; }
     ReactiveCommand<Unit, Unit> RenameSheetCommand { get; }
     ReactiveCommand<Unit, Unit> EditSheetCommand { get; }
+    ReactiveCommand<Unit, Unit> ManuallyEditSheetCommand { get; }
     ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; }
     ReactiveCommand<Unit, Unit> NavigateToManualViewCommand { get; }
     Sheet? SelectedSheet { get; set; }

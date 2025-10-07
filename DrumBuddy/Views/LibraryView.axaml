@@ -241,9 +241,14 @@
                                 Click="Button_OnClick">
                             <Button.Flyout>
                                 <MenuFlyout Placement="BottomEdgeAlignedLeft">
-                                    <MenuItem Header="Edit sheet" Click="EditMenuItem_OnClick">
+                                    <MenuItem Header="Edit sheet while recording" Click="EditMenuItem_OnClick">
                                         <MenuItem.Icon>
-                                            <PathIcon Data="{StaticResource edit_regular}" />
+                                            <PathIcon Data="{StaticResource RecordIcon}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Manually edit sheet" Click="ManualEdit">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource EditorIcon}" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="Duplicate sheet" Click="DuplicateMenuItem_OnClick">

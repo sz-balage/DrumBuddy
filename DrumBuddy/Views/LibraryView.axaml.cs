@@ -224,4 +224,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
         if (selected.Count > 0) _ = ViewModel.BatchRemoveSheets(selected);
     }
+
+    private void ManualEdit(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.ManuallyEditSheetCommand.Execute().Subscribe();
+    }
 }
