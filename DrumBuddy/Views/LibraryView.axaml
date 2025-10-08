@@ -165,7 +165,7 @@
                  Grid.ColumnSpan="2" Grid.Column="0">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="models:Sheet">
-                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,*,Auto,Auto">
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,*,Auto">
                         <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
                                   Data="{StaticResource music}"
                                   Width="30"
@@ -214,11 +214,11 @@
                                 Margin="8,-3,0,0"
                                 Padding="8,4"
                                 Background="Transparent"
-                                Click="CompareButton_OnClick">
+                                Click="ViewButton_OnClick">
                             <StackPanel Orientation="Horizontal">
-                                <PathIcon Data="{StaticResource compare}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <PathIcon Data="{StaticResource View}" Width="16" Height="16" Margin="0,0,10,0" />
                                 <TextBlock FontWeight="SemiBold"
-                                           Opacity="0.8" Text="Compare" />
+                                           Opacity="0.8" Text="View &amp; PDF export" />
                             </StackPanel>
                         </Button>
                         <Button Grid.Row="1" Grid.Column="3"
@@ -226,11 +226,23 @@
                                 Margin="8,-3,0,0"
                                 Padding="8,4"
                                 Background="Transparent"
-                                Click="ViewButton_OnClick">
+                                Click="CompareButton_OnClick">
                             <StackPanel Orientation="Horizontal">
-                                <PathIcon Data="{StaticResource View}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <PathIcon Data="{StaticResource compare}" Width="16" Height="16" Margin="0,0,10,0" />
                                 <TextBlock FontWeight="SemiBold"
-                                           Opacity="0.8" Text="View &amp; export" />
+                                           Opacity="0.8" Text="Compare" />
+                            </StackPanel>
+                        </Button>
+                        <Button Grid.Row="0" Grid.Column="4"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Margin="8,-3,0,0"
+                                Padding="8,4"
+                                Background="Transparent">
+                            <StackPanel Orientation="Horizontal">
+                                <PathIcon Data="{StaticResource SaveAs}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <TextBlock FontWeight="SemiBold"
+                                           Opacity="0.8" Text="Save as" />
                             </StackPanel>
                         </Button>
                         <Button Grid.Row="0" Grid.Column="5" Grid.RowSpan="2"
@@ -282,7 +294,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <UniformGrid Grid.Row="1" Grid.Column="0"
+        <UniformGrid Grid.Row="1" Grid.Column="0" IsVisible="False"
                      Grid.RowSpan="2" x:Name="ZeroStateStack"
                      Grid.ColumnSpan="2" Columns="2">
             <Button Classes="card" CornerRadius="0" x:Name="RecordButton">
