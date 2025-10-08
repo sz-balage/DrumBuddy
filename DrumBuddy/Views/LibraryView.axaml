@@ -109,6 +109,26 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center">
+                    <Button x:Name="ImportSheetButton"
+                            Background="{StaticResource LighterGray}"
+                            BorderThickness="1"
+                            BorderBrush="{StaticResource HeaderGray}"
+                            CornerRadius="20"
+                            Command="{Binding ImportSheetCommand}">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Style>
+                        </Button.Styles>
+                        <StackPanel Orientation="Horizontal">
+                            <PathIcon Data="{StaticResource Add}" />
+                            <TextBlock Text="Import sheet"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{StaticResource NunitoFont}"
+                                       Margin="5,3,0,0" />
+                        </StackPanel>
+                    </Button>
                     <Button x:Name="SelectAllButton"
                             Background="{StaticResource LighterGray}"
                             BorderThickness="1"

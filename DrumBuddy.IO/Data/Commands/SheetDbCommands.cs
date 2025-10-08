@@ -9,7 +9,7 @@ public static class SheetDbCommands
 
     private const string UpdateSheetSql = """
                                           UPDATE Sheets
-                                          SET name = @NewName,
+                                          SET name = @NewName, 
                                               description = @Description,
                                               tempo = @Tempo,
                                               measures_data = @MeasuresData

@@ -47,7 +47,7 @@ public class FileStorageInteractionService(
         if (file is null)
             return null;
 
-        var data = await serializationService.SerializeSheet(sheet);
+        var data = serializationService.SerializeSheet(sheet);
         await using var stream = await file.OpenWriteAsync();
         await using var writer = new StreamWriter(stream);
         await writer.WriteAsync(data);
@@ -57,5 +57,54 @@ public class FileStorageInteractionService(
             configurationService.Set(LastFolderKey, parentFolder);
 
         return file.Name;
+    }
+
+    public async Task<Sheet?> OpenSheetAsync(TopLevel topLevel)
+    {
+        var storageProvider = topLevel?.StorageProvider;
+        if (storageProvider is null)
+            return null;
+
+        var lastFolderPath = configurationService.Get<string>(LastFolderKey);
+        var fallbackPath = Path.Combine(FilePathProvider.GetPathForFileStorage(), "sheets");
+
+        var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
+            ? lastFolderPath
+            : fallbackPath;
+
+        if (!Directory.Exists(basePath))
+            Directory.CreateDirectory(basePath);
+
+        var suggestedFolder = await storageProvider.TryGetFolderFromPathAsync(new Uri(basePath));
+
+        var filePickerOptions = new FilePickerOpenOptions
+        {
+            Title = "Import Sheet...",
+            AllowMultiple = false,
+            SuggestedStartLocation = suggestedFolder,
+            FileTypeFilter =
+            [
+                new FilePickerFileType("DrumBuddy Sheet File (*.dbsheet)") { Patterns = new[] { "*.dbsheet" } },
+                new FilePickerFileType("All Files") { Patterns = new[] { "*" } }
+            ]
+        };
+
+        var files = await storageProvider.OpenFilePickerAsync(filePickerOptions);
+        var file = files.Count > 0 ? files[0] : null;
+        if (file is null)
+            return null;
+
+        await using var stream = await file.OpenReadAsync();
+        using var reader = new StreamReader(stream);
+        var data = await reader.ReadToEndAsync();
+
+        var fileName = Path.GetFileNameWithoutExtension(file.Name);
+        var sheet = serializationService.DeserializeSheet(data, fileName);
+
+        var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
+        if (parentFolder is not null)
+            configurationService.Set(LastFolderKey, parentFolder);
+
+        return sheet;
     }
 }

@@ -12,6 +12,7 @@ using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
+using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.Views;
 using DynamicData;
 using DynamicData.Binding;
@@ -109,7 +110,15 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public async Task BatchRemoveSheets(List<Sheet> sheetsToRemove)
     {
-        var confirmation = await ShowConfirmationDialog.Handle(Unit.Default);
+        var confirmationVm = new ConfirmationViewModel
+        {
+            Message = "Are you sure you want to delete selected sheets?",
+            ShowDiscard = true,
+            ShowConfirm = false,
+            DiscardText = "Delete",
+            CancelText = "Cancel"
+        };
+        var confirmation = await ShowConfirmationDialog.Handle(confirmationVm);
         if (confirmation == Confirmation.Cancel)
             return;
         foreach (var sheet in sheetsToRemove)
@@ -123,7 +132,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
     public Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; } = new();
-    public Interaction<Unit, Confirmation> ShowConfirmationDialog { get; } = new();
+    public Interaction<ConfirmationViewModel, Confirmation> ShowConfirmationDialog { get; } = new();
 
 
     public bool SheetExists(string sheetName)
@@ -158,6 +167,49 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         {
             _notificationService.ShowNotification(new Notification("Error saving sheet.",
                 $"An error occurred while saving the sheet: {e.Message}",
+                NotificationType.Error));
+        }
+    }
+
+    [ReactiveCommand]
+    private async Task ImportSheet()
+    {
+        try
+        {
+            var sheet = await _fileStorageInteractionService.OpenSheetAsync(_mainWindow);
+            if (sheet is null)
+                return;
+
+            if (_sheetStorage.SheetExists(sheet.Name))
+            {
+                var confirmationVm = new ConfirmationViewModel
+                {
+                    Message = "A sheet with this name already exists. Do you want to overwrite it?",
+                    ShowDiscard = false,
+                    ShowConfirm = true,
+                    ConfirmText = "Overwrite",
+                    CancelText = "Cancel"
+                };
+                var confirmation = await ShowConfirmationDialog.Handle(confirmationVm);
+                if (confirmation == Confirmation.Cancel)
+                    return;
+                if (confirmation == Confirmation.Confirm)
+                    await _sheetStorage.RemoveSheetAsync(
+                        _sheetSource.Items.First(s => s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            await _sheetStorage.SaveSheetAsync(sheet);
+            _sheetSource.AddOrUpdate(sheet);
+            _notificationService.ShowNotification(new Notification(
+                "Sheet imported.",
+                $"Successfully imported \"{sheet.Name}\".",
+                NotificationType.Success));
+        }
+        catch (Exception ex)
+        {
+            _notificationService.ShowNotification(new Notification(
+                "Import failed.",
+                $"An error occurred while importing the sheet: {ex.Message}",
                 NotificationType.Error));
         }
     }
@@ -260,7 +312,7 @@ public interface ILibraryViewModel : IRoutableViewModel
     Interaction<Sheet, Sheet?> ShowEditDialog { get; }
     Interaction<Sheet, Sheet> ShowRenameDialog { get; }
     Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; }
-    Interaction<Unit, Confirmation> ShowConfirmationDialog { get; }
+    Interaction<ConfirmationViewModel, Confirmation> ShowConfirmationDialog { get; }
     ReactiveCommand<Unit, Unit> DuplicateSheetCommand { get; }
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);

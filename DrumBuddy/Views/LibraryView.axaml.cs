@@ -89,19 +89,12 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private Button NavSheetButton => this.FindControl<Button>("CreateFirstSheetButton");
     private UniformGrid ZeroStateGrid => this.FindControl<UniformGrid>("ZeroStateStack");
 
-    private async Task ConfirmationHandler(IInteractionContext<Unit, Confirmation> context)
+    private async Task ConfirmationHandler(IInteractionContext<ConfirmationViewModel, Confirmation> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
         var saveView = new ConfirmationView
         {
-            ViewModel = new ConfirmationViewModel
-            {
-                Message = "Are you sure you want to delete selected sheets?",
-                ShowDiscard = true,
-                ShowConfirm = false,
-                DiscardText = "Delete",
-                CancelText = "Cancel"
-            }
+            ViewModel = context.Input
         };
         var result = await saveView.ShowDialog<Confirmation>(mainWindow);
         context.SetOutput(result);

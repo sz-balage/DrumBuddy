@@ -6,6 +6,7 @@ using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Models;
 using DrumBuddy.ViewModels;
+using DrumBuddy.ViewModels.Dialogs;
 using ReactiveUI;
 
 namespace DrumBuddy.DesignHelpers;
@@ -50,7 +51,7 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; }
-    public Interaction<Unit, Confirmation> ShowConfirmationDialog { get; }
+    public Interaction<ConfirmationViewModel, Confirmation> ShowConfirmationDialog { get; }
     public ReactiveCommand<Unit, Unit> DuplicateSheetCommand { get; set; }
 
     public Task CompareSheets(Sheet baseSheet, Sheet comparedSheet)
