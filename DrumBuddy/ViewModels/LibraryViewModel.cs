@@ -29,7 +29,6 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     private readonly MainWindow _mainWindow;
 
-    //TODO: make sheets exportable/importable to/from files
     private readonly NotificationService _notificationService;
     private readonly PdfGenerator _pdfGenerator;
     private readonly IObservable<bool> _removeCanExecute;
