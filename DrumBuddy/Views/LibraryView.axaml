@@ -185,7 +185,7 @@
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1"
                                     Orientation="Horizontal"
-                                    Margin="0,4,0,4">
+                                    Margin="0">
                             <TextBlock Text="Description: "
                                        FontWeight="SemiBold"
                                        Opacity="0.8" />
