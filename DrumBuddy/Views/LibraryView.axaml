@@ -28,7 +28,7 @@
                        Classes="header"
                        VerticalAlignment="Center" />
             <TextBlock Text="You haven't created any sheets yet. To get started choose below."
-                       Margin="18"
+                       Margin="26,18,18,18"
                        x:Name="ZeroStateTextBlock"
                        Classes="header"
                        HorizontalAlignment="Center"
