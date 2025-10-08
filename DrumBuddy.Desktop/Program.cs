@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Threading;
 using Avalonia;
 using Avalonia.ReactiveUI;
-using DrumBuddy.Crash;
+using Avalonia.Threading;
+using DrumBuddy.ViewModels.Dialogs;
+using DrumBuddy.Views.Dialogs;
 
 namespace DrumBuddy.Desktop;
 
@@ -22,18 +24,20 @@ internal class Program
         }
         catch (Exception ex)
         {
-            //TODO: subscribe to reactive command thrown exceptions
-            var lastCrash = CrashService.GetCrashData();
-            if (CrashService.SetCrashData(ex))
-                if (lastCrash == null || lastCrash.CrashDate < DateTimeOffset.UtcNow - TimeSpan.FromSeconds(10))
-                    try
-                    {
-                        Process.Start(typeof(Program).Assembly.Location.Replace(".dll", ".exe"));
-                    }
-                    catch (Exception exc)
-                    {
-                        ;
-                    }
+            var errorWindow = new ErrorWindow
+            {
+                DataContext = new ErrorViewModel
+                {
+                    Title = ex.Message,
+                    Description = $"Source: {ex.Source}\n\n{ex.StackTrace}"
+                }
+            };
+
+            if (Application.Current == null) BuildAvaloniaApp().SetupWithoutStarting();
+
+            errorWindow.Show();
+            errorWindow.Closed += (_, _) => Environment.Exit(1);
+            Dispatcher.UIThread.MainLoop(CancellationToken.None);
         }
     }
 
