@@ -35,7 +35,7 @@
                        FontWeight="SemiBold" />
         </Grid>
         <TabControl Grid.Row="1">
-            <TabItem Header="Drum Mapping" 
+            <TabItem Header="Drum Mapping"
                      x:Name="DrumMappingTab"
                      FontSize="16">
                 <ScrollViewer>
@@ -63,28 +63,27 @@
                                                 </MultiBinding>
                                             </Ellipse.Fill>
                                         </Ellipse>
-                                        <TextBlock  Grid.Column="2" 
-                                                    Margin="0,0,10,0"
-                                                    HorizontalAlignment="Right" 
-                                                    VerticalAlignment="Center"
-                                                    IsVisible="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).KeyboardInput}"
-                                                    Text="{Binding Note, Converter={StaticResource NoteToKeyboardKeyConverter}}" />
-                                        <TextBlock  Grid.Column="2" 
-                                                    Margin="0,0,10,0"
-                                                    HorizontalAlignment="Right" 
-                                                    VerticalAlignment="Center"
-                                                    IsVisible="{Binding !$parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).KeyboardInput}"
-                                                    Text="{Binding Note}" />
+                                        <TextBlock Grid.Column="2"
+                                                   Margin="0,0,10,0"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center"
+                                                   IsVisible="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).KeyboardInput}"
+                                                   Text="{Binding Note, Converter={StaticResource NoteToKeyboardKeyConverter}}" />
+                                        <TextBlock Grid.Column="2"
+                                                   Margin="0,0,10,0"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center"
+                                                   IsVisible="{Binding !$parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).KeyboardInput}"
+                                                   Text="{Binding Note}" />
                                         <Button Content="Remap"
-                                                Grid.Column="3" 
+                                                Grid.Column="3"
                                                 Classes="confirm"
                                                 FontFamily="{StaticResource NunitoFont}"
                                                 Command="{Binding $parent[views:ConfigurationView].((viewModels:ConfigurationViewModel)DataContext).StartListeningCommand}"
                                                 CommandParameter="{Binding Drum}"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Center"
-                                                IsVisible="{Binding !IsListening}"
-                                                />
+                                                IsVisible="{Binding !IsListening}" />
                                         <Button Content="Cancel mapping"
                                                 Grid.Column="3"
                                                 Classes="confirm"
@@ -101,7 +100,7 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem x:Name="SettingsTab"
-                Header="Settings" 
+                     Header="Settings" IsSelected="True"
                      FontSize="16">
                 <StackPanel Spacing="16" Margin="0,4,0,0">
                     <Expander Header="Audio Settings"
@@ -133,39 +132,54 @@
                               FontWeight="SemiBold"
                               IsExpanded="True"
                               Margin="0,0,0,4">
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="Input Mode"
-                                       FontWeight="Medium"
-                                       FontSize="14" />
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                                    <TextBlock Text="MIDI Mode"
-                                               x:Name="MIDIModeIcon"
-                                               FontSize="16"
-                                               FontFamily="{StaticResource NunitoFont}"
-                                               VerticalAlignment="Center" />
-                                    <PathIcon x:Name="MIDIModeText" 
-                                              Margin="10,0,0,2"
-                                              Data="{StaticResource music}"/>
-                                </StackPanel>
-                                <ToggleSwitch x:Name="InputModeToggle"
-                                              IsChecked="{Binding KeyboardInput}"
-                                              OnContent=""
-                                              OffContent="" />
-                                <StackPanel Orientation="Horizontal"
-                                            HorizontalAlignment="Stretch">
-                                    <PathIcon x:Name="KeyboardModeIcon" 
-                                              Margin="-10,0,10,0"
-                                              HorizontalAlignment="Left"
-                                              Data="{StaticResource Keyboard}"/>
-                                    <TextBlock Text="Keyboard Mode"
-                                               x:Name="KeyboardModeText"
-                                               FontSize="16"
-                                               FontFamily="{StaticResource NunitoFont}"
-                                               VerticalAlignment="Center" />
+                        <Grid RowDefinitions="Auto,*">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Input Mode"
+                                           FontWeight="Medium"
+                                           FontSize="14" />
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                        <TextBlock Text="MIDI Mode"
+                                                   x:Name="MIDIModeIcon"
+                                                   FontSize="16"
+                                                   FontFamily="{StaticResource NunitoFont}"
+                                                   VerticalAlignment="Center" />
+                                        <PathIcon x:Name="MIDIModeText"
+                                                  Margin="10,0,0,2"
+                                                  Data="{StaticResource music}" />
+                                    </StackPanel>
+                                    <ToggleSwitch x:Name="InputModeToggle"
+                                                  IsChecked="{Binding KeyboardInput}"
+                                                  OnContent=""
+                                                  OffContent="" />
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Stretch">
+                                        <PathIcon x:Name="KeyboardModeIcon"
+                                                  Margin="-10,0,10,0"
+                                                  HorizontalAlignment="Left"
+                                                  Data="{StaticResource Keyboard}" />
+                                        <TextBlock Text="Keyboard Mode"
+                                                   x:Name="KeyboardModeText"
+                                                   FontSize="16"
+                                                   FontFamily="{StaticResource NunitoFont}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
                                 </StackPanel>
                             </StackPanel>
-                        </StackPanel>
+                            <StackPanel Grid.Row="1" Margin="0,20,0,0" HorizontalAlignment="Left" Spacing="8">
+                                <TextBlock Text="Recheck connected MIDI devices"
+                                           FontWeight="Medium"
+                                           FontSize="14" />
+                                <Button Classes="round" Command="{Binding RecheckMIDIDevicesCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <PathIcon Data="{StaticResource ArrowSync}"/>
+                                        <TextBlock Text="Recheck"
+                                                   Margin="10,0,0,0"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
                     </Expander>
 
                 </StackPanel>

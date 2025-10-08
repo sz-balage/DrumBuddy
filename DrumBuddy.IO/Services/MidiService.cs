@@ -33,7 +33,7 @@ public class MidiService(ConfigurationService configurationService)
     }
 
 
-    public MidiDeviceConnectionResult TryConnect()
+    public MidiDeviceConnectionResult TryConnect(bool forceDeviceChoosing = false)
     {
         var devCount = BassMidi.InDeviceCount;
 
@@ -47,7 +47,7 @@ public class MidiService(ConfigurationService configurationService)
             {
                 BassMidi.InFree(i);
                 BassMidi.InGetDeviceInfo(i, out var info);
-                if (info.Name == desiredDeviceName)
+                if (info.Name == desiredDeviceName && !forceDeviceChoosing)
                 {
                     SetDeviceForIdx(i);
                     return new MidiDeviceConnectionResult([new MidiDeviceShortInfo(info.ID, info.Name)]);
@@ -58,7 +58,7 @@ public class MidiService(ConfigurationService configurationService)
 
             return new MidiDeviceConnectionResult(devices);
         }
-
+        
         SetDeviceForIdx(0);
         var singleDeviceInfo = BassMidi.InGetDeviceInfo(0);
         return new MidiDeviceConnectionResult([new MidiDeviceShortInfo(singleDeviceInfo.ID, singleDeviceInfo.Name)]);

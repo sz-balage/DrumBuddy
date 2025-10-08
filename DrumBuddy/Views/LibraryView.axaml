@@ -124,17 +124,8 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center">
                     <Button x:Name="ImportSheetButton"
-                            Background="{StaticResource LighterGray}"
-                            BorderThickness="1"
-                            BorderBrush="{StaticResource HeaderGray}"
-                            CornerRadius="20"
+                            Classes="round"
                             Command="{Binding ImportSheetCommand}">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Background" Value="White" />
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                            </Style>
-                        </Button.Styles>
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource Add}" />
                             <TextBlock Text="Import sheet"
@@ -144,10 +135,7 @@
                         </StackPanel>
                     </Button>
                     <Button x:Name="SelectAllButton"
-                            Background="{StaticResource LighterGray}"
-                            BorderThickness="1"
-                            BorderBrush="{StaticResource HeaderGray}"
-                            CornerRadius="20"
+                            Classes="round"
                             Click="SelectAllButton_OnClick">
                         <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -164,16 +152,9 @@
                         </StackPanel>
                     </Button>
                     <Button x:Name="BatchDeleteMenuItem"
-                            Background="{StaticResource LighterGray}"
-                            BorderThickness="1"
-                            BorderBrush="{StaticResource HeaderGray}"
-                            CornerRadius="20"
+                            Classes="round"
                             Click="BatchDeleteMenuItem_OnClick">
                         <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Background" Value="White" />
-                                <Setter Property="BorderBrush" Value="{StaticResource Error}" />
-                            </Style>
                             <Style Selector="Button:disabled">
                                 <Setter Property="Opacity" Value="0.5" />
                             </Style>

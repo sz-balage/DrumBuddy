@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DrumBuddy.Core.Enums;
@@ -124,6 +125,13 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     {
         _configService.StartListening(drum);
         UpdateListeningDrum(drum);
+    }
+
+    private IObservable<bool> CanRecheckMidiDevices => this.WhenAnyValue(vm => vm.KeyboardInput).Select(ki => !ki);
+    [ReactiveCommand(CanExecute = nameof(CanRecheckMidiDevices))]
+    private async Task RecheckMIDIDevices()
+    {
+        await _mainVm.ForceRecheckMidiDevices();
     }
 
     [ReactiveCommand]

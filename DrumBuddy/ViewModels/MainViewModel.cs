@@ -138,6 +138,23 @@ public partial class MainViewModel : ReactiveObject, IScreen
         // }
     }
 
+    public async Task ForceRecheckMidiDevices()
+    {
+        var connectionResult = _midiService.TryConnect(true);
+        switch (connectionResult.DevicesConnected.Length)
+        {
+            case 0:
+                ConnectionError("No MIDI input devices found. Please connect a device and try again.");
+                return;
+            case > 1:
+                await HandleMultipleMidiDevices(connectionResult.DevicesConnected);
+                return;
+            default:
+                SuccessfulConnection("Connected to " + connectionResult.DevicesConnected[0].Name);
+                return;
+        }
+    }
+
     private async Task HandleMultipleMidiDevices(MidiDeviceShortInfo[] deviceInfos)
     {
         var chosenDevice = await ChooseMidiDevice.Handle(deviceInfos);
