@@ -33,6 +33,20 @@
                        Classes="header"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
+            <Button x:Name="ZeroStateImportSheetButton"
+                    Height="66"
+                    HorizontalAlignment="Right"
+                    Background="{StaticResource HeaderGray}"
+                    Command="{Binding ImportSheetCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <PathIcon Data="{StaticResource Add}" />
+                    <TextBlock Text="Import sheet"
+                               Classes="header"
+                               VerticalAlignment="Center"
+                               FontFamily="{StaticResource NunitoFont}"
+                               Margin="10,1,0,0" />
+                </StackPanel>
+            </Button>
         </Grid>
         <Border Grid.Row="1" Margin="0"
                 Background="{StaticResource LighterGray}"
