@@ -5,11 +5,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Services;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
@@ -94,7 +92,7 @@ public class App : Application
 
     private static void RegisterCoreServices()
     {
-        CurrentMutable.RegisterConstant<ISerializationService>(new SerializationService());
+        CurrentMutable.RegisterConstant<SerializationService>(new SerializationService());
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
@@ -106,12 +104,12 @@ public class App : Application
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(
             new SheetStorage(
-                Locator.Current.GetRequiredService<ISerializationService>(),
+                Locator.Current.GetRequiredService<SerializationService>(),
                 connectionString
             )
         );
         CurrentMutable.RegisterConstant(
-            new FileConfigurationStorage(Locator.Current.GetRequiredService<ISerializationService>(),
+            new FileConfigurationStorage(Locator.Current.GetRequiredService<SerializationService>(),
                 Path.Combine(FilePathProvider.GetPathForFileStorage(), "config")));
         CurrentMutable.RegisterConstant(new ConfigurationService(
             Locator.Current.GetRequiredService<FileConfigurationStorage>(),

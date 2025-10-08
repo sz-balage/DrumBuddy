@@ -1,6 +1,5 @@
-﻿using System.Text.Json;
-using DrumBuddy.Core.Abstractions;
-using DrumBuddy.Core.Models;
+﻿using DrumBuddy.Core.Models;
+using DrumBuddy.Core.Services;
 
 namespace DrumBuddy.IO.Data.Storage;
 
@@ -8,9 +7,9 @@ public class FileConfigurationStorage
 {
     private const string FileName = "config.json";
     private readonly string _saveDirectory;
-    private readonly ISerializationService _serializationService;
+    private readonly SerializationService _serializationService;
 
-    public FileConfigurationStorage(ISerializationService serializationService, string saveDirectory)
+    public FileConfigurationStorage(SerializationService serializationService, string saveDirectory)
     {
         _serializationService = serializationService;
         _saveDirectory = saveDirectory;

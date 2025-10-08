@@ -1,15 +1,15 @@
 ﻿using System.Collections.Immutable;
-using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Models;
+using DrumBuddy.Core.Services;
 
 namespace DrumBuddy.IO.Data.Storage;
 
 public class SheetStorage
 {
     private readonly string _connectionString;
-    private readonly ISerializationService _serializationService;
+    private readonly SerializationService _serializationService;
 
-    public SheetStorage(ISerializationService serializationService, string connectionString)
+    public SheetStorage(SerializationService serializationService, string connectionString)
     {
         _serializationService = serializationService;
 

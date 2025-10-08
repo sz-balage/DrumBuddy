@@ -1,12 +1,10 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json;
-using DrumBuddy.Core.Abstractions;
-using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 
 namespace DrumBuddy.Core.Services;
 
-public class SerializationService : ISerializationService
+public class SerializationService
 {
     public byte[] SerializeMeasurementData(ImmutableArray<Measure> measures)
     {
