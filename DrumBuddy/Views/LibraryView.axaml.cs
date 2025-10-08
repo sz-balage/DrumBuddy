@@ -231,4 +231,13 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     {
         ViewModel.ManuallyEditSheetCommand.Execute().Subscribe();
     }
+
+    private void SaveSheetAs(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent is ListBoxItem item)
+            SheetsListBox.SelectedItem = item.DataContext;
+        ViewModel.SaveSelectedSheetAsCommand.Execute().Subscribe();
+    }
 }

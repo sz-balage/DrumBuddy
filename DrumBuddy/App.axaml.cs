@@ -53,6 +53,8 @@ public class App : Application
     {
         RegisterCoreServices();
         RegisterIOServices();
+        CurrentMutable.Register(() =>
+            new FileStorageInteractionService(Locator.Current.GetRequiredService<SerializationService>()));
         CurrentMutable.RegisterConstant(new MainViewModel(
             Locator.Current.GetRequiredService<MidiService>()));
         CurrentMutable.RegisterConstant(new PdfGenerator());
@@ -61,7 +63,8 @@ public class App : Application
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
             Locator.Current.GetRequiredService<SheetStorage>(),
-            Locator.Current.GetRequiredService<PdfGenerator>()));
+            Locator.Current.GetRequiredService<PdfGenerator>(),
+            Locator.Current.GetRequiredService<FileStorageInteractionService>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.RegisterConstant(
             new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),

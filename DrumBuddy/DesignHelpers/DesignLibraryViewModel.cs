@@ -28,6 +28,7 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     public IScreen HostScreen { get; }
     public ReadOnlyObservableCollection<Sheet> Sheets { get; }
     public ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<Unit, Unit> SaveSelectedSheetAsCommand { get; }
     public ReactiveCommand<Unit, Unit> RenameSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> EditSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> ManuallyEditSheetCommand { get; }

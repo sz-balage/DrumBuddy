@@ -238,6 +238,7 @@
                                 VerticalAlignment="Center"
                                 Margin="8,-3,0,0"
                                 Padding="8,4"
+                                Click="SaveSheetAs"
                                 Background="Transparent">
                             <StackPanel Orientation="Horizontal">
                                 <PathIcon Data="{StaticResource SaveAs}" Width="16" Height="16" Margin="0,0,10,0" />

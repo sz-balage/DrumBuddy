@@ -30,4 +30,9 @@ public class SerializationService
     {
         return JsonSerializer.Deserialize<AppConfiguration>(appConfigJson);
     }
+
+    public async Task<string> SerializeSheet(Sheet sheet)
+    {
+        return JsonSerializer.Serialize(sheet, new JsonSerializerOptions { WriteIndented = true });
+    }
 }
