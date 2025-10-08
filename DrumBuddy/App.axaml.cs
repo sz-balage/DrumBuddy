@@ -119,6 +119,6 @@ public class App : Application
         CurrentMutable.RegisterConstant(new ConfigurationService(
             Locator.Current.GetRequiredService<FileConfigurationStorage>(),
             Locator.Current.GetRequiredService<MetronomePlayer>()));
-        CurrentMutable.RegisterConstant(new MidiService());
+        CurrentMutable.RegisterConstant(new MidiService(Locator.Current.GetRequiredService<ConfigurationService>()));
     }
 }

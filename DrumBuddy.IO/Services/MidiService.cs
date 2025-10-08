@@ -5,8 +5,9 @@ using ManagedBass.Midi;
 
 namespace DrumBuddy.IO.Services;
 
-public class MidiService
+public class MidiService(ConfigurationService configurationService)
 {
+    private const string LastDeviceKey = "LastUsedMidiDevice";
     private readonly Subject<bool> _inputDeviceDisconnected = new();
     private readonly Subject<int> _notes = new();
     private bool _isConnected;
@@ -40,11 +41,18 @@ public class MidiService
             return new MidiDeviceConnectionResult([]);
         if (devCount > 1)
         {
+            var desiredDeviceName = configurationService.Get<string>(LastDeviceKey) ?? string.Empty;
             var devices = new MidiDeviceShortInfo[devCount];
             for (var i = 0; i < devCount; i++)
             {
                 BassMidi.InFree(i);
                 BassMidi.InGetDeviceInfo(i, out var info);
+                if (info.Name == desiredDeviceName)
+                {
+                    SetDeviceForIdx(i);
+                    return new MidiDeviceConnectionResult([new MidiDeviceShortInfo(info.ID, info.Name)]);
+                }
+
                 devices[i] = new MidiDeviceShortInfo(info.ID, info.Name);
             }
 
@@ -82,6 +90,7 @@ public class MidiService
             }
 
         SetDeviceForIdx(indexOfChosenDevice);
+        configurationService.Set(LastDeviceKey, chosenDeviceInfo?.Name);
     }
 
     private void SetDeviceForIdx(int idx)
