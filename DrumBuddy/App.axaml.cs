@@ -105,7 +105,6 @@ public class App : Application
     private static void RegisterIOServices()
     {
         var connectionString = $"Data Source={Path.Combine(Environment.CurrentDirectory, "sheet_db.db")};";
-        CurrentMutable.RegisterConstant(new MidiService());
         CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(
@@ -120,5 +119,6 @@ public class App : Application
         CurrentMutable.RegisterConstant(new ConfigurationService(
             Locator.Current.GetRequiredService<FileConfigurationStorage>(),
             Locator.Current.GetRequiredService<MetronomePlayer>()));
+        CurrentMutable.RegisterConstant(new MidiService());
     }
 }

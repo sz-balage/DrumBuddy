@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using DrumBuddy.Extensions;
@@ -10,23 +12,24 @@ using DrumBuddy.Services;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
+
 namespace DrumBuddy.ViewModels;
 
 public partial class MainViewModel : ReactiveObject, IScreen
 {
     private readonly MidiService _midiService;
-    private NotificationService _notificationService;
     [Reactive] private bool _canRetry;
     private IDisposable? _connectionErrorSub;
+    [Reactive] private bool _isKeyboardInput;
 
     [Reactive] private bool _isPaneOpen;
     [Reactive] private bool _noConnection;
+    private NotificationService _notificationService;
 
     [Reactive] private NavigationMenuItemTemplate _selectedPaneItem;
     private IDisposable? _successfulConnectionSub;
 
     [Reactive] private string _successMessage;
-    [Reactive] private bool _isKeyboardInput;
     private IDisposable? _successNotificationSub;
 
     public MainViewModel(MidiService midiService)
@@ -38,10 +41,8 @@ public partial class MainViewModel : ReactiveObject, IScreen
             .Subscribe(OnSelectedPaneItemChanged);
         CanRetry = true;
     }
-    public void SetTopLevelWindow(Window window)
-    {
-        _notificationService = new(window);
-    }
+
+    public Interaction<MidiDeviceShortInfo[], MidiDeviceShortInfo?> ChooseMidiDevice { get; } = new();
     public IRoutableViewModel CurrentViewModel { get; private set; }
 
     public ObservableCollection<NavigationMenuItemTemplate> PaneItems { get; } = new()
@@ -57,6 +58,11 @@ public partial class MainViewModel : ReactiveObject, IScreen
 
     public RoutingState Router { get; } = new();
 
+    public void SetTopLevelWindow(Window window)
+    {
+        _notificationService = new NotificationService(window);
+    }
+
     public void NavigateFromCode(IRoutableViewModel viewModel)
     {
         var navigateTo = PaneItems.Single(item => item.ModelType == viewModel.GetType());
@@ -66,7 +72,8 @@ public partial class MainViewModel : ReactiveObject, IScreen
     private void SuccessfulConnection(string message)
     {
         NoConnection = false;
-        _notificationService.ShowNotification(new Notification("Successful connection.",message, NotificationType.Success));
+        _notificationService.ShowNotification(new Notification("Successful connection.", message,
+            NotificationType.Success));
         WindowNotificationManager asd = new();
     }
 
@@ -74,7 +81,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
     {
         CanRetry = false;
         NoConnection = true;
-        _notificationService.ShowNotification(new Notification("Connection error.",message,
+        _notificationService.ShowNotification(new Notification("Connection error.", message,
             NotificationType.Error,
             onClose: () => CanRetry = true));
     }
@@ -105,17 +112,44 @@ public partial class MainViewModel : ReactiveObject, IScreen
     }
 
     [ReactiveCommand]
-    private void TryConnect()
+    private async Task TryConnect()
     {
         var connectionResult = _midiService.TryConnect();
-        switch (connectionResult.IsSuccess)
+        switch (connectionResult.DevicesConnected.Length)
         {
-            case true:
-                SuccessfulConnection(connectionResult.Message);
-                break;
-            case false:
-                ConnectionError(connectionResult.Message!);
-                break;
+            case 0:
+                ConnectionError("No MIDI input devices found. Please connect a device and try again.");
+                return;
+            case > 1:
+                await HandleMultipleMidiDevices(connectionResult.DevicesConnected);
+                return;
+            default:
+                SuccessfulConnection("Connected to " + connectionResult.DevicesConnected[0].Name);
+                return;
+        }
+        // switch (connectionResult.IsSuccess)
+        // {
+        //     case true:
+        //         SuccessfulConnection(connectionResult.Message);
+        //         break;
+        //     case false:
+        //         ConnectionError(connectionResult.Message!);
+        //         break;
+        // }
+    }
+
+    private async Task HandleMultipleMidiDevices(MidiDeviceShortInfo[] deviceInfos)
+    {
+        var chosenDevice = await ChooseMidiDevice.Handle(deviceInfos);
+        if (chosenDevice is null)
+        {
+            ConnectionError("No device chosen. Please try again in top bar or configuration menu.");
+        }
+        else
+        {
+            //TODO: also save to config to persist midi device preference
+            _midiService.SetUserChosenDeviceAsInput(chosenDevice);
+            SuccessfulConnection("Connected to " + chosenDevice?.Name);
         }
     }
 }

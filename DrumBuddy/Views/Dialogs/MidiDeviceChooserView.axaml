@@ -1,0 +1,44 @@
+<reactiveUi:ReactiveWindow x:TypeArguments="dialogs:MidiDeviceChooserViewModel" xmlns="https://github.com/avaloniaui"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                           xmlns:reactiveUi="http://reactiveui.net"
+                           xmlns:dialogs="clr-namespace:DrumBuddy.ViewModels.Dialogs" CanResize="False"
+                           Width="500" Height="500"
+                           mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200"
+                           x:Class="DrumBuddy.Views.Dialogs.MidiDeviceChooserView"
+                           x:DataType="dialogs:MidiDeviceChooserViewModel"
+                           Title="MidiDeviceChooserView">
+    <Grid RowDefinitions="0.1*,0.8*,0.1*">
+        <Grid Background="{StaticResource HeaderGray}">
+            <TextBlock VerticalAlignment="Center" Classes="header">Choose a MIDI device to use with DrumBuddy</TextBlock>
+        </Grid>
+        <ListBox Grid.Row="1" ItemsSource="{Binding MidiDevices}"
+                 SelectedItem="{Binding SelectedMidiDevice, Mode=TwoWay}" VerticalAlignment="Stretch">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="Auto,*">
+                        <TextBlock FontWeight="Bold" HorizontalAlignment="Right" Margin="0,0,10,0">ID:</TextBlock>
+                        <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" Text="{Binding Id}"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Right"
+                                   Margin="0,0,10,0">
+                            Name:
+                        </TextBlock>
+                        <TextBlock Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" Text="{Binding Name}"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Button Grid.Row="2" Margin="0"
+                Classes="confirm"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                x:Name="ChooseButton" Click="ChooseButton_OnClick">
+            Choose selected midi device
+        </Button>
+    </Grid>
+</reactiveUi:ReactiveWindow>

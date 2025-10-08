@@ -17,7 +17,7 @@
         <dialogs:ErrorViewModel />
     </Design.DataContext>
     <Grid Margin="20" RowDefinitions="Auto, Auto, Auto, *">
-        <Label Grid.Row="0" Content="😲 An Error Has Occurred 😲" />
+        <Label Grid.Row="0" Content="😲 An Error Has Occurred 😲" FontFamily="" />
         <TextBlock Grid.Row="1" Margin="0 10" TextWrapping="Wrap">
             DrumBuddy has experienced an unexpected error.
             <LineBreak />

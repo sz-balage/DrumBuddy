@@ -10,7 +10,7 @@
     <ItemGroup>
         <PackageReference Include="Dapper"/>
         <PackageReference Include="ManagedBass"/>
-        <PackageReference Include="RtMidi.Core"/>
+        <PackageReference Include="ManagedBass.Midi"/>
         <PackageReference Include="System.Data.SQLite.Core"/>
         <PackageReference Include="System.Management"/>
         <PackageReference Include="System.Reactive"/>
@@ -22,5 +22,7 @@
     <ItemGroup>
         <None Include="runtimes/linux-x64/native/libbass.so" CopyToOutputDirectory="PreserveNewest"/>
         <None Include="runtimes/win-x64/native/bass.dll" CopyToOutputDirectory="PreserveNewest"/>
+        <None Include="runtimes/linux-x64/native/libbassmidi.so" CopyToOutputDirectory="PreserveNewest"/>
+        <None Include="runtimes/win-x64/native/bassmidi.dll" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 </Project>
