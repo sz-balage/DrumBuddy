@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using DrumBuddy.Crash;
 
 namespace DrumBuddy.Desktop;
 
@@ -13,7 +15,26 @@ internal class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        try
+        {
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            //TODO: subscribe to reactive command thrown exceptions
+            var lastCrash = CrashService.GetCrashData();
+            if (CrashService.SetCrashData(ex))
+                if (lastCrash == null || lastCrash.CrashDate < DateTimeOffset.UtcNow - TimeSpan.FromSeconds(10))
+                    try
+                    {
+                        Process.Start(typeof(Program).Assembly.Location.Replace(".dll", ".exe"));
+                    }
+                    catch (Exception exc)
+                    {
+                        ;
+                    }
+        }
     }
 
 

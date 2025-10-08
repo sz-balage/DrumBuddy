@@ -1,18 +1,22 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using DrumBuddy.Core.Services;
+using DrumBuddy.Crash;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
+using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.Views;
+using DrumBuddy.Views.Dialogs;
 using ReactiveUI;
 using Splat;
 using static Splat.Locator;
@@ -37,6 +41,26 @@ public class App : Application
         {
             desktop.MainWindow = Locator.Current.GetService<MainWindow>();
             if (desktop.MainWindow.DataContext is MainViewModel vm) vm.SelectedPaneItem = vm.PaneItems[0];
+        }
+
+        //because of auto restart on crash, we check here if we crashed the last time, if yes, show the error window
+        var lastCrash = CrashService.GetCrashData();
+
+        if (lastCrash != null)
+        {
+            new ErrorWindow
+            {
+                DataContext = new ErrorViewModel
+                {
+                    Title = lastCrash.ErrorMessage,
+                    Description = $"DrumBuddy crashed at '{lastCrash.Source}'\r\n" +
+                                  $"with the following error:\r\n\r\n" +
+                                  $"{lastCrash.ErrorMessage}.\r\n\r\n" +
+                                  $"Stack Trace:\r\n{lastCrash.StackTrace}"
+                }
+            }.Show();
+
+            Task.Delay(10000).ContinueWith(_ => CrashService.ClearCrashData());
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -116,7 +140,7 @@ public class App : Application
         );
         CurrentMutable.RegisterConstant(
             new FileConfigurationStorage(Locator.Current.GetRequiredService<SerializationService>(),
-                Path.Combine(FilePathProvider.GetPathForFileStorage(), "config")));
+                Path.Combine(FilePathProvider.GetPathForSavedFiles(), "config")));
         CurrentMutable.RegisterConstant(new ConfigurationService(
             Locator.Current.GetRequiredService<FileConfigurationStorage>(),
             Locator.Current.GetRequiredService<MetronomePlayer>()));

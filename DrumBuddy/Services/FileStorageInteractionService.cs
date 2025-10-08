@@ -23,7 +23,7 @@ public class FileStorageInteractionService(
             return null;
 
         var lastFolderPath = configurationService.Get<string>(LastFolderKey);
-        var fallbackPath = Path.Combine(FilePathProvider.GetPathForFileStorage(), "sheets");
+        var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "sheets");
 
         var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
             ? lastFolderPath
@@ -66,7 +66,7 @@ public class FileStorageInteractionService(
             return null;
 
         var lastFolderPath = configurationService.Get<string>(LastFolderKey);
-        var fallbackPath = Path.Combine(FilePathProvider.GetPathForFileStorage(), "sheets");
+        var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "sheets");
 
         var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
             ? lastFolderPath
