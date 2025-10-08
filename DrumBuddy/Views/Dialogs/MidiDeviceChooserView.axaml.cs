@@ -8,7 +8,7 @@ using ReactiveUI;
 
 namespace DrumBuddy.Views.Dialogs;
 
-public class MidiDeviceChooserView : ReactiveWindow<MidiDeviceChooserViewModel>
+public partial class MidiDeviceChooserView : ReactiveWindow<MidiDeviceChooserViewModel>
 {
     public MidiDeviceChooserView()
     {
