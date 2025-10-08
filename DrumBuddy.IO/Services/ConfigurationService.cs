@@ -19,7 +19,8 @@ public class ConfigurationService
         _storage = storage;
         _metronomePlayer = metronomePlayer;
         _config = _storage.LoadConfig();
-
+        if (_config.UserSettings is null)
+            _config.UserSettings = new Dictionary<string, string>();
         if (_config.DrumMapping.Count == 0)
         {
             foreach (var drum in Enum.GetValues<Drum>())
@@ -126,5 +127,28 @@ public class ConfigurationService
         targetMapping[ListeningDrum.Value] = receivedNote;
         Save();
         StopListening();
+    }
+
+    public void Set<T>(string key, T value)
+    {
+        _config.UserSettings[key] = value?.ToString() ?? string.Empty;
+        Save();
+    }
+
+    public T? Get<T>(string key)
+    {
+        if (!_config.UserSettings.TryGetValue(key, out var str))
+            return default;
+
+        try
+        {
+            if (typeof(T) == typeof(string))
+                return (T)(object)str;
+            return (T)Convert.ChangeType(str, typeof(T));
+        }
+        catch
+        {
+            return default;
+        }
     }
 }

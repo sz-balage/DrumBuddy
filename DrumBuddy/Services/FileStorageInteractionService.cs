@@ -6,20 +6,31 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
+using DrumBuddy.IO.Services;
 
 namespace DrumBuddy.Services;
 
-public class FileStorageInteractionService(SerializationService serializationService)
+public class FileStorageInteractionService(
+    SerializationService serializationService,
+    ConfigurationService configurationService)
 {
+    private const string LastFolderKey = "LastUsedSheetFolder";
+
     public async Task<string?> SaveSheetAsAsync(TopLevel topLevel, Sheet sheet)
     {
         var storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
             return null;
-        var suggestedPath = Path.Combine(FilePathProvider.GetPathForFileStorage(), "sheets");
-        if (!Directory.Exists(suggestedPath))
-            Directory.CreateDirectory(suggestedPath);
-        var suggestedFolder = await storageProvider.TryGetFolderFromPathAsync(new Uri(suggestedPath));
+
+        var lastFolderPath = configurationService.Get<string>(LastFolderKey);
+        var fallbackPath = Path.Combine(FilePathProvider.GetPathForFileStorage(), "sheets");
+
+        var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
+            ? lastFolderPath
+            : fallbackPath;
+        if (!Directory.Exists(basePath))
+            Directory.CreateDirectory(basePath);
+        var suggestedFolder = await storageProvider.TryGetFolderFromPathAsync(new Uri(basePath));
         var filePickerOptions = new FilePickerSaveOptions
         {
             Title = "Save Sheet As...",
@@ -40,6 +51,11 @@ public class FileStorageInteractionService(SerializationService serializationSer
         await using var stream = await file.OpenWriteAsync();
         await using var writer = new StreamWriter(stream);
         await writer.WriteAsync(data);
+
+        var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
+        if (parentFolder is not null)
+            configurationService.Set(LastFolderKey, parentFolder);
+
         return file.Name;
     }
 }

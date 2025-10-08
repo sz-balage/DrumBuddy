@@ -54,7 +54,10 @@ public class App : Application
         RegisterCoreServices();
         RegisterIOServices();
         CurrentMutable.Register(() =>
-            new FileStorageInteractionService(Locator.Current.GetRequiredService<SerializationService>()));
+            new FileStorageInteractionService(
+                Locator.Current.GetRequiredService<SerializationService>(),
+                Locator.Current.GetRequiredService<ConfigurationService>()
+            ));
         CurrentMutable.RegisterConstant(new MainViewModel(
             Locator.Current.GetRequiredService<MidiService>()));
         CurrentMutable.RegisterConstant(new PdfGenerator());
