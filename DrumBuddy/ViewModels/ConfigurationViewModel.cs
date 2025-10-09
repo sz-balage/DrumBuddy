@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DrumBuddy.Core.Enums;
@@ -16,9 +15,8 @@ namespace DrumBuddy.ViewModels;
 public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 {
     // TODO: make drum positions configurable (simple combobox will do)
-    // TODO: make default save directory configurable
-    // TODO: add option to revert to default drum mappings, and drum positions
     private readonly ConfigurationService _configService;
+    private readonly MainViewModel _mainVm;
     private readonly MidiService _midiService;
     private IDisposable? _beatsSubscription;
 
@@ -26,7 +24,6 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 
     private IObservable<int>? _keyboardBeats;
     [Reactive] private bool _keyboardInput;
-    private readonly MainViewModel _mainVm;
     [Reactive] private int _metronomeVolume = 8000;
 
     public ConfigurationViewModel(IScreen hostScreen,
@@ -72,6 +69,8 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 
     public IReadOnlyDictionary<Drum, int> Mapping => _configService.Mapping;
     public IObservable<Drum?> ListeningDrumChanged => _configService.ListeningDrumChanged;
+
+    private IObservable<bool> CanRecheckMidiDevices => this.WhenAnyValue(vm => vm.KeyboardInput).Select(ki => !ki);
 
     public string? UrlPathSegment { get; }
     public IScreen HostScreen { get; }
@@ -127,8 +126,6 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         UpdateListeningDrum(drum);
     }
 
-    private IObservable<bool> CanRecheckMidiDevices => this.WhenAnyValue(vm => vm.KeyboardInput).Select(ki => !ki);
-
     [ReactiveCommand(CanExecute = nameof(CanRecheckMidiDevices))]
     private async Task RecheckMIDIDevices()
     {
@@ -141,12 +138,13 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         _configService.StopListening();
         UpdateListeningDrum(null);
     }
+
     [ReactiveCommand]
     private void RevertToDefaultMappings()
     {
         if (KeyboardInput)
             _configService.SetDefaultKeyboardMappings();
-        else 
+        else
             _configService.SetDefaultDrumMappings();
         UpdateDrumMappings();
     }

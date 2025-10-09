@@ -164,7 +164,6 @@ public partial class MainViewModel : ReactiveObject, IScreen
         }
         else
         {
-            //TODO: also save to config to persist midi device preference
             _midiService.SetUserChosenDeviceAsInput(chosenDevice);
             SuccessfulConnection("Connected to " + chosenDevice?.Name);
         }
