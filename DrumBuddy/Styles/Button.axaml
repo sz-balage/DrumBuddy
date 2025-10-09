@@ -13,7 +13,16 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontFamily" Value="{StaticResource NunitoFont}" />
     </Style>
-
+    <Style Selector="Button.round">
+        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="Background" Value="{StaticResource LighterGray}" />
+        <Setter Property="BorderBrush" Value="{StaticResource HeaderGray}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Button.round:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+    </Style>
     <Style Selector="Button.confirm">
         <Setter Property="Background" Value="{StaticResource AccentLighter}" />
     </Style>

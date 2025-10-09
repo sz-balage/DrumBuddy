@@ -38,22 +38,11 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
                     vm => vm.KeyboardInput,
                     v => v.InputModeToggle.IsChecked) // Changed from KeyboardInputCheckBox
                 .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.MIDIModeText.Foreground, ki =>
-            {
-                return ki ? Brushes.Gray : Brushes.Black;
-            });        
-            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.MIDIModeIcon.Foreground, ki =>
-            {
-                return ki ? Brushes.Gray : Brushes.Black;
-            });     
-            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeText.Foreground, ki =>
-            {
-                return ki ? Brushes.Black : Brushes.Gray;
-            });  
-            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeIcon.Foreground, ki =>
-            {
-                return ki ? Brushes.Black : Brushes.Gray;
-            });
+            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.MIDIModeText.Foreground, ki => ki ? Brushes.Gray : Brushes.Black);        
+            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.MIDIModeIcon.Foreground, ki => ki ? Brushes.Gray : Brushes.Black);     
+            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeText.Foreground, ki => ki ? Brushes.Black : Brushes.Gray);  
+            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeIcon.Foreground, ki => ki ? Brushes.Black : Brushes.Gray);
+            this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.RevertTextBlock.Text, ki => ki ? "Revert keyboard mappings" : "Revert drum mappings");
             var mainView = Locator.Current.GetRequiredService<MainWindow>();
             ViewModel.KeyboardBeats = mainView.KeyboardBeats;
             ViewModel.DrumMappingTabSelected = true;

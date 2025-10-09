@@ -12,6 +12,7 @@ using DrumBuddy.Core.Models;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Services;
+using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.ViewModels.Dialogs;
@@ -50,6 +51,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     vm => vm.Sheets,
                     v => v.SheetsLB.ItemsSource)
                 .DisposeWith(d);
+            if (Design.IsDesignMode)
+                return;
             this.OneWayBind(ViewModel,
                     vm => vm.SelectedSheet,
                     v => v.BatchDeleteMenuItem.IsEnabled, b => b != null)
@@ -60,6 +63,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateGrid.IsVisible, count => count == 0)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateTextBlock.IsVisible, count => count == 0)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateImportSheetButton.IsVisible,
+                    count => count == 0)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.SelectAllButton.IsVisible, count => count != 0)
                 .DisposeWith(d);
@@ -75,10 +81,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowCompareDialog, HandleCompare)
                 .DisposeWith(d);
-
-            // this.BindCommand(ViewModel, vm => vm.RemoveSheetCommand,
-            //         v => v.DeleteSheetMenuItem)
-            //     .DisposeWith(d);
+            this.BindInteraction(ViewModel, vm => vm.ShowConfirmationDialog, ConfirmationHandler)
+                .DisposeWith(d);
         });
     }
 
@@ -87,6 +91,17 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private ListBox SheetsLB => this.FindControl<ListBox>("SheetsListBox");
     private Button NavSheetButton => this.FindControl<Button>("CreateFirstSheetButton");
     private UniformGrid ZeroStateGrid => this.FindControl<UniformGrid>("ZeroStateStack");
+
+    private async Task ConfirmationHandler(IInteractionContext<ConfirmationViewModel, Confirmation> context)
+    {
+        var mainWindow = Locator.Current.GetService<MainWindow>();
+        var saveView = new ConfirmationView
+        {
+            ViewModel = context.Input
+        };
+        var result = await saveView.ShowDialog<Confirmation>(mainWindow);
+        context.SetOutput(result);
+    }
 
     private async Task HandleCompare(IInteractionContext<(Sheet, Sheet), Unit> arg)
     {
@@ -116,17 +131,21 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         if (button.DataContext is not Sheet baseSheet) return;
         if (ViewModel is null) return;
         var flyout = new MenuFlyout();
-
-        foreach (var sheet in ViewModel.Sheets)
+        var otherSheets = ViewModel.Sheets.Where(s => s != baseSheet).ToList();
+        if (!otherSheets.Any())
+            flyout.Items.Add(new MenuItem { Header = "No other sheets to compare with", IsEnabled = false });
+        else
         {
-            if (sheet == baseSheet) continue; // don't compare with itself
-            var menuItem = new MenuItem { Header = sheet.Name, Tag = sheet };
-            menuItem.Click += async (s, args) =>
+            foreach (var sheet in otherSheets)
             {
-                if (s is MenuItem mi && mi.Tag is Sheet selectedSheet)
-                    await ViewModel.CompareSheets(baseSheet, selectedSheet);
-            };
-            flyout.Items.Add(menuItem);
+                var menuItem = new MenuItem { Header = sheet.Name, Tag = sheet };
+                menuItem.Click += async (s, args) =>
+                {
+                    if (s is MenuItem mi && mi.Tag is Sheet selectedSheet)
+                        await ViewModel.CompareSheets(baseSheet, selectedSheet);
+                };
+                flyout.Items.Add(menuItem);
+            }
         }
 
         FlyoutBase.SetAttachedFlyout(button, flyout);
@@ -202,5 +221,19 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         if (ViewModel is null) return;
         var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
         if (selected.Count > 0) _ = ViewModel.BatchRemoveSheets(selected);
+    }
+
+    private void ManualEdit(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.ManuallyEditSheetCommand.Execute().Subscribe();
+    }
+
+    private void SaveSheetAs(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent is ListBoxItem item)
+            SheetsListBox.SelectedItem = item.DataContext;
+        ViewModel.SaveSelectedSheetAsCommand.Execute().Subscribe();
     }
 }

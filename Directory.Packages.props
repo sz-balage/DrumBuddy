@@ -14,6 +14,7 @@
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageVersion Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.6" />
     <PackageVersion Include="Deadpikle.AvaloniaProgressRing" Version="0.10.10" />
+    <PackageVersion Include="ManagedBass.Midi" Version="4.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
     <PackageVersion Include="PdfSharpCore" Version="1.3.67" />
@@ -35,7 +36,6 @@
     <!--        IO-->
     <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="ManagedBass" Version="4.0.1" />
-    <PackageVersion Include="RtMidi.Core" Version="1.0.53" />
     <PackageVersion Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageVersion Include="System.Management" Version="9.0.9" />
   </ItemGroup>

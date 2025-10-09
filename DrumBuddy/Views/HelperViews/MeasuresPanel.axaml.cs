@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using DrumBuddy.ViewModels.HelperViewModels;
 
@@ -13,9 +14,10 @@ namespace DrumBuddy.Views.HelperViews;
 
 public partial class MeasuresPanel : UserControl
 {
-    // ✅ Dependency property for binding measures collection
     public static readonly StyledProperty<IEnumerable> MeasuresProperty =
         AvaloniaProperty.Register<MeasuresPanel, IEnumerable>(nameof(Measures));
+
+    private readonly Subject<int> _measurePressedIdx = new();
 
     public MeasuresPanel()
     {
@@ -33,16 +35,17 @@ public partial class MeasuresPanel : UserControl
     }
 
     private ItemsControl _measuresItemControl => this.FindControl<ItemsControl>("MeasuresItemControl");
-
-    // ✅ Event for measure pointer presses
+    public IObservable<int> MeasurePressedIdx => _measurePressedIdx.AsObservable();
     public event EventHandler<PointerPressedEventArgs> MeasurePointerPressed;
 
     private void OnMeasurePointerPressed(object sender, PointerPressedEventArgs e)
     {
-        // ✅ Only forward if the source is a MeasureView
-        if (e.Source is Control control &&
-            (control is MeasureView || control.FindLogicalAncestorOfType<MeasureView>() != null))
-            MeasurePointerPressed?.Invoke(this, e);
+        if (sender is MeasureView measureView)
+        {
+            var index = MeasuresItemControl.ItemContainerGenerator.IndexFromContainer(
+                measureView.Parent as Control);
+            _measurePressedIdx.OnNext(index);
+        }
     }
 
     public List<MeasureView> GetVisualDescendants()

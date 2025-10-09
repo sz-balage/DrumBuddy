@@ -2,6 +2,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform;
@@ -10,8 +11,8 @@ using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
-using DrumBuddy.ViewModels.HelperViewModels;
-using DrumBuddy.Views.HelperViews;
+using DrumBuddy.ViewModels.Dialogs;
+using DrumBuddy.Views.Dialogs;
 using ReactiveUI;
 using Splat;
 
@@ -21,7 +22,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
     private MidiService _midiService;
     private bool isClosingConfirmed;
-    public IObservable<int>? KeyboardBeats { get; private set; }
+
     public MainWindow()
     {
         _midiService = Locator.Current.GetService<MidiService>();
@@ -54,9 +55,10 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             //     .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.TryConnectCommand, v => v._retryButton)
                 .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.IsKeyboardInput, v => v.ModeIndicatorIcon.Data, 
+            this.BindInteraction(ViewModel, vm => vm.ChooseMidiDevice, HandleMidiDeviceChoosing).DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.IsKeyboardInput, v => v.ModeIndicatorIcon.Data,
                 StyleProvider.GetStreamGeometryForInputType);
-            this.OneWayBind(ViewModel, vm => vm.IsKeyboardInput, v => v.ModeIndicatorText.Text, 
+            this.OneWayBind(ViewModel, vm => vm.IsKeyboardInput, v => v.ModeIndicatorText.Text,
                 ki => ki ? "Keyboard" : "MIDI");
             Closing += async (_, e) =>
             {
@@ -84,11 +86,23 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
             ViewModel.SetTopLevelWindow(this);
             ViewModel.TryConnectCommand.Execute().Subscribe();
-
         });
         InitializeComponent();
     }
 
+    public IObservable<int>? KeyboardBeats { get; private set; }
+
     private RoutedViewHost _routedViewHost => this.FindControl<RoutedViewHost>("RoutedViewHost");
     private Button _retryButton => this.FindControl<Button>("RetryButton");
+
+    private async Task HandleMidiDeviceChoosing(
+        IInteractionContext<MidiDeviceShortInfo[], MidiDeviceShortInfo?> context)
+    {
+        var dialog = new MidiDeviceChooserView
+        {
+            ViewModel = new MidiDeviceChooserViewModel(context.Input)
+        };
+        var result = await dialog.ShowDialog<MidiDeviceShortInfo?>(this);
+        context.SetOutput(result);
+    }
 }

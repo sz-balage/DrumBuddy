@@ -5,11 +5,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using DrumBuddy.Core.Abstractions;
 using DrumBuddy.Core.Services;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
@@ -55,6 +53,11 @@ public class App : Application
     {
         RegisterCoreServices();
         RegisterIOServices();
+        CurrentMutable.Register(() =>
+            new FileStorageInteractionService(
+                Locator.Current.GetRequiredService<SerializationService>(),
+                Locator.Current.GetRequiredService<ConfigurationService>()
+            ));
         CurrentMutable.RegisterConstant(new MainViewModel(
             Locator.Current.GetRequiredService<MidiService>()));
         CurrentMutable.RegisterConstant(new PdfGenerator());
@@ -63,7 +66,8 @@ public class App : Application
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
             Locator.Current.GetRequiredService<SheetStorage>(),
-            Locator.Current.GetRequiredService<PdfGenerator>()));
+            Locator.Current.GetRequiredService<PdfGenerator>(),
+            Locator.Current.GetRequiredService<FileStorageInteractionService>()));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.RegisterConstant(
             new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),
@@ -94,27 +98,27 @@ public class App : Application
 
     private static void RegisterCoreServices()
     {
-        CurrentMutable.RegisterConstant<ISerializationService>(new SerializationService());
+        CurrentMutable.RegisterConstant<SerializationService>(new SerializationService());
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
     private static void RegisterIOServices()
     {
         var connectionString = $"Data Source={Path.Combine(Environment.CurrentDirectory, "sheet_db.db")};";
-        CurrentMutable.RegisterConstant(new MidiService());
         CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(
             new SheetStorage(
-                Locator.Current.GetRequiredService<ISerializationService>(),
+                Locator.Current.GetRequiredService<SerializationService>(),
                 connectionString
             )
         );
         CurrentMutable.RegisterConstant(
-            new FileConfigurationStorage(Locator.Current.GetRequiredService<ISerializationService>(),
-                Path.Combine(FilePathProvider.GetPathForFileStorage(), "config")));
+            new FileConfigurationStorage(Locator.Current.GetRequiredService<SerializationService>(),
+                Path.Combine(FilePathProvider.GetPathForSavedFiles(), "config")));
         CurrentMutable.RegisterConstant(new ConfigurationService(
             Locator.Current.GetRequiredService<FileConfigurationStorage>(),
             Locator.Current.GetRequiredService<MetronomePlayer>()));
+        CurrentMutable.RegisterConstant(new MidiService(Locator.Current.GetRequiredService<ConfigurationService>()));
     }
 }

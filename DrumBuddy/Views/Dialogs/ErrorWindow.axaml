@@ -1,0 +1,37 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:DrumBuddy.ViewModels.Dialogs"
+        xmlns:dialogs="clr-namespace:DrumBuddy.ViewModels.Dialogs"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="350"
+        Width="500" Height="350"
+        MinWidth="550" MinHeight="350"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True"
+        x:Class="DrumBuddy.Views.Dialogs.ErrorWindow"
+        x:DataType="vm:ErrorViewModel" Background="{StaticResource HeaderGray}"
+        Title="DrumBuddy Error">
+
+    <Design.DataContext>
+        <dialogs:ErrorViewModel />
+    </Design.DataContext>
+    <Grid Margin="20" RowDefinitions="Auto, Auto, Auto, *">
+        <Label Grid.Row="0" Content="😲 An Error Has Occurred 😲" FontFamily="" />
+        <TextBlock Grid.Row="1" Margin="0 10" TextWrapping="Wrap">
+            DrumBuddy has experienced an unexpected error.
+            <LineBreak />
+            Please report it to us:
+            <LineBreak />
+            <TextBlock Text="Open GitHub Issue Page"
+                       Foreground="{StaticResource Accent}"
+                       Cursor="Hand"
+                       PointerPressed="OnReportLinkClicked" />
+        </TextBlock>
+
+
+        <Label Grid.Row="2" Content="{Binding Title}" />
+        <TextBox Grid.Row="3" Background="{StaticResource LighterGray}" TextWrapping="Wrap" IsReadOnly="True"
+                 Text="{Binding Description}" />
+    </Grid>
+</Window>

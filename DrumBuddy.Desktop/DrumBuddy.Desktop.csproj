@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
@@ -6,7 +7,17 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
+        <!-- ✅ Publish setup -->
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+        <PublishTrimmed>false</PublishTrimmed>
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
     </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop"/>
         <PackageReference Include="Avalonia.ReactiveUI"/>
@@ -19,4 +30,69 @@
         <ProjectReference Include="..\DrumBuddy.IO\DrumBuddy.IO.csproj"/>
         <ProjectReference Include="..\DrumBuddy\DrumBuddy.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <None Include="../DrumBuddy/Assets/metronome.wav" CopyToOutputDirectory="PreserveNewest" Link="Assets/metronome.wav"/>
+        <None Include="../DrumBuddy/Assets/metronomeup.wav" CopyToOutputDirectory="PreserveNewest" Link="Assets/metronomeup.wav"/>
+    </ItemGroup>
+
+    <!-- copy bass libs directly to output root-->
+    <ItemGroup>
+        <!-- Linux -->
+        <None Include="runtimes/linux-x64/native/libbass.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>libbass.so</Link>
+        </None>
+        <None Include="runtimes/linux-x64/native/libbassmidi.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>libbassmidi.so</Link>
+        </None>
+
+        <!-- Windows -->
+        <None Include="runtimes/win-x64/native/bass.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>bass.dll</Link>
+        </None>
+        <None Include="runtimes/win-x64/native/bassmidi.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>bassmidi.dll</Link>
+        </None>
+
+        <!-- macOS (Intel) -->
+        <None Include="runtimes/osx-x64/native/libbass.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>libbass.dylib</Link>
+        </None>
+        <None Include="runtimes/osx-x64/native/libbassmidi.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>libbassmidi.dylib</Link>
+        </None>
+
+        <!-- macOS (ARM) -->
+        <None Include="runtimes/osx-arm64/native/libbass.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>libbass-arm.dylib</Link>
+        </None>
+        <None Include="runtimes/osx-arm64/native/libbassmidi.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>libbassmidi-arm.dylib</Link>
+        </None>
+    </ItemGroup>
+
+    <!-- copy native libs to publish folder root -->
+    <Target Name="CopyBassLibsToPublish" AfterTargets="Publish">
+        <ItemGroup>
+            <BassLibsLinux Include="runtimes/linux-x64/native/*.so"/>
+            <BassLibsWindows Include="runtimes/win-x64/native/*.dll"/>
+            <BassLibsMac Include="runtimes/osx-x64/native/*.dylib"/>
+            <BassLibsMacArm Include="runtimes/osx-arm64/native/*.dylib"/>
+        </ItemGroup>
+
+        <Message Importance="high" Text="🪶 Copying native BASS libraries for $(RuntimeIdentifier)..."/>
+
+        <Copy SourceFiles="@(BassLibsLinux)" DestinationFolder="$(PublishDir)" Condition="$(RuntimeIdentifier.Contains('linux'))"/>
+        <Copy SourceFiles="@(BassLibsWindows)" DestinationFolder="$(PublishDir)" Condition="$(RuntimeIdentifier.Contains('win'))"/>
+        <Copy SourceFiles="@(BassLibsMac)" DestinationFolder="$(PublishDir)" Condition="$(RuntimeIdentifier.Contains('osx-x64'))"/>
+        <Copy SourceFiles="@(BassLibsMacArm)" DestinationFolder="$(PublishDir)" Condition="$(RuntimeIdentifier.Contains('osx-arm64'))"/>
+    </Target>
+
 </Project>

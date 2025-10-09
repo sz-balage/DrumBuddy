@@ -15,6 +15,7 @@
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="66" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -27,54 +28,159 @@
                        Classes="header"
                        VerticalAlignment="Center" />
             <TextBlock Text="You haven't created any sheets yet. To get started choose below."
-                       Margin="18"
+                       Margin="26,18,18,18"
                        x:Name="ZeroStateTextBlock"
                        Classes="header"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
-            <Button x:Name="SelectAllButton"
-                    Margin="0,10,170,10"
-                    Background="{StaticResource HeaderGray}"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
+            <Button x:Name="ZeroStateImportSheetButton"
                     Height="66"
-                    Click="SelectAllButton_OnClick">
+                    HorizontalAlignment="Right"
+                    Background="{StaticResource HeaderGray}"
+                    Command="{Binding ImportSheetCommand}">
                 <StackPanel Orientation="Horizontal">
-                    <PathIcon Data="{StaticResource Checkmark}" Foreground="{StaticResource Accent}" />
-                    <TextBlock Text="Select all"
+                    <PathIcon Data="{StaticResource Add}" />
+                    <TextBlock Text="Import sheet"
+                               Classes="header"
                                VerticalAlignment="Center"
                                FontFamily="{StaticResource NunitoFont}"
-                               FontSize="16"
-                               Foreground="{StaticResource Accent}"
-                               Margin="5,3,0,0" />
-                </StackPanel>
-            </Button>
-            <Button x:Name="BatchDeleteMenuItem"
-                    Margin="10,10,0,10"
-                    Background="{StaticResource HeaderGray}"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Height="66"
-                    Click="BatchDeleteMenuItem_OnClick">
-                <StackPanel Orientation="Horizontal">
-                    <PathIcon Data="{StaticResource delete}"
-                              Foreground="Red" />
-                    <TextBlock Text="Delete selected"
-                               VerticalAlignment="Center"
-                               FontFamily="{StaticResource NunitoFont}"
-                               FontSize="16"
-                               Foreground="Red"
-                               Margin="5,3,0,0" />
+                               Margin="10,1,0,0" />
                 </StackPanel>
             </Button>
         </Grid>
-        <ListBox Grid.Row="1"
+        <Border Grid.Row="1" Margin="0"
+                Background="{StaticResource LighterGray}"
+                Padding="12,6">
+            <Grid ColumnDefinitions="Auto,*">
+                <StackPanel Grid.Column="0" Orientation="Horizontal"
+                            HorizontalAlignment="Left">
+                    <Button Command="{Binding SortByDescendingCommand}"
+                            Background="{StaticResource LighterGray}"
+                            BorderThickness="1"
+                            BorderBrush="{StaticResource HeaderGray}"
+                            CornerRadius="20"
+                            IsVisible="{Binding !IsSortDescending}">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Style>
+                        </Button.Styles>
+                        <PathIcon Data="{StaticResource SortAscending}" />
+                    </Button>
+                    <Button IsVisible="{Binding IsSortDescending}"
+                            CornerRadius="20"
+                            Background="{StaticResource LighterGray}"
+                            BorderThickness="1"
+                            BorderBrush="{StaticResource HeaderGray}"
+                            Command="{Binding SortByAscendingCommand}">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Style>
+                        </Button.Styles>
+                        <PathIcon Data="{StaticResource SortDescending}" />
+                    </Button>
+                    <ComboBox
+                        Width="100"
+                        CornerRadius="20"
+                        Margin="0,0,0,0"
+                        Height="35"
+                        ItemsSource="{Binding SortOptions}"
+                        SelectedItem="{Binding SelectedSortOption}"
+                        Background="{StaticResource LighterGray}"
+                        BorderThickness="1"
+                        BorderBrush="{StaticResource HeaderGray}"
+                        ToolTip.Tip="Sort by">
+                        <ComboBox.Styles>
+                            <Style Selector="ComboBox:pointerover /template/ Border#Background">
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Style>
+                            <Style Selector="ComboBox:pressed /template/ Border#Background">
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Style>
+                        </ComboBox.Styles>
+                    </ComboBox>
+                </StackPanel>
+                <TextBox Grid.Column="1" Width="220" CornerRadius="20"
+                         Background="{StaticResource LighterGray}"
+                         BorderThickness="1"
+                         BorderBrush="{StaticResource HeaderGray}"
+                         Watermark="Search by name or description..."
+                         HorizontalAlignment="Left"
+                         Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Styles>
+                        <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                            <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            <Setter Property="Background" Value="White" />
+                        </Style>
+                    </TextBox.Styles>
+                </TextBox>
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <Button x:Name="ImportSheetButton"
+                            Classes="round"
+                            Command="{Binding ImportSheetCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <PathIcon Data="{StaticResource Add}" />
+                            <TextBlock Text="Import sheet"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{StaticResource NunitoFont}"
+                                       Margin="5,3,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="SelectAllButton"
+                            Classes="round"
+                            Click="SelectAllButton_OnClick">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Style>
+                        </Button.Styles>
+                        <StackPanel Orientation="Horizontal">
+                            <PathIcon Data="{StaticResource Checkmark}" />
+                            <TextBlock Text="Select all"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{StaticResource NunitoFont}"
+                                       Margin="5,3,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="BatchDeleteMenuItem"
+                            Classes="round"
+                            Click="BatchDeleteMenuItem_OnClick">
+                        <Button.Styles>
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Style>
+                        </Button.Styles>
+                        <StackPanel Orientation="Horizontal">
+                            <PathIcon Data="{StaticResource delete}"
+                                      Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                            <TextBlock Text="Delete selected"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{StaticResource NunitoFont}"
+                                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                       Margin="5,3,0,0" />
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ListBox Grid.Row="2"
                  x:Name="SheetsListBox" Margin="0,10,0,0"
                  SelectionMode="Multiple"
                  Grid.ColumnSpan="2" Grid.Column="0">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="models:Sheet">
-                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,*,Auto,Auto">
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,*,Auto">
                         <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
                                   Data="{StaticResource music}"
                                   Width="30"
@@ -94,7 +200,7 @@
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1"
                                     Orientation="Horizontal"
-                                    Margin="0,4,0,4">
+                                    Margin="0">
                             <TextBlock Text="Description: "
                                        FontWeight="SemiBold"
                                        Opacity="0.8" />
@@ -123,11 +229,11 @@
                                 Margin="8,-3,0,0"
                                 Padding="8,4"
                                 Background="Transparent"
-                                Click="CompareButton_OnClick">
+                                Click="ViewButton_OnClick">
                             <StackPanel Orientation="Horizontal">
-                                <PathIcon Data="{StaticResource compare}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <PathIcon Data="{StaticResource View}" Width="16" Height="16" Margin="0,0,10,0" />
                                 <TextBlock FontWeight="SemiBold"
-                                           Opacity="0.8" Text="Compare" />
+                                           Opacity="0.8" Text="View &amp; PDF export" />
                             </StackPanel>
                         </Button>
                         <Button Grid.Row="1" Grid.Column="3"
@@ -135,11 +241,24 @@
                                 Margin="8,-3,0,0"
                                 Padding="8,4"
                                 Background="Transparent"
-                                Click="ViewButton_OnClick">
+                                Click="CompareButton_OnClick">
                             <StackPanel Orientation="Horizontal">
-                                <PathIcon Data="{StaticResource View}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <PathIcon Data="{StaticResource compare}" Width="16" Height="16" Margin="0,0,10,0" />
                                 <TextBlock FontWeight="SemiBold"
-                                           Opacity="0.8" Text="View &amp; export" />
+                                           Opacity="0.8" Text="Compare" />
+                            </StackPanel>
+                        </Button>
+                        <Button Grid.Row="0" Grid.Column="4"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Margin="8,-3,0,0"
+                                Padding="8,4"
+                                Click="SaveSheetAs"
+                                Background="Transparent">
+                            <StackPanel Orientation="Horizontal">
+                                <PathIcon Data="{StaticResource SaveAs}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <TextBlock FontWeight="SemiBold"
+                                           Opacity="0.8" Text="Save as" />
                             </StackPanel>
                         </Button>
                         <Button Grid.Row="0" Grid.Column="5" Grid.RowSpan="2"
@@ -150,9 +269,14 @@
                                 Click="Button_OnClick">
                             <Button.Flyout>
                                 <MenuFlyout Placement="BottomEdgeAlignedLeft">
-                                    <MenuItem Header="Edit sheet" Click="EditMenuItem_OnClick">
+                                    <MenuItem Header="Edit sheet while recording" Click="EditMenuItem_OnClick">
                                         <MenuItem.Icon>
-                                            <PathIcon Data="{StaticResource edit_regular}" />
+                                            <PathIcon Data="{StaticResource RecordIcon}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Manually edit sheet" Click="ManualEdit">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource EditorIcon}" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="Duplicate sheet" Click="DuplicateMenuItem_OnClick">
@@ -186,7 +310,8 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <UniformGrid Grid.Row="1" Grid.Column="0" x:Name="ZeroStateStack"
+        <UniformGrid Grid.Row="1" Grid.Column="0" IsVisible="False"
+                     Grid.RowSpan="2" x:Name="ZeroStateStack"
                      Grid.ColumnSpan="2" Columns="2">
             <Button Classes="card" CornerRadius="0" x:Name="RecordButton">
                 <Border>

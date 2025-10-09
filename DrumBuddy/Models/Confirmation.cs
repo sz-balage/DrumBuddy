@@ -2,7 +2,7 @@
 
 public enum Confirmation
 {
-    Save,
+    Confirm,
     Cancel,
     Discard
 }

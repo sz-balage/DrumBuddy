@@ -17,7 +17,6 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.IO.Data.Storage;
-using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.ViewModels;
 using DrumBuddy.ViewModels.Dialogs;
@@ -38,7 +37,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     {
         if (Design.IsDesignMode)
         {
-            var vm = new ManualEditorViewModel(null, new SheetStorage(null,""), () => Task.CompletedTask);
+            var vm = new ManualEditorViewModel(null, new SheetStorage(null, ""), () => Task.CompletedTask);
             vm.LoadSheet(TestSheetProvider.GetTestSheet());
             ViewModel = vm;
         }
@@ -100,7 +99,18 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     private async Task ConfirmationHandler(IInteractionContext<Unit, Confirmation> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var saveView = new ConfirmationView();
+        var saveView = new ConfirmationView
+        {
+            ViewModel = new ConfirmationViewModel
+            {
+                Message = "You have unsaved changes. Are you sure you want to exit?",
+                ShowDiscard = true,
+                ShowConfirm = true,
+                ConfirmText = "Save",
+                DiscardText = "Discard",
+                CancelText = "Cancel"
+            }
+        };
         var result = await saveView.ShowDialog<Confirmation>(mainWindow);
         context.SetOutput(result);
     }

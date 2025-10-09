@@ -15,9 +15,15 @@ public class FilePathProvider
         return Path.Combine(AppContext.BaseDirectory, "Assets", "metronome.wav");
     }
 
-    public static string GetPathForFileStorage()
+    public static string GetPathForSavedFiles()
     {
         return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             "DrumBuddy", "SavedFiles");
+    }
+
+    public static string GetPathForCrashData()
+    {
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "DrumBuddy", "ErrorLogs");
     }
 }

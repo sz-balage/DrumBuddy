@@ -2,54 +2,56 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dialogs="clr-namespace:DrumBuddy.ViewModels.Dialogs"
         mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="150"
         Width="450" Height="150"
         WindowStartupLocation="CenterOwner"
         ExtendClientAreaChromeHints="NoChrome"
         ExtendClientAreaToDecorationsHint="True"
         CanResize="False"
+        x:DataType="dialogs:ConfirmationViewModel"
         x:Class="DrumBuddy.Views.Dialogs.ConfirmationView"
         Title="User confirmation needed">
-    <Grid RowDefinitions="Auto,Auto" Margin="20">
+    <Grid Margin="20" RowDefinitions="Auto,Auto">
         <TextBlock Grid.Row="0"
                    TextWrapping="Wrap"
                    HorizontalAlignment="Left"
                    Classes="dialog-title"
-                   Text="You have unsaved changes. Are you sure you want to exit?" />
-        <Grid Grid.Row="1" Margin="0,0,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+                   Text="{Binding Message}" />
 
-            <Button Grid.Column="0"
-                    Margin="0,0,6,0"
-                    Classes="dialogbutton confirm"
-                    x:Name="Save">
-                <StackPanel Orientation="Horizontal">
-                    <PathIcon Data="{StaticResource Save}" />
-                    <TextBlock Margin="5,3,0,0">
-                        Save
-                    </TextBlock>
-                </StackPanel>
-            </Button>
-            <Button Grid.Column="1"
-                    Margin="0,0,6,0"
-                    Classes="dialogbutton delete"
-                    x:Name="Discard">
-                <StackPanel Orientation="Horizontal">
-                    <PathIcon Data="{StaticResource delete}" />
-                    <TextBlock Margin="5,3,0,0">
-                        Discard
-                    </TextBlock>
-                </StackPanel>
-            </Button>
-            <Button Grid.Column="2"
-                    Classes="dialogbutton"
-                    x:Name="Cancel">
-                <TextBlock Margin="0,3,0,0">Cancel</TextBlock>
-            </Button>
+        <Grid Grid.Row="1" Margin="0,10,0,0">
+            <UniformGrid x:Name="ButtonGrid"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Center"
+                         ColumnSpacing="6">
+                <Button Classes="dialogbutton confirm"
+                        x:Name="Save"
+                        IsVisible="{Binding ShowConfirm}">
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource Save}" />
+                        <TextBlock Margin="5,3,0,0" Text="{Binding ConfirmText}" />
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="dialogbutton delete"
+                        x:Name="Discard"
+                        IsVisible="{Binding ShowDiscard}">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Background" Value="{StaticResource ErrorDarker}" />
+                        </Style>
+                    </Button.Styles>
+                    <StackPanel Orientation="Horizontal">
+                        <PathIcon Data="{StaticResource delete}" />
+                        <TextBlock Margin="5,3,0,0" Text="{Binding DiscardText}" />
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="dialogbutton"
+                        x:Name="Cancel">
+                    <TextBlock Margin="0,3,0,0" Text="{Binding CancelText}" />
+                </Button>
+            </UniformGrid>
         </Grid>
     </Grid>
 </Window>

@@ -10,9 +10,12 @@ using Avalonia.Controls.Notifications;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
+using DrumBuddy.Models;
 using DrumBuddy.Services;
+using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.Views;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
@@ -22,7 +25,9 @@ namespace DrumBuddy.ViewModels;
 
 public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 {
-    //TODO: make sheets exportable/importable to/from files
+    private readonly FileStorageInteractionService _fileStorageInteractionService;
+
+    private readonly MainWindow _mainWindow;
 
     private readonly NotificationService _notificationService;
     private readonly PdfGenerator _pdfGenerator;
@@ -30,20 +35,54 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private readonly ReadOnlyObservableCollection<Sheet> _sheets;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     private readonly SheetStorage _sheetStorage;
-
+    private readonly ObservableAsPropertyHelper<SortOption> _sortOptionHelper;
+    [Reactive] private string _filterText = string.Empty;
+    [Reactive] private bool _isSortDescending;
     [Reactive] private Sheet _selectedSheet;
+    [Reactive] private SortOption _selectedSortOption = SortOption.Name;
 
     public LibraryViewModel(IScreen hostScreen, SheetStorage sheetStorage,
-        PdfGenerator pdfGenerator)
+        PdfGenerator pdfGenerator, FileStorageInteractionService fileStorageInteractionService)
     {
-        _notificationService = new(Locator.Current.GetRequiredService<MainWindow>());
+        _mainWindow = Locator.Current.GetRequiredService<MainWindow>();
+        _notificationService = new NotificationService(_mainWindow);
         _pdfGenerator = pdfGenerator;
+        _fileStorageInteractionService = fileStorageInteractionService;
         HostScreen = hostScreen;
         _sheetStorage = sheetStorage;
+        var sortChanged = this.WhenAnyValue(vm => vm.SelectedSortOption, vm => vm.IsSortDescending)
+            .Select(tuple =>
+            {
+                var (option, descending) = tuple;
+                return option switch
+                {
+                    SortOption.Tempo => descending
+                        ? SortExpressionComparer<Sheet>.Descending(s => s.Tempo.Value)
+                        : SortExpressionComparer<Sheet>.Ascending(s => s.Tempo.Value),
+                    SortOption.Length => descending
+                        ? SortExpressionComparer<Sheet>.Descending(s => s.Length)
+                        : SortExpressionComparer<Sheet>.Ascending(s => s.Length),
+                    _ => descending
+                        ? SortExpressionComparer<Sheet>.Descending(s => s.Name)
+                        : SortExpressionComparer<Sheet>.Ascending(s => s.Name)
+                };
+            });
+        var filter = this.WhenAnyValue(vm => vm.FilterText)
+            .Throttle(TimeSpan.FromMilliseconds(200))
+            .DistinctUntilChanged()
+            .Select(text =>
+            {
+                if (string.IsNullOrWhiteSpace(text))
+                    return _ => true;
+
+                return new Func<Sheet, bool>(sheet =>
+                    (sheet.Name?.Contains(text, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (sheet.Description?.Contains(text, StringComparison.OrdinalIgnoreCase) ?? false));
+            });
         _sheetSource.Connect()
-            .SortBy(s => s.Name)
             .ObserveOn(RxApp.MainThreadScheduler)
-            .Bind(out _sheets)
+            .Filter(filter)
+            .SortAndBind(out _sheets, sortChanged)
             .Subscribe();
         // _sheetSource.AddOrUpdate(new Sheet(new Bpm(100), ImmutableArray<Measure>.Empty, "New Sheet", "New Sheet"));
         _removeCanExecute = this.WhenAnyValue(vm => vm.SelectedSheet).Select(sheet => sheet != null!);
@@ -51,6 +90,8 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             .ToObservable()
             .Subscribe());
     }
+
+    public IEnumerable<SortOption> SortOptions => Enum.GetValues<SortOption>();
 
     public ReadOnlyObservableCollection<Sheet> Sheets => _sheets;
     public string? UrlPathSegment { get; } = "library";
@@ -68,6 +109,17 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public async Task BatchRemoveSheets(List<Sheet> sheetsToRemove)
     {
+        var confirmationVm = new ConfirmationViewModel
+        {
+            Message = "Are you sure you want to delete selected sheets?",
+            ShowDiscard = true,
+            ShowConfirm = false,
+            DiscardText = "Delete",
+            CancelText = "Cancel"
+        };
+        var confirmation = await ShowConfirmationDialog.Handle(confirmationVm);
+        if (confirmation == Confirmation.Cancel)
+            return;
         foreach (var sheet in sheetsToRemove)
         {
             await _sheetStorage.RemoveSheetAsync(sheet);
@@ -79,10 +131,86 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
     public Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; } = new();
+    public Interaction<ConfirmationViewModel, Confirmation> ShowConfirmationDialog { get; } = new();
+
 
     public bool SheetExists(string sheetName)
     {
         return _sheetStorage.SheetExists(sheetName);
+    }
+
+    [ReactiveCommand]
+    private void SortByAscending()
+    {
+        IsSortDescending = false;
+    }
+
+    [ReactiveCommand]
+    private void SortByDescending()
+    {
+        IsSortDescending = true;
+    }
+
+    [ReactiveCommand]
+    private async Task SaveSelectedSheetAs()
+    {
+        try
+        {
+            var file = await _fileStorageInteractionService.SaveSheetAsAsync(_mainWindow, SelectedSheet);
+            if (file is not null)
+                _notificationService.ShowNotification(new Notification("Successful save.",
+                    $"The sheet {SelectedSheet.Name} successfully saved to {file}.",
+                    NotificationType.Success));
+        }
+        catch (Exception e)
+        {
+            _notificationService.ShowNotification(new Notification("Error saving sheet.",
+                $"An error occurred while saving the sheet: {e.Message}",
+                NotificationType.Error));
+        }
+    }
+
+    [ReactiveCommand]
+    private async Task ImportSheet()
+    {
+        try
+        {
+            var sheet = await _fileStorageInteractionService.OpenSheetAsync(_mainWindow);
+            if (sheet is null)
+                return;
+
+            if (_sheetStorage.SheetExists(sheet.Name))
+            {
+                var confirmationVm = new ConfirmationViewModel
+                {
+                    Message = "A sheet with this name already exists. Do you want to overwrite it?",
+                    ShowDiscard = false,
+                    ShowConfirm = true,
+                    ConfirmText = "Overwrite",
+                    CancelText = "Cancel"
+                };
+                var confirmation = await ShowConfirmationDialog.Handle(confirmationVm);
+                if (confirmation == Confirmation.Cancel)
+                    return;
+                if (confirmation == Confirmation.Confirm)
+                    await _sheetStorage.RemoveSheetAsync(
+                        _sheetSource.Items.First(s => s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            await _sheetStorage.SaveSheetAsync(sheet);
+            _sheetSource.AddOrUpdate(sheet);
+            _notificationService.ShowNotification(new Notification(
+                "Sheet imported.",
+                $"Successfully imported \"{sheet.Name}\".",
+                NotificationType.Success));
+        }
+        catch (Exception ex)
+        {
+            _notificationService.ShowNotification(new Notification(
+                "Import failed.",
+                $"An error occurred while importing the sheet: {ex.Message}",
+                NotificationType.Error));
+        }
     }
 
     [ReactiveCommand(CanExecute = nameof(_removeCanExecute))]
@@ -134,6 +262,15 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     }
 
     [ReactiveCommand]
+    private async Task ManuallyEditSheet()
+    {
+        var mainVm = HostScreen as MainViewModel;
+        var manualVm = Locator.Current.GetRequiredService<ManualViewModel>();
+        mainVm!.NavigateFromCode(manualVm);
+        manualVm.ChooseSheet(SelectedSheet);
+    }
+
+    [ReactiveCommand]
     private async Task DuplicateSheet()
     {
         var original = SelectedSheet;
@@ -164,14 +301,17 @@ public interface ILibraryViewModel : IRoutableViewModel
 {
     ReadOnlyObservableCollection<Sheet> Sheets { get; }
     ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; }
+    ReactiveCommand<Unit, Unit> SaveSelectedSheetAsCommand { get; }
     ReactiveCommand<Unit, Unit> RenameSheetCommand { get; }
     ReactiveCommand<Unit, Unit> EditSheetCommand { get; }
+    ReactiveCommand<Unit, Unit> ManuallyEditSheetCommand { get; }
     ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; }
     ReactiveCommand<Unit, Unit> NavigateToManualViewCommand { get; }
     Sheet? SelectedSheet { get; set; }
     Interaction<Sheet, Sheet?> ShowEditDialog { get; }
     Interaction<Sheet, Sheet> ShowRenameDialog { get; }
     Interaction<(Sheet, Sheet), Unit> ShowCompareDialog { get; }
+    Interaction<ConfirmationViewModel, Confirmation> ShowConfirmationDialog { get; }
     ReactiveCommand<Unit, Unit> DuplicateSheetCommand { get; }
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);

@@ -16,7 +16,8 @@ public static class MidiExtensions
             {
                 var match = config.Mapping.FirstOrDefault(kvp => kvp.Value == noteNumber);
                 return match.Key == default ? Drum.Rest : match.Key;
-            });
+            })
+            .Where(drum => drum != Drum.Rest);
     }
 
     public static IObservable<Drum> GetMappedBeatsForKeyboard(
@@ -27,6 +28,7 @@ public static class MidiExtensions
             {
                 var match = config.Mapping.FirstOrDefault(kvp => kvp.Value == noteNumber);
                 return match.Key == default ? Drum.Rest : match.Key;
-            });
+            })
+            .Where(drum => drum != Drum.Rest);
     }
 }
