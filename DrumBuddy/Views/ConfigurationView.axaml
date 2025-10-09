@@ -33,6 +33,21 @@
                        Classes="header"
                        FontSize="16"
                        FontWeight="SemiBold" />
+            <Button x:Name="ZeroStateImportSheetButton"
+                    IsVisible="{Binding DrumMappingTabSelected}"
+                    Height="66"
+                    HorizontalAlignment="Right"
+                    Background="{StaticResource HeaderGray}"
+                    Command="{Binding RevertToDefaultMappingsCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <PathIcon Data="{StaticResource Undo}" />
+                    <TextBlock x:Name="RevertTextBlock"
+                               Text="Revert to default mappings"
+                               FontSize="16"
+                               VerticalAlignment="Center"
+                               Margin="10,0,0,0" />
+                </StackPanel>
+            </Button>
         </Grid>
         <TabControl Grid.Row="1">
             <TabItem Header="Drum Mapping"

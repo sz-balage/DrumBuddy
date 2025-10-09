@@ -43,7 +43,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         this.WhenAnyValue(vm => vm.KeyboardInput)
             .Subscribe(ki =>
             {
-                ChangeSubscription(_mainVm?.NoConnection ?? true);
+                ChangeSubscription(ki);
                 _mainVm!.IsKeyboardInput = ki;
                 _configService.KeyboardInput = ki;
                 UpdateDrumMappings();
@@ -108,15 +108,15 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
             item.IsListening = item.Drum == drum;
     }
 
-    private void ChangeSubscription(bool noConnection)
+    private void ChangeSubscription(bool keyboardInput)
     {
         _beatsSubscription?.Dispose();
-        if (!noConnection)
+        if (!keyboardInput)
             _beatsSubscription = _midiService
                 .GetRawNoteObservable()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(OnMidiNoteReceived);
-        else if (KeyboardInput && KeyboardBeats is not null)
+        else if (KeyboardBeats is not null)
             _beatsSubscription = KeyboardBeats.ObserveOn(RxApp.MainThreadScheduler).Subscribe(OnMidiNoteReceived);
     }
 
@@ -128,6 +128,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     }
 
     private IObservable<bool> CanRecheckMidiDevices => this.WhenAnyValue(vm => vm.KeyboardInput).Select(ki => !ki);
+
     [ReactiveCommand(CanExecute = nameof(CanRecheckMidiDevices))]
     private async Task RecheckMIDIDevices()
     {
@@ -139,6 +140,15 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     {
         _configService.StopListening();
         UpdateListeningDrum(null);
+    }
+    [ReactiveCommand]
+    private void RevertToDefaultMappings()
+    {
+        if (KeyboardInput)
+            _configService.SetDefaultKeyboardMappings();
+        else 
+            _configService.SetDefaultDrumMappings();
+        UpdateDrumMappings();
     }
 
     private void OnMidiNoteReceived(int noteNumber)

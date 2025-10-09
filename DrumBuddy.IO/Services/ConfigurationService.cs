@@ -23,16 +23,12 @@ public class ConfigurationService
             _config.UserSettings = new Dictionary<string, string>();
         if (_config.DrumMapping.Count == 0)
         {
-            foreach (var drum in Enum.GetValues<Drum>())
-                if (drum != Drum.Rest)
-                    _config.DrumMapping[drum] = (int)drum;
+            SetDefaultDrumMappings();
         }
 
         if (_config.KeyboardMapping.Count == 0)
         {
-            foreach (var drum in Enum.GetValues<Drum>())
-                if (drum != Drum.Rest)
-                    _config.KeyboardMapping[drum] = -1; // unmapped
+            SetDefaultKeyboardMappings();
         }
 
         if (_config.DrumPositions.Count == 0)
@@ -150,5 +146,20 @@ public class ConfigurationService
         {
             return default;
         }
+    }
+
+    public void SetDefaultDrumMappings()
+    {
+        foreach (var drum in Enum.GetValues<Drum>())
+            if (drum != Drum.Rest)
+                _config.DrumMapping[drum] = (int)drum;
+        Save();       
+    }
+    public void SetDefaultKeyboardMappings()
+    {
+        foreach (var drum in Enum.GetValues<Drum>())
+            if (drum != Drum.Rest)
+                _config.KeyboardMapping[drum] = (int)drum; 
+        Save();
     }
 }

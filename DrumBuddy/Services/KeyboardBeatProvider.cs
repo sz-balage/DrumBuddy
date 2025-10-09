@@ -27,17 +27,17 @@ public static class KeyboardBeatProvider
     public static string GetKeyForDrumValue(int value) =>
         value switch
         {
-            (int)Drum.HiHat => Key.A.ToString(),
-            (int)Drum.Snare => Key.S.ToString(),
-            (int)Drum.Kick => Key.D.ToString(),
-            (int)Drum.FloorTom => Key.F.ToString(),
-            (int)Drum.Crash1 => Key.Q.ToString(),
-            (int)Drum.Crash2 => Key.C.ToString(),
-            (int)Drum.Tom1 => Key.W.ToString(),
-            (int)Drum.Tom2 => Key.E.ToString(),
-            (int)Drum.Ride => Key.R.ToString(),
-            (int)Drum.HiHat_Open => Key.Y.ToString(),
-            (int)Drum.HiHat_Pedal => Key.X.ToString(),
-            _ => Key.None.ToString()
+            (int)Drum.HiHat => nameof(Key.A),
+            (int)Drum.Snare => nameof(Key.S),
+            (int)Drum.Kick => nameof(Key.D),
+            (int)Drum.FloorTom => nameof(Key.F),
+            (int)Drum.Crash1 => nameof(Key.Q),
+            (int)Drum.Crash2 => nameof(Key.C),
+            (int)Drum.Tom1 => nameof(Key.W),
+            (int)Drum.Tom2 => nameof(Key.E),
+            (int)Drum.Ride => nameof(Key.R),
+            (int)Drum.HiHat_Open => nameof(Key.Y),
+            (int)Drum.HiHat_Pedal => nameof(Key.X),
+            _ => nameof(Key.None)
         };
 }
