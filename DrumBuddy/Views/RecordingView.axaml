@@ -46,7 +46,8 @@
                                        Margin="10" />
                         </StackPanel>
                     </Button>
-                    <Button x:Name="PauseRecordingButton">
+                    <!-- TODO implement pause and resume -->
+                    <Button x:Name="PauseRecordingButton" IsVisible="False">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource Pause}" />
                             <TextBlock Text="Pause" FontFamily="{StaticResource NunitoFont}"
@@ -54,7 +55,7 @@
                                        Margin="10" />
                         </StackPanel>
                     </Button>
-                    <Button x:Name="ResumeRecordingButton">
+                    <Button x:Name="ResumeRecordingButton" IsVisible="False">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource Resume}" />
                             <TextBlock Text="Resume" FontFamily="{StaticResource NunitoFont}"

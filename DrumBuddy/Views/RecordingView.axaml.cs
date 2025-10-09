@@ -1,14 +1,11 @@
 using System;
 using System.Diagnostics;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Extensions;
 using DrumBuddy.Models;
-using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.Views.Dialogs;
@@ -50,24 +47,26 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 i => { return !i; });
             this.OneWayBind(ViewModel, vm => vm.IsRecording, v => v._stopRecordingButton.IsVisible,
                 i => { return i; });
-            ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsPaused)
-                .Subscribe(rp =>
-                {
-                    if (rp.Item1 && !rp.Item2)
-                        _pauseRecordingButton.IsVisible = true;
-                    else
-                        _pauseRecordingButton.IsVisible = false;
-                })
-                .DisposeWith(d);
-            ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsPaused)
-                .Subscribe(rp =>
-                {
-                    if (rp.Item1 && rp.Item2)
-                        _resumeRecordingButton.IsVisible = true;
-                    else
-                        _resumeRecordingButton.IsVisible = false;
-                })
-                .DisposeWith(d);
+            //TODO make visible when implemented
+
+            // ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsPaused)
+            //     .Subscribe(rp =>
+            //     {
+            //         if (rp.Item1 && !rp.Item2)
+            //             _pauseRecordingButton.IsVisible = true;
+            //         else
+            //             _pauseRecordingButton.IsVisible = false;
+            //     })
+            //     .DisposeWith(d);
+            // ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsPaused)
+            //     .Subscribe(rp =>
+            //     {
+            //         if (rp.Item1 && rp.Item2)
+            //             _resumeRecordingButton.IsVisible = true;
+            //         else
+            //             _resumeRecordingButton.IsVisible = false;
+            //     })
+            //     .DisposeWith(d);
             ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsLoadingSheets)
                 .Subscribe(vals =>
                 {
@@ -83,7 +82,7 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             this.OneWayBind(ViewModel, vm => vm.CountDownVisibility, v => v._countDownGrid.IsVisible)
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ShowSaveDialog, SaveHandler);
-            
+
             var mainView = Locator.Current.GetRequiredService<MainWindow>();
             ViewModel.KeyboardBeats = mainView.KeyboardBeats;
             ViewModel!.StopRecordingCommand.ThrownExceptions.Subscribe(ex => Debug.WriteLine(ex.Message));
