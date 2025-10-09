@@ -100,7 +100,7 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem x:Name="SettingsTab"
-                     Header="Settings" IsSelected="True"
+                     Header="Settings"
                      FontSize="16">
                 <StackPanel Spacing="16" Margin="0,4,0,0">
                     <Expander Header="Audio Settings"
