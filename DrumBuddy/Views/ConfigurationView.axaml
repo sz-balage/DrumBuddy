@@ -167,13 +167,13 @@
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Grid.Row="1" Margin="0,20,0,0" HorizontalAlignment="Left" Spacing="8">
-                                <TextBlock Text="Recheck connected MIDI devices"
+                                <TextBlock Text="Choose MIDI devices again"
                                            FontWeight="Medium"
                                            FontSize="14" />
                                 <Button Classes="round" Command="{Binding RecheckMIDIDevicesCommand}">
                                     <StackPanel Orientation="Horizontal">
-                                        <PathIcon Data="{StaticResource ArrowSync}"/>
-                                        <TextBlock Text="Recheck"
+                                        <PathIcon Data="{StaticResource SyncArrow}"/>
+                                        <TextBlock Text="Choose again"
                                                    Margin="10,0,0,0"
                                                    VerticalAlignment="Center" />
                                     </StackPanel>

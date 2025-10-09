@@ -8,7 +8,7 @@
                            mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200"
                            x:Class="DrumBuddy.Views.Dialogs.MidiDeviceChooserView"
                            x:DataType="dialogs:MidiDeviceChooserViewModel"
-                           Title="MidiDeviceChooserView">
+                           Title="Choose a MIDI device">
     <Grid RowDefinitions="0.1*,0.8*,0.1*">
         <Grid Background="{StaticResource HeaderGray}">
             <TextBlock VerticalAlignment="Center" Classes="header">Choose a MIDI device to use with DrumBuddy</TextBlock>
