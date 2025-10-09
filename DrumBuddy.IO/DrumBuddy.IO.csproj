@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers> 
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,10 +19,22 @@
     <ItemGroup>
         <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj"/>
     </ItemGroup>
+<!--    linux bass runtimes-->
     <ItemGroup>
         <None Include="runtimes/linux-x64/native/libbass.so" CopyToOutputDirectory="PreserveNewest"/>
-        <None Include="runtimes/win-x64/native/bass.dll" CopyToOutputDirectory="PreserveNewest"/>
         <None Include="runtimes/linux-x64/native/libbassmidi.so" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+<!--    windows bass runtimes-->
+    <ItemGroup>
+        <None Include="runtimes/win-x64/native/bass.dll" CopyToOutputDirectory="PreserveNewest"/>
         <None Include="runtimes/win-x64/native/bassmidi.dll" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
+<!--    macos bass runtimes-->
+    <ItemGroup>
+        <None Include="runtimes/osx-x64/native/libbass.dylib" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="runtimes/osx-x64/native/libbassmidi.dylib" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="runtimes/osx-arm64/native/libbass.dylib" CopyToOutputDirectory="PreserveNewest" Condition="Exists('runtimes/osx-arm64/native/libbass.dylib')" />
+        <None Include="runtimes/osx-arm64/native/libbassmidi.dylib" CopyToOutputDirectory="PreserveNewest" Condition="Exists('runtimes/osx-arm64/native/libbassmidi.dylib')" />
+    </ItemGroup>
+
 </Project>
