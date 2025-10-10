@@ -1,0 +1,61 @@
+name: 🚀 Publish DrumBuddy
+
+on:
+  push:
+    branches:
+      - release   # trigger only when merging/pushing to 'release' branch
+  workflow_dispatch:  # allow manual trigger too
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [win-x64, linux-x64, osx-x64, osx-arm64]
+
+    steps:
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x' # adjust to your target .NET version
+
+      - name: 🏗️ Publish for ${{ matrix.os }}
+        run: |
+          dotnet publish DrumBuddy.Desktop -c Release -r ${{ matrix.os }} --self-contained true -o publish/${{ matrix.os }}
+
+      - name: 📦 Create zip
+        run: |
+          cd publish
+          zip -r DrumBuddy-${{ matrix.os }}.zip ${{ matrix.os }}
+
+      - name: 💾 Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrumBuddy-${{ matrix.os }}
+          path: publish/DrumBuddy-${{ matrix.os }}.zip
+
+  release:
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📥 Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: 🗃️ Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: DrumBuddy v${{ steps.version.outputs.version }}
+          files: |
+            artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
