@@ -1,5 +1,8 @@
 name: 🚀 Publish DrumBuddy
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
