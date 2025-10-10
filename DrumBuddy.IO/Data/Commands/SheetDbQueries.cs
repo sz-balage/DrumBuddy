@@ -1,4 +1,4 @@
-﻿namespace DrumBuddy.IO.Data;
+﻿namespace DrumBuddy.IO.Data.Commands;
 
 public static class SheetDbQueries
 {
