@@ -52,6 +52,12 @@ jobs:
         with:
           path: ./artifacts
 
+      - name: 🏷️ Get version from csproj
+        id: version
+        run: |
+          VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" DrumBuddy.Desktop/DrumBuddy.Desktop.csproj)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
       - name: 🗃️ Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -61,4 +67,3 @@ jobs:
             artifacts/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
