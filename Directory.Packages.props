@@ -36,7 +36,7 @@
     <!--        IO-->
     <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="ManagedBass" Version="4.0.1" />
-    <PackageVersion Include="System.Data.SQLite.Core" Version="1.0.119" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="9.0.9" />
     <PackageVersion Include="System.Management" Version="9.0.9" />
   </ItemGroup>
 </Project>
