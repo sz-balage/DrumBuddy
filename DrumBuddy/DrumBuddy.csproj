@@ -24,7 +24,6 @@
         <None Remove="Assets\Fonts\Nunito-Regular.ttf"/>
         <None Remove="Assets\Fonts\Nunito-SemiBold.ttf"/>
         <None Remove="Assets\Fonts\Nunito-SemiBoldItalic.ttf"/>
-        <None Remove="Assets\snare-icon.jpg"/>
         <None Remove="Assets\window.icon.png"/>
     </ItemGroup>
     <ItemGroup>
@@ -81,12 +80,6 @@
     <ItemGroup>
         <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj"/>
         <ProjectReference Include="..\DrumBuddy.IO\DrumBuddy.IO.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedResource Include="Assets\snare-icon.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
