@@ -104,7 +104,8 @@ public class App : Application
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
     private static void RegisterIOServices()
     {
-        var connectionString = $"Data Source={Path.Combine(Environment.CurrentDirectory, "sheet_db.db")};";
+        var exeDir = AppContext.BaseDirectory;
+        var connectionString = $"Data Source={Path.Combine(exeDir, "sheet_db.db")};";
         CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(
