@@ -115,6 +115,21 @@ jobs:
           VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" DrumBuddy.Desktop/DrumBuddy.Desktop.csproj)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           
+      - name: 🧨 Delete existing release if it exists
+        run: |
+          VERSION_TAG="v${{ steps.version.outputs.version }}"
+          echo "🔍 Checking for existing release: $VERSION_TAG"
+          gh release view "$VERSION_TAG" --json tagName || {
+            echo "No existing release found for $VERSION_TAG"
+            exit 0
+          }
+          echo "⚠️ Existing release found. Deleting..."
+          gh release delete "$VERSION_TAG" -y
+          echo "🧹 Deleting tag..."
+          git push --delete origin "$VERSION_TAG" || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 🗃️ Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
