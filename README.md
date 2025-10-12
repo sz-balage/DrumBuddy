@@ -2,10 +2,8 @@
 <br />
 <div align="center">
   <a href="https://github.com/baluka1118/DrumBuddy">
-    <img src="images/logo.png" alt="Logo" width="120" height="120">
+    <img src="images/logo.png" alt="Logo" width="400" height="400">
   </a>
-
-<h3 align="center">DrumBuddy</h3>
 
   <p align="center">
     A cross-platform app for drummers to record, learn, and improve their rhythm.
