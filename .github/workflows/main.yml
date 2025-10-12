@@ -6,8 +6,8 @@ permissions:
 on:
   push:
     branches:
-      - release   # trigger only when merging/pushing to 'release' branch
-  workflow_dispatch:  # allow manual trigger too
+      - release
+  workflow_dispatch:
 
 jobs:
   build-and-release:
@@ -23,16 +23,28 @@ jobs:
       - name: ⚙️ Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x' # adjust to your target .NET version
+          dotnet-version: '9.0.x'
 
       - name: 🏗️ Publish for ${{ matrix.os }}
         run: |
           dotnet publish DrumBuddy.Desktop -c Release -r ${{ matrix.os }} --self-contained true -o publish/${{ matrix.os }}
 
+      # 🍏 Run packaging only for macOS builds
+      - name: 🍏 Package macOS .app bundle
+        if: startsWith(matrix.os, 'osx-')
+        run: |
+          chmod +x ./scripts/package_macos_app.sh
+          ./scripts/package_macos_app.sh "${{ matrix.os }}"
+
+      # 📦 Zip the right output
       - name: 📦 Create zip
         run: |
           cd publish
-          zip -r DrumBuddy-${{ matrix.os }}.zip ${{ matrix.os }}
+          if [[ "${{ matrix.os }}" == osx-* ]]; then
+            zip -r DrumBuddy-${{ matrix.os }}.zip DrumBuddy.app
+          else
+            zip -r DrumBuddy-${{ matrix.os }}.zip ${{ matrix.os }}
+          fi
 
       - name: 💾 Upload build artifact
         uses: actions/upload-artifact@v4
