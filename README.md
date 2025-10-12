@@ -55,6 +55,7 @@ One of DrumBuddy’s core features is the ability to **compare two sheets**:
 
 It’s designed to work with **any electronic drum kit**, with **customizable MIDI mappings** for flexible compatibility.
 > NOTE: The app has limited drumming functionality, as for now it can only record in 4/4 time signature, and the smallest division unit is a 16th note.
+
 > 🎓 This application also serves as my **Bachelor’s thesis project**
 
 ---
