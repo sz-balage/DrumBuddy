@@ -29,14 +29,12 @@ jobs:
         run: |
           dotnet publish DrumBuddy.Desktop -c Release -r ${{ matrix.os }} --self-contained true -o publish/${{ matrix.os }}
 
-      # 🍏 Run packaging only for macOS builds
       - name: 🍏 Package macOS .app bundle
         if: startsWith(matrix.os, 'osx-')
         run: |
           chmod +x ./scripts/package_macos_app.sh
           ./scripts/package_macos_app.sh "${{ matrix.os }}"
 
-      # 📦 Zip the right output
       - name: 📦 Create zip
         run: |
           cd publish
@@ -52,8 +50,55 @@ jobs:
           name: DrumBuddy-${{ matrix.os }}
           path: publish/DrumBuddy-${{ matrix.os }}.zip
 
-  release:
+  # 🍏 Separate job to build DMGs on macOS runners
+  build-dmg:
     needs: build-and-release
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [osx-x64, osx-arm64]
+
+    steps:
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📥 Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DrumBuddy-${{ matrix.arch }}
+          path: ./publish
+
+      - name: 🧳 Unzip .app bundle
+        run: |
+          cd publish
+          unzip -q DrumBuddy-${{ matrix.arch }}.zip
+
+      - name: 🧰 Install create-dmg
+        run: |
+          brew install create-dmg
+
+      - name: 💿 Create DMG
+        run: |
+          cd publish
+          mkdir -p dmg
+          create-dmg \
+            --volname "DrumBuddy Installer" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "DrumBuddy.app" 150 200 \
+            --app-drop-link 450 200 \
+            "dmg/DrumBuddy-${{ matrix.arch }}.dmg" \
+            "DrumBuddy.app"
+
+      - name: 💾 Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrumBuddy-${{ matrix.arch }}-dmg
+          path: publish/dmg/DrumBuddy-${{ matrix.arch }}.dmg
+
+  release:
+    needs: [build-and-release, build-dmg]
     runs-on: ubuntu-latest
     steps:
       - name: 🧩 Checkout repository
