@@ -194,9 +194,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         //drum sub
         var measureIdx = -1;
         var rythmicGroupIndex = -1;
-        var delay = 5 * _bpm.QuarterNoteDuration() - _bpm.SixteenthNoteDuration() / 2.0
-                    + _bpm
-                        .SixteenthNoteDuration(); //5 times the quarter because of how observable.interval works (first wait the interval, only then starts emitting)
+        var delay = 5 * _bpm.QuarterNoteDuration(); 
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
             .GetNotes(_bpm,
