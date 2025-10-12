@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <h3>DrumBuddy</h3>
+  <h1>DrumBuddy</h3>
   <p align="center">
     A cross-platform app for drummers to record, learn, and improve their rhythm.
     <br />
