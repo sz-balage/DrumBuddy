@@ -54,6 +54,7 @@ One of DrumBuddy’s core features is the ability to **compare two sheets**:
 → The app then provides feedback, helping drummers identify mistakes and improve their timing.
 
 It’s designed to work with **any electronic drum kit**, with **customizable MIDI mappings** for flexible compatibility.
+> NOTE: The app has limited drumming functionality, as for now it can only record in 4/4 time signature, and the smallest division unit is a 16th note.
 
 > 🎓 This application also serves as my **Bachelor’s thesis project**
 
@@ -92,35 +93,27 @@ DrumBuddy is 100% C#, leveraging modern cross-platform and reactive technologies
 #### 🍎 macOS 
 For the time being, due to a lack of a paid developer certificate, you can only run DrumBuddy on macOS by manually signing it yourself.
 ##### Silicon 
-1. Download the latest `DrumBuddy-osx-arm64.zip` from [Releases](https://github.com/baluka1118/DrumBuddy/releases)
-2. Extract the zip archive
-3. Open the terminal, and navigate to the folder you have extracted the zip to (parent folder of `osx-arm64`)
+1. Download the latest `DrumBuddy-osx-arm64.dmg` from [Releases](https://github.com/baluka1118/DrumBuddy/releases)
+2. Run the disk image and drag the app to the Applications folder
+3. Open up the terminal, and navigate to your Applications folder
 4. Execute the following commands:
    ```bash
-   sudo xattr -cr osx-arm64
-   sudo xattr -rd com.apple.quarantine osx-arm64
-5. After that navigate into the `osx-arm64` folder, sign the app, and make it executable
-   ```bash
-   cd osx-arm64
-   sudo codesign --force --deep --sign - DrumBuddy.Desktop
-   chmod +x DrumBuddy.Desktop
-6. Now you can run the app
-   ./DrumBuddy.Desktop
+   sudo xattr -cr DrumBuddy.app
+   sudo xattr -rd com.apple.quarantine DrumBuddy.app
+   sudo codesign --force --deep --sign - DrumBuddy.app
+5. Now you can run the app
+The app will ask for your permission to access the documents folder, in order to store exported app related data.
 ##### Intel
-1. Download the latest `DrumBuddy-osx-x64.zip` from [Releases](https://github.com/baluka1118/DrumBuddy/releases)
-2. Extract the zip archive
-3. Open the terminal, and navigate to the folder you have extracted the zip to (parent folder of `osx-x64`)
+1. Download the latest `DrumBuddy-osx-x64.dmg` from [Releases](https://github.com/baluka1118/DrumBuddy/releases)
+2. Run the disk image and drag the app to the Applications folder
+3. Open up the terminal, and navigate to your Applications folder
 4. Execute the following commands:
    ```bash
-   sudo xattr -cr osx-x64
-   sudo xattr -rd com.apple.quarantine osx-x64
-5. After that navigate into the `osx-x64` folder, sign the app, and make it executable
-   ```bash
-   cd osx-x64
-   sudo codesign --force --deep --sign - DrumBuddy.Desktop
-   chmod +x DrumBuddy.Desktop
-6. Now you can run the app
-   ./DrumBuddy.Desktop
+   sudo xattr -cr DrumBuddy.app
+   sudo xattr -rd com.apple.quarantine DrumBuddy.app
+   sudo codesign --force --deep --sign - DrumBuddy.app
+5. Now you can run the app
+The app will ask for your permission to access the documents folder, in order to store exported app related data.
 
 ## Usage
 After installation:

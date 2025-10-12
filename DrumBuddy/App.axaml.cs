@@ -38,7 +38,7 @@ public class App : Application
             desktop.MainWindow = Locator.Current.GetService<MainWindow>();
             if (desktop.MainWindow.DataContext is MainViewModel vm) vm.SelectedPaneItem = vm.PaneItems[0];
         }
-
+        
         base.OnFrameworkInitializationCompleted();
     }
 

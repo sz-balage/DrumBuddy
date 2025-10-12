@@ -1,9 +1,13 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:DrumBuddy.Converters"
-             x:Class="DrumBuddy.App"
+             x:Class="DrumBuddy.App" Name="DrumBuddy"
              RequestedThemeVariant="Light">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <NativeMenu.Menu>
+        <NativeMenu>
+        </NativeMenu>
+    </NativeMenu.Menu>
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
