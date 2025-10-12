@@ -3,7 +3,7 @@
 <div align="center">
   <h1>DrumBuddy</h3>
   <p align="center">
-    A cross-platform app for drummers to record, learn, and improve their rhythm.
+    A cross-platform app for drummers, allowing them to record, manage, and learn new digital sheets, with real-time feedback.
     <br />
     <strong>Bachelor's Thesis Project by Szabó Balázs</strong>
     <br />
