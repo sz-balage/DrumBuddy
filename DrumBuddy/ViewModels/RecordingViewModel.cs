@@ -195,7 +195,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         //drum sub
         var measureIdx = -1;
         var rythmicGroupIndex = -1;
-        var delay = 5 * _bpm.QuarterNoteDuration(); 
+        var delay = 5 * _bpm.QuarterNoteDuration();
         var tempNotes = new List<NoteGroup>();
         _subs.Add(RecordingService
             .GetNotes(_bpm,
@@ -300,8 +300,8 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         {
             _metronomePlayer.PlayNormalBeep();
         }
-        //TODO: do the same in editing viewmodel and check 
-        if(Measures.Count - Measures.IndexOf(CurrentMeasure) < 20) //always have 20 measures in advance
+
+        if (Measures.Count - Measures.IndexOf(CurrentMeasure) < 20) //always have 20 measures in advance
             _measureSource.AddRange(Enumerable.Range(1, 20).ToList().Select(_ => new MeasureViewModel()));
         CurrentMeasure?.MovePointerToRg(idx);
         if (_globalPointerIdx == 0)
