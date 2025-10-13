@@ -40,7 +40,6 @@ public partial class MeasuresPanel : UserControl
 
     private void OnMeasurePointerPressed(object sender, PointerPressedEventArgs e)
     {
-        //TODO: if there are empty measures before clicked measure, select the one after first non empty measure
         if (sender is MeasureView measureView)
         {
             var index = MeasuresItemControl.ItemContainerGenerator.IndexFromContainer(
