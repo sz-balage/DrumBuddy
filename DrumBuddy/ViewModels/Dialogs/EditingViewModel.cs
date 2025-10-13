@@ -13,9 +13,7 @@ using DrumBuddy.Core.Extensions;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO;
 using DrumBuddy.IO.Services;
-using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.HelperViewModels;
 using DrumBuddy.Views.HelperViews;
@@ -36,7 +34,6 @@ public partial class EditingViewModel : ReactiveObject
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly MetronomePlayer _metronomePlayer;
     private readonly MidiService _midiService;
-    private NotificationService _notificationService;
     private readonly PdfGenerator _pdfGenerator;
     private readonly IObservable<bool> _stopRecordingCanExecute;
     public readonly Sheet OriginalSheet;
@@ -52,6 +49,7 @@ public partial class EditingViewModel : ReactiveObject
 
     [Reactive] private bool _isRecording;
     [Reactive] private bool _isViewOnly;
+    private NotificationService _notificationService;
 
     private bool _recordingJustStarted = true;
     private int _selectedEntryPointMeasureIndex;
@@ -60,6 +58,7 @@ public partial class EditingViewModel : ReactiveObject
 
     [Reactive] private string _timeElapsed;
     private DispatcherTimer _timer;
+
     public EditingViewModel(Sheet originalSheet,
         MidiService midiService,
         ConfigurationService configService,
@@ -79,7 +78,7 @@ public partial class EditingViewModel : ReactiveObject
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe();
         _measureSource.AddRange(originalSheet.Measures.Select(m => new MeasureViewModel(m)));
-        _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(i => new MeasureViewModel()));
+        _measureSource.AddRange(Enumerable.Range(1, 20).ToList().Select(i => new MeasureViewModel()));
         _stopRecordingCanExecute = this.WhenAnyValue(vm => vm.IsRecording, vm => vm.CurrentMeasure,
             (recording, currentMeasure) => recording && currentMeasure != null);
         //bpm changes should update the _bpm prop
@@ -103,10 +102,6 @@ public partial class EditingViewModel : ReactiveObject
             .Subscribe(recording => CanSave = !recording);
     }
 
-    public void SetTopLevelWindow(Window window)
-    {
-        _notificationService = new(window);
-    }
     private bool _keyboardInputEnabled => _configService.KeyboardInput;
 
     public IObservable<int> KeyboardBeats { get; set; }
@@ -115,6 +110,11 @@ public partial class EditingViewModel : ReactiveObject
     public IObservable<bool> CanNavigate => this.WhenAnyValue(
         vm => vm.IsRecording,
         recording => !recording);
+
+    public void SetTopLevelWindow(Window window)
+    {
+        _notificationService = new NotificationService(window);
+    }
 
     public async Task ExportSheetToPdfAsync(List<MeasureView> measures)
     {
@@ -128,7 +128,8 @@ public partial class EditingViewModel : ReactiveObject
         }
         catch (Exception e)
         {
-            _notificationService.ShowNotification(new Notification("Export error.","Error while exporting sheet: " + e.Message,NotificationType.Error));
+            _notificationService.ShowNotification(new Notification("Export error.",
+                "Error while exporting sheet: " + e.Message, NotificationType.Error));
         }
         finally
         {
@@ -247,6 +248,8 @@ public partial class EditingViewModel : ReactiveObject
             _metronomePlayer.PlayNormalBeep();
         }
 
+        if (Measures.Count - Measures.IndexOf(CurrentMeasure) < 20) //always have 20 measures in advance
+            _measureSource.AddRange(Enumerable.Range(1, 20).ToList().Select(_ => new MeasureViewModel()));
         CurrentMeasure?.MovePointerToRg(idx);
         if (_globalPointerIdx == 0)
             _timer.Start();
@@ -272,9 +275,12 @@ public partial class EditingViewModel : ReactiveObject
     {
         if (!_configService.KeyboardInput && !_midiService.IsConnected)
         {
-            _notificationService.ShowNotification(new Notification("No input device found.", "Please connect your midi device and try again, or enable keyboard input in the settings.",NotificationType.Error));
+            _notificationService.ShowNotification(new Notification("No input device found.",
+                "Please connect your midi device and try again, or enable keyboard input in the settings.",
+                NotificationType.Error));
             return;
         }
+
         InitTimer();
         CountDown = 5;
         InitMetronomeSubs();
@@ -302,9 +308,11 @@ public partial class EditingViewModel : ReactiveObject
 
         var recordedCount = Measures.Count(m => !m.IsEmpty);
         if (recordedCount > 0)
-            _notificationService.ShowNotification(new Notification("Recording stopped.",$"Captured {recordedCount} measure(s)."));
+            _notificationService.ShowNotification(new Notification("Recording stopped.",
+                $"Captured {recordedCount} measure(s)."));
         else
-            _notificationService.ShowNotification(new Notification("Recording stopped.","No notes captured.", NotificationType.Warning));
+            _notificationService.ShowNotification(new Notification("Recording stopped.", "No notes captured.",
+                NotificationType.Warning));
     }
 
     private void ResetPointer()
