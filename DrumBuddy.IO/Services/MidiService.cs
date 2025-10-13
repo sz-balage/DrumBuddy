@@ -11,6 +11,7 @@ public class MidiService(ConfigurationService configurationService)
     private readonly Subject<bool> _inputDeviceDisconnected = new();
     private readonly Subject<int> _notes = new();
     private bool _isConnected;
+    private MidiInProcedure? _midiCallback; // Hold a strong reference!
 
     public bool IsConnected
     {
@@ -58,7 +59,7 @@ public class MidiService(ConfigurationService configurationService)
 
             return new MidiDeviceConnectionResult(devices);
         }
-        
+
         SetDeviceForIdx(0);
         var singleDeviceInfo = BassMidi.InGetDeviceInfo(0);
         return new MidiDeviceConnectionResult([new MidiDeviceShortInfo(singleDeviceInfo.ID, singleDeviceInfo.Name)]);
@@ -96,7 +97,10 @@ public class MidiService(ConfigurationService configurationService)
     private void SetDeviceForIdx(int idx)
     {
         BassMidi.InFree(idx); //to avoid double init
-        if (BassMidi.InInit(idx, MidiInCallback, IntPtr.Zero))
+
+        _midiCallback = MidiInCallback;
+
+        if (BassMidi.InInit(idx, _midiCallback, IntPtr.Zero))
             if (BassMidi.InStart(idx))
                 IsConnected = true;
     }

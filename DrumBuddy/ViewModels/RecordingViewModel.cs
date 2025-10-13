@@ -71,7 +71,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
             .Bind(out _measures)
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe();
-        _measureSource.AddRange(Enumerable.Range(1, 70).ToList().Select(_ => new MeasureViewModel()));
+        _measureSource.AddRange(Enumerable.Range(1, 20).ToList().Select(_ => new MeasureViewModel()));
         _stopRecordingCanExecute = this.WhenAnyValue(vm => vm.IsRecording, vm => vm.CurrentMeasure,
             (recording, currentMeasure) => recording && currentMeasure != null);
         //bpm changes should update the _bpm prop
@@ -191,6 +191,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
 
     private void InitBeatSub()
     {
+        //TODO: check how it can index out here (rythmic group) -> after done, release a bugfix 
         //drum sub
         var measureIdx = -1;
         var rythmicGroupIndex = -1;
@@ -299,7 +300,9 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         {
             _metronomePlayer.PlayNormalBeep();
         }
-
+        //TODO: do the same in editing viewmodel and check 
+        if(Measures.Count - Measures.IndexOf(CurrentMeasure) < 20) //always have 20 measures in advance
+            _measureSource.AddRange(Enumerable.Range(1, 20).ToList().Select(_ => new MeasureViewModel()));
         CurrentMeasure?.MovePointerToRg(idx);
         if (_globalPointerIdx == 0)
             _timer.Start();
