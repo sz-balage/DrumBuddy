@@ -115,7 +115,7 @@ After installation:
 
 ## Roadmap
 - [ ] Multiple time signatures, and note division (1/32, triplets, sextuplets)
-- [ ] MusicXML export
+- [ ] MIDI, and MusicXML export/import 
 - [ ] User management, and cloud sync
 
 Any feature requests, and feedback is welcome and appreciated. (https://github.com/sz-balage/DrumBuddy/issues)
