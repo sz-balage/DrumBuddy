@@ -8,6 +8,8 @@
     <strong>Bachelor's Thesis Project by Szabó Balázs</strong>
     <br />
     <br />
+    <a href="https://github.com/sz-balage/DrumBuddy/wiki">Explore DrumBuddy wiki »</a>
+    <br />
     <a href="https://github.com/baluka1118/DrumBuddy/issues/new?labels=bug&template=bug_report.md">Report Bug</a>
     &middot;
     <a href="https://github.com/baluka1118/DrumBuddy/issues/new?labels=enhancement&template=feature-request.md">Request Feature</a>
@@ -128,5 +130,8 @@ Szabó Balázs, szabobazsi11182@gmail.com
 * [ReactiveUI Team](https://github.com/reactiveui)
 * [ManagedBass](https://github.com/ManagedBass/ManagedBass)
 * [JetBrains Rider](https://www.jetbrains.com/rider/)
+
+---
+### For more info, visit the projects' wiki: [DrumBuddy Wiki](https://github.com/sz-balage/DrumBuddy/wiki)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
