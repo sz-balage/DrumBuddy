@@ -263,7 +263,9 @@ public partial class EditingViewModel : ReactiveObject
 
         if (CurrentMeasure != null!)
             CurrentMeasure.IsPointerVisible = false;
-
+        var lastNonEmptyMeasureIndex = Measures.IndexOf(Measures.Last(m => !m.IsEmpty));
+        if (measureIndex > lastNonEmptyMeasureIndex)
+            measureIndex = lastNonEmptyMeasureIndex + 1; //can't select empty measures after the last recorded one
         _selectedEntryPointMeasureIndex = measureIndex;
         CurrentMeasure = Measures[_selectedEntryPointMeasureIndex];
         CurrentMeasure.IsPointerVisible = true;

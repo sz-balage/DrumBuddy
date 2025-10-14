@@ -10,6 +10,7 @@
                                 xmlns:views="clr-namespace:DrumBuddy.Views"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="DrumBuddy.Views.ConfigurationView">
+    <!-- TODO: add functionality to move a measure (either drag and drop if possible, or just arrows) -->
     <UserControl.Styles>
         <Style Selector="Border.Drum">
             <Setter Property="Background" Value="{StaticResource HeaderGray}" />
@@ -187,7 +188,7 @@
                                            FontSize="14" />
                                 <Button Classes="round" Command="{Binding RecheckMIDIDevicesCommand}">
                                     <StackPanel Orientation="Horizontal">
-                                        <PathIcon Data="{StaticResource SyncArrow}"/>
+                                        <PathIcon Data="{StaticResource SyncArrow}" />
                                         <TextBlock Text="Choose again"
                                                    Margin="10,0,0,0"
                                                    VerticalAlignment="Center" />

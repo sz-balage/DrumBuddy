@@ -26,6 +26,7 @@ public class PdfGenerator
             Directory.CreateDirectory(_saveDirectory);
     }
 
+    //TODO: scaling feels off (tested on mac)
     public async Task ExportSheetToPdf(IEnumerable<MeasureView> measureViews,
         string sheetName,
         string sheetDescription,
