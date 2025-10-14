@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Threading;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using Avalonia.Threading;
+using DrumBuddy.ViewModels.Dialogs;
+using DrumBuddy.Views.Dialogs;
 
 namespace DrumBuddy.Desktop;
 
@@ -16,6 +20,7 @@ internal class Program
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
 #if !DEBUG
+    
         }
         catch (Exception ex)
         {
