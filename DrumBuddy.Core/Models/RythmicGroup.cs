@@ -19,6 +19,8 @@ public record RythmicGroup(ImmutableArray<NoteGroup> NoteGroups)
                 return false;
             var thisNg = NoteGroups[i];
             var otherNg = other.NoteGroups[i];
+            if (otherNg.Count != thisNg.Count)
+                return false;
             for (var j = 0; j < thisNg.Count; j++)
                 if (thisNg[j] != otherNg[j])
                     return false;
