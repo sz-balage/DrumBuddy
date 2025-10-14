@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/sz-balage/DrumBuddy">
-    <img src="images/app" alt="Logo" width="120" height="120">
+    <img src="images/app.png" alt="Logo" width="120" height="120">
   </a>
 
   <h1>DrumBuddy</h1>
