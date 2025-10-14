@@ -104,16 +104,7 @@ For the time being, due to a lack of a paid developer certificate, you can only 
 5. Now you can run the app
 The app will ask for your permission to access the documents folder, in order to store exported app related data.
 ##### Intel
-1. Download the latest `DrumBuddy-osx-x64.dmg` from [Releases](https://github.com/baluka1118/DrumBuddy/releases)
-2. Run the disk image and drag the app to the Applications folder
-3. Open up the terminal, and navigate to your Applications folder
-4. Execute the following commands:
-   ```bash
-   sudo xattr -cr DrumBuddy.app
-   sudo xattr -rd com.apple.quarantine DrumBuddy.app
-   sudo codesign --force --deep --sign - DrumBuddy.app
-5. Now you can run the app
-The app will ask for your permission to access the documents folder, in order to store exported app related data.
+Use the same commands as above, but with the DrumBuddy-osx-x64.dmg build.
 
 ## Usage
 After installation:
