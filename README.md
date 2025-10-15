@@ -2,8 +2,9 @@
 <br />
 <div align="center">
   <a href="https://github.com/sz-balage/DrumBuddy">
-    <img src="images/applogo.png" alt="Logo" height="120">
+    <img src="images/appicon.png" alt="Logo" height="120">
   </a>
+  <h1>DrumBuddy</h1>
   <p align="center">
     A cross-platform app for drummers, allowing them to record, manage, and learn new digital sheets, with real-time feedback.
     <br />
