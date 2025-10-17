@@ -137,6 +137,8 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                     var buttons = presenter.GetVisualDescendants().OfType<Button>().ToList();
                     var deleteButton = buttons.FirstOrDefault(b => b.Name == "DeleteMeasureButton");
                     var duplicateButton = buttons.FirstOrDefault(b => b.Name == "DuplicateMeasureButton");
+                    var moveLeftButton = buttons.FirstOrDefault(b => b.Name == "MoveLeftMeasureButton");
+                    var moveRightButton = buttons.FirstOrDefault(b => b.Name == "MoveRightMeasureButton");
 
                     if (measureView != null)
                         measureView.IsBeingEdited = i == currentIndex;
@@ -146,10 +148,27 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                     if (duplicateButton != null)
                         duplicateButton.IsVisible = i == currentIndex;
 
+                    if (moveLeftButton != null)
+                        moveLeftButton.IsVisible = i == currentIndex && i > 0 && itemsCount > 1;
+                    if (moveRightButton != null)
+                        moveRightButton.IsVisible = i == currentIndex && i < itemsCount - 1 && itemsCount > 1;
+
                     if (i == currentIndex) presenter.BringIntoView();
                 }
             }
         }, DispatcherPriority.Loaded);
+    }
+
+    private void MoveLeftMeasureButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel is null) return;
+        ViewModel.MoveSelectedMeasureLeft();
+    }
+
+    private void MoveRightMeasureButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel is null) return;
+        ViewModel.MoveSelectedMeasureRight();
     }
 
     // TODO: move most of this logic to axaml
