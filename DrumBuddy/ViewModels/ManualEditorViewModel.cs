@@ -40,11 +40,14 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         Drum.Kick,
         Drum.Snare,
         Drum.HiHat,
+        Drum.HiHat_Open,
+        Drum.HiHat_Pedal,
         Drum.Tom1,
         Drum.Tom2,
         Drum.FloorTom,
         Drum.Ride,
-        Drum.Crash1
+        Drum.Crash1,
+        Drum.Crash2
     };
 
     public readonly ReadOnlyObservableCollection<MeasureViewModel> Measures;
@@ -180,15 +183,50 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         if (col < 0 || col >= Columns) return;
         if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
 
-        // Enforce max notes per column when attempting to set a note (from false -> true)
-        var current = _measureSteps[CurrentMeasureIndex][row, col];
-        if (!current &&
-            CountCheckedInColumn(col) >= MaxNotesPerColumn) return; // ignore attempt, UI will reflect disabled state
+        var matrix = _measureSteps[CurrentMeasureIndex];
+        var current = matrix[row, col];
 
-        _measureSteps[CurrentMeasureIndex][row, col] = !current;
+        var hatDrums = new[] { Drum.HiHat, Drum.HiHat_Open, Drum.HiHat_Pedal };
+        var hatIndices = hatDrums
+            .Select(d => Array.IndexOf(Drums, d))
+            .Where(i => i >= 0)
+            .ToArray();
+        var isHatRow = hatIndices.Contains(row);
+
+        if (!current)
+        {
+            var currentCount = 0;
+            for (var r = 0; r < Drums.Length; r++)
+                if (matrix[r, col])
+                    currentCount++;
+
+            if (isHatRow)
+            {
+                var otherHatsChecked = hatIndices.Count(i => i != row && matrix[i, col]);
+                var prospective = currentCount - otherHatsChecked + 1;
+                if (prospective > MaxNotesPerColumn) return;
+
+                foreach (var i in hatIndices)
+                    if (i != row)
+                        matrix[i, col] = false;
+
+                matrix[row, col] = true;
+            }
+            else
+            {
+                if (currentCount >= MaxNotesPerColumn) return;
+                matrix[row, col] = true;
+            }
+        }
+        else
+        {
+            matrix[row, col] = false;
+        }
+
         CurrentSheet = BuildSheet();
         RedrawMeasureAt();
     }
+
 
     public int CountCheckedInColumn(int col)
     {
