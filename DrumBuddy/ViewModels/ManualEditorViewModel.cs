@@ -270,7 +270,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
                         measureMatrix[drumIndex, col] = true;
                 }
 
-                col++;
+                col += NoteValueToColumns(noteGroup.Value);
             }
 
             _measureSteps.Add(measureMatrix);
@@ -283,6 +283,16 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         CurrentSheet = BuildSheet();
         DrawSheet();
         IsSaved = true;
+    }
+
+    private int NoteValueToColumns(NoteValue value)
+    {
+        return value switch
+        {
+            NoteValue.Quarter => 4,
+            NoteValue.Eighth => 2,
+            _ => 1
+        };
     }
 
     private Sheet BuildSheet()
