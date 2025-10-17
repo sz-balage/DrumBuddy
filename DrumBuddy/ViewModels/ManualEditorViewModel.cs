@@ -147,6 +147,32 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         await _onClose();
     }
 
+    public void MoveSelectedMeasureLeft()
+    {
+        if (CurrentMeasureIndex <= 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
+
+        var idx = CurrentMeasureIndex;
+        (_measureSteps[idx - 1], _measureSteps[idx]) = (_measureSteps[idx], _measureSteps[idx - 1]);
+
+        CurrentMeasureIndex = idx - 1;
+        CurrentSheet = BuildSheet();
+        DrawSheet();
+        IsSaved = false;
+    }
+
+    public void MoveSelectedMeasureRight()
+    {
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count - 1) return;
+
+        var idx = CurrentMeasureIndex;
+        (_measureSteps[idx + 1], _measureSteps[idx]) = (_measureSteps[idx], _measureSteps[idx + 1]);
+
+        CurrentMeasureIndex = idx + 1;
+        CurrentSheet = BuildSheet();
+        DrawSheet();
+        IsSaved = false;
+    }
+
     public void ToggleStep(int row, int col)
     {
         IsSaved = false;

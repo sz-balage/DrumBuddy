@@ -87,6 +87,21 @@
                                 <StackPanel Orientation="Horizontal"
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Top">
+                                    <Button x:Name="MoveLeftMeasureButton" IsVisible="False"
+                                            Width="32" Height="32"
+                                            Background="White"
+                                            BorderThickness="1"
+                                            BorderBrush="{StaticResource HeaderGray}"
+                                            Cursor="Hand"
+                                            Click="MoveLeftMeasureButton_OnClick">
+                                        <Button.Styles>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                            </Style>
+                                        </Button.Styles>
+                                        <PathIcon Foreground="{StaticResource Accent}"
+                                                  Data="{StaticResource ArrowLeft}" />
+                                    </Button>
                                     <Button x:Name="DeleteMeasureButton" IsVisible="False"
                                             Width="32"
                                             Height="32"
@@ -119,6 +134,22 @@
                                         </Button.Styles>
                                         <PathIcon Foreground="{StaticResource Accent}"
                                                   Data="{StaticResource Duplicate}" />
+                                    </Button>
+
+                                    <Button x:Name="MoveRightMeasureButton" IsVisible="False"
+                                            Width="32" Height="32"
+                                            Background="White"
+                                            BorderThickness="1"
+                                            BorderBrush="{StaticResource HeaderGray}"
+                                            Cursor="Hand"
+                                            Click="MoveRightMeasureButton_OnClick">
+                                        <Button.Styles>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                            </Style>
+                                        </Button.Styles>
+                                        <PathIcon Foreground="{StaticResource Accent}"
+                                                  Data="{StaticResource ArrowRight}" />
                                     </Button>
                                 </StackPanel>
                             </Grid>
