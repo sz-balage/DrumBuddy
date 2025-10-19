@@ -26,6 +26,7 @@ namespace DrumBuddy.ViewModels;
 
 public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 {
+    // TODO: add batch import/export
     private readonly FileStorageInteractionService _fileStorageInteractionService;
 
     private readonly MainWindow _mainWindow;
