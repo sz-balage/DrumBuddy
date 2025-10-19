@@ -31,9 +31,11 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
             this.OneWayBind(ViewModel, vm => vm.IsExporting, v => v.ExportTextBlock.Text, isExporting =>
                     isExporting ? "Exporting..." : "Export to pdf")
                 .DisposeWith(d);
+            Title = "Viewing Sheet - " + ViewModel.OriginalSheet.Name;
             //editing stuff
             if (!ViewModel.IsViewOnly)
             {
+                Title = "Editing Sheet - " + ViewModel.OriginalSheet.Name;
                 this.BindCommand(ViewModel, vm => vm.StartRecordingCommand, v => v._startRecordingButton)
                     .DisposeWith(d);
                 this.BindCommand(ViewModel, vm => vm.StopRecordingCommand, v => v._stopRecordingButton)
