@@ -16,7 +16,10 @@ public class FileStorageInteractionService(
     MidiService midiService,
     ConfigurationService configurationService)
 {
-    private const string LastFolderKey = "LastUsedSheetFolder";
+    private const string LastJsonFolderKey = "LastUsedJsonFolder";
+    private const string LastMidiFolderKey = "LastUsedMidiFolder";
+    private const string LastMusicXmlFolderKey = "LastUsedMusicXmlFolder";
+    private const string LastImportFolderKey = "LastUsedImportFolder";
 
     public async Task<string?> SaveSheetJsonAsync(TopLevel topLevel, Sheet sheet)
     {
@@ -24,7 +27,7 @@ public class FileStorageInteractionService(
         if (storageProvider is null)
             return null;
 
-        var lastFolderPath = configurationService.Get<string>(LastFolderKey);
+        var lastFolderPath = configurationService.Get<string>(LastJsonFolderKey);
         var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "sheets");
 
         var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
@@ -55,7 +58,7 @@ public class FileStorageInteractionService(
 
         var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
         if (parentFolder is not null)
-            configurationService.Set(LastFolderKey, parentFolder);
+            configurationService.Set(LastJsonFolderKey, parentFolder);
 
         return file.Name;
     }
@@ -66,7 +69,7 @@ public class FileStorageInteractionService(
         if (storageProvider is null)
             return null;
 
-        var lastFolderPath = configurationService.Get<string>(LastFolderKey);
+        var lastFolderPath = configurationService.Get<string>(LastMidiFolderKey);
         var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "midi");
 
         var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
@@ -95,7 +98,7 @@ public class FileStorageInteractionService(
 
         var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
         if (parentFolder is not null)
-            configurationService.Set(LastFolderKey, parentFolder);
+            configurationService.Set(LastMidiFolderKey, parentFolder);
 
         midiService.ExportToMidi(sheet, file.Path.AbsolutePath);
 
@@ -108,7 +111,7 @@ public class FileStorageInteractionService(
         if (storageProvider is null)
             return null;
 
-        var lastFolderPath = configurationService.Get<string>(LastFolderKey);
+        var lastFolderPath = configurationService.Get<string>(LastMusicXmlFolderKey);
         var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "musicxml");
 
         var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
@@ -138,7 +141,7 @@ public class FileStorageInteractionService(
 
         var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
         if (parentFolder is not null)
-            configurationService.Set(LastFolderKey, parentFolder);
+            configurationService.Set(LastMusicXmlFolderKey, parentFolder);
 
         MusicXmlExporter.ExportSheetToMusicXml(sheet, file.Path.AbsolutePath);
 
@@ -151,7 +154,7 @@ public class FileStorageInteractionService(
         if (storageProvider is null)
             return null;
 
-        var lastFolderPath = configurationService.Get<string>(LastFolderKey);
+        var lastFolderPath = configurationService.Get<string>(LastImportFolderKey);
         var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "sheets");
 
         var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
@@ -170,8 +173,8 @@ public class FileStorageInteractionService(
             SuggestedStartLocation = suggestedFolder,
             FileTypeFilter =
             [
-                new FilePickerFileType("DrumBuddy Sheet File (*.dbsheet)") { Patterns = new[] { "*.dbsheet" } },
-                new FilePickerFileType("MIDI Files (*.mid, *.midi)") { Patterns = new[] { "*.midi" } }
+                new FilePickerFileType("DrumBuddy compatible file (*.dbsheet,*.midi,*.xml,*.musicxml)")
+                    { Patterns = new[] { "*.dbsheet", "*.midi", "*.xml", "*.musicxml" } }
             ]
         };
 
@@ -198,13 +201,13 @@ public class FileStorageInteractionService(
         }
         else if (extension is ".musicxml" or ".xml")
         {
-            // sheet = MusicXmlExporter.ImportMusicXmlToSheet(file.Path.AbsolutePath,
-            //     Path.GetFileNameWithoutExtension(file.Path.AbsolutePath));
+            sheet = MusicXmlExporter.ImportMusicXmlToSheet(file.Path.AbsolutePath,
+                Path.GetFileNameWithoutExtension(file.Path.AbsolutePath));
         }
 
         var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
         if (parentFolder is not null)
-            configurationService.Set(LastFolderKey, parentFolder);
+            configurationService.Set(LastImportFolderKey, parentFolder);
 
         return sheet;
     }

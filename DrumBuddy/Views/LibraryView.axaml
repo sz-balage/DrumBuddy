@@ -267,7 +267,7 @@
                                             <PathIcon Data="{StaticResource Midi}" />
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <MenuItem Header="Export to MusicXML file (TBD)" IsEnabled="False"
+                                    <MenuItem Header="Export to MusicXML file"
                                               Click="ExportToMusicXml">
                                         <MenuItem.Icon>
                                             <PathIcon Data="{StaticResource music}" />
