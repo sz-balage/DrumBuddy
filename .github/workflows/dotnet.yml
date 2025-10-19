@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: Test on all platforms
 
 on:
   push:
@@ -10,19 +10,25 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-and-test:
-
-    runs-on: ubuntu-latest
+  test:
+    name: 🧪 Cross-platform tests
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: 🧱 Restore and Build
+        run: dotnet build DrumBuddy.Desktop -c Release
+
+      - name: 🧪 Run tests
+        run: dotnet test --no-build --verbosity normal
+
