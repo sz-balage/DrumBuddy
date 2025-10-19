@@ -234,6 +234,15 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             button.Parent is Grid grid &&
             grid.Parent is ListBoxItem item)
             SheetsListBox.SelectedItem = item.DataContext;
-        ViewModel.SaveSelectedSheetAsCommand.Execute().Subscribe();
+        ViewModel.SaveSelectedSheetAs(SaveFormat.Json);
+    }
+
+    private void ExportToMidi(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent is ListBoxItem item)
+            SheetsListBox.SelectedItem = item.DataContext;
+        ViewModel.SaveSelectedSheetAs(SaveFormat.Midi);
     }
 }

@@ -1,17 +1,24 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.InteropServices;
+using DrumBuddy.Core.Models;
 using ManagedBass.Midi;
 
 namespace DrumBuddy.IO.Services;
 
-public class MidiService(ConfigurationService configurationService)
+public class MidiService
 {
     private const string LastDeviceKey = "LastUsedMidiDevice";
+    private readonly ConfigurationService _configurationService;
     private readonly Subject<bool> _inputDeviceDisconnected = new();
     private readonly Subject<int> _notes = new();
     private bool _isConnected;
     private MidiInProcedure? _midiCallback; // Hold a strong reference!
+
+    public MidiService(ConfigurationService configurationService)
+    {
+        _configurationService = configurationService;
+    }
 
     public bool IsConnected
     {
@@ -42,7 +49,7 @@ public class MidiService(ConfigurationService configurationService)
             return new MidiDeviceConnectionResult([]);
         if (devCount > 1)
         {
-            var desiredDeviceName = configurationService.Get<string>(LastDeviceKey) ?? string.Empty;
+            var desiredDeviceName = _configurationService.Get<string>(LastDeviceKey) ?? string.Empty;
             var devices = new MidiDeviceShortInfo[devCount];
             for (var i = 0; i < devCount; i++)
             {
@@ -91,7 +98,7 @@ public class MidiService(ConfigurationService configurationService)
             }
 
         SetDeviceForIdx(indexOfChosenDevice);
-        configurationService.Set(LastDeviceKey, chosenDeviceInfo?.Name);
+        _configurationService.Set(LastDeviceKey, chosenDeviceInfo?.Name);
     }
 
     private void SetDeviceForIdx(int idx)
@@ -103,6 +110,17 @@ public class MidiService(ConfigurationService configurationService)
         if (BassMidi.InInit(idx, _midiCallback, IntPtr.Zero))
             if (BassMidi.InStart(idx))
                 IsConnected = true;
+    }
+
+    public Sheet? ImportFromMidi(string filePath)
+    {
+        return MidiExporter.ImportMidiToSheet(filePath,
+            Path.GetFileNameWithoutExtension(filePath), "Imported from MIDI");
+    }
+
+    public void ExportToMidi(Sheet sheet, string filePath)
+    {
+        MidiExporter.ExportSheetToMidi(sheet, filePath);
     }
 }
 

@@ -10,6 +10,7 @@ using Avalonia.Controls.Notifications;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
+using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.Dialogs;
@@ -28,6 +29,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private readonly FileStorageInteractionService _fileStorageInteractionService;
 
     private readonly MainWindow _mainWindow;
+    private readonly MidiService _midiService;
 
     private readonly NotificationService _notificationService;
     private readonly PdfGenerator _pdfGenerator;
@@ -42,12 +44,15 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     [Reactive] private SortOption _selectedSortOption = SortOption.Name;
 
     public LibraryViewModel(IScreen hostScreen, SheetStorage sheetStorage,
-        PdfGenerator pdfGenerator, FileStorageInteractionService fileStorageInteractionService)
+        PdfGenerator pdfGenerator,
+        FileStorageInteractionService fileStorageInteractionService,
+        MidiService midiService)
     {
         _mainWindow = Locator.Current.GetRequiredService<MainWindow>();
         _notificationService = new NotificationService(_mainWindow);
         _pdfGenerator = pdfGenerator;
         _fileStorageInteractionService = fileStorageInteractionService;
+        _midiService = midiService;
         HostScreen = hostScreen;
         _sheetStorage = sheetStorage;
         var sortChanged = this.WhenAnyValue(vm => vm.SelectedSortOption, vm => vm.IsSortDescending)
@@ -139,6 +144,28 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         return _sheetStorage.SheetExists(sheetName);
     }
 
+    public async Task SaveSelectedSheetAs(SaveFormat format)
+    {
+        try
+        {
+            string? file;
+            if (format == SaveFormat.Midi)
+                file = await _fileStorageInteractionService.SaveSheetMidiAsync(_mainWindow, SelectedSheet);
+            else
+                file = await _fileStorageInteractionService.SaveSheetJsonAsync(_mainWindow, SelectedSheet);
+            if (file is not null)
+                _notificationService.ShowNotification(new Notification("Successful save.",
+                    $"The sheet {SelectedSheet.Name} successfully saved to {format.ToString()} {file}.",
+                    NotificationType.Success));
+        }
+        catch (Exception e)
+        {
+            _notificationService.ShowNotification(new Notification("Error saving sheet.",
+                $"An error occurred while saving the sheet ({format.ToString()}): {e.Message}",
+                NotificationType.Error));
+        }
+    }
+
     [ReactiveCommand]
     private void SortByAscending()
     {
@@ -149,25 +176,6 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private void SortByDescending()
     {
         IsSortDescending = true;
-    }
-
-    [ReactiveCommand]
-    private async Task SaveSelectedSheetAs()
-    {
-        try
-        {
-            var file = await _fileStorageInteractionService.SaveSheetAsAsync(_mainWindow, SelectedSheet);
-            if (file is not null)
-                _notificationService.ShowNotification(new Notification("Successful save.",
-                    $"The sheet {SelectedSheet.Name} successfully saved to {file}.",
-                    NotificationType.Success));
-        }
-        catch (Exception e)
-        {
-            _notificationService.ShowNotification(new Notification("Error saving sheet.",
-                $"An error occurred while saving the sheet: {e.Message}",
-                NotificationType.Error));
-        }
     }
 
     [ReactiveCommand]
@@ -297,11 +305,16 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     }
 }
 
+public enum SaveFormat
+{
+    Json,
+    Midi
+}
+
 public interface ILibraryViewModel : IRoutableViewModel
 {
     ReadOnlyObservableCollection<Sheet> Sheets { get; }
     ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; }
-    ReactiveCommand<Unit, Unit> SaveSelectedSheetAsCommand { get; }
     ReactiveCommand<Unit, Unit> RenameSheetCommand { get; }
     ReactiveCommand<Unit, Unit> EditSheetCommand { get; }
     ReactiveCommand<Unit, Unit> ManuallyEditSheetCommand { get; }
@@ -315,6 +328,7 @@ public interface ILibraryViewModel : IRoutableViewModel
     ReactiveCommand<Unit, Unit> DuplicateSheetCommand { get; }
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);
+    Task SaveSelectedSheetAs(SaveFormat format);
     Task CompareSheets(Sheet baseSheet, Sheet comparedSheet);
     Task BatchRemoveSheets(List<Sheet> selected);
 }

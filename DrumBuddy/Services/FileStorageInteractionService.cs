@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -12,11 +13,12 @@ namespace DrumBuddy.Services;
 
 public class FileStorageInteractionService(
     SerializationService serializationService,
+    MidiService midiService,
     ConfigurationService configurationService)
 {
     private const string LastFolderKey = "LastUsedSheetFolder";
 
-    public async Task<string?> SaveSheetAsAsync(TopLevel topLevel, Sheet sheet)
+    public async Task<string?> SaveSheetJsonAsync(TopLevel topLevel, Sheet sheet)
     {
         var storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
@@ -59,6 +61,49 @@ public class FileStorageInteractionService(
         return file.Name;
     }
 
+    public async Task<string?> SaveSheetMidiAsync(TopLevel topLevel, Sheet sheet)
+    {
+        var storageProvider = topLevel?.StorageProvider;
+        if (storageProvider is null)
+            return null;
+
+        var lastFolderPath = configurationService.Get<string>(LastFolderKey);
+        var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "midi");
+
+        var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
+            ? lastFolderPath
+            : fallbackPath;
+
+        if (!Directory.Exists(basePath))
+            Directory.CreateDirectory(basePath);
+
+        var suggestedFolder = await storageProvider.TryGetFolderFromPathAsync(new Uri(basePath));
+
+        var filePickerOptions = new FilePickerSaveOptions
+        {
+            Title = "Export as MIDI...",
+            SuggestedStartLocation = suggestedFolder,
+            SuggestedFileName = sheet.Name,
+            FileTypeChoices = new List<FilePickerFileType>
+            {
+                new("MIDI File (*.midi)") { Patterns = new[] { "*.midi" } },
+                new("All Files") { Patterns = new[] { "*" } }
+            }
+        };
+
+        var file = await storageProvider.SaveFilePickerAsync(filePickerOptions);
+        if (file is null)
+            return null;
+
+        var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
+        if (parentFolder is not null)
+            configurationService.Set(LastFolderKey, parentFolder);
+
+        midiService.ExportToMidi(sheet, file.Path.AbsolutePath);
+
+        return file.Name;
+    }
+
     public async Task<Sheet?> OpenSheetAsync(TopLevel topLevel)
     {
         var storageProvider = topLevel?.StorageProvider;
@@ -79,27 +124,38 @@ public class FileStorageInteractionService(
 
         var filePickerOptions = new FilePickerOpenOptions
         {
-            Title = "Import Sheet...",
+            Title = "Open Sheet or MIDI File...",
             AllowMultiple = false,
             SuggestedStartLocation = suggestedFolder,
             FileTypeFilter =
             [
                 new FilePickerFileType("DrumBuddy Sheet File (*.dbsheet)") { Patterns = new[] { "*.dbsheet" } },
+                new FilePickerFileType("MIDI Files (*.mid, *.midi)") { Patterns = new[] { "*.midi" } },
                 new FilePickerFileType("All Files") { Patterns = new[] { "*" } }
             ]
         };
 
         var files = await storageProvider.OpenFilePickerAsync(filePickerOptions);
-        var file = files.Count > 0 ? files[0] : null;
+        var file = files.FirstOrDefault();
         if (file is null)
             return null;
 
-        await using var stream = await file.OpenReadAsync();
-        using var reader = new StreamReader(stream);
-        var data = await reader.ReadToEndAsync();
+        var extension = Path.GetExtension(file.Name).ToLowerInvariant();
 
-        var fileName = Path.GetFileNameWithoutExtension(file.Name);
-        var sheet = serializationService.DeserializeSheet(data, fileName);
+        Sheet? sheet = null;
+
+        if (extension is ".dbsheet")
+        {
+            await using var stream = await file.OpenReadAsync();
+            using var reader = new StreamReader(stream);
+            var json = await reader.ReadToEndAsync();
+            var fileName = Path.GetFileNameWithoutExtension(file.Name);
+            sheet = serializationService.DeserializeSheet(json, fileName);
+        }
+        else if (extension is ".mid" or ".midi")
+        {
+            sheet = midiService.ImportFromMidi(file.Path.AbsolutePath);
+        }
 
         var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
         if (parentFolder is not null)

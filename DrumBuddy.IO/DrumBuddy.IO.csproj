@@ -11,6 +11,7 @@
         <PackageReference Include="Dapper"/>
         <PackageReference Include="ManagedBass"/>
         <PackageReference Include="ManagedBass.Midi"/>
+        <PackageReference Include="Melanchall.DryWetMidi.Nativeless"/>
         <PackageReference Include="Microsoft.Data.Sqlite" />
         <PackageReference Include="System.Management"/>
         <PackageReference Include="System.Reactive"/>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -25,11 +26,12 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
         });
     }
 
+    public ReactiveCommand<Unit, Unit> SaveSelectedSheetAsCommand { get; }
+
     public string? UrlPathSegment { get; }
     public IScreen HostScreen { get; }
     public ReadOnlyObservableCollection<Sheet> Sheets { get; }
     public ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; } = ReactiveCommand.Create(() => { });
-    public ReactiveCommand<Unit, Unit> SaveSelectedSheetAsCommand { get; }
     public ReactiveCommand<Unit, Unit> RenameSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> EditSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> ManuallyEditSheetCommand { get; }
@@ -45,6 +47,11 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     public Task SaveSheet(Sheet sheet)
     {
         return Task.CompletedTask;
+    }
+
+    public Task SaveSelectedSheetAs(SaveFormat format)
+    {
+        throw new NotImplementedException();
     }
 
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
