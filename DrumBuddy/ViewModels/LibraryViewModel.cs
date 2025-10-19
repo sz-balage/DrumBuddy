@@ -151,8 +151,13 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             string? file;
             if (format == SaveFormat.Midi)
                 file = await _fileStorageInteractionService.SaveSheetMidiAsync(_mainWindow, SelectedSheet);
-            else
+            else if (format == SaveFormat.Json)
                 file = await _fileStorageInteractionService.SaveSheetJsonAsync(_mainWindow, SelectedSheet);
+            else
+            {
+                file = await _fileStorageInteractionService.SaveSheetMusicXmlAsync(_mainWindow, SelectedSheet);
+            }
+
             if (file is not null)
                 _notificationService.ShowNotification(new Notification("Successful save.",
                     $"The sheet {SelectedSheet.Name} successfully saved to {format.ToString()} {file}.",
@@ -308,7 +313,8 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 public enum SaveFormat
 {
     Json,
-    Midi
+    Midi,
+    MusicXml
 }
 
 public interface ILibraryViewModel : IRoutableViewModel

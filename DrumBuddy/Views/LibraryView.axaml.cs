@@ -245,4 +245,21 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             SheetsListBox.SelectedItem = item.DataContext;
         ViewModel.SaveSelectedSheetAs(SaveFormat.Midi);
     }
+
+    private void ExportToMusicXml(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent is ListBoxItem item)
+            SheetsListBox.SelectedItem = item.DataContext;
+        ViewModel.SaveSelectedSheetAs(SaveFormat.MusicXml);
+    }
+
+    private void ExportFlyout_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent is ListBoxItem item)
+            SheetsListBox.SelectedItem = item.DataContext;
+    }
 }

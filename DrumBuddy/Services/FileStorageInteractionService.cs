@@ -40,8 +40,7 @@ public class FileStorageInteractionService(
             SuggestedFileName = sheet.Name,
             FileTypeChoices = new List<FilePickerFileType>
             {
-                new("DrumBuddy Sheet File (*.dbsheet)") { Patterns = new[] { "*.dbsheet" } },
-                new("All Files") { Patterns = new[] { "*" } }
+                new("DrumBuddy Sheet File (*.dbsheet)") { Patterns = new[] { "*.dbsheet" } }
             }
         };
 
@@ -86,8 +85,7 @@ public class FileStorageInteractionService(
             SuggestedFileName = sheet.Name,
             FileTypeChoices = new List<FilePickerFileType>
             {
-                new("MIDI File (*.midi)") { Patterns = new[] { "*.midi" } },
-                new("All Files") { Patterns = new[] { "*" } }
+                new("MIDI File (*.midi)") { Patterns = new[] { "*.midi" } }
             }
         };
 
@@ -100,6 +98,49 @@ public class FileStorageInteractionService(
             configurationService.Set(LastFolderKey, parentFolder);
 
         midiService.ExportToMidi(sheet, file.Path.AbsolutePath);
+
+        return file.Name;
+    }
+
+    public async Task<string?> SaveSheetMusicXmlAsync(TopLevel topLevel, Sheet sheet)
+    {
+        var storageProvider = topLevel?.StorageProvider;
+        if (storageProvider is null)
+            return null;
+
+        var lastFolderPath = configurationService.Get<string>(LastFolderKey);
+        var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "musicxml");
+
+        var basePath = !string.IsNullOrWhiteSpace(lastFolderPath) && Directory.Exists(lastFolderPath)
+            ? lastFolderPath
+            : fallbackPath;
+
+        if (!Directory.Exists(basePath))
+            Directory.CreateDirectory(basePath);
+
+        var suggestedFolder = await storageProvider.TryGetFolderFromPathAsync(new Uri(basePath));
+
+        var filePickerOptions = new FilePickerSaveOptions
+        {
+            Title = "Export as MusicXML...",
+            SuggestedStartLocation = suggestedFolder,
+            SuggestedFileName = sheet.Name,
+            FileTypeChoices = new List<FilePickerFileType>
+            {
+                new("MusicXML File (*.musicxml, *.xml)") { Patterns = new[] { "*.xml", "*.musicxml" } },
+                new("All Files") { Patterns = new[] { "*" } }
+            }
+        };
+
+        var file = await storageProvider.SaveFilePickerAsync(filePickerOptions);
+        if (file is null)
+            return null;
+
+        var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
+        if (parentFolder is not null)
+            configurationService.Set(LastFolderKey, parentFolder);
+
+        MusicXmlExporter.ExportSheetToMusicXml(sheet, file.Path.AbsolutePath);
 
         return file.Name;
     }
@@ -130,8 +171,7 @@ public class FileStorageInteractionService(
             FileTypeFilter =
             [
                 new FilePickerFileType("DrumBuddy Sheet File (*.dbsheet)") { Patterns = new[] { "*.dbsheet" } },
-                new FilePickerFileType("MIDI Files (*.mid, *.midi)") { Patterns = new[] { "*.midi" } },
-                new FilePickerFileType("All Files") { Patterns = new[] { "*" } }
+                new FilePickerFileType("MIDI Files (*.mid, *.midi)") { Patterns = new[] { "*.midi" } }
             ]
         };
 
@@ -155,6 +195,11 @@ public class FileStorageInteractionService(
         else if (extension is ".mid" or ".midi")
         {
             sheet = midiService.ImportFromMidi(file.Path.AbsolutePath);
+        }
+        else if (extension is ".musicxml" or ".xml")
+        {
+            // sheet = MusicXmlExporter.ImportMusicXmlToSheet(file.Path.AbsolutePath,
+            //     Path.GetFileNameWithoutExtension(file.Path.AbsolutePath));
         }
 
         var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
