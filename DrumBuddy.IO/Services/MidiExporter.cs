@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
+using DrumBuddy.Core.Services;
 using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
@@ -16,7 +17,6 @@ public static class MidiExporter
         var trackChunk = new TrackChunk();
         midiFile.Chunks.Add(trackChunk);
 
-        // Set tempo event (first track event)
         var bpm = sheet.Tempo.Value;
         var microsecondsPerQuarter = (int)(60000000.0 / bpm);
         trackChunk.Events.Add(new SetTempoEvent(microsecondsPerQuarter));
@@ -48,14 +48,14 @@ public static class MidiExporter
                     continue;
                 }
 
+                var groupStartTick = currentTick;
+
                 foreach (var note in ng)
                 {
                     var midiNoteNumber = (SevenBitNumber)(int)note.Drum;
 
-                    var midiNote =
-                        new Melanchall.DryWetMidi.Interaction.Note(midiNoteNumber, durationTicks, currentTick);
-
-                    notesCollection.Add(midiNote);
+                    notesCollection.Add(new Melanchall.DryWetMidi.Interaction.Note(
+                        midiNoteNumber, durationTicks, groupStartTick));
                 }
 
                 currentTick += durationTicks;
@@ -86,10 +86,14 @@ public static class MidiExporter
         if (midiNotes.Count == 0)
             return new Sheet(sheetTempo, ImmutableArray<Measure>.Empty, name, description);
 
-        var quarterTicks = TimeConverter.ConvertFrom(MusicalTimeSpan.Quarter, tempoMap);
-        var eighthTicks = TimeConverter.ConvertFrom(MusicalTimeSpan.Eighth, tempoMap);
         var sixteenthTicks = TimeConverter.ConvertFrom(MusicalTimeSpan.Sixteenth, tempoMap);
         var measureTicks = TimeConverter.ConvertFrom(MusicalTimeSpan.Whole, tempoMap);
+
+        foreach (var n in midiNotes)
+        {
+            var quantized = Math.Round(n.Time / (double)sixteenthTicks) * sixteenthTicks;
+            n.Time = (long)quantized;
+        }
 
         var lastNoteEndTick = midiNotes.Max(n => n.Time + n.Length);
         var measuresCount = (int)((lastNoteEndTick + measureTicks - 1) / measureTicks);
@@ -131,13 +135,14 @@ public static class MidiExporter
 
                 var starters = notesInMeasure
                     .Where(n => n.Time >= slotStart && n.Time < slotEnd)
-                    .ToList();
+                    .GroupBy(n => n.Time)
+                    .OrderBy(g => g.Key)
+                    .FirstOrDefault()?.ToList() ?? new List<Melanchall.DryWetMidi.Interaction.Note>();
 
                 if (starters.Count == 0)
                 {
                     var restNote = new Note(Drum.Rest, NoteValue.Sixteenth);
-                    var ng = new NoteGroup(new List<Note> { restNote });
-                    noteGroupsForRg.Add(ng);
+                    noteGroupsForRg.Add(new NoteGroup(new List<Note> { restNote }));
                     slotIndex += 1;
                     continue;
                 }
@@ -151,7 +156,8 @@ public static class MidiExporter
                         ? (Drum)(int)mn.NoteNumber
                         : Drum.Rest;
 
-                    if (mn.Length > chosenDurationTicks) chosenDurationTicks = mn.Length;
+                    if (mn.Length > chosenDurationTicks)
+                        chosenDurationTicks = mn.Length;
 
                     groupNotes.Add(new Note(drumEnum, NoteValue.Sixteenth));
                 }
@@ -165,8 +171,7 @@ public static class MidiExporter
                     .Select(n => new Note(n.Drum, groupValue))
                     .ToList();
 
-                var ngFinal = new NoteGroup(finalizedNotes);
-                noteGroupsForRg.Add(ngFinal);
+                noteGroupsForRg.Add(new NoteGroup(finalizedNotes));
 
                 var consumedSlots = groupValue switch
                 {
@@ -179,7 +184,8 @@ public static class MidiExporter
                 slotIndex += consumedSlots;
             }
 
-            rgList.Add(new RythmicGroup(noteGroupsForRg.ToImmutableArray()));
+            noteGroupsForRg = RecordingService.UpscaleNotes(noteGroupsForRg);
+            rgList.Add(new RythmicGroup([..noteGroupsForRg]));
         }
 
         return new Measure(rgList);
