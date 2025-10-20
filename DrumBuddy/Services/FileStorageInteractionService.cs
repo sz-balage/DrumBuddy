@@ -148,11 +148,11 @@ public class FileStorageInteractionService(
         return file.Name;
     }
 
-    public async Task<Sheet?> OpenSheetAsync(TopLevel topLevel)
+    public async Task<List<Sheet>> OpenSheetAsync(TopLevel topLevel)
     {
         var storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
-            return null;
+            return new List<Sheet>();
 
         var lastFolderPath = configurationService.Get<string>(LastImportFolderKey);
         var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "sheets");
@@ -169,7 +169,7 @@ public class FileStorageInteractionService(
         var filePickerOptions = new FilePickerOpenOptions
         {
             Title = "Open Sheet or MIDI File...",
-            AllowMultiple = false,
+            AllowMultiple = true,
             SuggestedStartLocation = suggestedFolder,
             FileTypeFilter =
             [
@@ -179,36 +179,46 @@ public class FileStorageInteractionService(
         };
 
         var files = await storageProvider.OpenFilePickerAsync(filePickerOptions);
-        var file = files.FirstOrDefault();
-        if (file is null)
-            return null;
+        var sheets = await ImportFiles(files);
 
-        var extension = Path.GetExtension(file.Name).ToLowerInvariant();
-
-        Sheet? sheet = null;
-
-        if (extension is ".dbsheet")
-        {
-            await using var stream = await file.OpenReadAsync();
-            using var reader = new StreamReader(stream);
-            var json = await reader.ReadToEndAsync();
-            var fileName = Path.GetFileNameWithoutExtension(file.Name);
-            sheet = serializationService.DeserializeSheet(json, fileName);
-        }
-        else if (extension is ".mid" or ".midi")
-        {
-            sheet = midiService.ImportFromMidi(file.Path.AbsolutePath);
-        }
-        else if (extension is ".musicxml" or ".xml")
-        {
-            sheet = MusicXmlExporter.ImportMusicXmlToSheet(file.Path.AbsolutePath,
-                Path.GetFileNameWithoutExtension(file.Path.AbsolutePath));
-        }
-
-        var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
+        var parentFolder = Path.GetDirectoryName(files.FirstOrDefault()?.Path.LocalPath);
         if (parentFolder is not null)
             configurationService.Set(LastImportFolderKey, parentFolder);
 
-        return sheet;
+        return sheets;
+    }
+
+    private async Task<List<Sheet>> ImportFiles(IReadOnlyList<IStorageFile> files)
+    {
+        var sheets = new List<Sheet>();
+        foreach (var file in files)
+        {
+            var extension = Path.GetExtension(file.Name).ToLowerInvariant();
+
+            Sheet? sheet = null;
+
+            if (extension is ".dbsheet")
+            {
+                await using var stream = await file.OpenReadAsync();
+                using var reader = new StreamReader(stream);
+                var json = await reader.ReadToEndAsync();
+                var fileName = Path.GetFileNameWithoutExtension(file.Name);
+                sheet = serializationService.DeserializeSheet(json, fileName);
+            }
+            else if (extension is ".mid" or ".midi")
+            {
+                sheet = midiService.ImportFromMidi(file.Path.AbsolutePath);
+            }
+            else if (extension is ".musicxml" or ".xml")
+            {
+                sheet = MusicXmlExporter.ImportMusicXmlToSheet(file.Path.AbsolutePath,
+                    Path.GetFileNameWithoutExtension(file.Path.AbsolutePath));
+            }
+
+            if (sheet is not null)
+                sheets.Add(sheet);
+        }
+
+        return sheets;
     }
 }

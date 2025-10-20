@@ -40,7 +40,7 @@
                     Command="{Binding ImportSheetCommand}">
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource Add}" />
-                    <TextBlock Text="Import sheet"
+                    <TextBlock Text="Import sheets"
                                Classes="header"
                                VerticalAlignment="Center"
                                FontFamily="{StaticResource NunitoFont}"
@@ -128,7 +128,7 @@
                             Command="{Binding ImportSheetCommand}">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource Add}" />
-                            <TextBlock Text="Import sheet"
+                            <TextBlock Text="Import sheets"
                                        VerticalAlignment="Center"
                                        FontFamily="{StaticResource NunitoFont}"
                                        Margin="5,3,0,0" />

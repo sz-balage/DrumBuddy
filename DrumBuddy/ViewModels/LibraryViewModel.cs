@@ -189,34 +189,37 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         try
         {
-            var sheet = await _fileStorageInteractionService.OpenSheetAsync(_mainWindow);
-            if (sheet is null)
+            var sheets = await _fileStorageInteractionService.OpenSheetAsync(_mainWindow);
+            if (sheets.Count == 0)
                 return;
-
-            if (_sheetStorage.SheetExists(sheet.Name))
+            foreach (var sheet in sheets)
             {
-                var confirmationVm = new ConfirmationViewModel
+                if (_sheetStorage.SheetExists(sheet.Name))
                 {
-                    Message = "A sheet with this name already exists. Do you want to overwrite it?",
-                    ShowDiscard = false,
-                    ShowConfirm = true,
-                    ConfirmText = "Overwrite",
-                    CancelText = "Cancel"
-                };
-                var confirmation = await ShowConfirmationDialog.Handle(confirmationVm);
-                if (confirmation == Confirmation.Cancel)
-                    return;
-                if (confirmation == Confirmation.Confirm)
-                    await _sheetStorage.RemoveSheetAsync(
-                        _sheetSource.Items.First(s => s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)));
-            }
+                    var confirmationVm = new ConfirmationViewModel
+                    {
+                        Message = $"A sheet with the name {sheet.Name} already exists. Do you want to overwrite it?",
+                        ShowDiscard = false,
+                        ShowConfirm = true,
+                        ConfirmText = "Overwrite",
+                        CancelText = "Cancel"
+                    };
+                    var confirmation = await ShowConfirmationDialog.Handle(confirmationVm);
+                    if (confirmation == Confirmation.Cancel)
+                        return;
+                    if (confirmation == Confirmation.Confirm)
+                        await _sheetStorage.RemoveSheetAsync(
+                            _sheetSource.Items.First(s =>
+                                s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)));
+                }
 
-            await _sheetStorage.SaveSheetAsync(sheet);
-            _sheetSource.AddOrUpdate(sheet);
-            _notificationService.ShowNotification(new Notification(
-                "Sheet imported.",
-                $"Successfully imported \"{sheet.Name}\".",
-                NotificationType.Success));
+                await _sheetStorage.SaveSheetAsync(sheet);
+                _sheetSource.AddOrUpdate(sheet);
+                _notificationService.ShowNotification(new Notification(
+                    "Sheet imported.",
+                    $"Successfully imported \"{sheet.Name}\".",
+                    NotificationType.Success));
+            }
         }
         catch (Exception ex)
         {
