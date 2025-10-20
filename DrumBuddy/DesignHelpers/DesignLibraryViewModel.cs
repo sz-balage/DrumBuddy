@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -51,7 +50,7 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public Task SaveSelectedSheetAs(SaveFormat format)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
