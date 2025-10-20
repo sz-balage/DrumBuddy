@@ -119,8 +119,8 @@ After installation:
 - Compare sheets to see the difference
 
 ## Roadmap
+- [x] MIDI, and MusicXML export/import 
 - [ ] Multiple time signatures, and note division (1/32, triplets, sextuplets)
-- [ ] MIDI, and MusicXML export/import 
 - [ ] User management, and cloud sync
 
 Any feature requests, and feedback is welcome and appreciated. (https://github.com/sz-balage/DrumBuddy/issues)
