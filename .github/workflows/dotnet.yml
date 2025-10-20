@@ -27,7 +27,12 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: 🧱 Restore and Build
-        run: dotnet build DrumBuddy.Desktop -c Release
+        run: dotnet build DrumBuddy.Desktop -c Release /p:VSTestLogger=
+
+        
       - name: 🧪 Run tests
-        run: dotnet test DrumBuddy.Unit/DrumBuddy.Core.Unit.csproj --configuration Release --no-build --verbosity normal
+        run: dotnet test DrumBuddy.Unit/DrumBuddy.Core.Unit.csproj --configuration Release --no-build --verbosity normal --logger "console;verbosity=detailed"
+        env:
+          DOTNET_ROLL_FORWARD: Major
+
 
