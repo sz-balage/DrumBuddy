@@ -57,6 +57,10 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     vm => vm.SelectedSheet,
                     v => v.BatchDeleteMenuItem.IsEnabled, b => b != null)
                 .DisposeWith(d);
+            this.OneWayBind(ViewModel,
+                    vm => vm.SelectedSheet,
+                    v => v.BatchExportButton.IsEnabled, b => b != null)
+                .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.SelectedSheet,
                     v => v.SheetsLB.SelectedItem)
                 .DisposeWith(d);
@@ -234,6 +238,53 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             button.Parent is Grid grid &&
             grid.Parent is ListBoxItem item)
             SheetsListBox.SelectedItem = item.DataContext;
-        ViewModel.SaveSelectedSheetAsCommand.Execute().Subscribe();
+        ViewModel.SaveSelectedSheetAs(SaveFormat.Json);
+    }
+
+    private void ExportToMidi(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent is ListBoxItem item)
+            SheetsListBox.SelectedItem = item.DataContext;
+        ViewModel.SaveSelectedSheetAs(SaveFormat.Midi);
+    }
+
+    private void ExportToMusicXml(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent is ListBoxItem item)
+            SheetsListBox.SelectedItem = item.DataContext;
+        ViewModel.SaveSelectedSheetAs(SaveFormat.MusicXml);
+    }
+
+    private void ExportFlyout_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent is ListBoxItem item)
+            SheetsListBox.SelectedItem = item.DataContext;
+    }
+
+    private void BatchMusicXmlExport(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel is null) return;
+        var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
+        ViewModel!.BatchExportSheets(selected, SaveFormat.MusicXml);
+    }
+
+    private void BatchMidiExport(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel is null) return;
+        var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
+        ViewModel!.BatchExportSheets(selected, SaveFormat.Midi);
+    }
+
+    private void BatchJsonExport(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel is null) return;
+        var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
+        ViewModel!.BatchExportSheets(selected, SaveFormat.Json);
     }
 }

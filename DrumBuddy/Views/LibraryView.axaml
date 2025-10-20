@@ -40,7 +40,7 @@
                     Command="{Binding ImportSheetCommand}">
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource Add}" />
-                    <TextBlock Text="Import sheet"
+                    <TextBlock Text="Import sheets"
                                Classes="header"
                                VerticalAlignment="Center"
                                FontFamily="{StaticResource NunitoFont}"
@@ -128,12 +128,50 @@
                             Command="{Binding ImportSheetCommand}">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource Add}" />
-                            <TextBlock Text="Import sheet"
+                            <TextBlock Text="Import sheets"
                                        VerticalAlignment="Center"
                                        FontFamily="{StaticResource NunitoFont}"
                                        Margin="5,3,0,0" />
                         </StackPanel>
                     </Button>
+                    <Button x:Name="BatchExportButton"
+                            Classes="round">
+                        <Button.Styles>
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Style>
+                        </Button.Styles>
+                        <Button.Flyout>
+                            <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                                <MenuItem Header="Export to sheet file" Click="BatchJsonExport">
+                                    <MenuItem.Icon>
+                                        <PathIcon Data="{StaticResource SaveAs}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Export to MIDI file" Click="BatchMidiExport">
+                                    <MenuItem.Icon>
+                                        <PathIcon Data="{StaticResource Midi}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Export to MusicXML file"
+                                          Click="BatchMusicXmlExport">
+                                    <MenuItem.Icon>
+                                        <PathIcon Data="{StaticResource music}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuFlyout>
+                        </Button.Flyout>
+                        <StackPanel Orientation="Horizontal">
+                            <PathIcon Data="{StaticResource Export}"
+                                      Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                            <TextBlock Text="Export selected"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{StaticResource NunitoFont}"
+                                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                       Margin="5,3,0,0" />
+                        </StackPanel>
+                    </Button>
+
                     <Button x:Name="SelectAllButton"
                             Classes="round"
                             Click="SelectAllButton_OnClick">
@@ -226,7 +264,7 @@
                         </StackPanel>
                         <Button Grid.Row="0" Grid.Column="3"
                                 VerticalAlignment="Center"
-                                Margin="8,-3,0,0"
+                                Margin="8,-5,0,0"
                                 Padding="8,4"
                                 Background="Transparent"
                                 Click="ViewButton_OnClick">
@@ -238,7 +276,7 @@
                         </Button>
                         <Button Grid.Row="1" Grid.Column="3"
                                 VerticalAlignment="Center"
-                                Margin="8,-3,0,0"
+                                Margin="8,-5,0,0"
                                 Padding="8,4"
                                 Background="Transparent"
                                 Click="CompareButton_OnClick">
@@ -251,16 +289,37 @@
                         <Button Grid.Row="0" Grid.Column="4"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
-                                Margin="8,-3,0,0"
+                                Margin="8,-5,0,0"
                                 Padding="8,4"
-                                Click="SaveSheetAs"
+                                Click="ExportFlyout_OnClick"
                                 Background="Transparent">
+                            <Button.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                                    <MenuItem Header="Export to sheet file" Click="SaveSheetAs">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource SaveAs}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Export to MIDI file" Click="ExportToMidi">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource Midi}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Export to MusicXML file"
+                                              Click="ExportToMusicXml">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource music}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuFlyout>
+                            </Button.Flyout>
+
                             <StackPanel Orientation="Horizontal">
-                                <PathIcon Data="{StaticResource SaveAs}" Width="16" Height="16" Margin="0,0,10,0" />
-                                <TextBlock FontWeight="SemiBold"
-                                           Opacity="0.8" Text="Save as" />
+                                <PathIcon Data="{StaticResource Export}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <TextBlock FontWeight="SemiBold" Opacity="0.8" Text="Export to" />
                             </StackPanel>
                         </Button>
+
                         <Button Grid.Row="0" Grid.Column="5" Grid.RowSpan="2"
                                 VerticalAlignment="Center"
                                 Margin="8,0,0,0"

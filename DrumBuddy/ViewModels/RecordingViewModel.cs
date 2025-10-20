@@ -191,7 +191,6 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
 
     private void InitBeatSub()
     {
-        //TODO: check how it can index out here (rythmic group) -> after done, release a bugfix 
         //drum sub
         var measureIdx = -1;
         var rythmicGroupIndex = -1;

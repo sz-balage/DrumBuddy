@@ -38,7 +38,7 @@ public class App : Application
             desktop.MainWindow = Locator.Current.GetService<MainWindow>();
             if (desktop.MainWindow.DataContext is MainViewModel vm) vm.SelectedPaneItem = vm.PaneItems[0];
         }
-        
+
         base.OnFrameworkInitializationCompleted();
     }
 
@@ -56,6 +56,7 @@ public class App : Application
         CurrentMutable.Register(() =>
             new FileStorageInteractionService(
                 Locator.Current.GetRequiredService<SerializationService>(),
+                Locator.Current.GetRequiredService<MidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>()
             ));
         CurrentMutable.RegisterConstant(new MainViewModel(
@@ -67,7 +68,9 @@ public class App : Application
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
             Locator.Current.GetRequiredService<SheetStorage>(),
             Locator.Current.GetRequiredService<PdfGenerator>(),
-            Locator.Current.GetRequiredService<FileStorageInteractionService>()));
+            Locator.Current.GetRequiredService<FileStorageInteractionService>(),
+            Locator.Current.GetRequiredService<MidiService>()
+        ));
         CurrentMutable.RegisterConstant(new ManualViewModel(Locator.Current.GetRequiredService<IScreen>()));
         CurrentMutable.RegisterConstant(
             new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),

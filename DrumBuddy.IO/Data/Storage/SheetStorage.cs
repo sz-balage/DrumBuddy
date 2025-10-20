@@ -59,7 +59,7 @@ public class SheetStorage
             sheet.Name, sheet.Description);
     }
 
-    public static string GenerateCopyName(string originalName, HashSet<string> existingNames)
+    public static string GenerateCopyName(string originalName, HashSet<string?> existingNames)
     {
         var baseName = $"{originalName} - Copy";
         if (!existingNames.Contains(baseName))

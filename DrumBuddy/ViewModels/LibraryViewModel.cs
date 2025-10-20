@@ -10,6 +10,7 @@ using Avalonia.Controls.Notifications;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data.Storage;
+using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.Dialogs;
@@ -25,9 +26,11 @@ namespace DrumBuddy.ViewModels;
 
 public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 {
+    // TODO: add batch import/export
     private readonly FileStorageInteractionService _fileStorageInteractionService;
 
     private readonly MainWindow _mainWindow;
+    private readonly MidiService _midiService;
 
     private readonly NotificationService _notificationService;
     private readonly PdfGenerator _pdfGenerator;
@@ -42,12 +45,15 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     [Reactive] private SortOption _selectedSortOption = SortOption.Name;
 
     public LibraryViewModel(IScreen hostScreen, SheetStorage sheetStorage,
-        PdfGenerator pdfGenerator, FileStorageInteractionService fileStorageInteractionService)
+        PdfGenerator pdfGenerator,
+        FileStorageInteractionService fileStorageInteractionService,
+        MidiService midiService)
     {
         _mainWindow = Locator.Current.GetRequiredService<MainWindow>();
         _notificationService = new NotificationService(_mainWindow);
         _pdfGenerator = pdfGenerator;
         _fileStorageInteractionService = fileStorageInteractionService;
+        _midiService = midiService;
         HostScreen = hostScreen;
         _sheetStorage = sheetStorage;
         var sortChanged = this.WhenAnyValue(vm => vm.SelectedSortOption, vm => vm.IsSortDescending)
@@ -127,6 +133,35 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         }
     }
 
+    public async void BatchExportSheets(List<Sheet> selected, SaveFormat saveFormat)
+    {
+        if (selected.Count == 0)
+            return;
+        try
+        {
+            var count = await _fileStorageInteractionService.BatchExportSheetsAsync(
+                _mainWindow,
+                selected,
+                saveFormat);
+            if (count > 0)
+                _notificationService.ShowNotification(new Notification(
+                    "Export complete.",
+                    $"Successfully exported {count} sheet(s) to {saveFormat}.",
+                    NotificationType.Success));
+            else
+                _notificationService.ShowNotification(new Notification(
+                    "Export cancelled.",
+                    "No sheets were exported.",
+                    NotificationType.Warning));
+        }
+        catch (Exception ex)
+        {
+            _notificationService.ShowNotification(new Notification(
+                "Export failed.",
+                $"An error occurred while exporting sheets: {ex.Message}",
+                NotificationType.Error));
+        }
+    }
 
     public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
@@ -137,6 +172,33 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     public bool SheetExists(string sheetName)
     {
         return _sheetStorage.SheetExists(sheetName);
+    }
+
+    public async Task SaveSelectedSheetAs(SaveFormat format)
+    {
+        try
+        {
+            string? file;
+            if (format == SaveFormat.Midi)
+                file = await _fileStorageInteractionService.SaveSheetMidiAsync(_mainWindow, SelectedSheet);
+            else if (format == SaveFormat.Json)
+                file = await _fileStorageInteractionService.SaveSheetJsonAsync(_mainWindow, SelectedSheet);
+            else
+            {
+                file = await _fileStorageInteractionService.SaveSheetMusicXmlAsync(_mainWindow, SelectedSheet);
+            }
+
+            if (file is not null)
+                _notificationService.ShowNotification(new Notification("Successful save.",
+                    $"The sheet {SelectedSheet.Name} successfully saved to {format.ToString()} {file}.",
+                    NotificationType.Success));
+        }
+        catch (Exception e)
+        {
+            _notificationService.ShowNotification(new Notification("Error saving sheet.",
+                $"An error occurred while saving the sheet ({format.ToString()}): {e.Message}",
+                NotificationType.Error));
+        }
     }
 
     [ReactiveCommand]
@@ -152,57 +214,41 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     }
 
     [ReactiveCommand]
-    private async Task SaveSelectedSheetAs()
-    {
-        try
-        {
-            var file = await _fileStorageInteractionService.SaveSheetAsAsync(_mainWindow, SelectedSheet);
-            if (file is not null)
-                _notificationService.ShowNotification(new Notification("Successful save.",
-                    $"The sheet {SelectedSheet.Name} successfully saved to {file}.",
-                    NotificationType.Success));
-        }
-        catch (Exception e)
-        {
-            _notificationService.ShowNotification(new Notification("Error saving sheet.",
-                $"An error occurred while saving the sheet: {e.Message}",
-                NotificationType.Error));
-        }
-    }
-
-    [ReactiveCommand]
     private async Task ImportSheet()
     {
         try
         {
-            var sheet = await _fileStorageInteractionService.OpenSheetAsync(_mainWindow);
-            if (sheet is null)
+            var sheets = await _fileStorageInteractionService.OpenSheetAsync(_mainWindow);
+            if (sheets.Count == 0)
                 return;
-
-            if (_sheetStorage.SheetExists(sheet.Name))
+            foreach (var sheet in sheets)
             {
-                var confirmationVm = new ConfirmationViewModel
+                if (_sheetStorage.SheetExists(sheet.Name))
                 {
-                    Message = "A sheet with this name already exists. Do you want to overwrite it?",
-                    ShowDiscard = false,
-                    ShowConfirm = true,
-                    ConfirmText = "Overwrite",
-                    CancelText = "Cancel"
-                };
-                var confirmation = await ShowConfirmationDialog.Handle(confirmationVm);
-                if (confirmation == Confirmation.Cancel)
-                    return;
-                if (confirmation == Confirmation.Confirm)
-                    await _sheetStorage.RemoveSheetAsync(
-                        _sheetSource.Items.First(s => s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)));
-            }
+                    var confirmationVm = new ConfirmationViewModel
+                    {
+                        Message = $"A sheet with the name {sheet.Name} already exists. Do you want to overwrite it?",
+                        ShowDiscard = false,
+                        ShowConfirm = true,
+                        ConfirmText = "Overwrite",
+                        CancelText = "Cancel"
+                    };
+                    var confirmation = await ShowConfirmationDialog.Handle(confirmationVm);
+                    if (confirmation == Confirmation.Cancel)
+                        return;
+                    if (confirmation == Confirmation.Confirm)
+                        await _sheetStorage.RemoveSheetAsync(
+                            _sheetSource.Items.First(s =>
+                                s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)));
+                }
 
-            await _sheetStorage.SaveSheetAsync(sheet);
-            _sheetSource.AddOrUpdate(sheet);
-            _notificationService.ShowNotification(new Notification(
-                "Sheet imported.",
-                $"Successfully imported \"{sheet.Name}\".",
-                NotificationType.Success));
+                await _sheetStorage.SaveSheetAsync(sheet);
+                _sheetSource.AddOrUpdate(sheet);
+                _notificationService.ShowNotification(new Notification(
+                    "Sheet imported.",
+                    $"Successfully imported \"{sheet.Name}\".",
+                    NotificationType.Success));
+            }
         }
         catch (Exception ex)
         {
@@ -297,11 +343,17 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     }
 }
 
+public enum SaveFormat
+{
+    Json,
+    Midi,
+    MusicXml
+}
+
 public interface ILibraryViewModel : IRoutableViewModel
 {
     ReadOnlyObservableCollection<Sheet> Sheets { get; }
     ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; }
-    ReactiveCommand<Unit, Unit> SaveSelectedSheetAsCommand { get; }
     ReactiveCommand<Unit, Unit> RenameSheetCommand { get; }
     ReactiveCommand<Unit, Unit> EditSheetCommand { get; }
     ReactiveCommand<Unit, Unit> ManuallyEditSheetCommand { get; }
@@ -315,6 +367,8 @@ public interface ILibraryViewModel : IRoutableViewModel
     ReactiveCommand<Unit, Unit> DuplicateSheetCommand { get; }
     bool SheetExists(string sheetName);
     Task SaveSheet(Sheet sheet);
+    Task SaveSelectedSheetAs(SaveFormat format);
     Task CompareSheets(Sheet baseSheet, Sheet comparedSheet);
     Task BatchRemoveSheets(List<Sheet> selected);
+    void BatchExportSheets(List<Sheet> selected, SaveFormat saveFormat);
 }

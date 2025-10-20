@@ -25,11 +25,12 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
         });
     }
 
+    public ReactiveCommand<Unit, Unit> SaveSelectedSheetAsCommand { get; }
+
     public string? UrlPathSegment { get; }
     public IScreen HostScreen { get; }
     public ReadOnlyObservableCollection<Sheet> Sheets { get; }
     public ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; } = ReactiveCommand.Create(() => { });
-    public ReactiveCommand<Unit, Unit> SaveSelectedSheetAsCommand { get; }
     public ReactiveCommand<Unit, Unit> RenameSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> EditSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> ManuallyEditSheetCommand { get; }
@@ -43,6 +44,11 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     }
 
     public Task SaveSheet(Sheet sheet)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task SaveSelectedSheetAs(SaveFormat format)
     {
         return Task.CompletedTask;
     }
@@ -62,5 +68,9 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     public Task BatchRemoveSheets(List<Sheet> selected)
     {
         return Task.CompletedTask;
+    }
+
+    public void BatchExportSheets(List<Sheet> selected, SaveFormat saveFormat)
+    {
     }
 }
