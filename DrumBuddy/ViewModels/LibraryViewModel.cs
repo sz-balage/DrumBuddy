@@ -133,6 +133,35 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         }
     }
 
+    public async void BatchExportSheets(List<Sheet> selected, SaveFormat saveFormat)
+    {
+        if (selected.Count == 0)
+            return;
+        try
+        {
+            var count = await _fileStorageInteractionService.BatchExportSheetsAsync(
+                _mainWindow,
+                selected,
+                saveFormat);
+            if (count > 0)
+                _notificationService.ShowNotification(new Notification(
+                    "Export complete.",
+                    $"Successfully exported {count} sheet(s) to {saveFormat}.",
+                    NotificationType.Success));
+            else
+                _notificationService.ShowNotification(new Notification(
+                    "Export cancelled.",
+                    "No sheets were exported.",
+                    NotificationType.Warning));
+        }
+        catch (Exception ex)
+        {
+            _notificationService.ShowNotification(new Notification(
+                "Export failed.",
+                $"An error occurred while exporting sheets: {ex.Message}",
+                NotificationType.Error));
+        }
+    }
 
     public Interaction<Sheet, Sheet> ShowRenameDialog { get; } = new();
     public Interaction<Sheet, Sheet?> ShowEditDialog { get; } = new();
@@ -341,4 +370,5 @@ public interface ILibraryViewModel : IRoutableViewModel
     Task SaveSelectedSheetAs(SaveFormat format);
     Task CompareSheets(Sheet baseSheet, Sheet comparedSheet);
     Task BatchRemoveSheets(List<Sheet> selected);
+    void BatchExportSheets(List<Sheet> selected, SaveFormat saveFormat);
 }

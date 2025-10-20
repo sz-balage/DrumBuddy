@@ -69,4 +69,8 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         return Task.CompletedTask;
     }
+
+    public void BatchExportSheets(List<Sheet> selected, SaveFormat saveFormat)
+    {
+    }
 }

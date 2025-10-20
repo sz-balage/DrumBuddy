@@ -7,7 +7,9 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
+using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
+using DrumBuddy.ViewModels;
 
 namespace DrumBuddy.Services;
 
@@ -186,6 +188,82 @@ public class FileStorageInteractionService(
             configurationService.Set(LastImportFolderKey, parentFolder);
 
         return sheets;
+    }
+
+    public async Task<int> BatchExportSheetsAsync(
+        TopLevel topLevel,
+        IEnumerable<Sheet> sheets,
+        SaveFormat format)
+    {
+        var storageProvider = topLevel?.StorageProvider;
+        if (storageProvider is null)
+            return 0;
+
+        var folder = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = $"Select export folder for {format} files...",
+            AllowMultiple = false
+        });
+
+        var selectedFolder = folder.FirstOrDefault();
+        if (selectedFolder is null)
+            return 0;
+
+        var basePath = selectedFolder.Path.LocalPath;
+        Directory.CreateDirectory(basePath);
+
+        var exportedCount = 0;
+
+        var fileExtension = GetFileExtension(format);
+        var relevantExistingFiles = Directory
+            .EnumerateFiles(basePath)
+            .Where(f => Path.GetExtension(f) == fileExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var sheet in sheets)
+            try
+            {
+                var fileName = sheet.Name;
+
+                if (relevantExistingFiles.Contains(fileName))
+                    fileName = SheetStorage.GenerateCopyName(fileName, relevantExistingFiles);
+                var fileNameWithExtension = $"{fileName}{fileExtension}";
+                var filePath = Path.Combine(basePath, fileNameWithExtension);
+
+                switch (format)
+                {
+                    case SaveFormat.Json:
+                        var json = serializationService.SerializeSheet(sheet);
+                        await File.WriteAllTextAsync(filePath, json);
+                        break;
+
+                    case SaveFormat.Midi:
+                        midiService.ExportToMidi(sheet, filePath);
+                        break;
+
+                    case SaveFormat.MusicXml:
+                        MusicXmlExporter.ExportSheetToMusicXml(sheet, filePath);
+                        break;
+                }
+
+                exportedCount++;
+            }
+            catch
+            {
+            }
+
+        return exportedCount;
+    }
+
+    private static string GetFileExtension(SaveFormat format)
+    {
+        return format switch
+        {
+            SaveFormat.Json => ".dbsheet",
+            SaveFormat.Midi => ".midi",
+            SaveFormat.MusicXml => ".xml",
+            _ => ".dat"
+        };
     }
 
     private async Task<List<Sheet>> ImportFiles(IReadOnlyList<IStorageFile> files)
