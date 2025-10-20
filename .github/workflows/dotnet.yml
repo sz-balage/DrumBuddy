@@ -28,7 +28,6 @@ jobs:
 
       - name: 🧱 Restore and Build
         run: dotnet build DrumBuddy.Desktop -c Release
-
       - name: 🧪 Run tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test DrumBuddy.Unit/DrumBuddy.Core.Unit.csproj --configuration Release --no-build --verbosity normal
 
