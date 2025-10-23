@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Threading;
+using System.Reactive;
 using Avalonia;
 using Avalonia.ReactiveUI;
-using Avalonia.Threading;
-using DrumBuddy.ViewModels.Dialogs;
-using DrumBuddy.Views.Dialogs;
+using ReactiveUI;
 
 namespace DrumBuddy.Desktop;
 
@@ -20,7 +18,6 @@ internal class Program
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
 #if !DEBUG
-    
         }
         catch (Exception ex)
         {
@@ -45,6 +42,7 @@ internal class Program
 
     public static AppBuilder BuildAvaloniaApp()
     {
+        RxApp.DefaultExceptionHandler = Observer.Create((Exception ex) => throw ex);
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
