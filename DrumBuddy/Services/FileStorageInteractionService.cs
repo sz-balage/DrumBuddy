@@ -9,6 +9,7 @@ using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
+using DrumBuddy.Models.Exceptions;
 using DrumBuddy.ViewModels;
 
 namespace DrumBuddy.Services;
@@ -150,11 +151,11 @@ public class FileStorageInteractionService(
         return file.Name;
     }
 
-    public async Task<List<Sheet>> OpenSheetAsync(TopLevel topLevel)
+    public async Task<(List<Sheet> sheets, List<SheetImportException> exceptions)> OpenSheetsAsync(TopLevel topLevel)
     {
         var storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
-            return new List<Sheet>();
+            return (new List<Sheet>(), new List<SheetImportException>());
 
         var lastFolderPath = configurationService.Get<string>(LastImportFolderKey);
         var fallbackPath = Path.Combine(FilePathProvider.GetPathForSavedFiles(), "sheets");
@@ -181,13 +182,13 @@ public class FileStorageInteractionService(
         };
 
         var files = await storageProvider.OpenFilePickerAsync(filePickerOptions);
-        var sheets = await ImportFiles(files);
+        var sheetsAndExceptions = await ImportFiles(files);
 
         var parentFolder = Path.GetDirectoryName(files.FirstOrDefault()?.Path.LocalPath);
         if (parentFolder is not null)
             configurationService.Set(LastImportFolderKey, parentFolder);
 
-        return sheets;
+        return sheetsAndExceptions;
     }
 
     public async Task<int> BatchExportSheetsAsync(
@@ -266,37 +267,58 @@ public class FileStorageInteractionService(
         };
     }
 
-    private async Task<List<Sheet>> ImportFiles(IReadOnlyList<IStorageFile> files)
+    private async Task<(List<Sheet>, List<SheetImportException>)> ImportFiles(IReadOnlyList<IStorageFile> files)
     {
         var sheets = new List<Sheet>();
+        var exceptions = new List<SheetImportException>();
         foreach (var file in files)
         {
             var extension = Path.GetExtension(file.Name).ToLowerInvariant();
 
             Sheet? sheet = null;
-
+            var fileName = Path.GetFileNameWithoutExtension(file.Name);
             if (extension is ".dbsheet")
             {
                 await using var stream = await file.OpenReadAsync();
                 using var reader = new StreamReader(stream);
                 var json = await reader.ReadToEndAsync();
-                var fileName = Path.GetFileNameWithoutExtension(file.Name);
-                sheet = serializationService.DeserializeSheet(json, fileName);
+                try
+                {
+                    sheet = serializationService.DeserializeSheet(json, fileName);
+                }
+                catch (Exception e)
+                {
+                    exceptions.Add(new SheetImportException(e.Message, fileName));
+                }
             }
             else if (extension is ".mid" or ".midi")
             {
-                sheet = midiService.ImportFromMidi(file.Path.AbsolutePath);
+                try
+                {
+                    sheet = midiService.ImportFromMidi(file.Path.AbsolutePath);
+                }
+                catch (Exception e)
+                {
+                    exceptions.Add(new SheetImportException(e.Message, fileName));
+                }
             }
             else if (extension is ".musicxml" or ".xml")
             {
-                sheet = MusicXmlExporter.ImportMusicXmlToSheet(file.Path.AbsolutePath,
-                    Path.GetFileNameWithoutExtension(file.Path.AbsolutePath));
+                try
+                {
+                    sheet = MusicXmlExporter.ImportMusicXmlToSheet(file.Path.AbsolutePath,
+                        Path.GetFileNameWithoutExtension(file.Path.AbsolutePath));
+                }
+                catch (Exception e)
+                {
+                    exceptions.Add(new SheetImportException(e.Message, fileName));
+                }
             }
 
             if (sheet is not null)
                 sheets.Add(sheet);
         }
 
-        return sheets;
+        return (sheets, exceptions);
     }
 }
