@@ -30,7 +30,8 @@
         </TextBlock>
 
 
-        <Label Grid.Row="2" Content="{Binding Title}" />
+        <TextBlock Grid.Row="2" Text="{Binding Title}"
+                   TextWrapping="Wrap" />
         <TextBox Grid.Row="3" Background="{StaticResource LighterGray}" TextWrapping="Wrap" IsReadOnly="True"
                  Text="{Binding Description}" />
     </Grid>

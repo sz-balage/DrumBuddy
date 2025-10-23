@@ -32,6 +32,16 @@ public class FileConfigurationStorage
             return new AppConfiguration();
 
         var json = File.ReadAllText(path);
-        return _serializationService.DeserializeAppConfiguration(json) ?? new AppConfiguration();
+        try
+        {
+            var appConfig = _serializationService.DeserializeAppConfiguration(json);
+            return appConfig ?? new AppConfiguration();
+        }
+        catch (Exception e)
+        {
+            if (File.Exists(path))
+                File.Delete(path);
+            return new AppConfiguration();
+        }
     }
 }

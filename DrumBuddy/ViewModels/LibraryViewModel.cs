@@ -218,16 +218,17 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         try
         {
-            var sheets = await _fileStorageInteractionService.OpenSheetAsync(_mainWindow);
-            if (sheets.Count == 0)
-                return;
-            foreach (var sheet in sheets)
+            var sheetsAndExceptions = await _fileStorageInteractionService.OpenSheetsAsync(_mainWindow);
+            foreach (var sheet in sheetsAndExceptions.sheets)
             {
                 if (_sheetStorage.SheetExists(sheet.Name))
                 {
+                    var trimmedName = sheet.Name.Length > 15
+                        ? sheet.Name[..15] + "..."
+                        : sheet.Name;
                     var confirmationVm = new ConfirmationViewModel
                     {
-                        Message = $"A sheet with the name {sheet.Name} already exists. Do you want to overwrite it?",
+                        Message = $"A sheet with the name {trimmedName} already exists. Do you want to overwrite it?",
                         ShowDiscard = false,
                         ShowConfirm = true,
                         ConfirmText = "Overwrite",
@@ -249,6 +250,13 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
                     $"Successfully imported \"{sheet.Name}\".",
                     NotificationType.Success));
             }
+
+            foreach (var exception in sheetsAndExceptions.exceptions)
+                _notificationService.ShowNotification(new Notification(
+                    "Import failed.",
+                    $"An error occurred while importing {exception.SheetName}. " +
+                    $"Please ensure that the sheet is in the correct format and was exported using the client.",
+                    NotificationType.Error));
         }
         catch (Exception ex)
         {

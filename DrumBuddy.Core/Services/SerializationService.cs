@@ -49,8 +49,7 @@ public class SerializationService
     {
         var sheetData = JsonSerializer.Deserialize<SheetData>(sheetJson, _options)
                         ?? throw new InvalidOperationException("Failed to deserialize sheet");
-
-        const int DefaultTempo = 100;
+        const int defaultTempo = 100;
 
         Bpm tempo;
         try
@@ -59,7 +58,7 @@ public class SerializationService
         }
         catch (ArgumentException)
         {
-            tempo = new Bpm(DefaultTempo);
+            tempo = new Bpm(defaultTempo);
         }
 
         return new Sheet(tempo, sheetData.Measures, fileName, sheetData.Description);
