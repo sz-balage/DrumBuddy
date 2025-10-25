@@ -26,6 +26,7 @@ namespace DrumBuddy.ViewModels;
 
 public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 {
+    //TODO: make auto save checkbox
     public const int Columns = 16; // one measure, 16 sixteenth steps
     public const int MaxNotesPerColumn = 4; // maximum notes allowed per column (NoteGroup)
     private readonly SourceList<MeasureViewModel> _measureSource = new();
@@ -278,6 +279,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     [ReactiveCommand]
     private void AddMeasure()
     {
+        //TODO: add the measure after the currently selected measure instead
         var newMeasure = new bool[Drums.Length, Columns];
         _measureSteps.Add(newMeasure);
         CurrentMeasureIndex = _measureSteps.Count - 1;
