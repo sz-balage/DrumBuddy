@@ -269,7 +269,7 @@ public class NoteDrawHelper
         (Uri Path, Size ImageSize) noteHeadPathAndSize =
             new(new Uri(BaseNotationPath + "circle_open" + ImageExtension), CircleSize);
         var noteImage = new NoteImageAndBounds(noteHeadPathAndSize.Path,
-            new Rect(point.WithY(point.Y - 120), noteHeadPathAndSize.ImageSize));
+            new Rect(point.WithY(point.Y - 20), noteHeadPathAndSize.ImageSize));
         return noteImage;
     }
 
