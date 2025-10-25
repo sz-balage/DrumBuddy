@@ -31,12 +31,9 @@ public class ConfigurationService
             SetDefaultKeyboardMappings();
         }
 
-        if (_config.DrumPositions.Count == 0)
-        {
-            foreach (var drum in Enum.GetValues<Drum>())
-                if (drum != Drum.Rest)
-                    _config.DrumPositions[drum] = DefaultPosition(drum);
-        }
+        foreach (var drum in Enum.GetValues<Drum>()) //always override positions with default for now
+            if (drum != Drum.Rest)
+                _config.DrumPositions[drum] = DefaultPosition(drum);
     }
 
     public IReadOnlyDictionary<Drum, DrumPositionSlot> DrumPositions => _config.DrumPositions;
@@ -89,6 +86,7 @@ public class ConfigurationService
             Drum.Tom2 => DrumPositionSlot.OnLine4,
             Drum.Ride => DrumPositionSlot.OnLine5,
             Drum.HiHat => DrumPositionSlot.BetweenLine5And6,
+            Drum.HiHat_Open => DrumPositionSlot.BetweenLine5And6,
             Drum.HiHat_Pedal => DrumPositionSlot.BelowLine1,
             Drum.Crash1 => DrumPositionSlot.OnLine6,
             Drum.Crash2 => DrumPositionSlot.OnLine6,
@@ -153,13 +151,14 @@ public class ConfigurationService
         foreach (var drum in Enum.GetValues<Drum>())
             if (drum != Drum.Rest)
                 _config.DrumMapping[drum] = (int)drum;
-        Save();       
+        Save();
     }
+
     public void SetDefaultKeyboardMappings()
     {
         foreach (var drum in Enum.GetValues<Drum>())
             if (drum != Drum.Rest)
-                _config.KeyboardMapping[drum] = (int)drum; 
+                _config.KeyboardMapping[drum] = (int)drum;
         Save();
     }
 }
