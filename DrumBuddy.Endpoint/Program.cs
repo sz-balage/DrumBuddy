@@ -16,6 +16,7 @@ builder.Services.AddApplicationDbContext(builder.Configuration);
 builder.Services.AddApplicationIdentity();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddApplicationCors();
+builder.Services.AddScoped<SheetProtobufSerializationService>();
 
 var app = builder.Build();
 

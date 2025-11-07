@@ -22,12 +22,16 @@ public class DrumBuddyDbContext : IdentityDbContext<User>
         builder.Entity<SheetOnServer>(entity =>
         {
             entity.HasKey(s => s.Id);
+            entity.Property(s => s.ContentBytes)
+                .HasColumnType("bytea")
+                .IsRequired();
 
-            entity.Property(s => s.Content)
-                .HasConversion(
-                    sheet => JsonSerializer.Serialize(sheet, (JsonSerializerOptions?)null),
-                    json => JsonSerializer.Deserialize<Sheet>(json, (JsonSerializerOptions?)null)!)
-                .HasColumnType("jsonb"); 
+            //
+            // entity.Property(s => s.Content)
+            //     .HasConversion(
+            //         sheet => JsonSerializer.Serialize(sheet, (JsonSerializerOptions?)null),
+            //         json => JsonSerializer.Deserialize<Sheet>(json, (JsonSerializerOptions?)null)!)
+            //     .HasColumnType("jsonb"); 
 
             entity.Property(s => s.UserId)
                 .IsRequired();

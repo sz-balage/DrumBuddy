@@ -37,7 +37,6 @@ public static class AuthenticationEndpoints
             UserName = request.UserName ?? request.Email,
             Email = request.Email
         };
-
         var result = await userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
