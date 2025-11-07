@@ -4,34 +4,42 @@ using DrumBuddy.Core.Models;
 
 namespace DrumBuddy.Core.Helpers;
 
+
 public class BpmJsonConverter : JsonConverter<Bpm>
 {
-    public override Bpm Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override Bpm Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.StartObject)
         {
-            var value = 0;
-
-            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
-                if (reader.TokenType == JsonTokenType.PropertyName)
-                {
-                    var propertyName = reader.GetString();
-                    reader.Read();
-
-                    if (propertyName.Equals("value", StringComparison.OrdinalIgnoreCase)) value = reader.GetInt32();
-                }
-
-            // Create Bpm with the extracted value
-            return new Bpm(value);
+            reader.Read(); // Move to the "value" property
+            
+            if (reader.GetString() == "value")
+            {
+                reader.Read(); // Move to the value
+                int bpmValue = reader.GetInt32();
+                reader.Read(); // Move past the value
+                reader.Read(); // Move to EndObject
+                
+                return new Bpm(bpmValue);
+            }
+        }
+        else if (reader.TokenType == JsonTokenType.Number)
+        {
+            int bpmValue = reader.GetInt32();
+            return new Bpm(bpmValue);
         }
 
-        throw new JsonException("Invalid JSON format for Bpm");
+        throw new JsonException("Invalid BPM format");
     }
 
-    public override void Write(Utf8JsonWriter writer, Bpm value, JsonSerializerOptions options)
+    public override void Write(
+        Utf8JsonWriter writer,
+        Bpm value,
+        JsonSerializerOptions options)
     {
-        writer.WriteStartObject();
-        writer.WriteNumber("value", value.Value);
-        writer.WriteEndObject();
+        writer.WriteNumberValue(value.Value);
     }
 }

@@ -1,5 +1,8 @@
-﻿namespace DrumBuddy.Core.Models;
+﻿using System.Text.Json.Serialization;
+using DrumBuddy.Core.Helpers;
 
+namespace DrumBuddy.Core.Models;
+[JsonConverter(typeof(BpmJsonConverter))]
 public readonly record struct Bpm
 {
     public Bpm(int value)
