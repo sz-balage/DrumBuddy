@@ -1,0 +1,125 @@
+<rxui:ReactiveUserControl x:TypeArguments="vm:AuthViewModel"
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
+                          xmlns:rxui="http://reactiveui.net"
+                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                          x:Class="DrumBuddy.Views.AuthView"
+                          x:DataType="vm:AuthViewModel">
+
+    <Grid Background="{StaticResource BackgroundBrush}">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16" MaxWidth="400">
+            <!-- Header -->
+            <TextBlock Text="DrumBuddy" Classes="header" HorizontalAlignment="Center" FontSize="28"
+                       FontWeight="SemiBold" />
+            <TextBlock Classes="header"
+                       HorizontalAlignment="Center"
+                       Text="{Binding IsLoginMode, StringFormat={}{0:Sign In|Create Account}}"
+                       FontSize="16" />
+
+            <!-- Email -->
+            <TextBox x:Name="EmailTextBox"
+                     Watermark="Email address"
+                     Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                     Background="{StaticResource LighterGray}"
+                     BorderThickness="1"
+                     BorderBrush="{StaticResource HeaderGray}"
+                     Padding="12,10"
+                     CornerRadius="8">
+                <TextBox.Styles>
+                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                        <Setter Property="Background" Value="White" />
+                    </Style>
+                </TextBox.Styles>
+            </TextBox>
+
+            <!-- User Name (Register only) -->
+            <TextBox x:Name="UserNameTextBox"
+                     IsVisible="{Binding !IsLoginMode}"
+                     Watermark="Username (optional)"
+                     Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
+                     Background="{StaticResource LighterGray}"
+                     BorderThickness="1"
+                     BorderBrush="{StaticResource HeaderGray}"
+                     Padding="12,10"
+                     CornerRadius="8">
+                <TextBox.Styles>
+                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                        <Setter Property="Background" Value="White" />
+                    </Style>
+                </TextBox.Styles>
+            </TextBox>
+
+            <!-- Password -->
+            <TextBox x:Name="PasswordBox"
+                     PasswordChar="*"
+                     Watermark="Password"
+                     Background="{StaticResource LighterGray}"
+                     BorderThickness="1"
+                     BorderBrush="{StaticResource HeaderGray}"
+                     Padding="12,10"
+                     CornerRadius="8">
+                <TextBox.Styles>
+                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                        <Setter Property="Background" Value="White" />
+                    </Style>
+                </TextBox.Styles>
+            </TextBox>
+
+            <TextBox x:Name="ConfirmPasswordBox"
+                     PasswordChar="*"
+                     IsVisible="{Binding !IsLoginMode}"
+                     Watermark="Confirm password"
+                     Background="{StaticResource LighterGray}"
+                     BorderThickness="1"
+                     BorderBrush="{StaticResource HeaderGray}"
+                     Padding="12,10"
+                     CornerRadius="8">
+                <TextBox.Styles>
+                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                        <Setter Property="Background" Value="White" />
+                    </Style>
+                </TextBox.Styles>
+            </TextBox>
+
+            <CheckBox x:Name="RememberMeCheckBox"
+                      IsVisible="{Binding IsLoginMode}"
+                      IsChecked="{Binding RememberMe}"
+                      Content="Remember me"
+                      Foreground="{StaticResource Accent}"
+                      FontSize="14" />
+
+            <!-- Submit Button -->
+            <Button x:Name="SubmitButton"
+                    Classes="round"
+                    Height="40"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="SemiBold">
+                <TextBlock Text="{Binding IsLoginMode, StringFormat={}{0:Sign In|Create Account}}" />
+            </Button>
+
+            <!-- Toggle Mode -->
+            <Button x:Name="ToggleModeButton"
+                    Background="Transparent"
+                    Foreground="{StaticResource Accent}"
+                    Command="{Binding ToggleModeCommand}"
+                    FontSize="12">
+                <TextBlock Text="Toggle button placeholder text" />
+            </Button>
+        </StackPanel>
+
+        <!-- Loading Indicator -->
+        <ProgressBar x:Name="LoadingIndicator"
+                     IsIndeterminate="True"
+                     IsVisible="{Binding IsLoading}"
+                     VerticalAlignment="Bottom"
+                     Height="3" />
+    </Grid>
+</rxui:ReactiveUserControl>
