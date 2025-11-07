@@ -7,7 +7,7 @@ using PropertyBindingMixins = ReactiveUI.PropertyBindingMixins;
 
 namespace DrumBuddy.Views;
 
-public class AuthView : ReactiveUserControl<AuthViewModel>
+public partial class AuthView : ReactiveUserControl<AuthViewModel>
 {
     public AuthView()
     {
