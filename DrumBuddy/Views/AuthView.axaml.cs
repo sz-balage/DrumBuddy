@@ -10,6 +10,7 @@ namespace DrumBuddy.Views;
 public partial class AuthView : ReactiveUserControl<AuthViewModel>
 {
     //TODO: make this navigatable instead of switching visibility in MainWindow
+    //TODO: fix layout, make prettier with gradient background etc.
     public AuthView()
     {
         InitializeComponent();

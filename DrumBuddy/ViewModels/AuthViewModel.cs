@@ -97,6 +97,7 @@ public partial class AuthViewModel : ReactiveObject
 
     private async Task<bool> ExecuteLogin()
     {
+        //TODO: add same exception handling as in register
         try
         {
             IsLoading = true;

@@ -20,6 +20,8 @@ namespace DrumBuddy.Views;
 
 public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
+    //TODO: make auth view navigatable instead of switching visibility in MainWindow
+    //TODO: add logout functionality
     private MidiService _midiService;
     private TokenService _tokenService;
     private bool isClosingConfirmed;
