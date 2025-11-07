@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using ReactiveUI;
 using DrumBuddy.ViewModels;
 using PropertyBindingMixins = ReactiveUI.PropertyBindingMixins;
 
