@@ -1,10 +1,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using DrumBuddy.Api;
+using DrumBuddy.Api.Refit;
 using DrumBuddy.Core.Services;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
@@ -14,6 +17,7 @@ using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.Views;
 using ReactiveUI;
+using Refit;
 using Splat;
 using static Splat.Locator;
 
@@ -53,6 +57,21 @@ public class App : Application
     {
         RegisterCoreServices();
         RegisterIOServices();
+        var tokenService = new TokenService();
+        CurrentMutable.Register(() => tokenService, typeof(TokenService));
+
+        var authHandler = new AuthHeaderHandler(tokenService);
+
+        var authApi = RestService.For<IAuthApi>(
+            new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
+
+        var sheetApi = RestService.For<ISheetApi>(
+            new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
+
+        CurrentMutable.Register(
+            () => new ApiClient(authApi, sheetApi, tokenService),
+            typeof(ApiClient));
+        
         CurrentMutable.Register(() =>
             new FileStorageInteractionService(
                 Locator.Current.GetRequiredService<SerializationService>(),

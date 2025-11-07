@@ -74,6 +74,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ReactiveUI.Validation"/>
+        <PackageReference Include="Refit" />
+        <PackageReference Include="Refit.HttpClientFactory" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" />
         <PackageReference Include="System.Windows.Extensions"/>
     </ItemGroup>
 
