@@ -18,8 +18,11 @@ namespace DrumBuddy.ViewModels;
 public partial class MainViewModel : ReactiveObject, IScreen
 {
     private readonly MidiService _midiService;
+    private readonly TokenService _tokenService;
+
     [Reactive] private bool _canRetry;
     private IDisposable? _connectionErrorSub;
+    [Reactive] private bool _isAuthenticated; // Add this
     [Reactive] private bool _isKeyboardInput;
 
     [Reactive] private bool _isPaneOpen;
@@ -34,6 +37,8 @@ public partial class MainViewModel : ReactiveObject, IScreen
 
     public MainViewModel(MidiService midiService)
     {
+        _tokenService = Locator.Current.GetRequiredService<TokenService>();
+        _isAuthenticated = _tokenService.IsTokenValid();
         _midiService = midiService;
         _midiService!.InputDeviceDisconnected
             .Subscribe(connected => { NoConnection = true; });
@@ -57,6 +62,14 @@ public partial class MainViewModel : ReactiveObject, IScreen
     };
 
     public RoutingState Router { get; } = new();
+
+    public void SetAuthenticated()
+    {
+        IsAuthenticated = true;
+        // Navigate to home on successful authentication
+        var homeItem = PaneItems.First();
+        SelectedPaneItem = homeItem;
+    }
 
     public void SetTopLevelWindow(Window window)
     {

@@ -60,8 +60,10 @@ public class App : Application
         var tokenService = new TokenService();
         CurrentMutable.Register(() => tokenService, typeof(TokenService));
 
-        var authHandler = new AuthHeaderHandler(tokenService);
-
+        var authHandler = new AuthHeaderHandler(tokenService)
+        {
+            InnerHandler = new HttpClientHandler()
+        };
         var authApi = RestService.For<IAuthApi>(
             new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
 
@@ -71,7 +73,7 @@ public class App : Application
         CurrentMutable.Register(
             () => new ApiClient(authApi, sheetApi, tokenService),
             typeof(ApiClient));
-        
+
         CurrentMutable.Register(() =>
             new FileStorageInteractionService(
                 Locator.Current.GetRequiredService<SerializationService>(),

@@ -27,12 +27,11 @@ public partial class AuthViewModel : ReactiveObject
     [Reactive] private bool _rememberMe;
     [Reactive] private string _userName = string.Empty;
 
-    public AuthViewModel()
+    public AuthViewModel(MainWindow mainWindow)
     {
         _apiClient = Locator.Current.GetRequiredService<ApiClient>();
         _tokenService = Locator.Current.GetRequiredService<TokenService>();
 
-        var mainWindow = Locator.Current.GetService<MainWindow>();
         _notificationService = new NotificationService(mainWindow);
 
         _ = LoadRememberedCredentialsAsync();
@@ -87,14 +86,12 @@ public partial class AuthViewModel : ReactiveObject
                 title,
                 $"Welcome, {_email}!",
                 NotificationType.Success));
-
-            // Save or clear remembered credentials
             if (_rememberMe)
                 _ = _tokenService.SaveRememberedCredentialsAsync(_email, _password);
             else
                 _ = _tokenService.ClearRememberedCredentialsAsync();
 
-            NavigateToLibrary();
+            NavigateToHome();
         }
         else
         {
@@ -151,11 +148,12 @@ public partial class AuthViewModel : ReactiveObject
         }
     }
 
-    private void NavigateToLibrary()
+    private void NavigateToHome()
     {
         var mainVm = Locator.Current.GetService<MainViewModel>();
-        mainVm?.NavigateFromCode(Locator.Current.GetRequiredService<LibraryViewModel>());
+        mainVm?.SetAuthenticated();
     }
+
 
     [ReactiveCommand]
     private void ToggleMode()

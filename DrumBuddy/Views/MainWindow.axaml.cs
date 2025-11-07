@@ -21,15 +21,43 @@ namespace DrumBuddy.Views;
 public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
     private MidiService _midiService;
+    private TokenService _tokenService;
     private bool isClosingConfirmed;
 
     public MainWindow()
     {
         _midiService = Locator.Current.GetService<MidiService>();
+        _tokenService = Locator.Current.GetService<TokenService>();
         ViewModel = Locator.Current.GetService<MainViewModel>();
         Icon = new WindowIcon(AssetLoader.Open(new Uri("avares://DrumBuddy/Assets/app.ico")));
         this.WhenActivated(d =>
         {
+            this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.MainContent.IsVisible)
+                .DisposeWith(d);
+            //
+            // this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.AuthContent.IsVisible, 
+            //         isAuth => !isAuth)
+            //     .DisposeWith(d);
+
+            if (this.FindControl<Grid>("AuthContentPlaceholder") is { } authContent)
+            {
+                authContent.Children.Add(new AuthView
+                {
+                    ViewModel = new AuthViewModel(this)
+                });
+                authContent.IsVisible = true;
+                // This will be triggered when AuthView navigates away successfully
+                this.WhenAnyValue(vm => vm.ViewModel.IsAuthenticated)
+                    .Where(isAuth => isAuth)
+                    .Do(_ =>
+                    {
+                        ViewModel?.SetAuthenticated();
+                        TryConnectToMidi();
+                    })
+                    .Subscribe()
+                    .DisposeWith(d);
+            }
+
             this.OneWayBind(ViewModel, vm => vm.PaneItems, v => v.PaneListBox.ItemsSource)
                 .DisposeWith(d);
 
@@ -85,7 +113,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
             ViewModel.SetTopLevelWindow(this);
-            ViewModel.TryConnectCommand.Execute().Subscribe();
+            // Only try connect if already authenticated
+            if (ViewModel.IsAuthenticated) TryConnectToMidi();
         });
         InitializeComponent();
     }
@@ -94,6 +123,11 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
 
     private RoutedViewHost _routedViewHost => this.FindControl<RoutedViewHost>("RoutedViewHost");
     private Button _retryButton => this.FindControl<Button>("RetryButton");
+
+    private void TryConnectToMidi()
+    {
+        ViewModel?.TryConnectCommand.Execute().Subscribe();
+    }
 
     private async Task HandleMidiDeviceChoosing(
         IInteractionContext<MidiDeviceShortInfo[], MidiDeviceShortInfo?> context)

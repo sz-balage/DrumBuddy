@@ -11,15 +11,14 @@
 
     <Grid Background="{StaticResource BackgroundBrush}">
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16" MaxWidth="400">
-            <!-- Header -->
             <TextBlock Text="DrumBuddy" Classes="header" HorizontalAlignment="Center" FontSize="28"
                        FontWeight="SemiBold" />
             <TextBlock Classes="header"
+                       x:Name="LoginPromptTextBlock"
                        HorizontalAlignment="Center"
-                       Text="{Binding IsLoginMode, StringFormat={}{0:Sign In|Create Account}}"
+                       IsVisible="{Binding IsLoginMode}"
+                       Text="Log in to your account!"
                        FontSize="16" />
-
-            <!-- Email -->
             <TextBox x:Name="EmailTextBox"
                      Watermark="Email address"
                      Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
@@ -36,7 +35,6 @@
                 </TextBox.Styles>
             </TextBox>
 
-            <!-- User Name (Register only) -->
             <TextBox x:Name="UserNameTextBox"
                      IsVisible="{Binding !IsLoginMode}"
                      Watermark="Username (optional)"
@@ -54,7 +52,6 @@
                 </TextBox.Styles>
             </TextBox>
 
-            <!-- Password -->
             <TextBox x:Name="PasswordBox"
                      PasswordChar="*"
                      Watermark="Password"
@@ -95,27 +92,24 @@
                       Foreground="{StaticResource Accent}"
                       FontSize="14" />
 
-            <!-- Submit Button -->
             <Button x:Name="SubmitButton"
-                    Classes="round"
+                    HorizontalAlignment="Stretch"
+                    Classes="confirm"
                     Height="40"
-                    Foreground="White"
                     FontSize="14"
                     FontWeight="SemiBold">
-                <TextBlock Text="{Binding IsLoginMode, StringFormat={}{0:Sign In|Create Account}}" />
+                <TextBlock x:Name="SubmitButtonText" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Button>
 
-            <!-- Toggle Mode -->
             <Button x:Name="ToggleModeButton"
                     Background="Transparent"
                     Foreground="{StaticResource Accent}"
                     Command="{Binding ToggleModeCommand}"
                     FontSize="12">
-                <TextBlock Text="Toggle button placeholder text" />
+                <TextBlock x:Name="ToggleButtonText" Text="Toggle button placeholder text" />
             </Button>
         </StackPanel>
 
-        <!-- Loading Indicator -->
         <ProgressBar x:Name="LoadingIndicator"
                      IsIndeterminate="True"
                      IsVisible="{Binding IsLoading}"

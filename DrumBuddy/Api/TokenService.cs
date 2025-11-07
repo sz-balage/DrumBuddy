@@ -1,7 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -9,19 +9,21 @@ namespace DrumBuddy.Services;
 
 public class TokenService
 {
-    // In-memory storage (lost on app close)
-    private string? _cachedToken;
-    private string? _cachedUserId;
-    private string? _cachedUserEmail;
+    private static readonly byte[] _encryptionKey = new byte[]
+        { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10 };
 
     private readonly string _rememberMeFilePath;
-    private static readonly byte[] _encryptionKey = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10 };
+
+    // In-memory storage (lost on app close)
+    private string? _cachedToken;
+    private string? _cachedUserEmail;
+    private string? _cachedUserId;
 
     public TokenService()
     {
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var drumBuddyFolder = Path.Combine(appDataPath, "DrumBuddy");
-        
+
         if (!Directory.Exists(drumBuddyFolder))
             Directory.CreateDirectory(drumBuddyFolder);
 
@@ -54,14 +56,18 @@ public class TokenService
     {
         try
         {
-            var credentials = new { email, password };
+            var credentials = new RememberedCredentials
+            {
+                Email = email,
+                Password = password
+            };
             var json = JsonSerializer.Serialize(credentials);
             var encryptedData = EncryptString(json);
             await File.WriteAllBytesAsync(_rememberMeFilePath, encryptedData);
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to save remembered credentials: {ex.Message}");
+            Debug.WriteLine($"Failed to save remembered credentials: {ex.Message}");
         }
     }
 
@@ -80,7 +86,7 @@ public class TokenService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to load remembered credentials: {ex.Message}");
+            Debug.WriteLine($"Failed to load remembered credentials: {ex.Message}");
             return null;
         }
     }
@@ -94,7 +100,7 @@ public class TokenService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to clear remembered credentials: {ex.Message}");
+            Debug.WriteLine($"Failed to clear remembered credentials: {ex.Message}");
         }
     }
 
