@@ -34,6 +34,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.MainContent.IsVisible)
                 .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.AuthContentPlaceholder.IsVisible, b => !b)
+                .DisposeWith(d);
             //
             // this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.AuthContent.IsVisible, 
             //         isAuth => !isAuth)
@@ -45,13 +47,10 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 {
                     ViewModel = new AuthViewModel(this)
                 });
-                authContent.IsVisible = true;
-                // This will be triggered when AuthView navigates away successfully
-                this.WhenAnyValue(vm => vm.ViewModel.IsAuthenticated)
+                this.WhenAnyValue(v => v.ViewModel!.IsAuthenticated)
                     .Where(isAuth => isAuth)
                     .Do(_ =>
                     {
-                        ViewModel?.SetAuthenticated();
                         TryConnectToMidi();
                     })
                     .Subscribe()

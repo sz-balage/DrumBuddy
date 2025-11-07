@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls.Notifications;
 using DrumBuddy.Api;
@@ -60,8 +63,8 @@ public partial class AuthViewModel : ReactiveObject
 
         RegisterCommand = ReactiveCommand.CreateFromTask(ExecuteRegister, canRegister);
 
-        LoginCommand.Subscribe(success => HandleAuthSuccess(success, "Login Successful"));
-        RegisterCommand.Subscribe(success => HandleAuthSuccess(success, "Registration Successful"));
+        LoginCommand.Where(s => s).Subscribe(success => HandleAuthSuccess(success, "Login successful"));
+        RegisterCommand.Where(s => s).Subscribe(success => HandleAuthSuccess(success, "Registration successful"));
     }
 
     public ReactiveCommand<Unit, bool> LoginCommand { get; }
@@ -80,26 +83,16 @@ public partial class AuthViewModel : ReactiveObject
 
     private void HandleAuthSuccess(bool success, string title)
     {
-        if (success)
-        {
-            _notificationService.ShowNotification(new Notification(
-                title,
-                $"Welcome, {_email}!",
-                NotificationType.Success));
-            if (_rememberMe)
-                _ = _tokenService.SaveRememberedCredentialsAsync(_email, _password);
-            else
-                _ = _tokenService.ClearRememberedCredentialsAsync();
-
-            NavigateToHome();
-        }
+        _notificationService.ShowNotification(new Notification(
+            title,
+            $"Welcome, {_email}!",
+            NotificationType.Success));
+        if (_rememberMe)
+            _ = _tokenService.SaveRememberedCredentialsAsync(_email, _password);
         else
-        {
-            _notificationService.ShowNotification(new Notification(
-                $"{title} Failed",
-                "Invalid credentials or server error.",
-                NotificationType.Error));
-        }
+            _ = _tokenService.ClearRememberedCredentialsAsync();
+
+        NavigateToHome();
     }
 
     private async Task<bool> ExecuteLogin()
@@ -125,27 +118,80 @@ public partial class AuthViewModel : ReactiveObject
     }
 
     private async Task<bool> ExecuteRegister()
+{
+    try
+    {
+        IsLoading = true;
+        await _apiClient.RegisterAsync(_email, _password, _userName);
+        //clear remembered credentials on new registration
+        await _tokenService.ClearRememberedCredentialsAsync();
+        return true;
+    }
+    catch (Refit.ApiException apiException)
+    {
+        var errorMessage = GetApiErrorMessage(apiException);
+        _notificationService.ShowNotification(new Notification(
+            "Registration Error",
+            errorMessage,
+            NotificationType.Error));
+        return false;
+    }
+    catch (Exception ex)
+    {
+        _notificationService.ShowNotification(new Notification(
+            "Registration Error",
+            ex.Message,
+            NotificationType.Error));
+        return false;
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+}
+    private string GetApiErrorMessage(Refit.ApiException apiException)
     {
         try
         {
-            IsLoading = true;
-            await _apiClient.RegisterAsync(_email, _password, _userName);
-            //clear remembered credentials on new registration
-            await _tokenService.ClearRememberedCredentialsAsync();
-            return true;
+            // Deserialize to JsonDocument to handle JsonElement
+            using var doc = System.Text.Json.JsonDocument.Parse(apiException.Content);
+            var root = doc.RootElement;
+
+            // Check for errors array
+            if (root.TryGetProperty("errors", out var errorsElement))
+            {
+                var errorMessages = new List<string>();
+
+                if (errorsElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    foreach (var error in errorsElement.EnumerateArray())
+                    {
+                        if (error.ValueKind == System.Text.Json.JsonValueKind.String)
+                        {
+                            errorMessages.Add(error.GetString() ?? "Unknown error");
+                        }
+                    }
+                }
+
+                if (errorMessages.Count > 0)
+                {
+                    return string.Join("\n", errorMessages);
+                }
+            }
+
+            // Check for message field
+            if (root.TryGetProperty("message", out var messageElement) && 
+                messageElement.ValueKind == System.Text.Json.JsonValueKind.String)
+            {
+                return messageElement.GetString() ?? "An error occurred";
+            }
         }
-        catch (Exception ex)
+        catch
         {
-            _notificationService.ShowNotification(new Notification(
-                "Registration Error",
-                ex.Message,
-                NotificationType.Error));
-            return false;
+            // Fallback to raw content
         }
-        finally
-        {
-            IsLoading = false;
-        }
+
+        return apiException.Content ?? "An error occurred. Please try again.";
     }
 
     private void NavigateToHome()
