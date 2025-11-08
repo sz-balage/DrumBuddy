@@ -9,106 +9,120 @@
                           x:Class="DrumBuddy.Views.AuthView"
                           x:DataType="vm:AuthViewModel">
 
-    <Grid Background="{StaticResource BackgroundBrush}">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16" MaxWidth="400">
-            <TextBlock Text="DrumBuddy" Classes="header" HorizontalAlignment="Center" FontSize="28"
-                       FontWeight="SemiBold" />
-            <TextBlock Classes="header"
-                       x:Name="LoginPromptTextBlock"
-                       HorizontalAlignment="Center"
-                       IsVisible="{Binding IsLoginMode}"
-                       Text="Log in to your account!"
-                       FontSize="16" />
-            <TextBox x:Name="EmailTextBox"
-                     Watermark="Email address"
-                     Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                     Background="{StaticResource LighterGray}"
-                     BorderThickness="1"
-                     BorderBrush="{StaticResource HeaderGray}"
-                     Padding="12,10"
-                     CornerRadius="8">
-                <TextBox.Styles>
-                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                        <Setter Property="Background" Value="White" />
-                    </Style>
-                </TextBox.Styles>
-            </TextBox>
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="50%,0%" EndPoint="100%,100%">
+                <GradientStop Offset="0" Color="{StaticResource Primary}" />
+                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Canvas x:Name="FloatingIconsCanvas" Background="Transparent" />
+        <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border Background="White"
+                    CornerRadius="20"
+                    Padding="40">
+                <StackPanel Spacing="16" MaxWidth="400">
+                    <TextBlock Text="DrumBuddy" Classes="header" HorizontalAlignment="Center" FontSize="28"
+                               FontWeight="SemiBold" />
+                    <TextBlock Classes="header"
+                               x:Name="LoginPromptTextBlock"
+                               HorizontalAlignment="Center"
+                               IsVisible="{Binding IsLoginMode}"
+                               Text="Log in to your account!"
+                               FontSize="16" />
+                    <TextBox x:Name="EmailTextBox"
+                             Watermark="Email address"
+                             Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{StaticResource LighterGray}"
+                             BorderThickness="1"
+                             BorderBrush="{StaticResource HeaderGray}"
+                             Padding="12,10"
+                             CornerRadius="8">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                                <Setter Property="Background" Value="White" />
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
 
-            <TextBox x:Name="UserNameTextBox"
-                     IsVisible="{Binding !IsLoginMode}"
-                     Watermark="Username (optional)"
-                     Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
-                     Background="{StaticResource LighterGray}"
-                     BorderThickness="1"
-                     BorderBrush="{StaticResource HeaderGray}"
-                     Padding="12,10"
-                     CornerRadius="8">
-                <TextBox.Styles>
-                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                        <Setter Property="Background" Value="White" />
-                    </Style>
-                </TextBox.Styles>
-            </TextBox>
+                    <TextBox x:Name="UserNameTextBox"
+                             IsVisible="{Binding !IsLoginMode}"
+                             Watermark="Username (optional)"
+                             Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{StaticResource LighterGray}"
+                             BorderThickness="1"
+                             BorderBrush="{StaticResource HeaderGray}"
+                             Padding="12,10"
+                             CornerRadius="8">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                                <Setter Property="Background" Value="White" />
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
 
-            <TextBox x:Name="PasswordBox"
-                     PasswordChar="*"
-                     Watermark="Password"
-                     Background="{StaticResource LighterGray}"
-                     BorderThickness="1"
-                     BorderBrush="{StaticResource HeaderGray}"
-                     Padding="12,10"
-                     CornerRadius="8">
-                <TextBox.Styles>
-                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                        <Setter Property="Background" Value="White" />
-                    </Style>
-                </TextBox.Styles>
-            </TextBox>
+                    <TextBox x:Name="PasswordBox"
+                             PasswordChar="*"
+                             Watermark="Password"
+                             Background="{StaticResource LighterGray}"
+                             BorderThickness="1"
+                             BorderBrush="{StaticResource HeaderGray}"
+                             Padding="12,10"
+                             CornerRadius="8">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                                <Setter Property="Background" Value="White" />
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
 
-            <TextBox x:Name="ConfirmPasswordBox"
-                     PasswordChar="*"
-                     IsVisible="{Binding !IsLoginMode}"
-                     Watermark="Confirm password"
-                     Background="{StaticResource LighterGray}"
-                     BorderThickness="1"
-                     BorderBrush="{StaticResource HeaderGray}"
-                     Padding="12,10"
-                     CornerRadius="8">
-                <TextBox.Styles>
-                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                        <Setter Property="Background" Value="White" />
-                    </Style>
-                </TextBox.Styles>
-            </TextBox>
+                    <TextBox x:Name="ConfirmPasswordBox"
+                             PasswordChar="*"
+                             IsVisible="{Binding !IsLoginMode}"
+                             Watermark="Confirm password"
+                             Background="{StaticResource LighterGray}"
+                             BorderThickness="1"
+                             BorderBrush="{StaticResource HeaderGray}"
+                             Padding="12,10"
+                             CornerRadius="8">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                                <Setter Property="Background" Value="White" />
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
 
-            <CheckBox x:Name="RememberMeCheckBox"
-                      IsVisible="{Binding IsLoginMode}"
-                      IsChecked="{Binding RememberMe}"
-                      Content="Remember me"
-                      Foreground="{StaticResource Accent}"
-                      FontSize="14" />
+                    <CheckBox x:Name="RememberMeCheckBox"
+                              IsVisible="{Binding IsLoginMode}"
+                              IsChecked="{Binding RememberMe}"
+                              Content="Remember me"
+                              Foreground="{StaticResource Accent}"
+                              FontSize="14" />
 
-            <Button x:Name="SubmitButton"
-                    HorizontalAlignment="Stretch"
-                    Classes="confirm"
-                    Height="40"
-                    FontSize="14"
-                    FontWeight="SemiBold">
-                <TextBlock x:Name="SubmitButtonText" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Button>
+                    <Button x:Name="SubmitButton"
+                            HorizontalAlignment="Stretch"
+                            Classes="confirm"
+                            Height="40"
+                            FontSize="14"
+                            FontWeight="SemiBold">
+                        <TextBlock x:Name="SubmitButtonText" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Button>
 
-            <Button x:Name="ToggleModeButton"
-                    Background="Transparent"
-                    Foreground="{StaticResource Accent}"
-                    Command="{Binding ToggleModeCommand}"
-                    FontSize="12">
-                <TextBlock x:Name="ToggleButtonText" Text="Toggle button placeholder text" />
-            </Button>
-        </StackPanel>
+                    <Button x:Name="ToggleModeButton"
+                            Background="Transparent"
+                            Foreground="{StaticResource Accent}"
+                            Command="{Binding ToggleModeCommand}"
+                            FontSize="12">
+                        <TextBlock x:Name="ToggleButtonText" Text="Toggle button placeholder text" />
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+
 
         <ProgressBar x:Name="LoadingIndicator"
                      IsIndeterminate="True"
