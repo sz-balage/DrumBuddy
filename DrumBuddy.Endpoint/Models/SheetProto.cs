@@ -1,23 +1,6 @@
 using ProtoBuf;
 
 namespace DrumBuddy.Endpoint.Models;
-
-[ProtoContract]
-public class SheetProto
-{
-    [ProtoMember(1)]
-    public string Name { get; set; } = string.Empty;
-
-    [ProtoMember(2)]
-    public string Description { get; set; } = string.Empty;
-
-    [ProtoMember(3)]
-    public int TempoValue { get; set; }
-
-    [ProtoMember(4)]
-    public List<MeasureProto> Measures { get; set; } = new();
-}
-
 [ProtoContract]
 public class MeasureProto
 {

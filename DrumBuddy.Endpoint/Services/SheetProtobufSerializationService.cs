@@ -8,56 +8,49 @@ namespace DrumBuddy.Endpoint.Services;
 
 public class SheetProtobufSerializationService
 {
-    public byte[] SerializeSheet(Sheet sheet)
+    public byte[] SerializeSheet(ImmutableArray<Measure> measures)
     {
-        var protoSheet = ConvertToProto(sheet);
+        var protoSheet = ConvertToProto(measures);
         using var ms = new MemoryStream();
         Serializer.Serialize(ms, protoSheet);
         return ms.ToArray();
     }
 
-    public Sheet DeserializeSheet(byte[] data)
+    public ImmutableArray<Measure> DeserializeSheet(byte[] data)
     {
         using var ms = new MemoryStream(data);
-        var protoSheet = Serializer.Deserialize<SheetProto>(ms);
-        return ConvertFromProto(protoSheet);
+        var protoMeasures = Serializer.Deserialize<ImmutableArray<MeasureProto>>(ms);
+        return ConvertFromProto(protoMeasures);
     }
 
-    private SheetProto ConvertToProto(Sheet sheet)
-    {
-        return new SheetProto
-        {
-            Name = sheet.Name,
-            Description = sheet.Description,
-            TempoValue = sheet.Tempo.Value,
-            Measures = sheet.Measures
-                .Select(m => new MeasureProto
-                {
-                    Groups = m.Groups
-                        .Select(g => new RythmicGroupProto
-                        {
-                            NoteGroups = g.NoteGroups
-                                .Select(ng => new NoteGroupProto
-                                {
-                                    Notes = ng
-                                        .Select(n => new NoteProto
-                                        {
-                                            Drum = (int)n.Drum,
-                                            NoteValue = (int)n.Value
-                                        })
-                                        .ToList()
-                                })
-                                .ToList()
-                        })
-                        .ToList()
-                })
-                .ToList()
-        };
-    }
+    private ImmutableArray<MeasureProto> ConvertToProto(ImmutableArray<Measure> measures) =>
+    [
+        ..measures
+            .Select(m => new MeasureProto
+            {
+                Groups = m.Groups
+                    .Select(g => new RythmicGroupProto
+                    {
+                        NoteGroups = g.NoteGroups
+                            .Select(ng => new NoteGroupProto
+                            {
+                                Notes = ng
+                                    .Select(n => new NoteProto
+                                    {
+                                        Drum = (int)n.Drum,
+                                        NoteValue = (int)n.Value
+                                    })
+                                    .ToList()
+                            })
+                            .ToList()
+                    })
+                    .ToList()
+            })
+    ];
 
-    private Sheet ConvertFromProto(SheetProto proto)
-    {
-        var measures = proto.Measures
+    private ImmutableArray<Measure> ConvertFromProto(ImmutableArray<MeasureProto> protoMeasures) =>
+    [
+        ..protoMeasures
             .Select(m => new Measure(
                 m.Groups
                     .Select(g => new RythmicGroup(
@@ -68,13 +61,6 @@ public class SheetProtobufSerializationService
                     ))
                     .ToList()
             ))
-            .ToImmutableArray();
+    ];
 
-        return new Sheet(
-            new Bpm(proto.TempoValue),
-            measures,
-            proto.Name,
-            proto.Description
-        );
-    }
 }

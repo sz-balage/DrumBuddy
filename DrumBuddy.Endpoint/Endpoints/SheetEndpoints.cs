@@ -1,8 +1,9 @@
 using System.Security.Claims;
 using DrumBuddy.Core.Models;
-using DrumBuddy.Endpoint.Data;
 using DrumBuddy.Endpoint.Models;
 using DrumBuddy.Endpoint.Services;
+using DrumBuddy.IO.Data;
+using DrumBuddy.IO.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DrumBuddy.Endpoint.Endpoints;
@@ -19,7 +20,7 @@ public static class SheetEndpoints
             .WithName("GetSheets")
             .WithOpenApi();
 
-        group.MapGet("/{name}", GetSheet)
+        group.MapGet("/{id:guid}", GetSheet)
             .WithName("GetSheet")
             .WithOpenApi();
 
@@ -27,11 +28,11 @@ public static class SheetEndpoints
             .WithName("CreateSheet")
             .WithOpenApi();
 
-        group.MapPut("/{name}", UpdateSheet)
+        group.MapPut("/{id:guid}", UpdateSheet)
             .WithName("UpdateSheet")
             .WithOpenApi();
 
-        group.MapDelete("/{name}", DeleteSheet)
+        group.MapDelete("/{id:guid}", DeleteSheet)
             .WithName("DeleteSheet")
             .WithOpenApi();
     }
@@ -46,20 +47,28 @@ public static class SheetEndpoints
         if (string.IsNullOrEmpty(userId))
             return Results.Unauthorized();
 
-        var sheets = await context.Sheets
+        var records = await context.Sheets
             .Where(s => s.UserId == userId)
             .OrderBy(s => s.Name)
             .ToListAsync();
 
-        var result = sheets
-            .Select(s => serializationService.DeserializeSheet(s.ContentBytes))
-            .ToList();
+        // Deserialize records to Sheets
+        var sheets = records.Select(record =>
+        {
+            var measures = serializationService.DeserializeSheet(record.MeasureBytes);
+            // Restore Guid and sync info from database
+            return new Sheet(record.Tempo, measures, record.Name, record.Description, record.Id)
+            {
+                LastSyncedAt = record.LastSyncedAt,
+                IsSyncEnabled = true // Server sheets are always synced
+            };
+        }).ToList();
 
-        return Results.Ok(result);
+        return Results.Ok(sheets);
     }
 
     private static async Task<IResult> GetSheet(
-        string name,
+        Guid id,
         DrumBuddyDbContext context,
         SheetProtobufSerializationService serializationService,
         HttpContext httpContext)
@@ -69,14 +78,22 @@ public static class SheetEndpoints
         if (string.IsNullOrEmpty(userId))
             return Results.Unauthorized();
 
-        var sheetOnServer = await context.Sheets
-            .FirstOrDefaultAsync(s => s.Name == name && s.UserId == userId);
+        var record = await context.Sheets
+            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
 
-        if (sheetOnServer is null)
+        if (record is null)
             return Results.NotFound();
 
-        var sheet = serializationService.DeserializeSheet(sheetOnServer.ContentBytes);
-        return Results.Ok(sheet);
+        var measures = serializationService.DeserializeSheet(record.MeasureBytes);
+        
+        // Restore Guid and sync info
+        var result = new Sheet(record.Tempo, measures, record.Name, record.Description, record.Id)
+        {
+            LastSyncedAt = record.LastSyncedAt,
+            IsSyncEnabled = true
+        };
+
+        return Results.Ok(result);
     }
 
     private static async Task<IResult> CreateSheet(
@@ -90,33 +107,38 @@ public static class SheetEndpoints
         if (string.IsNullOrEmpty(userId))
             return Results.Unauthorized();
 
-        // Serialize the sheet to protobuf
-        var contentBytes = serializationService.SerializeSheet(request.Content);
+        var measureBytes = serializationService.SerializeSheet(request.Sheet.Measures);
 
-        var sheet = new SheetOnServer
+        var record = new SheetRecord
         {
-            ContentBytes = contentBytes,
-            Name = request.Content.Name,
+            Id = request.Sheet.Id, // Use Guid from sheet
+            MeasureBytes = measureBytes,
+            Name = request.Sheet.Name,
+            Description = request.Sheet.Description,
+            Tempo = request.Sheet.Tempo.Value,
             UserId = userId,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            LastSyncedAt = DateTime.UtcNow
         };
 
         try
         {
-            context.Sheets.Add(sheet);
+            context.Sheets.Add(record);
             await context.SaveChangesAsync();
         }
         catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("IX_Sheets_UserId_Name") == true)
         {
-            return Results.Conflict(new { message = "You already have a sheet with that name" });
+            return Results.Conflict(new { errors = new[] { "You already have a sheet with that name" } });
+        }
+        catch (DbUpdateException ex)
+        {
+            return Results.BadRequest(new { errors = new[] { ex.InnerException?.Message ?? "Database error" } });
         }
 
-        return Results.Created();
+        return Results.Created($"/api/sheets/{record.Id}", request.Sheet);
     }
 
     private static async Task<IResult> UpdateSheet(
-        string name,
+        Guid id,
         UpdateSheetRequest request,
         DrumBuddyDbContext context,
         SheetProtobufSerializationService serializationService,
@@ -127,18 +149,19 @@ public static class SheetEndpoints
         if (string.IsNullOrEmpty(userId))
             return Results.Unauthorized();
 
-        var sheet = await context.Sheets
-            .FirstOrDefaultAsync(s => s.Name == name && s.UserId == userId);
+        var record = await context.Sheets
+            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
 
-        if (sheet is null)
+        if (record is null)
             return Results.NotFound();
 
-        // Serialize the updated sheet
-        var contentBytes = serializationService.SerializeSheet(request.Content);
+        var measureBytes = serializationService.SerializeSheet(request.Sheet.Measures);
         
-        sheet.ContentBytes = contentBytes;
-        sheet.Name = request.Content.Name;
-        sheet.UpdatedAt = DateTime.UtcNow;
+        record.MeasureBytes = measureBytes;
+        record.Name = request.Sheet.Name;
+        record.Description = request.Sheet.Description;
+        record.Tempo = request.Sheet.Tempo.Value;
+        record.LastSyncedAt = DateTime.UtcNow;
 
         try
         {
@@ -146,14 +169,17 @@ public static class SheetEndpoints
         }
         catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("IX_Sheets_UserId_Name") == true)
         {
-            return Results.Conflict(new { message = "A sheet with that name already exists" });
+            return Results.Conflict(new { errors = new[] { "A sheet with that name already exists" } });
         }
-
-        return Results.Ok(request.Content);
+        catch (DbUpdateException ex)
+        {
+            return Results.BadRequest(new { errors = new[] { ex.InnerException?.Message ?? "Database error" } });
+        }
+        return Results.Ok();
     }
 
     private static async Task<IResult> DeleteSheet(
-        string name,
+        Guid id,
         DrumBuddyDbContext context,
         HttpContext httpContext)
     {
@@ -162,13 +188,13 @@ public static class SheetEndpoints
         if (string.IsNullOrEmpty(userId))
             return Results.Unauthorized();
 
-        var sheet = await context.Sheets
-            .FirstOrDefaultAsync(s => s.Name == name && s.UserId == userId);
+        var record = await context.Sheets
+            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
 
-        if (sheet is null)
+        if (record is null)
             return Results.NotFound();
 
-        context.Sheets.Remove(sheet);
+        context.Sheets.Remove(record);
         await context.SaveChangesAsync();
 
         return Results.NoContent();

@@ -1,10 +1,8 @@
-using System.Text.Json;
-using DrumBuddy.Core.Models;
-using DrumBuddy.Endpoint.Models;
+using DrumBuddy.IO.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace DrumBuddy.Endpoint.Data;
+namespace DrumBuddy.IO.Data;
 
 public class DrumBuddyDbContext : IdentityDbContext<User>
 {
@@ -13,33 +11,36 @@ public class DrumBuddyDbContext : IdentityDbContext<User>
     {
     }
 
-    public DbSet<SheetOnServer> Sheets { get; set; }
+    public DbSet<SheetRecord> Sheets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         
-        builder.Entity<SheetOnServer>(entity =>
+        builder.Entity<SheetRecord>(entity =>
         {
             entity.HasKey(s => s.Id);
-            entity.Property(s => s.ContentBytes)
+            
+            entity.Property(s => s.Id)
+                .IsRequired();
+                
+            entity.Property(s => s.MeasureBytes)
                 .HasColumnType("bytea")
                 .IsRequired();
 
-            //
-            // entity.Property(s => s.Content)
-            //     .HasConversion(
-            //         sheet => JsonSerializer.Serialize(sheet, (JsonSerializerOptions?)null),
-            //         json => JsonSerializer.Deserialize<Sheet>(json, (JsonSerializerOptions?)null)!)
-            //     .HasColumnType("jsonb"); 
+            entity.Property(s => s.Name)
+                .IsRequired();
+                
+            entity.Property(s => s.Description)
+                .IsRequired();
+                
+            entity.Property(s => s.Tempo)
+                .IsRequired();
 
             entity.Property(s => s.UserId)
                 .IsRequired();
 
-            entity.Property(s => s.CreatedAt)
-                .IsRequired();
-
-            entity.Property(s => s.UpdatedAt)
+            entity.Property(s => s.LastSyncedAt)
                 .IsRequired();
 
             entity.HasOne(s => s.User)
@@ -47,10 +48,13 @@ public class DrumBuddyDbContext : IdentityDbContext<User>
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            entity.HasIndex(s => new { s.UserId, s.Id })
+                .IsUnique();
+                
             entity.HasIndex(s => new { s.UserId, s.Name })
                 .IsUnique();
-            entity.HasIndex(s => s.CreatedAt);
-            
+                
+            entity.HasIndex(s => s.LastSyncedAt);
         });
     }
 }

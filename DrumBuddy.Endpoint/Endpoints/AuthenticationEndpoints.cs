@@ -1,5 +1,6 @@
 using DrumBuddy.Endpoint.Models;
 using DrumBuddy.Endpoint.Services;
+using DrumBuddy.IO.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace DrumBuddy.Endpoint.Endpoints;

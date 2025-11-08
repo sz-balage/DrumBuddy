@@ -1,7 +1,8 @@
 using System.Text;
-using DrumBuddy.Endpoint.Data;
 using DrumBuddy.Endpoint.Models;
 using DrumBuddy.Endpoint.Services;
+using DrumBuddy.IO.Data;
+using DrumBuddy.IO.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

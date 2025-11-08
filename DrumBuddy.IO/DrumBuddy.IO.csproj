@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers> 
@@ -15,6 +15,9 @@
         <PackageReference Include="Microsoft.Data.Sqlite" />
         <PackageReference Include="System.Management"/>
         <PackageReference Include="System.Reactive"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     </ItemGroup>
 
     <ItemGroup>
