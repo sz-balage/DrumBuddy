@@ -17,19 +17,37 @@
             </LinearGradientBrush>
         </Grid.Background>
         <Canvas x:Name="FloatingIconsCanvas" Background="Transparent" />
+
         <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
             <Border Background="White"
                     CornerRadius="20"
-                    Padding="40">
-                <StackPanel Spacing="16" MaxWidth="400">
-                    <TextBlock Text="DrumBuddy" Classes="header" HorizontalAlignment="Center" FontSize="28"
+                    Padding="40"
+                    Width="420">
+
+                <StackPanel Spacing="16">
+                    <TextBlock Text="DrumBuddy"
+                               Classes="header"
+                               HorizontalAlignment="Center"
+                               FontSize="28"
                                FontWeight="SemiBold" />
+
                     <TextBlock Classes="header"
                                x:Name="LoginPromptTextBlock"
                                HorizontalAlignment="Center"
                                IsVisible="{Binding IsLoginMode}"
-                               Text="Log in to your account!"
-                               FontSize="16" />
+                               Text="Sign in to your account"
+                               FontSize="14"
+                               Foreground="#666666" />
+
+                    <TextBlock Classes="header"
+                               x:Name="RegisterPromptTextBlock"
+                               HorizontalAlignment="Center"
+                               IsVisible="{Binding !IsLoginMode}"
+                               Text="Create your account"
+                               FontSize="14"
+                               Foreground="#666666" />
+                    <!-- TODO make login possible with user name too-->
+                    <!-- TODO add validations (email should be in correct form etc.)-->
                     <TextBox x:Name="EmailTextBox"
                              Watermark="Email address"
                              Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
@@ -48,7 +66,7 @@
 
                     <TextBox x:Name="UserNameTextBox"
                              IsVisible="{Binding !IsLoginMode}"
-                             Watermark="Username (optional)"
+                             Watermark="Username"
                              Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
                              Background="{StaticResource LighterGray}"
                              BorderThickness="1"
@@ -78,7 +96,7 @@
                             </Style>
                         </TextBox.Styles>
                     </TextBox>
-
+                    <!-- TODO Confirm password box is currently bound to same text as password-->
                     <TextBox x:Name="ConfirmPasswordBox"
                              PasswordChar="*"
                              IsVisible="{Binding !IsLoginMode}"
@@ -95,34 +113,40 @@
                             </Style>
                         </TextBox.Styles>
                     </TextBox>
+                    <!-- TODO make pw visibility toggle-->
 
                     <CheckBox x:Name="RememberMeCheckBox"
                               IsVisible="{Binding IsLoginMode}"
                               IsChecked="{Binding RememberMe}"
                               Content="Remember me"
                               Foreground="{StaticResource Accent}"
-                              FontSize="14" />
-
+                              FontSize="13" />
+                    <!-- TODO Add auto login button also-->
+                    <!-- Submit Button -->
                     <Button x:Name="SubmitButton"
                             HorizontalAlignment="Stretch"
                             Classes="confirm"
                             Height="40"
                             FontSize="14"
-                            FontWeight="SemiBold">
-                        <TextBlock x:Name="SubmitButtonText" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            FontWeight="SemiBold"
+                            Margin="0,8,0,0">
+                        <TextBlock x:Name="SubmitButtonText"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
                     </Button>
 
+                    <!-- Toggle Mode -->
                     <Button x:Name="ToggleModeButton"
                             Background="Transparent"
                             Foreground="{StaticResource Accent}"
                             Command="{Binding ToggleModeCommand}"
-                            FontSize="12">
-                        <TextBlock x:Name="ToggleButtonText" Text="Toggle button placeholder text" />
+                            FontSize="12"
+                            Padding="0">
+                        <TextBlock x:Name="ToggleButtonText" />
                     </Button>
                 </StackPanel>
             </Border>
         </Grid>
-
 
         <ProgressBar x:Name="LoadingIndicator"
                      IsIndeterminate="True"
