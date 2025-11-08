@@ -126,6 +126,8 @@ public partial class MainViewModel : ReactiveObject, IScreen
     [ReactiveCommand]
     private async Task TryConnect()
     {
+        if (IsKeyboardInput)
+            return;
         var connectionResult = _midiService.TryConnect();
         switch (connectionResult.DevicesConnected.Length)
         {
@@ -139,15 +141,6 @@ public partial class MainViewModel : ReactiveObject, IScreen
                 SuccessfulConnection("Connected to " + connectionResult.DevicesConnected[0].Name);
                 return;
         }
-        // switch (connectionResult.IsSuccess)
-        // {
-        //     case true:
-        //         SuccessfulConnection(connectionResult.Message);
-        //         break;
-        //     case false:
-        //         ConnectionError(connectionResult.Message!);
-        //         break;
-        // }
     }
 
     public async Task ForceRecheckMidiDevices()
