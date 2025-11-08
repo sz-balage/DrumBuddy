@@ -66,7 +66,6 @@ public partial class MainViewModel : ReactiveObject, IScreen
     public void SetAuthenticated()
     {
         IsAuthenticated = true;
-        // Navigate to home on successful authentication
         var homeItem = PaneItems.First();
         SelectedPaneItem = homeItem;
     }

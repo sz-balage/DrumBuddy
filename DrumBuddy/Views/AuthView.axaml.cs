@@ -9,6 +9,7 @@ using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using DrumBuddy.ViewModels;
 using ReactiveUI;
+using ReactiveUI.Validation.Extensions;
 
 namespace DrumBuddy.Views;
 
@@ -18,8 +19,7 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
     private List<FloatingIcon> _floatingIcons = new();
     private Random _random = new();
     private IDisposable? _renderLoopSubscription;
-    //TODO: make this navigatable instead of switching visibility in MainWindow
-    //TODO: fix layout, make prettier with gradient background etc.
+
     public AuthView()
     {
         InitializeComponent();
@@ -31,37 +31,46 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
             if (_canvas != null)
             {
                 _canvas.Loaded += (s, e) => InitializeFloatingIcons();
-                
                 StartAnimationLoop();
             }
 
             this.Bind(ViewModel, vm => vm.Password, v => v.PasswordBox.Text)
                 .DisposeWith(d);
-            this.Bind(ViewModel, vm => vm.Password, v => v.ConfirmPasswordBox.Text)
+
+            this.Bind(ViewModel, vm => vm.ConfirmPassword, v => v.ConfirmPasswordBox.Text)
                 .DisposeWith(d);
+
+            this.BindValidation(ViewModel, vm => vm.Email, v => v.EmailValidation.Text)
+                .DisposeWith(d);
+            
+            this.BindValidation(ViewModel, vm => vm.Password, v => v.PasswordValidation.Text)
+                .DisposeWith(d);
+            
+            this.BindValidation(ViewModel, vm => vm.ConfirmPassword, v => v.ConfirmPasswordValidation.Text)
+                .DisposeWith(d);
+
             this.OneWayBind(ViewModel, vm => vm.IsLoginMode, v => v.LoginPromptTextBlock.Text,
                     isLogin => isLogin ? "Sign in to your account" : "Create a new account")
                 .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.IsLoginMode, v => v.SubmitButtonText.Text,
-                    isLogin => isLogin ? "Sign in" : "Create account")
+            
+            this.OneWayBind(ViewModel, vm => vm.IsLoginMode, v => v.LoginButton.IsVisible)
                 .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.LoginCommand, v => v.LoginButton)
+                .DisposeWith(d);
+            
+            this.OneWayBind(ViewModel, vm => vm.IsLoginMode, v => v.RegisterButton.IsVisible, b => !b)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.RegisterCommand, v => v.RegisterButton)
+                .DisposeWith(d);
+            
             this.OneWayBind(ViewModel, vm => vm.IsLoginMode, v => v.ToggleButtonText.Text,
-                    isLogin => isLogin ? "Register new account" : "Login")
+                    isLogin => isLogin ? "Don't have an account? Register" : "Already have an account? Sign In")
                 .DisposeWith(d);
-            var submitButton = this.FindControl<Button>("SubmitButton");
-            if (submitButton != null)
-                submitButton.Click += (s, e) =>
-                {
-                    if (ViewModel!.IsLoginMode)
-                        ViewModel.LoginCommand.Execute().Subscribe();
-                    else
-                        ViewModel.RegisterCommand.Execute().Subscribe();
-                };
-            d.Add(Disposable.Create(() => StopAnimationLoop()));
 
+            d.Add(Disposable.Create(StopAnimationLoop));
         });
     }
-    
+
     private void InitializeFloatingIcons()
     {
         if (_canvas == null) return;
@@ -73,8 +82,8 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
                 X = _random.Next(0, (int)_canvas.Bounds.Width),
                 Y = _random.Next(0, (int)_canvas.Bounds.Height),
                 Size = _random.Next(40, 100),
-                Opacity = _random.Next(10, 40) / 100.0, // 0.1 to 0.4 opacity
-                SpeedX = (_random.NextDouble() - 0.5) * 2, // -1 to 1
+                Opacity = _random.Next(10, 40) / 100.0,
+                SpeedX = (_random.NextDouble() - 0.5) * 2,
                 SpeedY = (_random.NextDouble() - 0.5) * 2,
                 RotationSpeed = (_random.NextDouble() - 0.5) * 3,
                 Rotation = _random.Next(0, 360)
@@ -98,7 +107,6 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
         };
 
         image.RenderTransform = new RotateTransform(icon.Rotation);
-
         Canvas.SetLeft(image, icon.X);
         Canvas.SetTop(image, icon.Y);
 
@@ -113,7 +121,7 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
         var timer = new System.Threading.Timer(_ =>
         {
             Dispatcher.UIThread.InvokeAsync(() => UpdateAnimation());
-        }, null, 0, 16); //~60 fps
+        }, null, 0, 16);
 
         _renderLoopSubscription = Disposable.Create(() => timer.Dispose());
     }
@@ -135,19 +143,13 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
             icon.X += icon.SpeedX;
             icon.Y += icon.SpeedY;
 
-            if (icon.X < -icon.Size)
-                icon.X = width;
-            if (icon.X > width)
-                icon.X = -icon.Size;
-
-            if (icon.Y < -icon.Size)
-                icon.Y = height;
-            if (icon.Y > height)
-                icon.Y = -icon.Size;
+            if (icon.X < -icon.Size) icon.X = width;
+            if (icon.X > width) icon.X = -icon.Size;
+            if (icon.Y < -icon.Size) icon.Y = height;
+            if (icon.Y > height) icon.Y = -icon.Size;
 
             icon.Rotation += icon.RotationSpeed;
-            if (icon.Rotation >= 360)
-                icon.Rotation -= 360;
+            if (icon.Rotation >= 360) icon.Rotation -= 360;
 
             if (icon.Visual != null)
             {

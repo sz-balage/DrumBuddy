@@ -47,22 +47,25 @@
                                FontSize="14"
                                Foreground="#666666" />
                     <!-- TODO make login possible with user name too-->
-                    <!-- TODO add validations (email should be in correct form etc.)-->
-                    <TextBox x:Name="EmailTextBox"
-                             Watermark="Email address"
-                             Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{StaticResource LighterGray}"
-                             BorderThickness="1"
-                             BorderBrush="{StaticResource HeaderGray}"
-                             Padding="12,10"
-                             CornerRadius="8">
-                        <TextBox.Styles>
-                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                                <Setter Property="Background" Value="White" />
-                            </Style>
-                        </TextBox.Styles>
-                    </TextBox>
+
+                    <StackPanel>
+                        <TextBox x:Name="EmailTextBox"
+                                 Watermark="Email address"
+                                 Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{StaticResource LighterGray}"
+                                 BorderThickness="1"
+                                 BorderBrush="{StaticResource HeaderGray}"
+                                 Padding="12,10"
+                                 CornerRadius="8">
+                            <TextBox.Styles>
+                                <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                    <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                                    <Setter Property="Background" Value="White" />
+                                </Style>
+                            </TextBox.Styles>
+                        </TextBox>
+                        <TextBlock x:Name="EmailValidation" Foreground="{StaticResource Error}" FontSize="12" Margin="0,4,0,0" />
+                    </StackPanel>
 
                     <TextBox x:Name="UserNameTextBox"
                              IsVisible="{Binding !IsLoginMode}"
@@ -81,39 +84,53 @@
                         </TextBox.Styles>
                     </TextBox>
 
-                    <TextBox x:Name="PasswordBox"
-                             PasswordChar="*"
-                             Watermark="Password"
-                             Background="{StaticResource LighterGray}"
-                             BorderThickness="1"
-                             BorderBrush="{StaticResource HeaderGray}"
-                             Padding="12,10"
-                             CornerRadius="8">
-                        <TextBox.Styles>
-                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                                <Setter Property="Background" Value="White" />
-                            </Style>
-                        </TextBox.Styles>
-                    </TextBox>
-                    <!-- TODO Confirm password box is currently bound to same text as password-->
-                    <TextBox x:Name="ConfirmPasswordBox"
-                             PasswordChar="*"
-                             IsVisible="{Binding !IsLoginMode}"
-                             Watermark="Confirm password"
-                             Background="{StaticResource LighterGray}"
-                             BorderThickness="1"
-                             BorderBrush="{StaticResource HeaderGray}"
-                             Padding="12,10"
-                             CornerRadius="8">
-                        <TextBox.Styles>
-                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                                <Setter Property="Background" Value="White" />
-                            </Style>
-                        </TextBox.Styles>
-                    </TextBox>
+                    <StackPanel>
+                        <TextBox x:Name="PasswordBox"
+                                 PasswordChar="*"
+                                 Watermark="Password"
+                                 Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{StaticResource LighterGray}"
+                                 BorderThickness="1"
+                                 BorderBrush="{StaticResource HeaderGray}"
+                                 Padding="12,10"
+                                 CornerRadius="8">
+                            <TextBox.Styles>
+                                <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                    <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                                    <Setter Property="Background" Value="White" />
+                                </Style>
+                            </TextBox.Styles>
+                        </TextBox>
+                        <TextBlock x:Name="PasswordValidation" 
+                                   Foreground="{StaticResource Error}" 
+                                   FontSize="12" 
+                                   Margin="0,4,0,0"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
                     <!-- TODO make pw visibility toggle-->
+                    <StackPanel IsVisible="{Binding !IsLoginMode}">
+                        <TextBox x:Name="ConfirmPasswordBox"
+                                 PasswordChar="*"
+                                 Watermark="Confirm password"
+                                 Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{StaticResource LighterGray}"
+                                 BorderThickness="1"
+                                 BorderBrush="{StaticResource HeaderGray}"
+                                 Padding="12,10"
+                                 CornerRadius="8">
+                            <TextBox.Styles>
+                                <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                    <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                                    <Setter Property="Background" Value="White" />
+                                </Style>
+                            </TextBox.Styles>
+                        </TextBox>
+                        <TextBlock x:Name="ConfirmPasswordValidation" 
+                                   Foreground="{StaticResource Error}" 
+                                   FontSize="12" 
+                                   Margin="0,4,0,0"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
 
                     <CheckBox x:Name="RememberMeCheckBox"
                               IsVisible="{Binding IsLoginMode}"
@@ -122,20 +139,32 @@
                               Foreground="{StaticResource Accent}"
                               FontSize="13" />
                     <!-- TODO Add auto login button also-->
-                    <!-- Submit Button -->
-                    <Button x:Name="SubmitButton"
+
+                    <Button x:Name="LoginButton"
+                            IsVisible="{Binding IsLoginMode}"
                             HorizontalAlignment="Stretch"
                             Classes="confirm"
                             Height="40"
                             FontSize="14"
                             FontWeight="SemiBold"
                             Margin="0,8,0,0">
-                        <TextBlock x:Name="SubmitButtonText"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center" />
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="Sign in"/>
+                    </Button>
+                    <Button x:Name="RegisterButton"
+                            IsVisible="{Binding !IsLoginMode}"
+                            HorizontalAlignment="Stretch"
+                            Classes="confirm"
+                            Height="40"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Margin="0,8,0,0">
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" 
+                                   Text="Create account"/>
                     </Button>
 
-                    <!-- Toggle Mode -->
                     <Button x:Name="ToggleModeButton"
                             Background="Transparent"
                             Foreground="{StaticResource Accent}"
