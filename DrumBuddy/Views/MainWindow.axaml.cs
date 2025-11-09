@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
+using DrumBuddy.Api;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
@@ -23,13 +24,13 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
     //TODO: make auth view navigatable instead of switching visibility in MainWindow
     //TODO: add logout functionality
     private MidiService _midiService;
-    private TokenService _tokenService;
+    private UserService _userService;
     private bool isClosingConfirmed;
 
     public MainWindow()
     {
         _midiService = Locator.Current.GetService<MidiService>();
-        _tokenService = Locator.Current.GetService<TokenService>();
+        _userService = Locator.Current.GetService<UserService>();
         ViewModel = Locator.Current.GetService<MainViewModel>();
         Icon = new WindowIcon(AssetLoader.Open(new Uri("avares://DrumBuddy/Assets/app.ico")));
         this.WhenActivated(d =>

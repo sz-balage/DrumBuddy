@@ -59,8 +59,8 @@ public class App : Application
     {
         RegisterCoreServices();
         RegisterIOServices();
-        var tokenService = new TokenService();
-        CurrentMutable.Register(() => tokenService, typeof(TokenService));
+        var tokenService = new UserService();
+        CurrentMutable.Register(() => tokenService, typeof(UserService));
 
         var authHandler = new AuthHeaderHandler(tokenService)
         {

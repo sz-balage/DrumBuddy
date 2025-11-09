@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
+using DrumBuddy.Api;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
@@ -19,7 +20,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
 {
     private const string LastDeviceKey = "LastUsedMidiDevice";
     private readonly MidiService _midiService;
-    private readonly TokenService _tokenService;
+    private readonly UserService _userService;
 
     [Reactive] private bool _canRetry;
     private IDisposable? _connectionErrorSub;
@@ -40,8 +41,8 @@ public partial class MainViewModel : ReactiveObject, IScreen
     public MainViewModel(MidiService midiService, ConfigurationService configurationService)
     {
         _configurationService = configurationService;
-        _tokenService = Locator.Current.GetRequiredService<TokenService>();
-        _isAuthenticated = _tokenService.IsTokenValid();
+        _userService = Locator.Current.GetRequiredService<UserService>();
+        _isAuthenticated = _userService.IsTokenValid();
         _midiService = midiService;
         _midiService!.InputDeviceDisconnected
             .Subscribe(connected => { NoConnection = true; });

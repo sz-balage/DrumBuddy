@@ -173,6 +173,14 @@
                             Padding="0">
                         <TextBlock x:Name="ToggleButtonText" />
                     </Button>
+                    <Button x:Name="GuestLogin"
+                            Background="Transparent"
+                            Foreground="{StaticResource Accent}"
+                            Command="{Binding GuestLoginCommand}"
+                            FontSize="12"
+                            Padding="0">
+                        <TextBlock Text="Continue as a guest (offline mode)" />
+                    </Button>
                 </StackPanel>
             </Border>
         </Grid>

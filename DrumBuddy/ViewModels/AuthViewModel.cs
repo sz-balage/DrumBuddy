@@ -25,7 +25,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
 {
     private readonly ApiClient _apiClient;
     private readonly NotificationService _notificationService;
-    private readonly TokenService _tokenService;
+    private readonly UserService _userService;
     
     [Reactive] private string _confirmPassword = string.Empty;
     [Reactive] private string _email = string.Empty;
@@ -38,7 +38,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
     public AuthViewModel(MainWindow mainWindow)
     {
         _apiClient = Locator.Current.GetRequiredService<ApiClient>();
-        _tokenService = Locator.Current.GetRequiredService<TokenService>();
+        _userService = Locator.Current.GetRequiredService<UserService>();
         _notificationService = new NotificationService(mainWindow);
 
         _ = LoadRememberedCredentialsAsync();
@@ -105,7 +105,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
 
     private async Task LoadRememberedCredentialsAsync()
     {
-        var credentials = await _tokenService.LoadRememberedCredentialsAsync();
+        var credentials = await _userService.LoadRememberedCredentialsAsync();
         if (credentials.HasValue)
         {
             Email = credentials.Value.Email ?? string.Empty;
@@ -121,13 +121,21 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             $"Welcome, {_email}!",
             NotificationType.Success));
         if (_rememberMe)
-            _ = _tokenService.SaveRememberedCredentialsAsync(_email, _password);
-        else
-            _ = _tokenService.ClearRememberedCredentialsAsync();
+            _ = _userService.SaveRememberedCredentialsAsync(_email, _password);
+        else 
+            _userService.ClearRememberedCredentials();
 
         NavigateToHome();
     }
-
+    [ReactiveCommand]
+    private void GuestLogin()
+    {
+        _notificationService.ShowNotification(new Notification(
+            "Guest Login",
+            "You are now logged in as a guest.",
+            NotificationType.Success));
+        NavigateToHome();
+    }
     private async Task<bool> ExecuteLogin()
     {
         try
@@ -155,8 +163,8 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         try
         {
             IsLoading = true;
-            await _apiClient.RegisterAsync(_email, _password, _userName);
-            await _tokenService.ClearRememberedCredentialsAsync();
+            await _apiClient.RegisterAsync(_email, _password, _userName); 
+            _userService.ClearRememberedCredentials();
             return true;
         }
         catch (Refit.ApiException apiException)

@@ -2,26 +2,25 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using DrumBuddy.Api;
 
 namespace DrumBuddy.Services;
 
 public class AuthHeaderHandler : DelegatingHandler
 {
-    private readonly TokenService _tokenService;
+    private readonly UserService _userService;
 
-    public AuthHeaderHandler(TokenService tokenService)
+    public AuthHeaderHandler(UserService userService)
     {
-        _tokenService = tokenService;
+        _userService = userService;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        // Get token from service
-        var token = await _tokenService.GetTokenAsync();
+        var token = _userService.GetToken();
 
-        // Add Authorization header if token exists
         if (!string.IsNullOrEmpty(token))
         {
             request.Headers.Authorization =
