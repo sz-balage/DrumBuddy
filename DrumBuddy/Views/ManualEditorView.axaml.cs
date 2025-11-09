@@ -17,7 +17,6 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.IO.Data;
-using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.Models;
 using DrumBuddy.ViewModels;
 using DrumBuddy.ViewModels.Dialogs;

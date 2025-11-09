@@ -1,24 +1,28 @@
-﻿using System.Reactive.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
-using DrumBuddy.IO.Data.Storage;
+using DrumBuddy.IO.Services;
+using DrumBuddy.IO.Storage;
 
-namespace DrumBuddy.IO.Services;
+namespace DrumBuddy.Services;
 
 public class ConfigurationService
 {
     private readonly BehaviorSubject<Drum?> _listeningDrum = new(null);
     private readonly MetronomePlayer _metronomePlayer;
-    private readonly FileConfigurationStorage _storage;
+    private readonly ConfigurationRepository _configRepository;
     private AppConfiguration _config;
 
-    public ConfigurationService(FileConfigurationStorage storage,
+    public ConfigurationService(ConfigurationRepository configRepository,
         MetronomePlayer metronomePlayer)
     {
-        _storage = storage;
+        _configRepository = configRepository;
         _metronomePlayer = metronomePlayer;
-        _config = _storage.LoadConfig();
+        _config = _configRepository.LoadConfig();
         if (_config.UserSettings is null)
             _config.UserSettings = new Dictionary<string, string>();
         if (_config.DrumMapping.Count == 0)
@@ -72,7 +76,7 @@ public class ConfigurationService
 
     private void Save()
     {
-        _storage.SaveConfig(_config);
+        _configRepository.SaveConfig(_config);
     }
 
     private static DrumPositionSlot DefaultPosition(Drum drum)

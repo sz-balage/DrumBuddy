@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
+using DrumBuddy.Services;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 

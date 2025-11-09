@@ -8,7 +8,6 @@ using Avalonia.Platform.Storage;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Data;
-using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models.Exceptions;
 using DrumBuddy.ViewModels;

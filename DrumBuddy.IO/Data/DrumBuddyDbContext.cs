@@ -12,6 +12,7 @@ public class DrumBuddyDbContext : IdentityDbContext<User>
     }
 
     public DbSet<SheetRecord> Sheets { get; set; }
+    public DbSet<ConfigurationRecord> Configurations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -58,6 +59,23 @@ public class DrumBuddyDbContext : IdentityDbContext<User>
                 .IsUnique();
                 
             entity.HasIndex(s => s.LastSyncedAt);
+        });
+        builder.Entity<ConfigurationRecord>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+            
+            entity.Property(c => c.Id).IsRequired();
+            entity.Property(c => c.ConfigurationData).IsRequired();
+            entity.Property(c => c.LastUpdated).IsRequired();
+            entity.Property(c => c.UserId).IsRequired(false);
+
+            entity.HasOne(c => c.User)
+                .WithOne() // One config per user
+                .HasForeignKey<ConfigurationRecord>(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
+            
+            entity.HasIndex(c => c.UserId).IsUnique();
         });
     }
 }

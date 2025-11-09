@@ -8,17 +8,12 @@ namespace DrumBuddy.IO.Services;
 
 public class MidiService
 {
-    private const string LastDeviceKey = "LastUsedMidiDevice";
-    private readonly ConfigurationService _configurationService;
+    // private readonly ConfigurationService _configurationService;
     private readonly Subject<bool> _inputDeviceDisconnected = new();
     private readonly Subject<int> _notes = new();
     private bool _isConnected;
     private MidiInProcedure? _midiCallback; // Hold a strong reference!
 
-    public MidiService(ConfigurationService configurationService)
-    {
-        _configurationService = configurationService;
-    }
 
     public bool IsConnected
     {
@@ -41,7 +36,7 @@ public class MidiService
     }
 
 
-    public MidiDeviceConnectionResult TryConnect(bool forceDeviceChoosing = false)
+    public MidiDeviceConnectionResult TryConnect(string desiredDeviceName, bool forceDeviceChoosing = false)
     {
         var devCount = BassMidi.InDeviceCount;
 
@@ -49,7 +44,6 @@ public class MidiService
             return new MidiDeviceConnectionResult([]);
         if (devCount > 1)
         {
-            var desiredDeviceName = _configurationService.Get<string>(LastDeviceKey) ?? string.Empty;
             var devices = new MidiDeviceShortInfo[devCount];
             for (var i = 0; i < devCount; i++)
             {
@@ -98,7 +92,6 @@ public class MidiService
             }
 
         SetDeviceForIdx(indexOfChosenDevice);
-        _configurationService.Set(LastDeviceKey, chosenDeviceInfo?.Name);
     }
 
     private void SetDeviceForIdx(int idx)

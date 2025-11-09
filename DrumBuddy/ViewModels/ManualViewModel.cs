@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data;
-using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
 using DynamicData;

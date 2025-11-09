@@ -12,8 +12,8 @@ using DrumBuddy.Core.Services;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data;
-using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
+using DrumBuddy.IO.Storage;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.Views;
@@ -83,7 +83,8 @@ public class App : Application
                 Locator.Current.GetRequiredService<ConfigurationService>()
             ));
         CurrentMutable.RegisterConstant(new MainViewModel(
-            Locator.Current.GetRequiredService<MidiService>()));
+            Locator.Current.GetRequiredService<MidiService>(),
+            Locator.Current.GetRequiredService<ConfigurationService>()));
         CurrentMutable.RegisterConstant(new PdfGenerator());
         CurrentMutable.RegisterConstant<IScreen>(Locator.Current.GetService<MainViewModel>());
         CurrentMutable.RegisterConstant(new MainWindow());
@@ -163,11 +164,10 @@ public class App : Application
         CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(
-            new FileConfigurationStorage(Locator.Current.GetRequiredService<SerializationService>(),
-                Path.Combine(FilePathProvider.GetPathForSavedFiles(), "config")));
+            new ConfigurationRepository(dbContext,Locator.Current.GetRequiredService<SerializationService>()));
         CurrentMutable.RegisterConstant(new ConfigurationService(
-            Locator.Current.GetRequiredService<FileConfigurationStorage>(),
+            Locator.Current.GetRequiredService<ConfigurationRepository>(),
             Locator.Current.GetRequiredService<MetronomePlayer>()));
-        CurrentMutable.RegisterConstant(new MidiService(Locator.Current.GetRequiredService<ConfigurationService>()));
+        CurrentMutable.RegisterConstant(new MidiService());
     }
 }

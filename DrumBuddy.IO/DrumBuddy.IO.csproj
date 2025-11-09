@@ -25,4 +25,8 @@
         <ProjectReference Include="..\DrumBuddy.Core\DrumBuddy.Core.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\Storage\" />
+    </ItemGroup>
+
 </Project>
