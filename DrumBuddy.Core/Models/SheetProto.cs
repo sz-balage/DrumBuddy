@@ -1,6 +1,6 @@
 using ProtoBuf;
 
-namespace DrumBuddy.Endpoint.Models;
+namespace DrumBuddy.Core.Models;
 [ProtoContract]
 public class MeasureProto
 {

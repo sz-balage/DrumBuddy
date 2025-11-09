@@ -43,11 +43,14 @@ public class DrumBuddyDbContext : IdentityDbContext<User>
             entity.Property(s => s.LastSyncedAt)
                 .IsRequired();
 
+            entity.Property(s => s.UserId).IsRequired(false);
+
             entity.HasOne(s => s.User)
                 .WithMany(u => u.Sheets)
                 .HasForeignKey(s => s.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false); // FK is optional
+            
             entity.HasIndex(s => new { s.UserId, s.Id })
                 .IsUnique();
                 

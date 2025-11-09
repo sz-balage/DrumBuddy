@@ -5,13 +5,13 @@ namespace DrumBuddy.Core.Models;
 
 public class Sheet
 {
-    public Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, string description, Guid id = default)
+    public Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, string description, Guid? id = null)
     {
         Name = name;
         Description = description;
         Tempo = tempo;
         Measures = measures;
-        Id = id == Guid.Empty ? Guid.NewGuid() : id;
+        Id = id ?? Guid.NewGuid();
     }
     public Guid Id { get; init; }
     public DateTime? LastSyncedAt { get; set; }

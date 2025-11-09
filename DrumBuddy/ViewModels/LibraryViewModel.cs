@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls.Notifications;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
+using DrumBuddy.IO.Data;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
@@ -37,14 +38,14 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private readonly IObservable<bool> _removeCanExecute;
     private readonly ReadOnlyObservableCollection<Sheet> _sheets;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
-    private readonly SheetStorage _sheetStorage;
+    private readonly SheetRepository _sheetStorage;
     private readonly ObservableAsPropertyHelper<SortOption> _sortOptionHelper;
     [Reactive] private string _filterText = string.Empty;
     [Reactive] private bool _isSortDescending;
     [Reactive] private Sheet _selectedSheet;
     [Reactive] private SortOption _selectedSortOption = SortOption.Name;
 
-    public LibraryViewModel(IScreen hostScreen, SheetStorage sheetStorage,
+    public LibraryViewModel(IScreen hostScreen, SheetRepository sheetStorage,
         PdfGenerator pdfGenerator,
         FileStorageInteractionService fileStorageInteractionService,
         MidiService midiService)
@@ -128,7 +129,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             return;
         foreach (var sheet in sheetsToRemove)
         {
-            await _sheetStorage.RemoveSheetAsync(sheet);
+            await _sheetStorage.DeleteSheetAsync(sheet.Id);
             _sheetSource.Remove(sheet);
         }
     }
@@ -238,9 +239,9 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
                     if (confirmation == Confirmation.Cancel)
                         return;
                     if (confirmation == Confirmation.Confirm)
-                        await _sheetStorage.RemoveSheetAsync(
+                        await _sheetStorage.DeleteSheetAsync(
                             _sheetSource.Items.First(s =>
-                                s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)));
+                                s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)).Id);
                 }
 
                 await _sheetStorage.SaveSheetAsync(sheet);
@@ -270,7 +271,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     [ReactiveCommand(CanExecute = nameof(_removeCanExecute))]
     private async Task RemoveSheet()
     {
-        await _sheetStorage.RemoveSheetAsync(_selectedSheet);
+        await _sheetStorage.DeleteSheetAsync(_selectedSheet.Id);
         _sheetSource.Remove(_selectedSheet);
     }
 
@@ -307,7 +308,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         var editResult = await ShowEditDialog.Handle(SelectedSheet);
         if (editResult != null)
         {
-            await _sheetStorage.UpdateSheetAsync(editResult);
+            await _sheetStorage. UpdateSheetAsync(editResult);
             _sheetSource.AddOrUpdate(editResult);
             _notificationService.ShowNotification(new Notification("Successful save.",
                 $"The sheet {editResult.Name} successfully saved.",
@@ -330,7 +331,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         var original = SelectedSheet;
         var allNames = _sheetSource.Items.Select(s => s.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        var newName = SheetStorage.GenerateCopyName(original.Name, allNames);
+        var newName = SheetRepository.GenerateCopyName(original.Name, allNames);
 
         // Duplicate the object (assuming Sheet is immutable or cloneable)
         var duplicated = original.RenameSheet(newName, original.Description);

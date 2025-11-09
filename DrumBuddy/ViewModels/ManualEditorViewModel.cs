@@ -11,6 +11,7 @@ using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.Extensions;
+using DrumBuddy.IO.Data;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
@@ -34,7 +35,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     private readonly NotificationService _notificationService;
     private readonly Func<Task> _onClose;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
-    private readonly SheetStorage _sheetStorage;
+    private readonly SheetRepository _sheetStorage;
 
     public readonly Drum[] Drums = new[]
     {
@@ -63,7 +64,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
 
-    public ManualEditorViewModel(IScreen host, SheetStorage sheetStorage,
+    public ManualEditorViewModel(IScreen host, SheetRepository sheetStorage,
         Func<Task> onClose)
     {
         _sheetStorage = sheetStorage;
@@ -261,7 +262,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             {
                 Name = dialogResult.Name;
                 Description = dialogResult.Description;
-                CurrentSheet = BuildSheet();
+                CurrentSheet = BuildSheet(CurrentSheet?.Id);
+                await _sheetStorage.SaveSheetAsync(CurrentSheet!);
                 _notificationService.ShowNotification(new Notification("Sheet saved.",
                     $"The sheet {Name} successfully saved.", NotificationType.Success));
                 IsSaved = true;
@@ -269,12 +271,15 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         }
         else
         {
+            CurrentSheet = BuildSheet(CurrentSheet?.Id);
             await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
+        
             _notificationService.ShowNotification(new Notification("Sheet saved.",
                 $"The sheet {Name} successfully saved.", NotificationType.Success));
             IsSaved = true;
         }
     }
+
 
     [ReactiveCommand]
     private void AddMeasure()
@@ -323,8 +328,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         foreach (var measure in sheet.Measures)
         {
             var measureMatrix = new bool[Drums.Length, Columns];
-
-            // Convert measure -> bool[,] matrix
+            
             var col = 0;
             foreach (var group in measure.Groups)
             foreach (var noteGroup in group.NoteGroups)
@@ -346,7 +350,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         Name = sheet.Name;
         Description = sheet.Description;
         BpmDecimal = sheet.Tempo.Value;
-        CurrentSheet = BuildSheet();
+        CurrentSheet = BuildSheet(sheet.Id);
         DrawSheet();
         IsSaved = true;
     }
@@ -361,7 +365,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         };
     }
 
-    private Sheet BuildSheet()
+    private Sheet BuildSheet(Guid? id = null)
     {
         var allMeasures = new List<Measure>();
 
@@ -390,8 +394,11 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
             allMeasures.Add(new Measure(groups));
         }
+        // Use the provided ID, or the current sheet's ID if editing, or generate new if creating
+        var sheetId = id ?? CurrentSheet?.Id ?? Guid.NewGuid();
 
-        return new Sheet(_bpm, [..allMeasures], Name ?? "Untitled", Description ?? "");
+        return new Sheet(_bpm, [..allMeasures], Name ?? "Untitled", Description ?? "", sheetId);
+
     }
 
     private void DrawSheet()

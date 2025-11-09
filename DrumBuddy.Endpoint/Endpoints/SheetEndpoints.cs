@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using DrumBuddy.Core.Models;
+using DrumBuddy.Core.Services;
 using DrumBuddy.Endpoint.Models;
 using DrumBuddy.Endpoint.Services;
 using DrumBuddy.IO.Data;
-using DrumBuddy.IO.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DrumBuddy.Endpoint.Endpoints;
@@ -39,7 +39,7 @@ public static class SheetEndpoints
 
     private static async Task<IResult> GetSheets(
         DrumBuddyDbContext context,
-        SheetProtobufSerializationService serializationService,
+        SerializationService serializationService,
         HttpContext httpContext)
     {
         var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -52,15 +52,13 @@ public static class SheetEndpoints
             .OrderBy(s => s.Name)
             .ToListAsync();
 
-        // Deserialize records to Sheets
         var sheets = records.Select(record =>
         {
-            var measures = serializationService.DeserializeSheet(record.MeasureBytes);
-            // Restore Guid and sync info from database
+            var measures = serializationService.DeserializeMeasurementData(record.MeasureBytes);
             return new Sheet(record.Tempo, measures, record.Name, record.Description, record.Id)
             {
                 LastSyncedAt = record.LastSyncedAt,
-                IsSyncEnabled = true // Server sheets are always synced
+                IsSyncEnabled = true 
             };
         }).ToList();
 
@@ -70,7 +68,7 @@ public static class SheetEndpoints
     private static async Task<IResult> GetSheet(
         Guid id,
         DrumBuddyDbContext context,
-        SheetProtobufSerializationService serializationService,
+        SerializationService serializationService,
         HttpContext httpContext)
     {
         var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -84,8 +82,8 @@ public static class SheetEndpoints
         if (record is null)
             return Results.NotFound();
 
-        var measures = serializationService.DeserializeSheet(record.MeasureBytes);
-        
+        var measures = serializationService.DeserializeMeasurementData(record.MeasureBytes);
+
         // Restore Guid and sync info
         var result = new Sheet(record.Tempo, measures, record.Name, record.Description, record.Id)
         {
@@ -98,8 +96,7 @@ public static class SheetEndpoints
 
     private static async Task<IResult> CreateSheet(
         CreateSheetRequest request,
-        DrumBuddyDbContext context,
-        SheetProtobufSerializationService serializationService,
+        SheetRepository repository,
         HttpContext httpContext)
     {
         var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -107,41 +104,21 @@ public static class SheetEndpoints
         if (string.IsNullOrEmpty(userId))
             return Results.Unauthorized();
 
-        var measureBytes = serializationService.SerializeSheet(request.Sheet.Measures);
-
-        var record = new SheetRecord
-        {
-            Id = request.Sheet.Id, // Use Guid from sheet
-            MeasureBytes = measureBytes,
-            Name = request.Sheet.Name,
-            Description = request.Sheet.Description,
-            Tempo = request.Sheet.Tempo.Value,
-            UserId = userId,
-            LastSyncedAt = DateTime.UtcNow
-        };
-
         try
         {
-            context.Sheets.Add(record);
-            await context.SaveChangesAsync();
+            await repository.SaveSheetAsync(request.Sheet, userId);
+            return Results.Created($"/api/sheets/{request.Sheet.Id}", request.Sheet);
         }
-        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("IX_Sheets_UserId_Name") == true)
+        catch (InvalidOperationException ex)
         {
-            return Results.Conflict(new { errors = new[] { "You already have a sheet with that name" } });
+            return Results.Conflict(new { errors = new[] { ex.Message } });
         }
-        catch (DbUpdateException ex)
-        {
-            return Results.BadRequest(new { errors = new[] { ex.InnerException?.Message ?? "Database error" } });
-        }
-
-        return Results.Created($"/api/sheets/{record.Id}", request.Sheet);
     }
 
     private static async Task<IResult> UpdateSheet(
         Guid id,
         UpdateSheetRequest request,
-        DrumBuddyDbContext context,
-        SheetProtobufSerializationService serializationService,
+        SheetRepository repository,
         HttpContext httpContext)
     {
         var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -149,34 +126,22 @@ public static class SheetEndpoints
         if (string.IsNullOrEmpty(userId))
             return Results.Unauthorized();
 
-        var record = await context.Sheets
-            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
-
-        if (record is null)
-            return Results.NotFound();
-
-        var measureBytes = serializationService.SerializeSheet(request.Sheet.Measures);
-        
-        record.MeasureBytes = measureBytes;
-        record.Name = request.Sheet.Name;
-        record.Description = request.Sheet.Description;
-        record.Tempo = request.Sheet.Tempo.Value;
-        record.LastSyncedAt = DateTime.UtcNow;
-
         try
         {
-            await context.SaveChangesAsync();
+            // Pass userId to repository, don't set on Sheet
+            await repository.UpdateSheetAsync(request.Sheet, userId);
+            return Results.Ok();
         }
-        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("IX_Sheets_UserId_Name") == true)
+        catch (InvalidOperationException ex) when (ex.Message.Contains("not found"))
         {
-            return Results.Conflict(new { errors = new[] { "A sheet with that name already exists" } });
+            return Results.NotFound();
         }
-        catch (DbUpdateException ex)
+        catch (InvalidOperationException ex)
         {
-            return Results.BadRequest(new { errors = new[] { ex.InnerException?.Message ?? "Database error" } });
+            return Results.Conflict(new { errors = new[] { ex.Message } });
         }
-        return Results.Ok();
     }
+
 
     private static async Task<IResult> DeleteSheet(
         Guid id,

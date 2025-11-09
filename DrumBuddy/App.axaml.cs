@@ -11,11 +11,13 @@ using DrumBuddy.Api.Refit;
 using DrumBuddy.Core.Services;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
+using DrumBuddy.IO.Data;
 using DrumBuddy.IO.Data.Storage;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.Views;
+using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
 using Refit;
 using Splat;
@@ -87,7 +89,7 @@ public class App : Application
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
-            Locator.Current.GetRequiredService<SheetStorage>(),
+            Locator.Current.GetRequiredService<SheetRepository>(),
             Locator.Current.GetRequiredService<PdfGenerator>(),
             Locator.Current.GetRequiredService<FileStorageInteractionService>(),
             Locator.Current.GetRequiredService<MidiService>()
@@ -101,7 +103,7 @@ public class App : Application
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<MidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>(),
-                Locator.Current.GetRequiredService<SheetStorage>(),
+                Locator.Current.GetRequiredService<SheetRepository>(),
                 Locator.Current.GetRequiredService<MetronomePlayer>()));
 
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() },
@@ -128,16 +130,38 @@ public class App : Application
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
     private static void RegisterIOServices()
     {
+        // var exeDir = AppContext.BaseDirectory;
+        // var connectionString = $"Data Source={Path.Combine(exeDir, "sheet_db.db")};";
+        // CurrentMutable.RegisterConstant(
+        //     new SheetStorage(
+        //         Locator.Current.GetRequiredService<SerializationService>(),
+        //         connectionString
+        //     )
+        // );
+        
         var exeDir = AppContext.BaseDirectory;
-        var connectionString = $"Data Source={Path.Combine(exeDir, "sheet_db.db")};";
-        CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
-            FilePathProvider.GetPathToRegularBeepSound()));
+        var dbPath = Path.Combine(exeDir, "sheet_db.db");
+        var connectionString = $"Data Source={dbPath};";
+
+        var dbOptions = new DbContextOptionsBuilder<DrumBuddyDbContext>()
+            .UseSqlite(connectionString)
+            .Options;
+
+        var dbContext = new DrumBuddyDbContext(dbOptions);
+        
+        dbContext.Database.EnsureCreated();
+
+        CurrentMutable.RegisterConstant(dbContext);
         CurrentMutable.RegisterConstant(
-            new SheetStorage(
-                Locator.Current.GetRequiredService<SerializationService>(),
-                connectionString
+            new SheetRepository(
+                dbContext,
+                Locator.Current.GetRequiredService<SerializationService>()
             )
         );
+        
+        
+        CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
+            FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(
             new FileConfigurationStorage(Locator.Current.GetRequiredService<SerializationService>(),
                 Path.Combine(FilePathProvider.GetPathForSavedFiles(), "config")));

@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DrumBuddy.Endpoint.Migrations
+namespace DrumBuddy.IO.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -161,12 +161,13 @@ namespace DrumBuddy.Endpoint.Migrations
                 name: "Sheets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Content = table.Column<string>(type: "jsonb", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MeasureBytes = table.Column<byte[]>(type: "bytea", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Tempo = table.Column<int>(type: "integer", nullable: false),
+                    LastSyncedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -217,14 +218,21 @@ namespace DrumBuddy.Endpoint.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sheets_CreatedAt",
+                name: "IX_Sheets_LastSyncedAt",
                 table: "Sheets",
-                column: "CreatedAt");
+                column: "LastSyncedAt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sheets_UserId",
+                name: "IX_Sheets_UserId_Id",
                 table: "Sheets",
-                column: "UserId");
+                columns: new[] { "UserId", "Id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sheets_UserId_Name",
+                table: "Sheets",
+                columns: new[] { "UserId", "Name" },
+                unique: true);
         }
 
         /// <inheritdoc />

@@ -20,7 +20,6 @@ public class ApiClient
         _tokenService = tokenService;
     }
 
-    // Auth methods
     public async Task<LoginResponse> LoginAsync(string email, string password)
     {
         var request = new LoginRequest(email, password);

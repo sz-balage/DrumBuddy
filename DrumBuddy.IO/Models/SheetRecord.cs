@@ -10,7 +10,8 @@ public class SheetRecord
     public string Description { get; set; } = string.Empty; 
     public int Tempo { get; set; }
     public DateTime LastSyncedAt { get; set; } = DateTime.UtcNow; 
-    public string UserId { get; set; } = string.Empty;
-    public virtual User User { get; set; } = null!;
+    public string? UserId { get; set; }
+    public virtual User? User { get; set; }
+    
 
 }

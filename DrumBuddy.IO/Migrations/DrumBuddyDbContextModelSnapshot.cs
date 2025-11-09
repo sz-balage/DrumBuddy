@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DrumBuddy.Endpoint.Migrations
+namespace DrumBuddy.IO.Migrations
 {
     [DbContext(typeof(DrumBuddyDbContext))]
     partial class DrumBuddyDbContextModelSnapshot : ModelSnapshot
@@ -47,7 +47,6 @@ namespace DrumBuddy.Endpoint.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -264,8 +263,7 @@ namespace DrumBuddy.Endpoint.Migrations
                     b.HasOne("DrumBuddy.IO.Models.User", "User")
                         .WithMany("Sheets")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });

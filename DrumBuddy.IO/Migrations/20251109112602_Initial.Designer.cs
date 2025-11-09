@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DrumBuddy.Endpoint.Migrations
+namespace DrumBuddy.IO.Migrations
 {
     [DbContext(typeof(DrumBuddyDbContext))]
-    [Migration("20251107142049_UseProtobufForSheetContent")]
-    partial class UseProtobufForSheetContent
+    [Migration("20251109112602_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,35 +25,39 @@ namespace DrumBuddy.Endpoint.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("DrumBuddy.Endpoint.Models.SheetOnServer", b =>
+            modelBuilder.Entity("DrumBuddy.IO.Models.SheetRecord", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<byte[]>("ContentBytes")
+                    b.Property<DateTime>("LastSyncedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte[]>("MeasureBytes")
                         .IsRequired()
                         .HasColumnType("bytea");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("Tempo")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedAt");
+                    b.HasIndex("LastSyncedAt");
+
+                    b.HasIndex("UserId", "Id")
+                        .IsUnique();
 
                     b.HasIndex("UserId", "Name")
                         .IsUnique();
@@ -61,7 +65,7 @@ namespace DrumBuddy.Endpoint.Migrations
                     b.ToTable("Sheets");
                 });
 
-            modelBuilder.Entity("DrumBuddy.Endpoint.Models.User", b =>
+            modelBuilder.Entity("DrumBuddy.IO.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -257,13 +261,12 @@ namespace DrumBuddy.Endpoint.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DrumBuddy.Endpoint.Models.SheetOnServer", b =>
+            modelBuilder.Entity("DrumBuddy.IO.Models.SheetRecord", b =>
                 {
-                    b.HasOne("DrumBuddy.Endpoint.Models.User", "User")
+                    b.HasOne("DrumBuddy.IO.Models.User", "User")
                         .WithMany("Sheets")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -279,7 +282,7 @@ namespace DrumBuddy.Endpoint.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("DrumBuddy.Endpoint.Models.User", null)
+                    b.HasOne("DrumBuddy.IO.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -288,7 +291,7 @@ namespace DrumBuddy.Endpoint.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("DrumBuddy.Endpoint.Models.User", null)
+                    b.HasOne("DrumBuddy.IO.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -303,7 +306,7 @@ namespace DrumBuddy.Endpoint.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DrumBuddy.Endpoint.Models.User", null)
+                    b.HasOne("DrumBuddy.IO.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -312,14 +315,14 @@ namespace DrumBuddy.Endpoint.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("DrumBuddy.Endpoint.Models.User", null)
+                    b.HasOne("DrumBuddy.IO.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DrumBuddy.Endpoint.Models.User", b =>
+            modelBuilder.Entity("DrumBuddy.IO.Models.User", b =>
                 {
                     b.Navigation("Sheets");
                 });

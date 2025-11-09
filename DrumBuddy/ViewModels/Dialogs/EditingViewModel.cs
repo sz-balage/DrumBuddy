@@ -295,7 +295,7 @@ public partial class EditingViewModel : ReactiveObject
     public Sheet Save()
     {
         var measures = Measures.Where(m => !m.IsEmpty).Select(vm => vm.Measure).ToImmutableArray();
-        return new Sheet(_bpm, measures, OriginalSheet.Name, OriginalSheet.Description);
+        return new Sheet(_bpm, measures, OriginalSheet.Name, OriginalSheet.Description,OriginalSheet.Id);
     }
 
     [ReactiveCommand(CanExecute = nameof(_stopRecordingCanExecute))]
