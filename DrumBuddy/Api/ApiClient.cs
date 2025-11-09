@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DrumBuddy.Api.Models;
 using DrumBuddy.Api.Refit;
 using DrumBuddy.Core.Models;
+using DrumBuddy.IO.Models;
 using DrumBuddy.Services;
 
 namespace DrumBuddy.Api;
@@ -22,7 +23,7 @@ public class ApiClient
 
     public async Task<LoginResponse> LoginAsync(string email, string password)
     {
-        var request = new LoginRequest(email, password);
+        var request = new AuthRequests.LoginRequest(email, password);
         var result = await _authApi.LoginAsync(request);
          _userService.SetToken(result.Token, result.UserId, result.Email);
         return result;
@@ -30,7 +31,7 @@ public class ApiClient
 
     public async Task<LoginResponse> RegisterAsync(string email, string password, string? userName = null)
     {
-        var request = new RegisterRequest(email, password, userName);
+        var request = new AuthRequests.RegisterRequest(email, password, userName);
         var result = await _authApi.RegisterAsync(request);
          _userService.SetToken(result.Token, result.UserId, result.Email);
         return result;

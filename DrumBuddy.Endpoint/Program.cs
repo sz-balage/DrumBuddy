@@ -2,6 +2,7 @@ using DrumBuddy.Core.Services;
 using DrumBuddy.Endpoint.Extensions;
 using DrumBuddy.Endpoint.Services;
 using DrumBuddy.IO.Data;
+using DrumBuddy.IO.Storage;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
@@ -20,6 +21,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddApplicationCors();
 builder.Services.AddScoped<SerializationService>();
 builder.Services.AddScoped<SheetRepository>();
+builder.Services.AddScoped<ConfigurationRepository>();
 
 var app = builder.Build();
 

@@ -21,4 +21,8 @@
       <ProjectReference Include="..\DrumBuddy.IO\DrumBuddy.IO.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Models\" />
+    </ItemGroup>
+
 </Project>

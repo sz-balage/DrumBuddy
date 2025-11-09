@@ -1,4 +1,3 @@
-using DrumBuddy.Endpoint.Models;
 using DrumBuddy.Endpoint.Services;
 using DrumBuddy.IO.Models;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +22,7 @@ public static class AuthenticationEndpoints
     }
 
     private static async Task<IResult> Register(
-        RegisterRequest request,
+        AuthRequests.RegisterRequest request,
         UserManager<User> userManager,
         TokenService tokenService)
     {
@@ -56,7 +55,7 @@ public static class AuthenticationEndpoints
     }
 
     private static async Task<IResult> Login(
-        LoginRequest request,
+        AuthRequests.LoginRequest request,
         UserManager<User> userManager,
         SignInManager<User> signInManager,
         TokenService tokenService)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DrumBuddy.Api.Models;
 using DrumBuddy.Core.Models;
+using DrumBuddy.IO.Models;
 using Refit;
 
 namespace DrumBuddy.Api.Refit;

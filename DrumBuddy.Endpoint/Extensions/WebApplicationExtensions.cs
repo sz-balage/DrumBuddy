@@ -23,5 +23,6 @@ public static class WebApplicationExtensions
     {
         app.MapAuthenticationEndpoints();
         app.MapSheetEndpoints();
+        app.MapConfigurationEndpoints(); 
     }
 }

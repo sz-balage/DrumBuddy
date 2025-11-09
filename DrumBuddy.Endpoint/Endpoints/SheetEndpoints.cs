@@ -1,9 +1,8 @@
 using System.Security.Claims;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
-using DrumBuddy.Endpoint.Models;
-using DrumBuddy.Endpoint.Services;
 using DrumBuddy.IO.Data;
+using DrumBuddy.IO.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DrumBuddy.Endpoint.Endpoints;
