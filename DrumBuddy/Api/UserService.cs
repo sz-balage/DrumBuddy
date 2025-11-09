@@ -17,7 +17,7 @@ public class UserService
     private string? _cachedToken;
     public string? Email { get; private set; }
     public string? UserId { get; private set; }
-    public bool IsGuestMode => string.IsNullOrEmpty(UserId);
+    public bool IsOnline => !string.IsNullOrEmpty(UserId) && IsTokenValid();
 
     public UserService()
     {

@@ -20,10 +20,8 @@ public class SheetRepository
     public async Task<ImmutableArray<Sheet>> LoadSheetsAsync(string? userId = null)
     {
         var query = _context.Sheets.AsQueryable();
-        
-        if (!string.IsNullOrEmpty(userId))
-            query = query.Where(s => s.UserId == userId);
-
+        query = query.Where(s => s.UserId == userId); 
+        //TODO: give more thought to how guest vs logged in user sheets are handled, for now guest sheets are available in guest mode, user sheets when logged in
         var records = await query
             .OrderBy(s => s.Name)
             .ToListAsync();
@@ -119,10 +117,7 @@ public class SheetRepository
     public bool SheetExists(string sheetName, string? userId = null)
     {
         var query = _context.Sheets.AsQueryable();
-        
-        if (!string.IsNullOrEmpty(userId))
-            query = query.Where(s => s.UserId == userId);
-
+        query = query.Where(s => s.Name == sheetName);
         return query.Any(s => s.Name == sheetName);
     }
 

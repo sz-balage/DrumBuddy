@@ -37,14 +37,14 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private readonly IObservable<bool> _removeCanExecute;
     private readonly ReadOnlyObservableCollection<Sheet> _sheets;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
-    private readonly SheetRepository _sheetStorage;
+    private readonly SheetService _sheetService;
     private readonly ObservableAsPropertyHelper<SortOption> _sortOptionHelper;
     [Reactive] private string _filterText = string.Empty;
     [Reactive] private bool _isSortDescending;
     [Reactive] private Sheet _selectedSheet;
     [Reactive] private SortOption _selectedSortOption = SortOption.Name;
 
-    public LibraryViewModel(IScreen hostScreen, SheetRepository sheetStorage,
+    public LibraryViewModel(IScreen hostScreen, SheetService sheetService,
         PdfGenerator pdfGenerator,
         FileStorageInteractionService fileStorageInteractionService,
         MidiService midiService)
@@ -55,7 +55,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         _fileStorageInteractionService = fileStorageInteractionService;
         _midiService = midiService;
         HostScreen = hostScreen;
-        _sheetStorage = sheetStorage;
+        _sheetService = sheetService;
         var sortChanged = this.WhenAnyValue(vm => vm.SelectedSortOption, vm => vm.IsSortDescending)
             .Select(tuple =>
             {
@@ -105,7 +105,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public async Task SaveSheet(Sheet sheet)
     {
-        await _sheetStorage.SaveSheetAsync(sheet);
+        await _sheetService.CreateSheetAsync(sheet);
     }
 
     public async Task CompareSheets(Sheet baseSheet, Sheet comparedSheet)
@@ -128,7 +128,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             return;
         foreach (var sheet in sheetsToRemove)
         {
-            await _sheetStorage.DeleteSheetAsync(sheet.Id);
+            await _sheetService.DeleteSheetAsync(sheet);
             _sheetSource.Remove(sheet);
         }
     }
@@ -171,7 +171,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     public bool SheetExists(string sheetName)
     {
-        return _sheetStorage.SheetExists(sheetName);
+        return _sheetService.SheetExists(sheetName);
     }
 
     public async Task SaveSelectedSheetAs(SaveFormat format)
@@ -221,7 +221,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             var sheetsAndExceptions = await _fileStorageInteractionService.OpenSheetsAsync(_mainWindow);
             foreach (var sheet in sheetsAndExceptions.sheets)
             {
-                if (_sheetStorage.SheetExists(sheet.Name))
+                if (_sheetService.SheetExists(sheet.Name))
                 {
                     var trimmedName = sheet.Name.Length > 15
                         ? sheet.Name[..15] + "..."
@@ -238,12 +238,12 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
                     if (confirmation == Confirmation.Cancel)
                         return;
                     if (confirmation == Confirmation.Confirm)
-                        await _sheetStorage.DeleteSheetAsync(
+                        await _sheetService.DeleteSheetAsync(
                             _sheetSource.Items.First(s =>
-                                s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)).Id);
+                                s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)));
                 }
 
-                await _sheetStorage.SaveSheetAsync(sheet);
+                await _sheetService.CreateSheetAsync(sheet);
                 _sheetSource.AddOrUpdate(sheet);
                 _notificationService.ShowNotification(new Notification(
                     "Sheet imported.",
@@ -270,7 +270,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     [ReactiveCommand(CanExecute = nameof(_removeCanExecute))]
     private async Task RemoveSheet()
     {
-        await _sheetStorage.DeleteSheetAsync(_selectedSheet.Id);
+        await _sheetService.DeleteSheetAsync(_selectedSheet);
         _sheetSource.Remove(_selectedSheet);
     }
 
@@ -294,7 +294,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         var newSheet = await ShowRenameDialog.Handle(_selectedSheet);
         if (newSheet != _selectedSheet)
         {
-            await _sheetStorage.RenameSheetAsync(SelectedSheet.Name, newSheet);
+            await _sheetService.RenameSheetAsync(SelectedSheet.Name, newSheet);
             _sheetSource.Remove(SelectedSheet);
             _sheetSource.AddOrUpdate(newSheet);
             //SelectedSheet.RenameSheet(dialogResult);
@@ -307,7 +307,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         var editResult = await ShowEditDialog.Handle(SelectedSheet);
         if (editResult != null)
         {
-            await _sheetStorage. UpdateSheetAsync(editResult);
+            await _sheetService. UpdateSheetAsync(editResult);
             _sheetSource.AddOrUpdate(editResult);
             _notificationService.ShowNotification(new Notification("Successful save.",
                 $"The sheet {editResult.Name} successfully saved.",
@@ -330,12 +330,12 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         var original = SelectedSheet;
         var allNames = _sheetSource.Items.Select(s => s.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        var newName = SheetRepository.GenerateCopyName(original.Name, allNames);
+        var newName = SheetService.GenerateCopyName(original.Name, allNames);
 
         // Duplicate the object (assuming Sheet is immutable or cloneable)
         var duplicated = original.RenameSheet(newName, original.Description);
 
-        await _sheetStorage.SaveSheetAsync(duplicated);
+        await _sheetService.CreateSheetAsync(duplicated);
         _sheetSource.AddOrUpdate(duplicated);
 
         _notificationService.ShowNotification(new Notification("Sheet duplicated.",
@@ -343,9 +343,20 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             NotificationType.Success));
     }
 
+    [ReactiveCommand]
+    private void TurnOnSheetSync()
+    {
+        
+    }
+    [ReactiveCommand]
+    private void TurnOffSheetSync()
+    {
+        
+    }
+
     private async Task LoadSheets()
     {
-        var sheets = await _sheetStorage.LoadSheetsAsync();
+        var sheets = await _sheetService.LoadSheetsAsync();
         _sheetSource.Clear();
         _sheetSource.AddOrUpdate(sheets);
     }

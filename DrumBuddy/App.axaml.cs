@@ -71,11 +71,17 @@ public class App : Application
 
         var sheetApi = RestService.For<ISheetApi>(
             new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
+        var configApi = RestService.For<IConfigurationApi>(
+                new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
 
         CurrentMutable.Register(
-            () => new ApiClient(authApi, sheetApi, tokenService),
+            () => new ApiClient(authApi, sheetApi, configApi, tokenService),
             typeof(ApiClient));
-
+        CurrentMutable.RegisterConstant(new SheetService(
+            Locator.Current.GetRequiredService<SheetRepository>(),
+            Locator.Current.GetRequiredService<UserService>(),
+            Locator.Current.GetRequiredService<ApiClient>()
+        ));
         CurrentMutable.Register(() =>
             new FileStorageInteractionService(
                 Locator.Current.GetRequiredService<SerializationService>(),
@@ -90,7 +96,7 @@ public class App : Application
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
-            Locator.Current.GetRequiredService<SheetRepository>(),
+            Locator.Current.GetRequiredService<SheetService>(),
             Locator.Current.GetRequiredService<PdfGenerator>(),
             Locator.Current.GetRequiredService<FileStorageInteractionService>(),
             Locator.Current.GetRequiredService<MidiService>()
@@ -104,7 +110,7 @@ public class App : Application
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<MidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>(),
-                Locator.Current.GetRequiredService<SheetRepository>(),
+                Locator.Current.GetRequiredService<SheetService>(),
                 Locator.Current.GetRequiredService<MetronomePlayer>()));
 
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() },
@@ -159,8 +165,6 @@ public class App : Application
                 Locator.Current.GetRequiredService<SerializationService>()
             )
         );
-        
-        
         CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(

@@ -34,7 +34,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     private readonly NotificationService _notificationService;
     private readonly Func<Task> _onClose;
     private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
-    private readonly SheetRepository _sheetStorage;
+    private readonly SheetService _sheetService;
 
     public readonly Drum[] Drums = new[]
     {
@@ -63,10 +63,10 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
 
-    public ManualEditorViewModel(IScreen host, SheetRepository sheetStorage,
+    public ManualEditorViewModel(IScreen host, SheetService sheetService,
         Func<Task> onClose)
     {
-        _sheetStorage = sheetStorage;
+        _sheetService = sheetService;
         _notificationService = new(Locator.Current.GetRequiredService<MainWindow>());
         HostScreen = host;
         UrlPathSegment = "manual-editor";
@@ -262,7 +262,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
                 Name = dialogResult.Name;
                 Description = dialogResult.Description;
                 CurrentSheet = BuildSheet(CurrentSheet?.Id);
-                await _sheetStorage.SaveSheetAsync(CurrentSheet!);
+                await _sheetService.CreateSheetAsync(CurrentSheet!);
                 _notificationService.ShowNotification(new Notification("Sheet saved.",
                     $"The sheet {Name} successfully saved.", NotificationType.Success));
                 IsSaved = true;
@@ -271,7 +271,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         else
         {
             CurrentSheet = BuildSheet(CurrentSheet?.Id);
-            await _sheetStorage.UpdateSheetAsync(CurrentSheet!);
+            await _sheetService.UpdateSheetAsync(CurrentSheet!);
         
             _notificationService.ShowNotification(new Notification("Sheet saved.",
                 $"The sheet {Name} successfully saved.", NotificationType.Success));

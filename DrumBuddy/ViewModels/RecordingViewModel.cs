@@ -33,7 +33,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     private readonly MetronomePlayer _metronomePlayer;
     private readonly MidiService _midiService;
     private readonly NotificationService _notificationService;
-    private readonly SheetRepository _sheetStorage;
+    private readonly SheetService _sheetService;
     private readonly IObservable<bool> _stopRecordingCanExecute;
     private Bpm _bpm;
     [Reactive] private decimal _bpmDecimal;
@@ -56,13 +56,13 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     public RecordingViewModel(IScreen hostScreen,
         MidiService midiService,
         ConfigurationService configService,
-        SheetRepository sheetStorage,
+        SheetService sheetService,
         MetronomePlayer metronomePlayer)
     {
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = configService;
-        _sheetStorage = sheetStorage;
+        _sheetService = sheetService;
         _notificationService = new(Locator.Current.GetRequiredService<MainWindow>());
         _metronomePlayer = metronomePlayer;
 
@@ -153,7 +153,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
     public async Task LoadSheets()
     {
         IsLoadingSheets = true;
-        var sheets = await _sheetStorage?.LoadSheetsAsync();
+        var sheets = await _sheetService?.LoadSheetsAsync();
         SheetOptions.Clear();
         SheetOptions.Add(new SheetOption("None", null));
         foreach (var sheet in sheets)

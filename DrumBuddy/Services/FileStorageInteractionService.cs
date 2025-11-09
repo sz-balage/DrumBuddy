@@ -151,7 +151,7 @@ public class FileStorageInteractionService(
         return file.Name;
     }
 
-    public async Task<(List<Sheet> sheets, List<SheetImportException> exceptions)> OpenSheetsAsync(TopLevel topLevel)
+    public async Task<(List<Sheet> sheets, List<SheetImportException> exceptions)>  OpenSheetsAsync(TopLevel topLevel)
     {
         var storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
@@ -227,7 +227,7 @@ public class FileStorageInteractionService(
                 var fileName = sheet.Name;
 
                 if (relevantExistingFiles.Contains(fileName))
-                    fileName = SheetRepository.GenerateCopyName(fileName, relevantExistingFiles);
+                    fileName = SheetService.GenerateCopyName(fileName, relevantExistingFiles);
                 var fileNameWithExtension = $"{fileName}{fileExtension}";
                 var filePath = Path.Combine(basePath, fileNameWithExtension);
 
