@@ -13,6 +13,11 @@ namespace DrumBuddy.DesignHelpers;
 
 public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
 {
+    private ReadOnlyObservableCollection<SheetViewModel> _sheets;
+    private SheetViewModel? _selectedSheet;
+    private ReactiveCommand<Unit, Unit> _turnOnSyncForSelectedSheetCommand;
+    private ReactiveCommand<Unit, Unit> _turnOffSyncForSelectedSheetCommand;
+
     public DesignLibraryViewModel()
     {
         List<Measure> measures = new()
@@ -30,12 +35,22 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     public string? UrlPathSegment { get; }
     public IScreen HostScreen { get; }
     public ReadOnlyObservableCollection<Sheet> Sheets { get; }
+
+    ReadOnlyObservableCollection<SheetViewModel> ILibraryViewModel.Sheets => _sheets;
+
     public ReactiveCommand<Unit, Unit> RemoveSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> RenameSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> EditSheetCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> ManuallyEditSheetCommand { get; }
     public ReactiveCommand<Unit, Unit> NavigateToRecordingViewCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> NavigateToManualViewCommand { get; } = ReactiveCommand.Create(() => { });
+
+    SheetViewModel? ILibraryViewModel.SelectedSheet
+    {
+        get => _selectedSheet;
+        set => _selectedSheet = value;
+    }
+
     public Sheet? SelectedSheet { get; set; }
 
     public bool SheetExists(string sheetName)
@@ -65,12 +80,18 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
         return Task.CompletedTask;
     }
 
-    public Task BatchRemoveSheets(List<Sheet> selected)
+    public Task BatchRemoveSheets(List<SheetViewModel> selected)
     {
-        return Task.CompletedTask;
+        throw new System.NotImplementedException();
     }
 
-    public void BatchExportSheets(List<Sheet> selected, SaveFormat saveFormat)
+    public void BatchExportSheets(List<SheetViewModel> selected, SaveFormat saveFormat)
     {
+        throw new System.NotImplementedException();
     }
+
+    ReactiveCommand<Unit, Unit> ILibraryViewModel.TurnOnSyncForSelectedSheetCommand => _turnOnSyncForSelectedSheetCommand;
+
+    ReactiveCommand<Unit, Unit> ILibraryViewModel.TurnOffSyncForSelectedSheetCommand => _turnOffSyncForSelectedSheetCommand;
+
 }
