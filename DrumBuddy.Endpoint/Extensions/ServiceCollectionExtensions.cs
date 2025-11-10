@@ -1,4 +1,5 @@
 using System.Text;
+using DrumBuddy.Endpoint.Configuration;
 using DrumBuddy.Endpoint.Services;
 using DrumBuddy.IO.Data;
 using DrumBuddy.IO.Models;
@@ -14,8 +15,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        var connectionString = GetConnectionString(configuration);
 
         services.AddDbContext<DrumBuddyDbContext>(options =>
             options.UseNpgsql(connectionString));
@@ -45,9 +45,9 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var jwtSettings = configuration.GetSection("JwtSettings");
-        var secretKey = jwtSettings["SecretKey"]
-            ?? throw new InvalidOperationException("JWT SecretKey not configured");
+        var secretKey = GetJwtSecret(configuration, "JwtSettings:SecretKey");
+        var issuer = GetJwtSecret(configuration, "JwtSettings:Issuer");
+        var audience = GetJwtSecret(configuration, "JwtSettings:Audience");
 
         services.AddAuthentication(options =>
         {
@@ -62,8 +62,8 @@ public static class ServiceCollectionExtensions
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings["Issuer"],
-                ValidAudience = jwtSettings["Audience"],
+                ValidIssuer = issuer,
+                ValidAudience = audience,
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(secretKey)),
                 ClockSkew = TimeSpan.Zero
@@ -90,5 +90,41 @@ public static class ServiceCollectionExtensions
         });
 
         return services;
+    }
+
+    private static string GetConnectionString(IConfiguration configuration)
+    {
+        var env = configuration["ASPNETCORE_ENVIRONMENT"];
+        
+        if (env == "Development")
+        {
+            return configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json");
+        }
+        else
+        {
+            return Secrets.DatabaseConnectionString;
+        }
+    }
+
+    private static string GetJwtSecret(IConfiguration configuration, string key)
+    {
+        var env = configuration["ASPNETCORE_ENVIRONMENT"];
+        
+        if (env == "Development")
+        {
+            return configuration[key]
+                ?? throw new InvalidOperationException($"JWT setting '{key}' not found in appsettings.json");
+        }
+        else
+        {
+            return key switch
+            {
+                "JwtSettings:SecretKey" => Secrets.JwtSecretKey,
+                "JwtSettings:Issuer" => Secrets.JwtIssuer,
+                "JwtSettings:Audience" => Secrets.JwtAudience,
+                _ => throw new InvalidOperationException($"Unknown JWT setting: {key}")
+            };
+        }
     }
 }

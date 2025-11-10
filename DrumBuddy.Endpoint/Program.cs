@@ -4,6 +4,7 @@ using DrumBuddy.Endpoint.Services;
 using DrumBuddy.IO.Data;
 using DrumBuddy.IO.Storage;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
@@ -29,4 +30,9 @@ var app = builder.Build();
 app.UseApplicationMiddleware();
 app.MapApplicationEndpoints();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DrumBuddyDbContext>();
+    db.Database.Migrate();
+}
 app.Run();

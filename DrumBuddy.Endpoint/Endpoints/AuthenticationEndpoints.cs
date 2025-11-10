@@ -10,8 +10,9 @@ public static class AuthenticationEndpoints
     public static void MapAuthenticationEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/api/auth")
-            .WithTags("Authentication");
-
+            .WithTags("Authentication")
+            .AllowAnonymous();
+        
         group.MapPost("/register", Register)
             .WithName("Register")
             .WithOpenApi();

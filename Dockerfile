@@ -5,10 +5,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
-COPY ["DrumBuddy.Endpoint.csproj", "./"]
-RUN dotnet restore "YourProject.csproj"
+
+COPY ["DrumBuddy.Endpoint/DrumBuddy.Endpoint.csproj", "DrumBuddy.Endpoint/"]
+COPY ["DrumBuddy.IO/DrumBuddy.IO.csproj", "DrumBuddy.IO/"]
+COPY ["DrumBuddy.Core/DrumBuddy.Core.csproj", "DrumBuddy.Core/"]
+
+RUN dotnet restore "DrumBuddy.Endpoint/DrumBuddy.Endpoint.csproj"
+
 COPY . .
-WORKDIR "/src"
+
+WORKDIR "/src/DrumBuddy.Endpoint"
 RUN dotnet build "DrumBuddy.Endpoint.csproj" -c Release -o /app/build
 
 FROM build AS publish
