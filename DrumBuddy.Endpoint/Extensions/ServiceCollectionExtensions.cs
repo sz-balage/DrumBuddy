@@ -1,5 +1,4 @@
 using System.Text;
-using DrumBuddy.Endpoint.Configuration;
 using DrumBuddy.Endpoint.Services;
 using DrumBuddy.IO.Data;
 using DrumBuddy.IO.Models;
@@ -16,7 +15,6 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         var connectionString = GetConnectionString(configuration);
-
         services.AddDbContext<DrumBuddyDbContext>(options =>
             options.UseNpgsql(connectionString));
 
@@ -45,9 +43,9 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var secretKey = GetJwtSecret(configuration, "JwtSettings:SecretKey");
-        var issuer = GetJwtSecret(configuration, "JwtSettings:Issuer");
-        var audience = GetJwtSecret(configuration, "JwtSettings:Audience");
+        var secretKey = configuration["JwtSettings:SecretKey"];
+        var issuer = configuration["JwtSettings:Issuer"];
+        var audience = configuration["JwtSettings:Audience"];
 
         services.AddAuthentication(options =>
         {
@@ -91,7 +89,6 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-
     private static string GetConnectionString(IConfiguration configuration)
     {
         var env = configuration["ASPNETCORE_ENVIRONMENT"];
@@ -99,32 +96,12 @@ public static class ServiceCollectionExtensions
         if (env == "Development")
         {
             return configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json");
+                   ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json");
         }
         else
         {
-            return Secrets.DatabaseConnectionString;
-        }
-    }
-
-    private static string GetJwtSecret(IConfiguration configuration, string key)
-    {
-        var env = configuration["ASPNETCORE_ENVIRONMENT"];
-        
-        if (env == "Development")
-        {
-            return configuration[key]
-                ?? throw new InvalidOperationException($"JWT setting '{key}' not found in appsettings.json");
-        }
-        else
-        {
-            return key switch
-            {
-                "JwtSettings:SecretKey" => Secrets.JwtSecretKey,
-                "JwtSettings:Issuer" => Secrets.JwtIssuer,
-                "JwtSettings:Audience" => Secrets.JwtAudience,
-                _ => throw new InvalidOperationException($"Unknown JWT setting: {key}")
-            };
+            return configuration["DATABASE_CONNECTION_STRING"]
+                   ?? throw new InvalidOperationException("Environment variable 'DATABASE_CONNECTION_STRING' not found.");
         }
     }
 }

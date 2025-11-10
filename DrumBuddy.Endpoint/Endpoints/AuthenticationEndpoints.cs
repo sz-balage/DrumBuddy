@@ -21,13 +21,13 @@ public static class AuthenticationEndpoints
             .WithName("Login")
             .WithOpenApi();
         
-        // group.MapPost("/forgot-password", ForgotPassword)
-        //     .WithName("ForgotPassword")
-        //     .WithOpenApi();
-        //
-        // group.MapPost("/reset-password", ResetPassword)
-        //     .WithName("ResetPassword")
-        //     .WithOpenApi();
+        group.MapPost("/forgot-password", ForgotPassword)
+            .WithName("ForgotPassword")
+            .WithOpenApi();
+        
+        group.MapPost("/reset-password", ResetPassword)
+            .WithName("ResetPassword")
+            .WithOpenApi();
     }
 
     private static async Task<IResult> Register(
@@ -107,7 +107,7 @@ public static class AuthenticationEndpoints
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
         
         var frontendUrl = configuration["AppSettings:FrontendUrl"];
-        var resetLink = $"{frontendUrl}/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
+        var resetLink = $"{frontendUrl}/reset-password?token={Uri.EscapeDataString(token)}";
 
         var emailSent = await emailService.SendPasswordResetEmailAsync(user.Email!, resetLink);
 

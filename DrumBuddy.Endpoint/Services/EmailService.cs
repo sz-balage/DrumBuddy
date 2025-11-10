@@ -1,13 +1,11 @@
 using System.Net;
 using System.Net.Mail;
-using DrumBuddy.Endpoint.Configuration;
 
 namespace DrumBuddy.Endpoint.Services;
 
 public class EmailService
 {
     private readonly IConfiguration _configuration;
-    private readonly ILogger<EmailService> _logger;
     private readonly string _senderEmail;
     private readonly string _senderPassword;
     private readonly int _smtpPort;
@@ -15,10 +13,10 @@ public class EmailService
     public EmailService(IConfiguration configuration)
     {
         _configuration = configuration;
-        _smtpHost = _configuration["EmailSettings:SmtpHost"];
+        _smtpHost = _configuration["EmailSettings:SmtpHost"] ?? throw new InvalidOperationException("SMTP Host is not configured.");
         _smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
-        _senderEmail = Secrets.SenderEmail;
-        _senderPassword = Secrets.SenderPassword;
+        _senderEmail = _configuration["SENDER_EMAIL"] ?? throw new InvalidOperationException("Sender email is not configured.");
+        _senderPassword = _configuration["SENDER_PASSWORD"] ?? throw new InvalidOperationException("Sender password is not configured.");
     }
     
 
@@ -49,15 +47,13 @@ public class EmailService
                     IsBodyHtml = true
                 };
                 mailMessage.To.Add(email);
-
+                client.Timeout = 10000;
                 await client.SendMailAsync(mailMessage);
-                _logger.LogInformation($"Password reset email sent to {email}");
                 return true;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error sending email to {email}: {ex.Message}");
             return false;
         }
     }
