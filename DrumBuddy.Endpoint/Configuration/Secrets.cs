@@ -22,4 +22,12 @@ public static class Secrets
         int.TryParse(Environment.GetEnvironmentVariable("JWT_EXPIRATION_MINUTES"), out var minutes)
             ? minutes
             : throw new InvalidOperationException("JWT_EXPIRATION_MINUTES environment variable not found or is not a valid integer.");
+    public static string SenderEmail =>
+        Environment.GetEnvironmentVariable("SENDER_EMAIL")
+        ?? throw new InvalidOperationException("SENDER_EMAIL environment variable not found.");
+
+    public static string SenderPassword =>
+        Environment.GetEnvironmentVariable("SENDER_PASSWORD")
+        ?? throw new InvalidOperationException("SENDER_PASSWORD environment variable not found.");
+    
 }

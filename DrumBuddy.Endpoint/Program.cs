@@ -23,6 +23,7 @@ builder.Services.AddApplicationCors();
 builder.Services.AddScoped<SerializationService>();
 builder.Services.AddScoped<SheetRepository>();
 builder.Services.AddScoped<ConfigurationRepository>();
+builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 
