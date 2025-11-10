@@ -106,8 +106,8 @@ public static class AuthenticationEndpoints
 
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
         
-        var frontendUrl = configuration["AppSettings:FrontendUrl"];
-        var resetLink = $"{frontendUrl}/reset-password?token={Uri.EscapeDataString(token)}";
+        var websiteurl = configuration["AppSettings:WebsiteUrl"];
+        var resetLink = $"{websiteurl}/reset-password.html?email={Uri.EscapeDataString(request.Email)}&token={Uri.EscapeDataString(token)}";
 
         var emailSent = await emailService.SendPasswordResetEmailAsync(user.Email!, resetLink);
 
@@ -128,7 +128,6 @@ public static class AuthenticationEndpoints
         {
             return Results.BadRequest(new { message = "Invalid email" });
         }
-
         var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
 
         if (!result.Succeeded)
