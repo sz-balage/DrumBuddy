@@ -15,8 +15,8 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
 {
     private ReadOnlyObservableCollection<SheetViewModel> _sheets;
     private SheetViewModel? _selectedSheet;
-    private ReactiveCommand<Unit, Unit> _turnOnSyncForSelectedSheetCommand;
-    private ReactiveCommand<Unit, Unit> _turnOffSyncForSelectedSheetCommand;
+    private ReactiveCommand<SheetViewModel, Unit> _turnOnSyncForSelectedSheetCommand;
+    private ReactiveCommand<SheetViewModel, Unit> _turnOffSyncForSelectedSheetCommand;
 
     public DesignLibraryViewModel()
     {
@@ -90,8 +90,8 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
         throw new System.NotImplementedException();
     }
 
-    ReactiveCommand<Unit, Unit> ILibraryViewModel.TurnOnSyncForSelectedSheetCommand => _turnOnSyncForSelectedSheetCommand;
+    ReactiveCommand<SheetViewModel, Unit> ILibraryViewModel.TurnOnSyncForSelectedSheetCommand => _turnOnSyncForSelectedSheetCommand;
 
-    ReactiveCommand<Unit, Unit> ILibraryViewModel.TurnOffSyncForSelectedSheetCommand => _turnOffSyncForSelectedSheetCommand;
+    ReactiveCommand<SheetViewModel, Unit> ILibraryViewModel.TurnOffSyncForSelectedSheetCommand => _turnOffSyncForSelectedSheetCommand;
 
 }

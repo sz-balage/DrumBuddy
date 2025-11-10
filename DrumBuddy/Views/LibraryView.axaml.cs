@@ -292,8 +292,11 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         if (sender is Button button &&
             button.Parent is Grid grid &&
             grid.Parent is ListBoxItem item)
+        {
             SheetsListBox.SelectedItem = item.DataContext;
-        ViewModel!.TurnOnSyncForSelectedSheetCommand.Execute().Subscribe();
+            var sheet = item.DataContext as SheetViewModel;
+            ViewModel!.TurnOnSyncForSelectedSheetCommand.Execute(sheet).Subscribe();   
+        }
     }
 
     private void DisableSyncButton_OnClick(object? sender, RoutedEventArgs e)
@@ -301,7 +304,10 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         if (sender is Button button &&
             button.Parent is Grid grid &&
             grid.Parent is ListBoxItem item)
+        {
             SheetsListBox.SelectedItem = item.DataContext;
-        ViewModel.TurnOffSyncForSelectedSheetCommand.Execute().Subscribe();
+            var sheet = SheetsListBox.SelectedItem as SheetViewModel;
+            ViewModel.TurnOffSyncForSelectedSheetCommand.Execute(sheet).Subscribe();
+        }
     }
 }

@@ -6,6 +6,8 @@
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
                           xmlns:designHelpers="clr-namespace:DrumBuddy.DesignHelpers"
+                          xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+                          xmlns:converters="clr-namespace:DrumBuddy.Converters"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Views.LibraryView"
                           x:DataType="vm:LibraryViewModel">
@@ -219,12 +221,35 @@
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="vm:SheetViewModel">
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,*,Auto">
-                        <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-                                  Data="{StaticResource music}"
-                                  Width="30"
-                                  Height="30"
-                                  Margin="5,0,20,0"
-                                  Foreground="#444444" />
+                        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="30" Height="30" Margin="5,0,20,0">
+                            <PathIcon Data="{StaticResource Cloud}"
+                                      Width="20" Height="20"
+                                      Foreground="Black">
+                                <PathIcon.IsVisible>
+                                    <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
+                                        <Binding Path="IsSyncEnabled" />
+                                        <Binding Path="IsSyncing" />
+                                    </MultiBinding>
+                                </PathIcon.IsVisible>
+                            </PathIcon>
+                            <PathIcon Data="{StaticResource CloudOff}"
+                                      Width="20" Height="20"
+                                      Foreground="{StaticResource DarkerGray}">
+                                <PathIcon.IsVisible>
+                                    <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
+                                        <Binding Path="!IsSyncEnabled" />
+                                        <Binding Path="IsSyncing" />
+                                    </MultiBinding>
+                                </PathIcon.IsVisible>
+                            </PathIcon>
+                            
+                            <avaloniaProgressRing:ProgressRing
+                                IsActive="{Binding IsSyncing}"
+                                IsVisible="{Binding IsSyncing}"
+                                Width="20"
+                                Height="20"
+                                Foreground="{StaticResource Accent}" />
+                        </Grid>
                         <StackPanel Grid.Row="0" Grid.Column="1"
                                     Orientation="Horizontal"
                                     Margin="0,0,0,4">
@@ -321,26 +346,28 @@
                         </Button>
                         <Button Grid.Row="1" Grid.Column="4"
                                 VerticalAlignment="Center"
-                                Margin="8,-5,0,0"
-                                Padding="8,4"
+                                Classes="sync"
+                                IsEnabled="{Binding !IsSyncing}"
                                 IsVisible="{Binding !IsSyncEnabled}"
-                                Background="Transparent"
                                 Click="EnableSyncButton_OnClick">
                             <StackPanel Orientation="Horizontal">
-                                <PathIcon Data="{StaticResource Cloud}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <PathIcon Data="{StaticResource Cloud}" 
+                                          Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
+                                          Width="16" Height="16" Margin="0,0,10,0" />
                                 <TextBlock FontWeight="SemiBold"
                                            Opacity="0.8" Text="Turn on sync" />
                             </StackPanel>
                         </Button>
                         <Button Grid.Row="1" Grid.Column="4"
+                                Classes="sync"
                                 VerticalAlignment="Center"
-                                Margin="8,-5,0,0"
-                                Padding="8,4"
+                                IsEnabled="{Binding !IsSyncing}"
                                 IsVisible="{Binding IsSyncEnabled}"
-                                Background="Transparent"
                                 Click="DisableSyncButton_OnClick">
                             <StackPanel Orientation="Horizontal">
-                                <PathIcon Data="{StaticResource CloudOff}" Width="16" Height="16" Margin="0,0,10,0" />
+                                <PathIcon Data="{StaticResource CloudOff}" 
+                                          Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
+                                          Width="16" Height="16" Margin="0,0,10,0" />
                                 <TextBlock FontWeight="SemiBold"
                                            Opacity="0.8" Text="Turn off sync" />
                             </StackPanel>

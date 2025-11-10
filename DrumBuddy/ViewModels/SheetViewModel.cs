@@ -9,6 +9,7 @@ namespace DrumBuddy.ViewModels
     public class SheetViewModel : ReactiveObject
     {
         private bool _isSyncEnabled;
+        private bool _isSyncing;
 
         public SheetViewModel(Sheet sheet)
         {
@@ -30,5 +31,10 @@ namespace DrumBuddy.ViewModels
         public Bpm Tempo => Sheet.Tempo;
         public TimeSpan Length => Sheet.Length;
         public DateTime? LastSyncedAt => Sheet.LastSyncedAt;
+        public bool IsSyncing
+        {
+            get => _isSyncing;
+            set => this.RaiseAndSetIfChanged(ref _isSyncing, value);
+        }
     }
 }

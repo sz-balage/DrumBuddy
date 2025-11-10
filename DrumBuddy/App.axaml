@@ -36,6 +36,8 @@
         </LinearGradientBrush>
         <converters:DrumHighlightConverter x:Key="DrumHighlightConverter" />
         <converters:NoteToKeyboardKeyConverter x:Key="NoteToKeyboardKeyConverter" />
+        <converters:SyncIconVisibleConverter x:Key="SyncIconVisibleConverter"/>
+        <converters:ButtonIconEnabledStateForegroundConverter x:Key="ButtonIconEnabledStateForegroundConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>

@@ -344,14 +344,20 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     }
 
     [ReactiveCommand]
-    private async Task TurnOnSyncForSelectedSheet()
+    private async Task TurnOnSyncForSelectedSheet(SheetViewModel sheet)
     {
-        SelectedSheet.IsSyncEnabled = true;
+        sheet.IsSyncing = true;
+        sheet.IsSyncEnabled = true;
+        await Task.Delay(5000);
+        sheet.IsSyncing = false;
     }
     [ReactiveCommand]
-    private async Task TurnOffSyncForSelectedSheet()
-    {
-        SelectedSheet.IsSyncEnabled = false;
+    private async Task TurnOffSyncForSelectedSheet(SheetViewModel sheet)
+    {     
+        sheet.IsSyncing = true;
+        sheet.IsSyncEnabled = false;
+        await Task.Delay(5000);
+        sheet.IsSyncing = false;
     }
 
     private async Task LoadSheets()
@@ -390,6 +396,6 @@ public interface ILibraryViewModel : IRoutableViewModel
     Task CompareSheets(Sheet baseSheet, Sheet comparedSheet);
     Task BatchRemoveSheets(List<SheetViewModel> selected);
     void BatchExportSheets(List<SheetViewModel> selected, SaveFormat saveFormat);
-    ReactiveCommand<Unit, Unit> TurnOnSyncForSelectedSheetCommand { get; }
-    ReactiveCommand<Unit, Unit> TurnOffSyncForSelectedSheetCommand { get; }
+    ReactiveCommand<SheetViewModel, Unit> TurnOnSyncForSelectedSheetCommand { get; }
+    ReactiveCommand<SheetViewModel, Unit> TurnOffSyncForSelectedSheetCommand { get; }
 }

@@ -187,7 +187,9 @@
                                            FontSize="14" />
                                 <Button Classes="round" Command="{Binding RecheckMIDIDevicesCommand}">
                                     <StackPanel Orientation="Horizontal">
-                                        <PathIcon Data="{StaticResource SyncArrow}" />
+                                        <PathIcon Data="{StaticResource SyncArrow}" 
+                                                  Foreground="{Binding !KeyboardInput, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
+                                                  />
                                         <TextBlock Text="Choose again"
                                                    Margin="10,0,0,0"
                                                    VerticalAlignment="Center" />

@@ -66,13 +66,22 @@ public class App : Application
         {
             InnerHandler = new HttpClientHandler()
         };
+        //prod
         var authApi = RestService.For<IAuthApi>(
-            new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
-
+            new HttpClient(authHandler) { BaseAddress = new Uri("https://drumbuddy.run.place") });
         var sheetApi = RestService.For<ISheetApi>(
-            new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
+            new HttpClient(authHandler) { BaseAddress = new Uri("https://drumbuddy.run.place") });
         var configApi = RestService.For<IConfigurationApi>(
-                new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
+                new HttpClient(authHandler) { BaseAddress = new Uri("https://drumbuddy.run.place") });   
+        //dev
+        // var authApi = RestService.For<IAuthApi>(
+        //     new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
+        //
+        // var sheetApi = RestService.For<ISheetApi>(
+        //     new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
+        // var configApi = RestService.For<IConfigurationApi>(
+        //     new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
+
 
         CurrentMutable.Register(
             () => new ApiClient(authApi, sheetApi, configApi, tokenService),
