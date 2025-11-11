@@ -32,7 +32,7 @@ public class ApiClient
     {
         var request = new AuthRequests.LoginRequest(email, password);
         var result = await _authApi.LoginAsync(request);
-        _userService.SetToken(result.Token, result.UserId, result.Email);
+        _userService.SetToken(result.Token, result.UserName, result.Email);
         return result;
     }
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(string email)
@@ -46,7 +46,7 @@ public class ApiClient
     {
         var request = new AuthRequests.RegisterRequest(email, password, userName);
         var result = await _authApi.RegisterAsync(request);
-        _userService.SetToken(result.Token, result.UserId, result.Email);
+        _userService.SetToken(result.Token, result.UserName, result.Email);
         return result;
     }
 

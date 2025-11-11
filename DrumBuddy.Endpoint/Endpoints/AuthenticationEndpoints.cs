@@ -55,9 +55,9 @@ public static class AuthenticationEndpoints
 
         var token = tokenService.GenerateAccessToken(user.Id, user.Email!);
 
-        return Results.Ok(new
+        return Results.Ok(new 
         {
-            userId = user.Id,
+            userName = user.UserName,
             email = user.Email,
             token
         });
@@ -86,7 +86,7 @@ public static class AuthenticationEndpoints
 
         return Results.Ok(new
         {
-            userId = user.Id,
+            username = user.UserName,
             email = user.Email,
             token
         });

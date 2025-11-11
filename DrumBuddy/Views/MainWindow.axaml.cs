@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Api;
@@ -35,6 +36,17 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         Icon = new WindowIcon(AssetLoader.Open(new Uri("avares://DrumBuddy/Assets/app.ico")));
         this.WhenActivated(d =>
         {
+            var userProfileButton = this.FindControl<Button>("UserProfileButton");
+            var signOutButton = this.FindControl<Button>("SignOutButton");
+            signOutButton.Click += (_, _) =>
+            {
+                ViewModel!.SignOutCommand.Execute().Subscribe();
+
+                // Close the flyout if open
+                if (userProfileButton.Flyout?.IsOpen == true)
+                    userProfileButton.Flyout.Hide();
+            };
+
             this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.MainContent.IsVisible)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.AuthContentPlaceholder.IsVisible, b => !b)

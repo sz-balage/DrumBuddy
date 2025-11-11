@@ -69,21 +69,55 @@
                                 </ListBox.ItemTemplate>
                             </ListBox>
                         </StackPanel>
-                        <StackPanel x:Name="ModeIndicatorStack"
-                                    Orientation="Horizontal"
-                                    VerticalAlignment="Bottom"
-                                    Spacing="15"
-                                    Margin="15">
-                            <PathIcon x:Name="ModeIndicatorIcon"
-                                      VerticalAlignment="Center"
-                                      Height="50"
-                                      Width="20" />
-                            <TextBlock x:Name="ModeIndicatorText"
-                                       Margin="0,2,0,0"
-                                       FontFamily="{StaticResource NunitoFont}"
-                                       FontWeight="Bold"
-                                       VerticalAlignment="Center" />
+                        <StackPanel VerticalAlignment="Bottom" Margin="15" Spacing="10">
+                            <!-- Mode Indicator -->
+                            <StackPanel x:Name="ModeIndicatorStack"
+                                        Orientation="Horizontal"
+                                        Spacing="15">
+                                <PathIcon x:Name="ModeIndicatorIcon"
+                                          VerticalAlignment="Center"
+                                          Height="50"
+                                          Width="20" />
+                                <TextBlock x:Name="ModeIndicatorText"
+                                           Margin="0,2,0,0"
+                                           FontFamily="{StaticResource NunitoFont}"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <Button x:Name="UserProfileButton"
+                                    Margin="-11,0,0,0"
+                                    Width="41" Height="50"
+                                    CornerRadius="20"
+                                    HorizontalAlignment="Left"
+                                    Background="{StaticResource HeaderGray}">
+                                <Button.Flyout>
+                                    <Flyout Placement="TopEdgeAlignedLeft">
+                                        <StackPanel Width="160" Spacing="10">
+                                            <TextBlock Text="{Binding UserName}"
+                                                       FontWeight="Bold"
+                                                       FontSize="13"
+                                                       Margin="0,0,0,8"
+                                                       TextTrimming="CharacterEllipsis" />
+
+                                            <Separator Margin="0,0,0,8" />
+
+                                            <Button x:Name="SignOutButton"
+                                                Command="{Binding SignOutCommand}"
+                                                    Content="Sign Out"
+                                                    Background="Transparent"
+                                                    Foreground="Black"
+                                                    HorizontalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Left"
+                                                    Padding="5,2"/>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+
+                                <PathIcon Data="{StaticResource Person}" Width="20" Height="20" />
+                            </Button>
                         </StackPanel>
+
                     </Grid>
                 </SplitView.Pane>
                 <SplitView.Content>

@@ -16,8 +16,8 @@ public class UserService
 
     private string? _cachedToken;
     public string? Email { get; private set; }
-    public string? UserId { get; private set; }
-    public bool IsOnline => !string.IsNullOrEmpty(UserId) && IsTokenValid();
+    public string? UserName { get; private set; }
+    public bool IsOnline => !string.IsNullOrEmpty(Email) && IsTokenValid();
 
     public UserService()
     {
@@ -32,17 +32,17 @@ public class UserService
 
     public string? GetToken() => _cachedToken;
 
-    public void SetToken(string token, string userId, string email)
+    public void SetToken(string token,string userName, string email)
     {
         _cachedToken = token;
-        UserId = userId;
+        UserName = userName;
         Email = email;
     }
 
     public void ClearToken()
     {
         _cachedToken = null;
-        UserId = null;
+        UserName = null;
         Email = null;
     }
     public bool IsTokenValid() => !string.IsNullOrEmpty(_cachedToken);

@@ -36,13 +36,20 @@ public partial class MainViewModel : ReactiveObject, IScreen
     private IDisposable? _successfulConnectionSub;
 
     [Reactive] private string _successMessage;
+    [Reactive] private string _userName;
     private IDisposable? _successNotificationSub;
 
     public MainViewModel(MidiService midiService, ConfigurationService configurationService)
     {
+       
         _configurationService = configurationService;
         _userService = Locator.Current.GetRequiredService<UserService>();
-        _isAuthenticated = _userService.IsTokenValid();
+        this.WhenAnyValue(vm => vm.IsAuthenticated)
+            .Subscribe(isAuth =>
+            {
+                UserName = _userService.IsOnline ? _userService.UserName : "Guest";
+            });
+        IsAuthenticated = _userService.IsOnline;
         _midiService = midiService;
         _midiService!.InputDeviceDisconnected
             .Subscribe(connected => { NoConnection = true; });
@@ -66,7 +73,13 @@ public partial class MainViewModel : ReactiveObject, IScreen
     };
 
     public RoutingState Router { get; } = new();
-
+    [ReactiveCommand]
+    private void SignOut()
+    {
+        _userService.ClearToken();
+        _userService.ClearRememberedCredentials();
+        IsAuthenticated = false;
+    }
     public void SetAuthenticated()
     {
         IsAuthenticated = true;

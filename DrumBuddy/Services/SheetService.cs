@@ -59,7 +59,7 @@ public class SheetService
     /// </summary>
     public async Task<Sheet?> GetSheetByIdAsync(Guid id)
     {
-        return await _repository.GetSheetByIdAsync(id, _userService.UserId);
+        return await _repository.GetSheetByIdAsync(id);
     }
 
     /// <summary>
