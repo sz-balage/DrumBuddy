@@ -68,18 +68,49 @@ public class SheetService
     public async Task CreateSheetAsync(Sheet sheet)
     {
         await _repository.SaveSheetAsync(sheet); //local save, userid null
-
+        // if (sheet.IsSyncEnabled && _userService.IsOnline)
+        // {
+        //     try
+        //     {
+        //         await _apiClient.CreateSheetAsync(sheet);
+        //         sheet.IsSyncEnabled = true;
+        //     }
+        //     catch
+        //     {
+        //         sheet.IsSyncEnabled = false;
+        //     }
+        // }
+    }
+    public async Task<bool> SyncSheetToServer(Sheet sheet)
+    {
+        await _repository.UpdateSheetAsync(sheet);
         if (sheet.IsSyncEnabled && _userService.IsOnline)
         {
             try
             {
                 await _apiClient.CreateSheetAsync(sheet);
-                sheet.IsSyncEnabled = true;
+                return true;
             }
-            catch
+            catch(Exception ex)
             {
-                sheet.IsSyncEnabled = false;
+                ;
+                return false;
             }
+        }
+        return false;
+    }
+    public async Task<bool> UnSyncSheetToServer(Sheet sheet)
+    {
+        await _repository.UpdateSheetAsync(sheet);
+        try
+        {
+            await _apiClient.DeleteSheetAsync(sheet.Id);
+            return true;
+        }
+        catch(Exception ex)
+        {
+            ;
+            return false;
         }
     }
 

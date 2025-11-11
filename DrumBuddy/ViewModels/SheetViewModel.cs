@@ -9,6 +9,7 @@ namespace DrumBuddy.ViewModels
     public class SheetViewModel : ReactiveObject
     {
         private bool _isSyncEnabled;
+        private DateTime? _lastSyncedAt;
         private bool _isSyncing;
 
         public SheetViewModel(Sheet sheet)
@@ -24,13 +25,16 @@ namespace DrumBuddy.ViewModels
             get => _isSyncEnabled;
             set { this.RaiseAndSetIfChanged(ref _isSyncEnabled, value); Sheet.IsSyncEnabled = value; }
         }
-
+        public DateTime? LastSyncedAt
+        {
+            get => _lastSyncedAt;
+            set { this.RaiseAndSetIfChanged(ref _lastSyncedAt, value); Sheet.LastSyncedAt = value; }
+        }
         public Guid Id => Sheet.Id;
         public string Name => Sheet.Name;
         public string Description => Sheet.Description;
         public Bpm Tempo => Sheet.Tempo;
         public TimeSpan Length => Sheet.Length;
-        public DateTime? LastSyncedAt => Sheet.LastSyncedAt;
         public bool IsSyncing
         {
             get => _isSyncing;

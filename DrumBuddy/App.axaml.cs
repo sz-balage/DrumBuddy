@@ -78,7 +78,8 @@ public class App : Application
         var configApi = RestService.For<IConfigurationApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
 
         CurrentMutable.Register(
-            () => new ApiClient(authApi, sheetApi, configApi, tokenService),
+            () => new ApiClient(authApi, sheetApi, configApi, tokenService,
+                Locator.Current.GetRequiredService<SerializationService>()),
             typeof(ApiClient));
         CurrentMutable.RegisterConstant(new SheetService(
             Locator.Current.GetRequiredService<SheetRepository>(),

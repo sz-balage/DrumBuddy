@@ -245,7 +245,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
                             _sheetSource.Items.First(s =>
                                 s.Name.Equals(sheet.Name, StringComparison.OrdinalIgnoreCase)).Sheet);
                 }
-
+                sheet.IsSyncEnabled = false; //by default, new sheets are not synced
                 await _sheetService.CreateSheetAsync(sheet);
                 _sheetSource.AddOrUpdate(new SheetViewModel(sheet));
                 _notificationService.ShowNotification(new Notification(
@@ -351,7 +351,25 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         sheet.IsSyncing = true;
         sheet.IsSyncEnabled = true;
-        await Task.Delay(5000);
+        var previousLastSyncedAt = sheet.Sheet.LastSyncedAt;
+        sheet.LastSyncedAt = DateTime.UtcNow;
+        var syncSuccessful = await _sheetService.SyncSheetToServer(sheet.Sheet);
+        if (syncSuccessful)
+        {
+            _notificationService.ShowNotification(new Notification(
+                "Sheet synced.",
+                $"The sheet {sheet.Name} was successfully synced to the server.",
+                NotificationType.Success));
+        }
+        else
+        {
+            sheet.Sheet.LastSyncedAt = previousLastSyncedAt; 
+            sheet.IsSyncEnabled = false;
+            _notificationService.ShowNotification(new Notification(
+                "Sync failed.",
+                $"An error occurred while syncing the sheet {sheet.Name} to the server. Sync has been disabled.",
+                NotificationType.Error));
+        }
         sheet.IsSyncing = false;
     }
     [ReactiveCommand]
@@ -359,7 +377,21 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     {     
         sheet.IsSyncing = true;
         sheet.IsSyncEnabled = false;
-        await Task.Delay(5000);
+        var syncSuccessful = await _sheetService.UnSyncSheetToServer(sheet.Sheet);
+        if (syncSuccessful)
+        {
+            _notificationService.ShowNotification(new Notification(
+                "Sheet sync turned off.",
+                $"The sheet {sheet.Name} was successfully removed from the server.",
+                NotificationType.Success));
+        }
+        else
+        {
+            _notificationService.ShowNotification(new Notification(
+                "Sync failed.",
+                $"An error occurred while removing the sheet {sheet.Name} from the server.",
+                NotificationType.Error));
+        }
         sheet.IsSyncing = false;
     }
 

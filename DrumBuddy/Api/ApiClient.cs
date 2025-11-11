@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DrumBuddy.Api.Models;
 using DrumBuddy.Api.Refit;
 using DrumBuddy.Core.Models;
+using DrumBuddy.Core.Services;
 using DrumBuddy.IO.Models;
 
 namespace DrumBuddy.Api;
@@ -14,17 +15,20 @@ public class ApiClient
     private readonly ISheetApi _sheetApi;
     private readonly IConfigurationApi _configurationApi;
     private readonly UserService _userService;
+    private readonly SerializationService _serializationService;
 
     public ApiClient(
         IAuthApi authApi, 
         ISheetApi sheetApi,
         IConfigurationApi configurationApi,
-        UserService userService)
+        UserService userService,
+        SerializationService serializationService)
     {
         _authApi = authApi;
         _sheetApi = sheetApi;
         _configurationApi = configurationApi;
         _userService = userService;
+        _serializationService = serializationService;
     }
 
     // Auth methods
@@ -58,10 +62,36 @@ public class ApiClient
         => await _sheetApi.GetSheetAsync(id);
 
     public async Task CreateSheetAsync(Sheet sheet) 
-        => await _sheetApi.CreateSheetAsync(new CreateSheetRequest(sheet));
+    {
+        var measureBytes = _serializationService.SerializeMeasurementData(sheet.Measures);
+        var dto = new SheetDto
+        {
+            Id = sheet.Id,
+            Name = sheet.Name,
+            Description = sheet.Description,
+            Tempo = sheet.Tempo.Value,
+            MeasureBytes = measureBytes,
+            LastSyncedAt = sheet.LastSyncedAt,
+            IsSyncEnabled = sheet.IsSyncEnabled
+        };
+        await _sheetApi.CreateSheetAsync(new CreateSheetRequest(dto));
+    }
 
     public async Task UpdateSheetAsync(Guid id, Sheet sheet) 
-        => await _sheetApi.UpdateSheetAsync(id, new UpdateSheetRequest(sheet));
+    {
+        var measureBytes = _serializationService.SerializeMeasurementData(sheet.Measures);
+        var dto = new SheetDto
+        {
+            Id = sheet.Id,
+            Name = sheet.Name,
+            Description = sheet.Description,
+            Tempo = sheet.Tempo.Value,
+            MeasureBytes = measureBytes,
+            LastSyncedAt = sheet.LastSyncedAt,
+            IsSyncEnabled = sheet.IsSyncEnabled
+        };
+        await _sheetApi.UpdateSheetAsync(id, new UpdateSheetRequest(dto));
+    }
 
     public async Task DeleteSheetAsync(Guid id) 
         => await _sheetApi.DeleteSheetAsync(id);

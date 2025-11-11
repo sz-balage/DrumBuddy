@@ -40,6 +40,30 @@ public class SheetRepository
         var record = await query.FirstOrDefaultAsync(s => s.Id == id);
         return record == null ? null : DeserializeToSheet(record);
     }
+    public async Task SaveSheetAsync(SheetDto sheetDto, string? userId = null)
+    {
+
+        var record = new SheetRecord
+        {
+            Id = sheetDto.Id,
+            MeasureBytes = sheetDto.MeasureBytes,
+            Name = sheetDto.Name,
+            Description = sheetDto.Description,
+            Tempo = sheetDto.Tempo,
+            LastSyncedAt = DateTime.UtcNow,
+            UserId = userId //null for client, actual userId for server
+        };
+
+        try
+        {
+            _context.Sheets.Add(record);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("IX_Sheets_UserId_Name") == true)
+        {
+            throw new InvalidOperationException("You already have a sheet with that name", ex);
+        }
+    }
 
     public async Task SaveSheetAsync(Sheet sheet, string? userId = null)
     {
@@ -66,7 +90,34 @@ public class SheetRepository
             throw new InvalidOperationException("You already have a sheet with that name", ex);
         }
     }
+    public async Task UpdateSheetAsync(SheetDto sheetDto, string? userId = null)
+    {
+        var query = _context.Sheets.AsQueryable();
+        
+        if (!string.IsNullOrEmpty(userId))
+            query = query.Where(s => s.UserId == userId);
 
+        var record = await query.FirstOrDefaultAsync(s => s.Id == sheetDto.Id);
+
+        if (record == null)
+            throw new InvalidOperationException($"Sheet with ID {sheetDto.Id} not found");
+
+        record.Name = sheetDto.Name;
+        record.Description = sheetDto.Description;
+        record.Tempo = sheetDto.Tempo;
+        record.MeasureBytes = sheetDto.MeasureBytes;
+        record.LastSyncedAt = DateTime.UtcNow;
+
+        try
+        {
+            _context.Sheets.Update(record);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("IX_Sheets_UserId_Name") == true)
+        {
+            throw new InvalidOperationException("A sheet with that name already exists", ex);
+        }
+    }
     public async Task UpdateSheetAsync(Sheet sheet, string? userId = null)
     {
         var query = _context.Sheets.AsQueryable();

@@ -1,10 +1,16 @@
 ﻿using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 using DrumBuddy.Core.Extensions;
 
 namespace DrumBuddy.Core.Models;
 
 public class Sheet
 {
+    // Parameterless constructor for JSON deserialization
+    [JsonConstructor]
+    public Sheet() { }
+
+    // Original constructor for code usage
     public Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, string description, Guid? id = null)
     {
         Name = name;
@@ -13,18 +19,32 @@ public class Sheet
         Measures = measures;
         Id = id ?? Guid.NewGuid();
     }
-    public Guid Id { get; init; }
+
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("lastSyncedAt")]
     public DateTime? LastSyncedAt { get; set; }
-    public string Name { get; init; }
-    public string Description { get; init; }
 
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("description")]
+    public string Description { get; set; }
+
+    [JsonPropertyName("tempo")]
     public Bpm Tempo { get; set; }
-    public ImmutableArray<Measure> Measures { get; }
 
-    //client specific
+    [JsonPropertyName("measures")]
+    public ImmutableArray<Measure> Measures { get; set; }
+
+    // client specific
+    [JsonPropertyName("isSyncEnabled")]
     public bool IsSyncEnabled { get; set; }
+
+    [JsonIgnore]
     public TimeSpan Length => CalculateLength();
- 
+
     private TimeSpan CalculateLength()
     {
         if (Measures.Length > 0)
@@ -35,6 +55,6 @@ public class Sheet
 
     public Sheet RenameSheet(string newName, string newDescription)
     {
-        return new Sheet(Tempo, Measures, newName, newDescription);
+        return new Sheet(Tempo, Measures, newName, newDescription, Id);
     }
 }
