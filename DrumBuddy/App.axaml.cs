@@ -67,22 +67,15 @@ public class App : Application
             InnerHandler = new HttpClientHandler()
         };
         //TODO: handle dev and prod base addresses
-        //prod
-        var authApi = RestService.For<IAuthApi>(
-            new HttpClient(authHandler) { BaseAddress = new Uri("https://api.drumbuddy.hu") });
-        var sheetApi = RestService.For<ISheetApi>(
-            new HttpClient(authHandler) { BaseAddress = new Uri("https://api.drumbuddy.hu") });
-        var configApi = RestService.For<IConfigurationApi>(
-                new HttpClient(authHandler) { BaseAddress = new Uri("https://api.drumbuddy.hu") });   
-        //dev
-        // var authApi = RestService.For<IAuthApi>(
-        //     new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
-        //
-        // var sheetApi = RestService.For<ISheetApi>(
-        //     new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
-        // var configApi = RestService.For<IConfigurationApi>(
-        //     new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });
+#if DEBUG
+        var baseAddress = new Uri("https://localhost:7258"); // local dev backend
+#else
+        var baseAddress = new Uri("https://api.drumbuddy.hu"); // production backend
+#endif
 
+        var authApi   = RestService.For<IAuthApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
+        var sheetApi  = RestService.For<ISheetApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
+        var configApi = RestService.For<IConfigurationApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
 
         CurrentMutable.Register(
             () => new ApiClient(authApi, sheetApi, configApi, tokenService),
