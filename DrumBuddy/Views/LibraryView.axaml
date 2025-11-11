@@ -220,7 +220,7 @@
                  Grid.ColumnSpan="2" Grid.Column="0">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="vm:SheetViewModel">
-                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,*,Auto">
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,Auto,*,Auto">
                         <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="30" Height="30" Margin="5,0,20,0">
                             <PathIcon Data="{StaticResource Cloud}"
                                       Width="20" Height="20"
@@ -372,7 +372,23 @@
                                            Opacity="0.8" Text="Turn off sync" />
                             </StackPanel>
                         </Button>
-                        <Button Grid.Row="0" Grid.Column="5" Grid.RowSpan="2"
+                        <StackPanel Grid.Row="1" Grid.Column="5"
+                                    Orientation="Horizontal"
+                                    Margin="0">
+                            <StackPanel.IsVisible>
+                                <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
+                                    <Binding Path="IsSyncEnabled" />
+                                    <Binding Path="IsSyncing" />
+                                </MultiBinding>
+                            </StackPanel.IsVisible>
+                            <TextBlock Text="Last synced at: "
+                                       FontWeight="SemiBold"
+                                       Opacity="0.8" />
+                            <TextBlock Text="{Binding LastSyncedAt}"
+                                       MaxWidth="800"
+                                       TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <Button Grid.Row="0" Grid.Column="6" Grid.RowSpan="2"
                                 VerticalAlignment="Center"
                                 Margin="8,0,0,0"
                                 Padding="8,8"
