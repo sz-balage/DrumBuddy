@@ -37,6 +37,7 @@
         <converters:DrumHighlightConverter x:Key="DrumHighlightConverter" />
         <converters:NoteToKeyboardKeyConverter x:Key="NoteToKeyboardKeyConverter" />
         <converters:SyncIconVisibleConverter x:Key="SyncIconVisibleConverter"/>
+        <converters:StringNotEmptyToBoolConverter x:Key="StringNotEmptyToBoolConverter"></converters:StringNotEmptyToBoolConverter>
         <converters:ButtonIconEnabledStateForegroundConverter x:Key="ButtonIconEnabledStateForegroundConverter" />
     </Application.Resources>
     <Application.Styles>

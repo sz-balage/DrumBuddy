@@ -189,6 +189,39 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             IsLoading = false;
         }
     }
+    [ReactiveCommand]
+    private async Task ResetPassword()
+    {
+        try
+        {
+            IsLoading = true;
+            //TODO: Change email to user input
+            var response = await _apiClient.ForgotPasswordAsync("");
+            _notificationService.ShowNotification(new Notification(
+                "Password Reset",
+                response.Message,
+                NotificationType.Success));
+        }
+        catch (Refit.ApiException apiException)
+        {
+            var errorMessage = GetApiErrorMessage(apiException);
+            _notificationService.ShowNotification(new Notification(
+                "Password Reset Error",
+                errorMessage,
+                NotificationType.Error));
+        }
+        catch (Exception ex)
+        {
+            _notificationService.ShowNotification(new Notification(
+                "Password Reset Error",
+                ex.Message,
+                NotificationType.Error));
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
 
     private string GetApiErrorMessage(Refit.ApiException apiException)
     {

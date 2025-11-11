@@ -68,11 +68,11 @@ public class App : Application
         };
         //prod
         var authApi = RestService.For<IAuthApi>(
-            new HttpClient(authHandler) { BaseAddress = new Uri("https://drumbuddy.run.place") });
+            new HttpClient(authHandler) { BaseAddress = new Uri("https://api.drumbuddy.hu") });
         var sheetApi = RestService.For<ISheetApi>(
-            new HttpClient(authHandler) { BaseAddress = new Uri("https://drumbuddy.run.place") });
+            new HttpClient(authHandler) { BaseAddress = new Uri("https://api.drumbuddy.hu") });
         var configApi = RestService.For<IConfigurationApi>(
-                new HttpClient(authHandler) { BaseAddress = new Uri("https://drumbuddy.run.place") });   
+                new HttpClient(authHandler) { BaseAddress = new Uri("https://api.drumbuddy.hu") });   
         //dev
         // var authApi = RestService.For<IAuthApi>(
         //     new HttpClient(authHandler) { BaseAddress = new Uri("https://localhost:7258") });

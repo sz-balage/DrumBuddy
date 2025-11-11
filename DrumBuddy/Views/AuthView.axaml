@@ -8,7 +8,7 @@
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Views.AuthView"
                           x:DataType="vm:AuthViewModel">
-
+<!-- TODO: fix misalignment of textblocks when validating texts are not visible -->
     <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="50%,0%" EndPoint="100%,100%">
@@ -64,7 +64,10 @@
                                 </Style>
                             </TextBox.Styles>
                         </TextBox>
-                        <TextBlock x:Name="EmailValidation" Foreground="{StaticResource Error}" FontSize="12" Margin="0,4,0,0" />
+                        <TextBlock x:Name="EmailValidation" Foreground="{StaticResource Error}" 
+                                   IsVisible="{Binding Text, ElementName=EmailValidation,
+                                   Converter={StaticResource StringNotEmptyToBoolConverter}}"
+                                   FontSize="12" Margin="0,4,0,0" />
                     </StackPanel>
 
                     <TextBox x:Name="UserNameTextBox"
@@ -105,6 +108,8 @@
                                    Foreground="{StaticResource Error}" 
                                    FontSize="12" 
                                    Margin="0,4,0,0"
+                                   IsVisible="{Binding Text, ElementName=PasswordValidation, 
+                                   Converter={StaticResource StringNotEmptyToBoolConverter}}"
                                    TextWrapping="Wrap" />
                     </StackPanel>
                     <!-- TODO make pw visibility toggle-->
@@ -129,6 +134,8 @@
                                    Foreground="{StaticResource Error}" 
                                    FontSize="12" 
                                    Margin="0,4,0,0"
+                                   IsVisible="{Binding Text, ElementName=ConfirmPasswordValidation, 
+                                   Converter={StaticResource StringNotEmptyToBoolConverter}}"
                                    TextWrapping="Wrap" />
                     </StackPanel>
 
@@ -172,6 +179,14 @@
                             FontSize="12"
                             Padding="0">
                         <TextBlock x:Name="ToggleButtonText" />
+                    </Button>
+                    <Button x:Name="ForgotPassword"
+                            Background="Transparent"
+                            Foreground="{StaticResource Accent}"
+                            Command="{Binding ResetPasswordCommand}"
+                            FontSize="12"
+                            Padding="0">
+                        <TextBlock Text="Forgot your password? Click here!" />
                     </Button>
                     <Button x:Name="GuestLogin"
                             Background="Transparent"

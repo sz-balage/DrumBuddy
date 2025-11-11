@@ -35,6 +35,12 @@ public class ApiClient
         _userService.SetToken(result.Token, result.UserId, result.Email);
         return result;
     }
+    public async Task<ForgotPasswordResponse> ForgotPasswordAsync(string email)
+    {
+        var request = new AuthRequests.ForgotPasswordRequest() { Email = email };
+        var result = await _authApi.ForgotPasswordAsync(request);
+        return result;
+    }
 
     public async Task<LoginResponse> RegisterAsync(string email, string password, string? userName = null)
     {
