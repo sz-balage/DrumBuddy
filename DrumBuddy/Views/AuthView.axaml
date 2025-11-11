@@ -77,7 +77,6 @@
 
                         <StackPanel>
                             <TextBox x:Name="PasswordBox"
-                                     
                                      PasswordChar="*"
                                      Classes="login revealPasswordButton"
                                      Watermark="Password"

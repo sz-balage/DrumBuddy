@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -20,13 +22,39 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
     private List<FloatingIcon> _floatingIcons = new();
     private Random _random = new();
     private IDisposable? _renderLoopSubscription;
-
+    
     public AuthView()
     {
         InitializeComponent();
 
         this.WhenActivated(d =>
         {
+            var pw = this.FindControl<TextBox>("PasswordBox");
+            var cpw = this.FindControl<TextBox>("ConfirmPasswordBox");
+
+            if (pw != null)
+            {
+                pw.AddHandler(InputElement.KeyDownEvent, (sender, e) =>
+                {
+                    if (e is Avalonia.Input.KeyEventArgs ke && ke.Key == Avalonia.Input.Key.Space)
+                        ke.Handled = true;
+                }, handledEventsToo: true);
+                // Observe Text property changes and strip spaces (covers paste/autofill)
+                pw.GetObservable(TextBox.TextProperty)
+                    .Subscribe(_ => FilterOutSpaces(pw)).DisposeWith(d);
+            }
+
+            if (cpw != null)
+            {
+                cpw.AddHandler(InputElement.KeyDownEvent, (sender, e) =>
+                {
+                    if (e is Avalonia.Input.KeyEventArgs ke && ke.Key == Avalonia.Input.Key.Space)
+                        ke.Handled = true;
+                }, handledEventsToo: true);
+
+                cpw.GetObservable(TextBox.TextProperty)
+                    .Subscribe(_ => FilterOutSpaces(cpw)).DisposeWith(d);
+            }
             _canvas = this.FindControl<Canvas>("FloatingIconsCanvas");
 
             if (_canvas != null)
@@ -72,6 +100,21 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
 
             d.Add(Disposable.Create(StopAnimationLoop));
         });
+    }
+    
+    private void FilterOutSpaces(TextBox tb)
+    {
+        if (tb == null) return;
+        var text = tb.Text ?? string.Empty;
+        if (!text.Contains(' ')) return;
+
+        var originalCaret = tb.CaretIndex;
+        var spacesBeforeCaret = text.Take(Math.Min(originalCaret, text.Length)).Count(c => c == ' ');
+        var newText = text.Replace(" ", string.Empty);
+        var newCaret = Math.Max(0, originalCaret - spacesBeforeCaret);
+
+        tb.Text = newText;
+        tb.CaretIndex = Math.Min(newText.Length, newCaret);
     }
 
     private void InitializeFloatingIcons()
