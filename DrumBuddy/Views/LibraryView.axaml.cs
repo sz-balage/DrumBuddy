@@ -291,7 +291,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     {
         if (sender is Button button &&
             button.Parent is Grid grid &&
-            grid.Parent is ListBoxItem item)
+            grid.Parent.Parent is ListBoxItem item)
         {
             SheetsListBox.SelectedItem = item.DataContext;
             var sheet = item.DataContext as SheetViewModel;
@@ -303,7 +303,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     {
         if (sender is Button button &&
             button.Parent is Grid grid &&
-            grid.Parent is ListBoxItem item)
+            grid.Parent.Parent is ListBoxItem item)
         {
             SheetsListBox.SelectedItem = item.DataContext;
             var sheet = SheetsListBox.SelectedItem as SheetViewModel;

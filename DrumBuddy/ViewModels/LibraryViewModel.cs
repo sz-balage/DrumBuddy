@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using Avalonia.Controls.Notifications;
+using DrumBuddy.Api;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Data;
@@ -43,12 +44,14 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     [Reactive] private bool _isSortDescending;
     [Reactive] private SheetViewModel _selectedSheet;
     [Reactive] private SortOption _selectedSortOption = SortOption.Name;
+    private readonly UserService _userService;
 
     public LibraryViewModel(IScreen hostScreen, SheetService sheetService,
         PdfGenerator pdfGenerator,
         FileStorageInteractionService fileStorageInteractionService,
         MidiService midiService)
     {
+        _userService = Locator.Current.GetRequiredService<UserService>();
         _mainWindow = Locator.Current.GetRequiredService<MainWindow>();
         _notificationService = new NotificationService(_mainWindow);
         _pdfGenerator = pdfGenerator;
@@ -96,7 +99,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             .ToObservable()
             .Subscribe());
     }
-
+    public bool IsOnline => _userService.IsOnline;
     public IEnumerable<SortOption> SortOptions => Enum.GetValues<SortOption>();
 
     public ReadOnlyObservableCollection<SheetViewModel> Sheets => _sheets;

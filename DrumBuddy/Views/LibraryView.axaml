@@ -8,6 +8,7 @@
                           xmlns:designHelpers="clr-namespace:DrumBuddy.DesignHelpers"
                           xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
                           xmlns:converters="clr-namespace:DrumBuddy.Converters"
+                          xmlns:views="clr-namespace:DrumBuddy.Views"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Views.LibraryView"
                           x:DataType="vm:LibraryViewModel">
@@ -344,34 +345,36 @@
                                 <TextBlock FontWeight="SemiBold" Opacity="0.8" Text="Export to" />
                             </StackPanel>
                         </Button>
-                        <Button Grid.Row="1" Grid.Column="4"
-                                VerticalAlignment="Center"
-                                Classes="sync"
-                                IsEnabled="{Binding !IsSyncing}"
-                                IsVisible="{Binding !IsSyncEnabled}"
-                                Click="EnableSyncButton_OnClick">
-                            <StackPanel Orientation="Horizontal">
-                                <PathIcon Data="{StaticResource Cloud}" 
-                                          Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
-                                          Width="16" Height="16" Margin="0,0,10,0" />
-                                <TextBlock FontWeight="SemiBold"
-                                           Opacity="0.8" Text="Turn on sync" />
-                            </StackPanel>
-                        </Button>
-                        <Button Grid.Row="1" Grid.Column="4"
-                                Classes="sync"
-                                VerticalAlignment="Center"
-                                IsEnabled="{Binding !IsSyncing}"
-                                IsVisible="{Binding IsSyncEnabled}"
-                                Click="DisableSyncButton_OnClick">
-                            <StackPanel Orientation="Horizontal">
-                                <PathIcon Data="{StaticResource CloudOff}" 
-                                          Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
-                                          Width="16" Height="16" Margin="0,0,10,0" />
-                                <TextBlock FontWeight="SemiBold"
-                                           Opacity="0.8" Text="Turn off sync" />
-                            </StackPanel>
-                        </Button>
+                        <Grid Grid.Row="1" Grid.Column="4"
+                              VerticalAlignment="Center"
+                              IsVisible="{Binding $parent[views:LibraryView].((vm:LibraryViewModel)DataContext).IsOnline}">
+                            <Button 
+                                    Classes="sync"
+                                    IsEnabled="{Binding !IsSyncing}"
+                                    IsVisible="{Binding !IsSyncEnabled}"
+                                    Click="EnableSyncButton_OnClick">
+                                <StackPanel Orientation="Horizontal">
+                                    <PathIcon Data="{StaticResource Cloud}" 
+                                              Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
+                                              Width="16" Height="16" Margin="0,0,10,0" />
+                                    <TextBlock FontWeight="SemiBold"
+                                               Opacity="0.8" Text="Turn on sync" />
+                                </StackPanel>
+                            </Button>
+                            <Button 
+                                    Classes="sync"
+                                    IsEnabled="{Binding !IsSyncing}"
+                                    IsVisible="{Binding IsSyncEnabled}"
+                                    Click="DisableSyncButton_OnClick">
+                                <StackPanel Orientation="Horizontal">
+                                    <PathIcon Data="{StaticResource CloudOff}" 
+                                              Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
+                                              Width="16" Height="16" Margin="0,0,10,0" />
+                                    <TextBlock FontWeight="SemiBold"
+                                               Opacity="0.8" Text="Turn off sync" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
                         <StackPanel Grid.Row="1" Grid.Column="5"
                                     Orientation="Horizontal"
                                     Margin="0">
