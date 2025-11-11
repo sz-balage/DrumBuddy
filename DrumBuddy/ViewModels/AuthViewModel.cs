@@ -34,6 +34,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
     [Reactive] private string _password = string.Empty;
     [Reactive] private bool _rememberMe;
     [Reactive] private string _userName = string.Empty;
+    [Reactive] private bool _isResetPasswordMode;
     private IObservable<bool> _signInCanExecute => this.IsValid();
     public AuthViewModel(MainWindow mainWindow)
     {
@@ -196,11 +197,12 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         {
             IsLoading = true;
             //TODO: Change email to user input
-            var response = await _apiClient.ForgotPasswordAsync("");
+            var response = await _apiClient.ForgotPasswordAsync(Email);
             _notificationService.ShowNotification(new Notification(
                 "Password Reset",
                 response.Message,
                 NotificationType.Success));
+            CancelResetPassword();
         }
         catch (Refit.ApiException apiException)
         {
@@ -264,7 +266,23 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
 
         return apiException.Content ?? "An error occurred. Please try again.";
     }
+    [ReactiveCommand]
+    private void CancelResetPassword()
+    {
+        IsResetPasswordMode = false;
+        Email = string.Empty;
+    }
 
+    [ReactiveCommand]
+    private void ShowResetPassword()
+    {
+        IsResetPasswordMode = true;
+        Email = string.Empty;
+        Password = string.Empty;
+        ConfirmPassword = string.Empty;
+        UserName = string.Empty;
+        RememberMe = false;
+    }
     private void NavigateToHome()
     {
         var mainVm = Locator.Current.GetService<MainViewModel>();

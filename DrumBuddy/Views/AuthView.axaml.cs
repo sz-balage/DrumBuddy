@@ -41,6 +41,8 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
                 .DisposeWith(d);
 
             this.BindValidation(ViewModel, vm => vm.Email, v => v.EmailValidation.Text)
+                .DisposeWith(d);  
+            this.BindValidation(ViewModel, vm => vm.Email, v => v.ResetEmailValidation.Text)
                 .DisposeWith(d);
             
             this.BindValidation(ViewModel, vm => vm.Password, v => v.PasswordValidation.Text)
