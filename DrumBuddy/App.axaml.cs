@@ -66,6 +66,7 @@ public class App : Application
         {
             InnerHandler = new HttpClientHandler()
         };
+        //TODO: handle dev and prod base addresses
         //prod
         var authApi = RestService.For<IAuthApi>(
             new HttpClient(authHandler) { BaseAddress = new Uri("https://api.drumbuddy.hu") });

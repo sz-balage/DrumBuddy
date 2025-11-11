@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;

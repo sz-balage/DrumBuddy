@@ -43,7 +43,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         _notificationService = new NotificationService(mainWindow);
 
         _ = LoadRememberedCredentialsAsync();
-
+        
         this.ValidationRule(
             vm => vm.Email,
             IsValidEmail,
@@ -144,6 +144,15 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             IsLoading = true;
             await _apiClient.LoginAsync(_email, _password);
             return true;
+        }
+        catch (Refit.ApiException apiException)
+        {
+            var errorMessage = GetApiErrorMessage(apiException);
+            _notificationService.ShowNotification(new Notification(
+                "Login Error",
+                errorMessage,
+                NotificationType.Error));
+            return false;
         }
         catch (Exception ex)
         {
@@ -262,6 +271,8 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         catch
         {
             // Fallback to raw content
+            if(apiException.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                return "Invalid email or password.";
         }
 
         return apiException.Content ?? "An error occurred. Please try again.";
