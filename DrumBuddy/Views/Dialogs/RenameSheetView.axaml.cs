@@ -29,7 +29,10 @@ public partial class RenameSheetView : ReactiveWindow<RenameSheetViewModel>
             this.BindCommand(ViewModel, vm => vm.RenameSheetCommand, v => v.Save).DisposeWith(d);
             var originalSheet = ViewModel.OriginalSheet;
             var observerCloseWithName = Observer.Create<Unit>(u => Close(new Sheet(originalSheet.Tempo,
-                originalSheet.Measures, ViewModel.NewName, ViewModel.NewDescription)));
+                originalSheet.Measures, ViewModel.NewName, ViewModel.NewDescription, originalSheet.Id)
+            {
+                IsSyncEnabled = originalSheet.IsSyncEnabled
+            }));
             ViewModel?.RenameSheetCommand.Subscribe(observerCloseWithName); //make optional name
             Cancel.Click += (sender, e) => Close(ViewModel!.OriginalSheet);
             KeyDown += (sender, e) =>

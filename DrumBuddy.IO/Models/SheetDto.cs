@@ -19,9 +19,8 @@ public class SheetDto
     [JsonPropertyName("measureBytes")]
     public byte[] MeasureBytes { get; set; } // Base64 encoded in JSON
 
-    [JsonPropertyName("lastSyncedAt")]
-    public DateTime? LastSyncedAt { get; set; }
-
     [JsonPropertyName("isSyncEnabled")]
     public bool IsSyncEnabled { get; set; }
+    [JsonPropertyName("updatedAt")]
+    public DateTime UpdatedAt { get; set; }
 }

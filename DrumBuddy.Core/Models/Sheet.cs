@@ -38,10 +38,19 @@ public class Sheet
 
     [JsonPropertyName("measures")]
     public ImmutableArray<Measure> Measures { get; set; }
-
+    private bool _isSyncEnabled;
     // client specific
     [JsonPropertyName("isSyncEnabled")]
-    public bool IsSyncEnabled { get; set; }
+    public bool IsSyncEnabled 
+    { 
+        get => _isSyncEnabled;
+        set
+        {
+            _isSyncEnabled = value;
+            if(!_isSyncEnabled)
+                LastSyncedAt = null;
+        } 
+    }
     [JsonPropertyName("updatedAt")]
     public DateTime UpdatedAt { get; set; } 
 
@@ -58,13 +67,13 @@ public class Sheet
 
     public Sheet RenameSheet(string newName, string newDescription)
     {
-        return new Sheet(Tempo, Measures, newName, newDescription, Id);
+        return new Sheet(Tempo, Measures, newName, newDescription);
     }
 
     public Sheet Sync()
     {
         IsSyncEnabled = true;
-        LastSyncedAt = DateTime.UtcNow;
+        LastSyncedAt = DateTime.Now;
         return this;
     }
     public Sheet UnSync()

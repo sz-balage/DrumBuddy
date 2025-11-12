@@ -50,8 +50,8 @@ public class SheetRepository
             Name = sheetDto.Name,
             Description = sheetDto.Description,
             Tempo = sheetDto.Tempo,
-            LastSyncedAt = DateTime.UtcNow,
-            UserId = userId //null for client, actual userId for server
+            UserId = userId,
+            UpdatedAt = sheetDto.UpdatedAt//null for client, actual userId for server
         };
 
         try
@@ -76,7 +76,7 @@ public class SheetRepository
             Name = sheet.Name,
             Description = sheet.Description,
             Tempo = sheet.Tempo.Value,
-            LastSyncedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
             UserId = userId //null for client, actual userId for server
         };
 
@@ -90,7 +90,7 @@ public class SheetRepository
             throw new InvalidOperationException("You already have a sheet with that name", ex);
         }
     }
-    public async Task UpdateSheetAsync(SheetDto sheetDto, string? userId = null)
+    public async Task UpdateSheetAsync(SheetDto sheetDto, DateTime updatedAt, string? userId = null)
     {
         var query = _context.Sheets.AsQueryable();
         
@@ -106,7 +106,7 @@ public class SheetRepository
         record.Description = sheetDto.Description;
         record.Tempo = sheetDto.Tempo;
         record.MeasureBytes = sheetDto.MeasureBytes;
-        record.LastSyncedAt = DateTime.UtcNow;
+        record.UpdatedAt = updatedAt;
 
         try
         {
@@ -118,7 +118,7 @@ public class SheetRepository
             throw new InvalidOperationException("A sheet with that name already exists", ex);
         }
     }
-    public async Task UpdateSheetAsync(Sheet sheet, string? userId = null)
+    public async Task UpdateSheetAsync(Sheet sheet, DateTime updatedAt, string? userId = null)
     {
         var query = _context.Sheets.AsQueryable();
         
@@ -136,7 +136,7 @@ public class SheetRepository
         record.Description = sheet.Description;
         record.Tempo = sheet.Tempo.Value;
         record.MeasureBytes = measureBytes;
-        record.LastSyncedAt = DateTime.UtcNow;
+        record.UpdatedAt = updatedAt;
 
         try
         {
@@ -172,7 +172,7 @@ public class SheetRepository
         return query.Any(s => s.Name == sheetName);
     }
 
-    public async Task RenameSheetAsync(string oldSheetName, Sheet newSheet, string? userId = null)
+    public async Task RenameSheetAsync(string oldSheetName, Sheet newSheet, DateTime updatedAt, string? userId = null)
     {
         var query = _context.Sheets.AsQueryable();
         
@@ -190,7 +190,7 @@ public class SheetRepository
         record.Description = newSheet.Description;
         record.Tempo = newSheet.Tempo.Value;
         record.MeasureBytes = measureBytes;
-        record.LastSyncedAt = DateTime.UtcNow;
+        record.UpdatedAt = updatedAt;
 
         try
         {
@@ -228,9 +228,9 @@ public class SheetRepository
             [..measures],
             record.Name,
             record.Description,
-            record.Id)
+            record.Id,
+            record.UpdatedAt)
         {
-            LastSyncedAt = record.LastSyncedAt
         };
     }
 }

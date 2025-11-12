@@ -10,8 +10,8 @@ namespace DrumBuddy.Api.Refit;
 
 public interface ISheetApi
 {
-    [Get("/api/sheets")]
-    Task<List<Sheet>> GetSheetsAsync();
+    [Get("/api/sheets/summary")]
+    Task<List<SheetSummaryDto>> GetSheetSummariesAsync();
 
     [Get("/api/sheets/{id}")]
     Task<Sheet> GetSheetAsync(Guid id);

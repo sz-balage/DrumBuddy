@@ -262,7 +262,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
                 Name = dialogResult.Name;
                 Description = dialogResult.Description;
                 CurrentSheet = BuildSheet(CurrentSheet?.Id);
-                await _sheetService.CreateSheetAsync(CurrentSheet!);
                 _notificationService.ShowNotification(new Notification("Sheet saved.",
                     $"The sheet {Name} successfully saved.", NotificationType.Success));
                 IsSaved = true;

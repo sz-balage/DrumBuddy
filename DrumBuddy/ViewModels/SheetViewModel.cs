@@ -16,6 +16,7 @@ namespace DrumBuddy.ViewModels
         {
             Sheet = sheet;
             _isSyncEnabled = sheet.IsSyncEnabled;
+            _lastSyncedAt = sheet.LastSyncedAt;
         }
 
         public Sheet Sheet { get; }
@@ -23,7 +24,12 @@ namespace DrumBuddy.ViewModels
         public bool IsSyncEnabled
         {
             get => _isSyncEnabled;
-            set { this.RaiseAndSetIfChanged(ref _isSyncEnabled, value); Sheet.IsSyncEnabled = value; }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isSyncEnabled, value);
+                Sheet.IsSyncEnabled = value;
+                
+            }
         }
         public DateTime? LastSyncedAt
         {

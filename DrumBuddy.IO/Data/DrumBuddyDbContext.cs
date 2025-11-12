@@ -40,10 +40,7 @@ public class DrumBuddyDbContext : IdentityDbContext<User>
 
             entity.Property(s => s.UserId)
                 .IsRequired();
-
-            entity.Property(s => s.LastSyncedAt)
-                .IsRequired();
-
+            
             entity.Property(s => s.UserId).IsRequired(false);
 
             entity.HasOne(s => s.User)
@@ -58,7 +55,6 @@ public class DrumBuddyDbContext : IdentityDbContext<User>
             entity.HasIndex(s => new { s.UserId, s.Name })
                 .IsUnique();
                 
-            entity.HasIndex(s => s.LastSyncedAt);
         });
         builder.Entity<ConfigurationRecord>(entity =>
         {

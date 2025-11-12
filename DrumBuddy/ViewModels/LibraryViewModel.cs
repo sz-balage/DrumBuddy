@@ -297,7 +297,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         var newSheet = await ShowRenameDialog.Handle(_selectedSheet.Sheet);
         if (newSheet != _selectedSheet.Sheet)
         {
-            await _sheetService.RenameSheetAsync(SelectedSheet.Name, newSheet);
+            await _sheetService.UpdateSheetAsync(newSheet);
             _sheetSource.Remove(SelectedSheet);
             _sheetSource.AddOrUpdate(new SheetViewModel(newSheet));
             //SelectedSheet.RenameSheet(dialogResult);
@@ -352,7 +352,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
         sheet.IsSyncing = true;
         sheet.IsSyncEnabled = true;
         var previousLastSyncedAt = sheet.Sheet.LastSyncedAt;
-        sheet.LastSyncedAt = DateTime.UtcNow;
+        sheet.LastSyncedAt = DateTime.Now;
         var syncSuccessful = await _sheetService.SyncSheetToServer(sheet.Sheet);
         if (syncSuccessful)
         {

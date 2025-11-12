@@ -384,7 +384,7 @@
                                     <Binding Path="IsSyncing" />
                                 </MultiBinding>
                             </StackPanel.IsVisible>
-                            <TextBlock Text="Last synced at: "
+                            <TextBlock Text="Last checked: "
                                        FontWeight="SemiBold"
                                        Opacity="0.8" />
                             <TextBlock Text="{Binding LastSyncedAt}"

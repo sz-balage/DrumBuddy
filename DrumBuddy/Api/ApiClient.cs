@@ -55,13 +55,13 @@ public class ApiClient
     }
 
     // Sheet methods
-    public async Task<List<Sheet>> GetSheetsAsync() 
-        => await _sheetApi.GetSheetsAsync();
+    public async Task<List<SheetSummaryDto>> GetSheetSummariesAsync() 
+        => await _sheetApi.GetSheetSummariesAsync();
 
     public async Task<Sheet> GetSheetAsync(Guid id) 
         => await _sheetApi.GetSheetAsync(id);
 
-    public async Task CreateSheetAsync(Sheet sheet) 
+    public async Task CreateSheetAsync(Sheet sheet, DateTime syncedAt) 
     {
         var measureBytes = _serializationService.SerializeMeasurementData(sheet.Measures);
         var dto = new SheetDto
@@ -71,13 +71,13 @@ public class ApiClient
             Description = sheet.Description,
             Tempo = sheet.Tempo.Value,
             MeasureBytes = measureBytes,
-            LastSyncedAt = sheet.LastSyncedAt,
-            IsSyncEnabled = sheet.IsSyncEnabled
+            IsSyncEnabled = sheet.IsSyncEnabled,
+            UpdatedAt = syncedAt
         };
         await _sheetApi.CreateSheetAsync(new CreateSheetRequest(dto));
     }
 
-    public async Task UpdateSheetAsync(Guid id, Sheet sheet) 
+    public async Task UpdateSheetAsync(Guid id, Sheet sheet, DateTime updatedAt) 
     {
         var measureBytes = _serializationService.SerializeMeasurementData(sheet.Measures);
         var dto = new SheetDto
@@ -87,8 +87,8 @@ public class ApiClient
             Description = sheet.Description,
             Tempo = sheet.Tempo.Value,
             MeasureBytes = measureBytes,
-            LastSyncedAt = sheet.LastSyncedAt,
-            IsSyncEnabled = sheet.IsSyncEnabled
+            IsSyncEnabled = sheet.IsSyncEnabled,
+            UpdatedAt = updatedAt
         };
         await _sheetApi.UpdateSheetAsync(id, new UpdateSheetRequest(dto));
     }

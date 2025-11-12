@@ -15,7 +15,7 @@ public static class SheetEndpoints
             .WithTags("Sheets")
             .RequireAuthorization();
 
-        group.MapGet("/", GetSheets)
+        group.MapGet("/summary", GetSheetSummaries)
             .WithName("GetSheets")
             .WithOpenApi();
 
@@ -35,33 +35,27 @@ public static class SheetEndpoints
             .WithName("DeleteSheet")
             .WithOpenApi();
     }
-
-    private static async Task<IResult> GetSheets(
+    
+    private static async Task<IResult> GetSheetSummaries(
         DrumBuddyDbContext context,
-        SerializationService serializationService,
         HttpContext httpContext)
     {
         var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
         if (string.IsNullOrEmpty(userId))
             return Results.Unauthorized();
 
-        var records = await context.Sheets
+        var summaries = await context.Sheets
             .Where(s => s.UserId == userId)
-            .OrderBy(s => s.Name)
+            .Select(s => new SheetSummaryDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                UpdatedAt = s.UpdatedAt,
+                Tempo = s.Tempo
+            })
             .ToListAsync();
 
-        var sheets = records.Select(record =>
-        {
-            var measures = serializationService.DeserializeMeasurementData(record.MeasureBytes);
-            return new Sheet(record.Tempo, measures, record.Name, record.Description, record.Id)
-            {
-                LastSyncedAt = record.LastSyncedAt,
-                IsSyncEnabled = true 
-            };
-        }).ToList();
-
-        return Results.Ok(sheets);
+        return Results.Ok(summaries);
     }
 
     private static async Task<IResult> GetSheet(
@@ -86,7 +80,6 @@ public static class SheetEndpoints
         // Restore Guid and sync info
         var result = new Sheet(record.Tempo, measures, record.Name, record.Description, record.Id)
         {
-            LastSyncedAt = record.LastSyncedAt,
             IsSyncEnabled = true
         };
 
@@ -128,7 +121,7 @@ public static class SheetEndpoints
         try
         {
             // Pass userId to repository, don't set on Sheet
-            await repository.UpdateSheetAsync(request.Sheet, userId);
+            await repository.UpdateSheetAsync(request.Sheet, request.Sheet.UpdatedAt, userId);
             return Results.Ok();
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("not found"))
