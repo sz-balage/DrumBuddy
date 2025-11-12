@@ -25,7 +25,10 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        <Grid Background="{StaticResource HeaderGray}" HorizontalAlignment="Stretch">
+        
+        <Grid Background="{StaticResource HeaderGray}" 
+              HorizontalAlignment="Stretch"
+              IsVisible="{Binding !IsLoadingSheets}">
             <TextBlock Text="Your Sheet Library"
                        Margin="18"
                        Classes="header"
@@ -51,9 +54,29 @@
                 </StackPanel>
             </Button>
         </Grid>
+        <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2"
+                    Orientation="Vertical" 
+                    IsVisible="{Binding IsLoadingSheets}" 
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12"
+                    Background="White">
+            <avaloniaProgressRing:ProgressRing
+                Width="64"
+                Height="64" 
+                Margin="5"
+                IsActive="True"
+                Foreground="{StaticResource Accent}" />
+            <TextBlock TextAlignment="Center"
+                       FontWeight="SemiBold" 
+                       FontSize="22" 
+                       Text="Sheets are loading"
+                       Margin="0,5,0,0"/>
+        </StackPanel>
         <Border Grid.Row="1" Margin="0"
                 Background="{StaticResource LighterGray}"
-                Padding="12,6">
+                Padding="12,6"
+                IsVisible="{Binding !IsLoadingSheets}">
             <Grid ColumnDefinitions="Auto,*">
                 <StackPanel Grid.Column="0" Orientation="Horizontal"
                             HorizontalAlignment="Left">
@@ -218,7 +241,8 @@
         <ListBox Grid.Row="2"
                  x:Name="SheetsListBox" Margin="0,10,0,0"
                  SelectionMode="Multiple"
-                 Grid.ColumnSpan="2" Grid.Column="0">
+                 Grid.ColumnSpan="2" Grid.Column="0"
+                 IsVisible="{Binding !IsLoadingSheets}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="vm:SheetViewModel">
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,Auto,*,Auto">
@@ -440,9 +464,15 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <UniformGrid Grid.Row="1" Grid.Column="0" IsVisible="False"
-                     Grid.RowSpan="2" x:Name="ZeroStateStack"
+        <UniformGrid Grid.Row="1" Grid.Column="0" 
+                     Grid.RowSpan="2" 
                      Grid.ColumnSpan="2" Columns="2">
+            <UniformGrid.IsVisible>
+                <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
+                    <Binding Path="Sheets.Count" />
+                    <Binding Path="IsLoadingSheets" />
+                </MultiBinding>
+            </UniformGrid.IsVisible>
             <Button Classes="card" CornerRadius="0" x:Name="RecordButton">
                 <Border>
                     <StackPanel Orientation="Vertical"

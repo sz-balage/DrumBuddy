@@ -40,6 +40,7 @@
         <converters:SyncIconVisibleConverter x:Key="SyncIconVisibleConverter"/>
         <converters:StringNotEmptyToBoolConverter x:Key="StringNotEmptyToBoolConverter"></converters:StringNotEmptyToBoolConverter>
         <converters:ButtonIconEnabledStateForegroundConverter x:Key="ButtonIconEnabledStateForegroundConverter" />
+        <converters:ZeroStateAndNotLoadingConverter x:Key="ZeroStateAndNotLoadingConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>

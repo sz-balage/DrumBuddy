@@ -42,6 +42,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     private readonly ObservableAsPropertyHelper<SortOption> _sortOptionHelper;
     [Reactive] private string _filterText = string.Empty;
     [Reactive] private bool _isSortDescending;
+    [Reactive] private bool _isLoadingSheets;
     [Reactive] private SheetViewModel _selectedSheet;
     [Reactive] private SortOption _selectedSortOption = SortOption.Name;
     private readonly UserService _userService;
@@ -397,9 +398,17 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     private async Task LoadSheets()
     {
-        var sheets = await _sheetService.LoadSheetsAsync();
-        _sheetSource.Clear();
-        _sheetSource.AddOrUpdate(sheets.Select(s => new SheetViewModel(s)));
+        IsLoadingSheets = true;
+        try
+        { 
+            var sheets = await _sheetService.LoadSheetsAsync();
+            _sheetSource.Clear();
+            _sheetSource.AddOrUpdate(sheets.Select(s => new SheetViewModel(s)));
+        } 
+        finally   
+        {
+            IsLoadingSheets = false;
+        }
     }
 }
 

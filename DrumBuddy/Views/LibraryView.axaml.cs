@@ -64,13 +64,6 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.Bind(ViewModel, vm => vm.SelectedSheet,
                     v => v.SheetsLB.SelectedItem)
                 .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateGrid.IsVisible, count => count == 0)
-                .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateTextBlock.IsVisible, count => count == 0)
-                .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateImportSheetButton.IsVisible,
-                    count => count == 0)
-                .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.SelectAllButton.IsVisible, count => count != 0)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.BatchDeleteMenuItem.IsVisible, count => count != 0)
