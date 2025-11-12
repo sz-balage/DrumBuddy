@@ -35,23 +35,15 @@ public class SheetService
     /// </summary>
     public async Task<ImmutableArray<Sheet>> LoadSheetsAsync()
     {
-        var sheets = 
-            await _repository.LoadSheetsAsync();
         if (_userService.IsOnline)
         {
-            try
-            {
-                // var localSheets = _repository.LoadSheetsAsync(null);
-                // // if a user is logged in, we still have to preserve the uniqueness of sheet names
-                // await SyncWithServerAsync(sheets);
-            }
-            catch
-            {
-                //offline or sync failed -> return local sheets
-            }
+            var syncedSheets = await SyncWithServerAsync();
+            return syncedSheets;
         }
-
-        return sheets;
+        else
+        { 
+            return await _repository.LoadSheetsAsync();
+        }
     }
 
     /// <summary>
@@ -198,42 +190,41 @@ public class SheetService
     {
         return SheetRepository.GenerateCopyName(originalName, existingNames);
     }
-
     /// <summary>
-    /// Sync local sheets with server
-    /// Merges changes and resolves conflicts
+    /// 
     /// </summary>
-    private async Task SyncWithServerAsync(ImmutableArray<Sheet> localSheets)
+    /// <returns>Sheets to store locally, synced with server versions</returns>
+    async Task<ImmutableArray<Sheet>> SyncWithServerAsync()
     {
-        var serverSheets = await _apiClient.GetSheetsAsync();
-        var localDict = localSheets.ToDictionary(s => s.Id);
+        var localSheets = (await _repository.LoadSheetsAsync()).ToList(); 
+        var remoteSheets = await _apiClient.GetSheetsAsync(); 
 
-        foreach (var serverSheet in serverSheets)
-        {
-            if (!localDict.ContainsKey(serverSheet.Id))
-            {
-                await _repository.SaveSheetAsync(serverSheet);
-            }
-            else
-            {
-                var localSheet = localDict[serverSheet.Id];
-                
-                if (serverSheet.LastSyncedAt > localSheet.LastSyncedAt)
-                {
-                    await _repository.UpdateSheetAsync(serverSheet);
-                }
-            }
-        }
+        var localMap = localSheets.ToDictionary(s => s.Id);
+        var remoteMap = remoteSheets.ToDictionary(s => s.Id);
 
-        var serverIds = serverSheets.Select(s => s.Id).ToHashSet();
-        foreach (var localId in localDict.Keys.Where(id => !serverIds.Contains(id)))
+        foreach (var remote in remoteSheets)
         {
-            var localSheet = localDict[localId];
-            
-            if (localSheet.LastSyncedAt.HasValue)
+            if (!localMap.TryGetValue(remote.Id, out var local))
             {
-                await _repository.DeleteSheetAsync(localId);
+                // remote sheet missing locally → download it
+                await _repository.SaveSheetAsync(remote);
+                localSheets.Add(remote.Sync());
+                continue;
             }
+            // both exist → decide which is newer
+            if (remote.UpdatedAt > local.UpdatedAt)
+            {
+                // remote is newer → overwrite local
+                await _repository.UpdateSheetAsync(remote);
+            }
+            else if (local.UpdatedAt > remote.UpdatedAt)
+            {
+                // local is newer → upload to server
+                await _apiClient.UpdateSheetAsync(local.Id, local);
+            }
+            local.Sync();
+            await _repository.UpdateSheetAsync(local);
         }
+        return [..localSheets];
     }
 }

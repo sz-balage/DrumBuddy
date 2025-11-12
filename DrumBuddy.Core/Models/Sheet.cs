@@ -11,13 +11,14 @@ public class Sheet
     public Sheet() { }
 
     // Original constructor for code usage
-    public Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, string description, Guid? id = null)
+    public Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, string description, Guid? id = null, DateTime? updatedAt = null)
     {
         Name = name;
         Description = description;
         Tempo = tempo;
         Measures = measures;
         Id = id ?? Guid.NewGuid();
+        UpdatedAt = updatedAt ?? DateTime.UtcNow;
     }
 
     [JsonPropertyName("id")]
@@ -41,6 +42,8 @@ public class Sheet
     // client specific
     [JsonPropertyName("isSyncEnabled")]
     public bool IsSyncEnabled { get; set; }
+    [JsonPropertyName("updatedAt")]
+    public DateTime UpdatedAt { get; set; } 
 
     [JsonIgnore]
     public TimeSpan Length => CalculateLength();
@@ -56,5 +59,17 @@ public class Sheet
     public Sheet RenameSheet(string newName, string newDescription)
     {
         return new Sheet(Tempo, Measures, newName, newDescription, Id);
+    }
+
+    public Sheet Sync()
+    {
+        IsSyncEnabled = true;
+        LastSyncedAt = DateTime.UtcNow;
+        return this;
+    }
+    public Sheet UnSync()
+    {
+        IsSyncEnabled = false;
+        return this;
     }
 }
