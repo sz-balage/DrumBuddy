@@ -131,6 +131,8 @@ public partial class MainViewModel : ReactiveObject, IScreen
             rvm.Dispose();
         if (currentVm is ConfigurationViewModel cvm)
             cvm.CancelMapping();
+        if (currentVm is ManualViewModel mvm)
+            mvm.Reset();
         Router.NavigateAndReset.Execute(navigateTo);
     }
 

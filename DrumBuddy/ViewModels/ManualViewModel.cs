@@ -75,7 +75,13 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
         EditorVisible = true;
         SheetListVisible = false;
     }
-    
+
+    public void Reset()
+    {
+        Editor = null;
+        EditorVisible = false;
+        SheetListVisible = false;
+    }
     public async Task LoadExistingSheets()
     {
         IsLoadingSheets = true;
