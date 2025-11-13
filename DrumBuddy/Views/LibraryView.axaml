@@ -38,12 +38,25 @@
                        x:Name="ZeroStateTextBlock"
                        Classes="header"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center" >
+                <TextBlock.IsVisible>
+                    <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
+                        <Binding Path="Sheets.Count" />
+                        <Binding Path="IsLoadingSheets" />
+                    </MultiBinding>
+                </TextBlock.IsVisible>
+            </TextBlock>
             <Button x:Name="ZeroStateImportSheetButton"
                     Height="66"
                     HorizontalAlignment="Right"
                     Background="{StaticResource HeaderGray}"
                     Command="{Binding ImportSheetCommand}">
+                <Button.IsVisible>
+                    <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
+                        <Binding Path="Sheets.Count" />
+                        <Binding Path="IsLoadingSheets" />
+                    </MultiBinding>
+                </Button.IsVisible>
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource Add}" />
                     <TextBlock Text="Import sheets"

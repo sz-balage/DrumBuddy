@@ -93,23 +93,26 @@
                                     Background="{StaticResource HeaderGray}">
                                 <Button.Flyout>
                                     <Flyout Placement="TopEdgeAlignedLeft">
-                                        <StackPanel Width="160" Spacing="10">
+                                        <StackPanel Width="160" Spacing="2">
                                             <TextBlock Text="{Binding UserName}"
                                                        FontWeight="Bold"
                                                        FontSize="13"
-                                                       Margin="0,0,0,8"
+                                                       HorizontalAlignment="Center"
                                                        TextTrimming="CharacterEllipsis" />
-
-                                            <Separator Margin="0,0,0,8" />
-
+                                            <Separator HorizontalAlignment="Stretch" />
                                             <Button x:Name="SignOutButton"
                                                 Command="{Binding SignOutCommand}"
-                                                    Content="Sign Out"
                                                     Background="Transparent"
                                                     Foreground="Black"
                                                     HorizontalAlignment="Stretch"
-                                                    HorizontalContentAlignment="Left"
-                                                    Padding="5,2"/>
+                                                    HorizontalContentAlignment="Left">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <PathIcon Data="{StaticResource SignOut}" Width="16" Height="16" Margin="0,0,10,0" />
+                                                    <TextBlock FontWeight="SemiBold"
+                                                               Margin="0,1,0,0"
+                                                               Text="Sign out" />
+                                                </StackPanel>
+                                            </Button>
                                         </StackPanel>
                                     </Flyout>
                                 </Button.Flyout>
