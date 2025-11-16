@@ -119,7 +119,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     private async Task SaveHandler(IInteractionContext<SheetCreationData, SheetNameAndDescription> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var saveView = new SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
+        var saveView = new SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input, ViewModel.CurrentSheet.Id) };
         var result = await saveView.ShowDialog<SheetNameAndDescription>(mainWindow);
         context.SetOutput(result);
     }
