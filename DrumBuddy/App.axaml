@@ -14,6 +14,7 @@
                 <MergeResourceInclude Source="/Controls/TabControl.axaml" />
                 <MergeResourceInclude Source="/Controls/TabItem.axaml" />
                 <MergeResourceInclude Source="/Controls/Expander.axaml" />
+                <MergeResourceInclude Source="/Controls/TextBox.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
         <FontFamily x:Key="NunitoFont">
@@ -36,6 +37,10 @@
         </LinearGradientBrush>
         <converters:DrumHighlightConverter x:Key="DrumHighlightConverter" />
         <converters:NoteToKeyboardKeyConverter x:Key="NoteToKeyboardKeyConverter" />
+        <converters:SyncIconVisibleConverter x:Key="SyncIconVisibleConverter"/>
+        <converters:StringNotEmptyToBoolConverter x:Key="StringNotEmptyToBoolConverter"></converters:StringNotEmptyToBoolConverter>
+        <converters:ButtonIconEnabledStateForegroundConverter x:Key="ButtonIconEnabledStateForegroundConverter" />
+        <converters:ZeroStateAndNotLoadingConverter x:Key="ZeroStateAndNotLoadingConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>

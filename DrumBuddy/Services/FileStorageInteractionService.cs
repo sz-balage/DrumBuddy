@@ -7,13 +7,13 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
-using DrumBuddy.IO.Data.Storage;
+using DrumBuddy.IO.Data;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models.Exceptions;
 using DrumBuddy.ViewModels;
 
 namespace DrumBuddy.Services;
-
+//TODO: replace whitespace with '-' in file names
 public class FileStorageInteractionService(
     SerializationService serializationService,
     MidiService midiService,
@@ -151,7 +151,7 @@ public class FileStorageInteractionService(
         return file.Name;
     }
 
-    public async Task<(List<Sheet> sheets, List<SheetImportException> exceptions)> OpenSheetsAsync(TopLevel topLevel)
+    public async Task<(List<Sheet> sheets, List<SheetImportException> exceptions)>  OpenSheetsAsync(TopLevel topLevel)
     {
         var storageProvider = topLevel?.StorageProvider;
         if (storageProvider is null)
@@ -227,7 +227,7 @@ public class FileStorageInteractionService(
                 var fileName = sheet.Name;
 
                 if (relevantExistingFiles.Contains(fileName))
-                    fileName = SheetStorage.GenerateCopyName(fileName, relevantExistingFiles);
+                    fileName = SheetService.GenerateCopyName(fileName, relevantExistingFiles);
                 var fileNameWithExtension = $"{fileName}{fileExtension}";
                 var filePath = Path.Combine(basePath, fileNameWithExtension);
 
@@ -284,7 +284,7 @@ public class FileStorageInteractionService(
                 var json = await reader.ReadToEndAsync();
                 try
                 {
-                    sheet = serializationService.DeserializeSheet(json, fileName);
+                    sheet = serializationService.DeserializeDbSheetFile(json, fileName);
                 }
                 catch (Exception e)
                 {

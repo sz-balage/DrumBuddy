@@ -64,13 +64,6 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.Bind(ViewModel, vm => vm.SelectedSheet,
                     v => v.SheetsLB.SelectedItem)
                 .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateGrid.IsVisible, count => count == 0)
-                .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateTextBlock.IsVisible, count => count == 0)
-                .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.ZeroStateImportSheetButton.IsVisible,
-                    count => count == 0)
-                .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.SelectAllButton.IsVisible, count => count != 0)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets.Count, v => v.BatchDeleteMenuItem.IsVisible, count => count != 0)
@@ -132,10 +125,10 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private void CompareButton_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
-        if (button.DataContext is not Sheet baseSheet) return;
+        if (button.DataContext is not SheetViewModel baseSheet) return;
         if (ViewModel is null) return;
         var flyout = new MenuFlyout();
-        var otherSheets = ViewModel.Sheets.Where(s => s != baseSheet).ToList();
+        var otherSheets = ViewModel.Sheets.Where(s => s.Sheet != baseSheet.Sheet).ToList();
         if (!otherSheets.Any())
             flyout.Items.Add(new MenuItem { Header = "No other sheets to compare with", IsEnabled = false });
         else
@@ -146,7 +139,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 menuItem.Click += async (s, args) =>
                 {
                     if (s is MenuItem mi && mi.Tag is Sheet selectedSheet)
-                        await ViewModel.CompareSheets(baseSheet, selectedSheet);
+                        await ViewModel.CompareSheets(baseSheet.Sheet, selectedSheet);
                 };
                 flyout.Items.Add(menuItem);
             }
@@ -193,7 +186,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         var mainWindow = Locator.Current.GetService<MainWindow>();
         var view = new EditingView
         {
-            ViewModel = new EditingViewModel(ViewModel.SelectedSheet, _midiService, _configurationService,
+            ViewModel = new EditingViewModel(ViewModel.SelectedSheet.Sheet, _midiService, _configurationService,
                 _pdfGenerator, true)
         };
         view.Show(mainWindow);
@@ -223,7 +216,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private void BatchDeleteMenuItem_OnClick(object? sender, RoutedEventArgs e)
     {
         if (ViewModel is null) return;
-        var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
+        var selected = SheetsLB.SelectedItems.Cast<SheetViewModel>().ToList();
         if (selected.Count > 0) _ = ViewModel.BatchRemoveSheets(selected);
     }
 
@@ -270,21 +263,44 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     private void BatchMusicXmlExport(object? sender, RoutedEventArgs e)
     {
         if (ViewModel is null) return;
-        var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
+        var selected = SheetsLB.SelectedItems.Cast<SheetViewModel>().ToList();
         ViewModel!.BatchExportSheets(selected, SaveFormat.MusicXml);
     }
 
     private void BatchMidiExport(object? sender, RoutedEventArgs e)
     {
         if (ViewModel is null) return;
-        var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
+        var selected = SheetsLB.SelectedItems.Cast<SheetViewModel>().ToList();
         ViewModel!.BatchExportSheets(selected, SaveFormat.Midi);
     }
 
     private void BatchJsonExport(object? sender, RoutedEventArgs e)
     {
         if (ViewModel is null) return;
-        var selected = SheetsLB.SelectedItems.Cast<Sheet>().ToList();
+        var selected = SheetsLB.SelectedItems.Cast<SheetViewModel>().ToList();
         ViewModel!.BatchExportSheets(selected, SaveFormat.Json);
+    }
+    private void EnableSyncButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent.Parent is ListBoxItem item)
+        {
+            SheetsListBox.SelectedItem = item.DataContext;
+            var sheet = item.DataContext as SheetViewModel;
+            ViewModel!.TurnOnSyncForSelectedSheetCommand.Execute(sheet).Subscribe();   
+        }
+    }
+
+    private void DisableSyncButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Parent is Grid grid &&
+            grid.Parent.Parent is ListBoxItem item)
+        {
+            SheetsListBox.SelectedItem = item.DataContext;
+            var sheet = SheetsListBox.SelectedItem as SheetViewModel;
+            ViewModel.TurnOffSyncForSelectedSheetCommand.Execute(sheet).Subscribe();
+        }
     }
 }

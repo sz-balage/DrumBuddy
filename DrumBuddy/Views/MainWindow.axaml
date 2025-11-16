@@ -21,86 +21,128 @@
         </Style>
     </Window.Styles>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Grid x:Name="AuthContentPlaceholder" />
+        <Grid x:Name="MainContent" IsVisible="False">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <Border x:Name="NoConnection" x:DataType="vm:MainViewModel"
-                Background="{StaticResource Error}">
-            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                <Label VerticalAlignment="Center">
-                    There are no MIDI devices connected. If you wish to use the client with keyboard controls, visit the Configuration page.
-                </Label>
-                <Button Classes="Retry" Background="{StaticResource Error}" x:Name="RetryButton" Margin="10,0,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <PathIcon Data="{StaticResource SyncArrow}" Margin="0,2,10,0" />
-                        <TextBlock Margin="0,4,0,0">Retry connection</TextBlock>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-        </Border>
-        <SplitView x:Name="SplitView" Grid.Row="1"
-                   OpenPaneLength="200"
-                   CompactPaneLength="50"
-                   DisplayMode="CompactInline"
-                   PaneBackground="{StaticResource HeaderGray}">
-            <SplitView.Pane>
-                <Grid>
-                    <StackPanel Spacing="11" Margin="5">
-                        <Button x:Name="TriggerPaneButton" Height="50" Width="41" Background="{StaticResource HeaderGray}">
-                            <PathIcon Data="{StaticResource Line_Horizontal_3}" />
-                        </Button>
-                        <ListBox x:Name="PaneListBox">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="{x:Type models:NavigationMenuItemTemplate}">
-                                    <StackPanel Spacing="15" Orientation="Horizontal">
-                                        <PathIcon VerticalAlignment="Center" Height="40" Data="{Binding Icon}" Width="15" />
-                                        <TextBlock Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"
-                                                   FontWeight="Bold"
-                                                   Text="{Binding Label}"
-                                                   VerticalAlignment="Center" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </StackPanel>
-                    <StackPanel x:Name="ModeIndicatorStack"
-                                Orientation="Horizontal"
-                                VerticalAlignment="Bottom" 
-                                Spacing="15"
-                                Margin="15">
-                        <PathIcon x:Name="ModeIndicatorIcon" 
-                                  VerticalAlignment="Center"
-                                  Height="50" 
-                                  Width="20" />
-                        <TextBlock x:Name="ModeIndicatorText" 
-                                   Margin="0,2,0,0" 
-                                   FontFamily="{StaticResource NunitoFont}"
-                                   FontWeight="Bold"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </Grid>
-            </SplitView.Pane>
-            <SplitView.Content>
-                <Border CornerRadius="12,0,0,0">
-                    <rxui:RoutedViewHost x:Name="RoutedViewHost">
-                        <rxui:RoutedViewHost.DefaultContent>
-                            <progRing:ProgressRing Foreground="Black"
-                                                   Width="80"
-                                                   Height="80"
-                                                   IsActive="True"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center" />
-                        </rxui:RoutedViewHost.DefaultContent>
-                    </rxui:RoutedViewHost>
-                </Border>
-            </SplitView.Content>
-        </SplitView>
-        <Grid x:Name="NotificationPlaceholder"
-              Grid.Row="1"
-              HorizontalAlignment="Right"
-              VerticalAlignment="Bottom"
-              Margin="20" />
+            <Border x:Name="NoConnection" x:DataType="vm:MainViewModel"
+                    Background="{StaticResource Error}">
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Label VerticalAlignment="Center">
+                        There are no MIDI devices connected. If you wish to use the client with keyboard controls, visit the Configuration page.
+                    </Label>
+                    <Button Classes="Retry" Background="{StaticResource Error}" x:Name="RetryButton" Margin="10,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <PathIcon Data="{StaticResource SyncArrow}" Margin="0,2,10,0" />
+                            <TextBlock Margin="0,4,0,0">Retry connection</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+            <SplitView x:Name="SplitView" Grid.Row="1"
+                       OpenPaneLength="200"
+                       CompactPaneLength="50"
+                       DisplayMode="CompactInline"
+                       PaneBackground="{StaticResource HeaderGray}">
+                <SplitView.Pane>
+                    <Grid>
+                        <StackPanel Spacing="11" Margin="5">
+                            <Button x:Name="TriggerPaneButton" Height="50" Width="41"
+                                    Background="{StaticResource HeaderGray}">
+                                <PathIcon Data="{StaticResource Line_Horizontal_3}" />
+                            </Button>
+                            <ListBox x:Name="PaneListBox">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type models:NavigationMenuItemTemplate}">
+                                        <StackPanel Spacing="15" Orientation="Horizontal">
+                                            <PathIcon VerticalAlignment="Center" Height="40" Data="{Binding Icon}"
+                                                      Width="15" />
+                                            <TextBlock Margin="0,2,0,0" FontFamily="{StaticResource NunitoFont}"
+                                                       FontWeight="Bold"
+                                                       Text="{Binding Label}"
+                                                       VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Bottom" Margin="15" Spacing="10">
+                            <!-- Mode Indicator -->
+                            <StackPanel x:Name="ModeIndicatorStack"
+                                        Orientation="Horizontal"
+                                        Spacing="15">
+                                <PathIcon x:Name="ModeIndicatorIcon"
+                                          VerticalAlignment="Center"
+                                          Height="50"
+                                          Width="20" />
+                                <TextBlock x:Name="ModeIndicatorText"
+                                           Margin="0,2,0,0"
+                                           FontFamily="{StaticResource NunitoFont}"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <Button x:Name="UserProfileButton"
+                                    Margin="-11,0,0,0"
+                                    Width="41" Height="50"
+                                    CornerRadius="20"
+                                    HorizontalAlignment="Left"
+                                    Background="{StaticResource HeaderGray}">
+                                <Button.Flyout>
+                                    <Flyout Placement="TopEdgeAlignedLeft">
+                                        <StackPanel Width="160" Spacing="2">
+                                            <TextBlock Text="{Binding UserName}"
+                                                       FontWeight="Bold"
+                                                       FontSize="13"
+                                                       HorizontalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <Separator HorizontalAlignment="Stretch" />
+                                            <Button x:Name="SignOutButton"
+                                                Command="{Binding SignOutCommand}"
+                                                    Background="Transparent"
+                                                    Foreground="Black"
+                                                    HorizontalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Left">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <PathIcon Data="{StaticResource SignOut}" Width="16" Height="16" Margin="0,0,10,0" />
+                                                    <TextBlock FontWeight="SemiBold"
+                                                               Margin="0,1,0,0"
+                                                               Text="Sign out" />
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+
+                                <PathIcon Data="{StaticResource Person}" Width="20" Height="20" />
+                            </Button>
+                        </StackPanel>
+
+                    </Grid>
+                </SplitView.Pane>
+                <SplitView.Content>
+                    <Border CornerRadius="12,0,0,0">
+                        <rxui:RoutedViewHost x:Name="RoutedViewHost">
+                            <rxui:RoutedViewHost.DefaultContent>
+                                <progRing:ProgressRing Foreground="Black"
+                                                       Width="80"
+                                                       Height="80"
+                                                       IsActive="True"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                            </rxui:RoutedViewHost.DefaultContent>
+                        </rxui:RoutedViewHost>
+                    </Border>
+                </SplitView.Content>
+            </SplitView>
+            <Grid x:Name="NotificationPlaceholder"
+                  Grid.Row="1"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom"
+                  Margin="20" />
+        </Grid>
     </Grid>
 </rxui:ReactiveWindow>

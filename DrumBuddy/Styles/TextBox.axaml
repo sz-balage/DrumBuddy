@@ -10,4 +10,8 @@
         <Setter Property="Padding" Value="10,8" />
         <Setter Property="CornerRadius" Value="4" />
     </Style>
+    <Style Selector="TextBox.login:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+        <Setter Property="Background" Value="White" />
+    </Style>
 </Styles>

@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
+using DrumBuddy.Api;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
@@ -17,23 +18,38 @@ namespace DrumBuddy.ViewModels;
 
 public partial class MainViewModel : ReactiveObject, IScreen
 {
+    private const string LastDeviceKey = "LastUsedMidiDevice";
     private readonly MidiService _midiService;
+    private readonly UserService _userService;
+
     [Reactive] private bool _canRetry;
     private IDisposable? _connectionErrorSub;
+    [Reactive] private bool _isAuthenticated; // Add this
     [Reactive] private bool _isKeyboardInput;
 
     [Reactive] private bool _isPaneOpen;
     [Reactive] private bool _noConnection;
     private NotificationService _notificationService;
+    private ConfigurationService _configurationService;
 
     [Reactive] private NavigationMenuItemTemplate _selectedPaneItem;
     private IDisposable? _successfulConnectionSub;
 
     [Reactive] private string _successMessage;
+    [Reactive] private string _userName;
     private IDisposable? _successNotificationSub;
 
-    public MainViewModel(MidiService midiService)
+    public MainViewModel(MidiService midiService, ConfigurationService configurationService)
     {
+       
+        _configurationService = configurationService;
+        _userService = Locator.Current.GetRequiredService<UserService>();
+        this.WhenAnyValue(vm => vm.IsAuthenticated)
+            .Subscribe(isAuth =>
+            {
+                UserName = _userService.IsOnline ? _userService.UserName : "Guest";
+            });
+        IsAuthenticated = _userService.IsOnline;
         _midiService = midiService;
         _midiService!.InputDeviceDisconnected
             .Subscribe(connected => { NoConnection = true; });
@@ -57,6 +73,19 @@ public partial class MainViewModel : ReactiveObject, IScreen
     };
 
     public RoutingState Router { get; } = new();
+    [ReactiveCommand]
+    private void SignOut()
+    {
+        _userService.ClearToken();
+        _userService.ClearRememberedCredentials();
+        IsAuthenticated = false;
+    }
+    public void SetAuthenticated()
+    {
+        IsAuthenticated = true;
+        var homeItem = PaneItems.First();
+        SelectedPaneItem = homeItem;
+    }
 
     public void SetTopLevelWindow(Window window)
     {
@@ -102,6 +131,8 @@ public partial class MainViewModel : ReactiveObject, IScreen
             rvm.Dispose();
         if (currentVm is ConfigurationViewModel cvm)
             cvm.CancelMapping();
+        if (currentVm is ManualViewModel mvm)
+            mvm.Reset();
         Router.NavigateAndReset.Execute(navigateTo);
     }
 
@@ -114,7 +145,10 @@ public partial class MainViewModel : ReactiveObject, IScreen
     [ReactiveCommand]
     private async Task TryConnect()
     {
-        var connectionResult = _midiService.TryConnect();
+        if (IsKeyboardInput)
+            return;
+        var desiredName = _configurationService.Get<string>(LastDeviceKey) ?? string.Empty;
+        var connectionResult = _midiService.TryConnect(desiredName);
         switch (connectionResult.DevicesConnected.Length)
         {
             case 0:
@@ -127,20 +161,12 @@ public partial class MainViewModel : ReactiveObject, IScreen
                 SuccessfulConnection("Connected to " + connectionResult.DevicesConnected[0].Name);
                 return;
         }
-        // switch (connectionResult.IsSuccess)
-        // {
-        //     case true:
-        //         SuccessfulConnection(connectionResult.Message);
-        //         break;
-        //     case false:
-        //         ConnectionError(connectionResult.Message!);
-        //         break;
-        // }
     }
 
     public async Task ForceRecheckMidiDevices()
     {
-        var connectionResult = _midiService.TryConnect(true);
+        var desiredName = _configurationService.Get<string>(LastDeviceKey) ?? string.Empty;
+        var connectionResult = _midiService.TryConnect(desiredName,true);
         switch (connectionResult.DevicesConnected.Length)
         {
             case 0:
@@ -165,6 +191,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
         else
         {
             _midiService.SetUserChosenDeviceAsInput(chosenDevice);
+            _configurationService.Set(LastDeviceKey, chosenDevice.Name);
             SuccessfulConnection("Connected to " + chosenDevice?.Name);
         }
     }

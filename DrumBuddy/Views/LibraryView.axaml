@@ -6,6 +6,9 @@
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
                           xmlns:designHelpers="clr-namespace:DrumBuddy.DesignHelpers"
+                          xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+                          xmlns:converters="clr-namespace:DrumBuddy.Converters"
+                          xmlns:views="clr-namespace:DrumBuddy.Views"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Views.LibraryView"
                           x:DataType="vm:LibraryViewModel">
@@ -22,7 +25,10 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        <Grid Background="{StaticResource HeaderGray}" HorizontalAlignment="Stretch">
+        
+        <Grid Background="{StaticResource HeaderGray}" 
+              HorizontalAlignment="Stretch"
+              IsVisible="{Binding !IsLoadingSheets}">
             <TextBlock Text="Your Sheet Library"
                        Margin="18"
                        Classes="header"
@@ -32,12 +38,25 @@
                        x:Name="ZeroStateTextBlock"
                        Classes="header"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center" >
+                <TextBlock.IsVisible>
+                    <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
+                        <Binding Path="Sheets.Count" />
+                        <Binding Path="IsLoadingSheets" />
+                    </MultiBinding>
+                </TextBlock.IsVisible>
+            </TextBlock>
             <Button x:Name="ZeroStateImportSheetButton"
                     Height="66"
                     HorizontalAlignment="Right"
                     Background="{StaticResource HeaderGray}"
                     Command="{Binding ImportSheetCommand}">
+                <Button.IsVisible>
+                    <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
+                        <Binding Path="Sheets.Count" />
+                        <Binding Path="IsLoadingSheets" />
+                    </MultiBinding>
+                </Button.IsVisible>
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource Add}" />
                     <TextBlock Text="Import sheets"
@@ -48,9 +67,29 @@
                 </StackPanel>
             </Button>
         </Grid>
+        <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2"
+                    Orientation="Vertical" 
+                    IsVisible="{Binding IsLoadingSheets}" 
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12"
+                    Background="White">
+            <avaloniaProgressRing:ProgressRing
+                Width="64"
+                Height="64" 
+                Margin="5"
+                IsActive="True"
+                Foreground="{StaticResource Accent}" />
+            <TextBlock TextAlignment="Center"
+                       FontWeight="SemiBold" 
+                       FontSize="22" 
+                       Text="Sheets are loading"
+                       Margin="0,5,0,0"/>
+        </StackPanel>
         <Border Grid.Row="1" Margin="0"
                 Background="{StaticResource LighterGray}"
-                Padding="12,6">
+                Padding="12,6"
+                IsVisible="{Binding !IsLoadingSheets}">
             <Grid ColumnDefinitions="Auto,*">
                 <StackPanel Grid.Column="0" Orientation="Horizontal"
                             HorizontalAlignment="Left">
@@ -215,16 +254,40 @@
         <ListBox Grid.Row="2"
                  x:Name="SheetsListBox" Margin="0,10,0,0"
                  SelectionMode="Multiple"
-                 Grid.ColumnSpan="2" Grid.Column="0">
+                 Grid.ColumnSpan="2" Grid.Column="0"
+                 IsVisible="{Binding !IsLoadingSheets}">
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="models:Sheet">
-                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,*,Auto">
-                        <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-                                  Data="{StaticResource music}"
-                                  Width="30"
-                                  Height="30"
-                                  Margin="5,0,20,0"
-                                  Foreground="#444444" />
+                <DataTemplate DataType="vm:SheetViewModel">
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,Auto,*,Auto">
+                        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="30" Height="30" Margin="5,0,20,0">
+                            <PathIcon Data="{StaticResource Cloud}"
+                                      Width="20" Height="20"
+                                      Foreground="{StaticResource Accent}">
+                                <PathIcon.IsVisible>
+                                    <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
+                                        <Binding Path="IsSyncEnabled" />
+                                        <Binding Path="IsSyncing" />
+                                    </MultiBinding>
+                                </PathIcon.IsVisible>
+                            </PathIcon>
+                            <PathIcon Data="{StaticResource CloudOff}"
+                                      Width="20" Height="20"
+                                      Foreground="Black">
+                                <PathIcon.IsVisible>
+                                    <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
+                                        <Binding Path="!IsSyncEnabled" />
+                                        <Binding Path="IsSyncing" />
+                                    </MultiBinding>
+                                </PathIcon.IsVisible>
+                            </PathIcon>
+                            
+                            <avaloniaProgressRing:ProgressRing
+                                IsActive="{Binding IsSyncing}"
+                                IsVisible="{Binding IsSyncing}"
+                                Width="20"
+                                Height="20"
+                                Foreground="{StaticResource Accent}" />
+                        </Grid>
                         <StackPanel Grid.Row="0" Grid.Column="1"
                                     Orientation="Horizontal"
                                     Margin="0,0,0,4">
@@ -313,14 +376,59 @@
                                     </MenuItem>
                                 </MenuFlyout>
                             </Button.Flyout>
-
+                            
                             <StackPanel Orientation="Horizontal">
                                 <PathIcon Data="{StaticResource Export}" Width="16" Height="16" Margin="0,0,10,0" />
                                 <TextBlock FontWeight="SemiBold" Opacity="0.8" Text="Export to" />
                             </StackPanel>
                         </Button>
-
-                        <Button Grid.Row="0" Grid.Column="5" Grid.RowSpan="2"
+                        <Grid Grid.Row="1" Grid.Column="4"
+                              VerticalAlignment="Center"
+                              IsVisible="{Binding $parent[views:LibraryView].((vm:LibraryViewModel)DataContext).IsOnline}">
+                            <Button 
+                                    Classes="sync"
+                                    IsEnabled="{Binding !IsSyncing}"
+                                    IsVisible="{Binding !IsSyncEnabled}"
+                                    Click="EnableSyncButton_OnClick">
+                                <StackPanel Orientation="Horizontal">
+                                    <PathIcon Data="{StaticResource Cloud}" 
+                                              Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
+                                              Width="16" Height="16" Margin="0,0,10,0" />
+                                    <TextBlock FontWeight="SemiBold"
+                                               Opacity="0.8" Text="Turn on sync" />
+                                </StackPanel>
+                            </Button>
+                            <Button 
+                                    Classes="sync"
+                                    IsEnabled="{Binding !IsSyncing}"
+                                    IsVisible="{Binding IsSyncEnabled}"
+                                    Click="DisableSyncButton_OnClick">
+                                <StackPanel Orientation="Horizontal">
+                                    <PathIcon Data="{StaticResource CloudOff}" 
+                                              Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
+                                              Width="16" Height="16" Margin="0,0,10,0" />
+                                    <TextBlock FontWeight="SemiBold"
+                                               Opacity="0.8" Text="Turn off sync" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                        <StackPanel Grid.Row="1" Grid.Column="5"
+                                    Orientation="Horizontal"
+                                    Margin="0">
+                            <StackPanel.IsVisible>
+                                <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
+                                    <Binding Path="IsSyncEnabled" />
+                                    <Binding Path="IsSyncing" />
+                                </MultiBinding>
+                            </StackPanel.IsVisible>
+                            <TextBlock Text="Last sync: "
+                                       FontWeight="SemiBold"
+                                       Opacity="0.8" />
+                            <TextBlock Text="{Binding LastSyncedAt}"
+                                       MaxWidth="800"
+                                       TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <Button Grid.Row="0" Grid.Column="6" Grid.RowSpan="2"
                                 VerticalAlignment="Center"
                                 Margin="8,0,0,0"
                                 Padding="8,8"
@@ -369,9 +477,15 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <UniformGrid Grid.Row="1" Grid.Column="0" IsVisible="False"
-                     Grid.RowSpan="2" x:Name="ZeroStateStack"
+        <UniformGrid Grid.Row="1" Grid.Column="0" 
+                     Grid.RowSpan="2" 
                      Grid.ColumnSpan="2" Columns="2">
+            <UniformGrid.IsVisible>
+                <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
+                    <Binding Path="Sheets.Count" />
+                    <Binding Path="IsLoadingSheets" />
+                </MultiBinding>
+            </UniformGrid.IsVisible>
             <Button Classes="card" CornerRadius="0" x:Name="RecordButton">
                 <Border>
                     <StackPanel Orientation="Vertical"

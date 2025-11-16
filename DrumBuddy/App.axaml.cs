@@ -1,19 +1,25 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using DrumBuddy.Api;
+using DrumBuddy.Api.Refit;
 using DrumBuddy.Core.Services;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO.Data.Storage;
+using DrumBuddy.IO.Data;
 using DrumBuddy.IO.Services;
+using DrumBuddy.IO.Storage;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.Views;
+using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
+using Refit;
 using Splat;
 using static Splat.Locator;
 
@@ -53,6 +59,34 @@ public class App : Application
     {
         RegisterCoreServices();
         RegisterIOServices();
+        var tokenService = new UserService(
+            Locator.Current.GetRequiredService<SheetRepository>());
+        CurrentMutable.Register(() => tokenService, typeof(UserService));
+
+        var authHandler = new AuthHeaderHandler(tokenService)
+        {
+            InnerHandler = new HttpClientHandler()
+        };
+        //TODO: handle dev and prod base addresses
+#if DEBUG
+        var baseAddress = new Uri("https://localhost:7258"); // local dev backend
+#else
+        var baseAddress = new Uri("https://api.drumbuddy.hu"); // production backend
+#endif
+
+        var authApi   = RestService.For<IAuthApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
+        var sheetApi  = RestService.For<ISheetApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
+        var configApi = RestService.For<IConfigurationApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
+
+        CurrentMutable.Register(
+            () => new ApiClient(authApi, sheetApi, configApi, tokenService,
+                Locator.Current.GetRequiredService<SerializationService>()),
+            typeof(ApiClient));
+        CurrentMutable.RegisterConstant(new SheetService(
+            Locator.Current.GetRequiredService<SheetRepository>(),
+            Locator.Current.GetRequiredService<UserService>(),
+            Locator.Current.GetRequiredService<ApiClient>()
+        ));
         CurrentMutable.Register(() =>
             new FileStorageInteractionService(
                 Locator.Current.GetRequiredService<SerializationService>(),
@@ -60,13 +94,14 @@ public class App : Application
                 Locator.Current.GetRequiredService<ConfigurationService>()
             ));
         CurrentMutable.RegisterConstant(new MainViewModel(
-            Locator.Current.GetRequiredService<MidiService>()));
+            Locator.Current.GetRequiredService<MidiService>(),
+            Locator.Current.GetRequiredService<ConfigurationService>()));
         CurrentMutable.RegisterConstant(new PdfGenerator());
         CurrentMutable.RegisterConstant<IScreen>(Locator.Current.GetService<MainViewModel>());
         CurrentMutable.RegisterConstant(new MainWindow());
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
-            Locator.Current.GetRequiredService<SheetStorage>(),
+            Locator.Current.GetRequiredService<SheetService>(),
             Locator.Current.GetRequiredService<PdfGenerator>(),
             Locator.Current.GetRequiredService<FileStorageInteractionService>(),
             Locator.Current.GetRequiredService<MidiService>()
@@ -80,7 +115,7 @@ public class App : Application
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<MidiService>(),
                 Locator.Current.GetRequiredService<ConfigurationService>(),
-                Locator.Current.GetRequiredService<SheetStorage>(),
+                Locator.Current.GetRequiredService<SheetService>(),
                 Locator.Current.GetRequiredService<MetronomePlayer>()));
 
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() },
@@ -107,22 +142,41 @@ public class App : Application
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
     private static void RegisterIOServices()
     {
+        // var exeDir = AppContext.BaseDirectory;
+        // var connectionString = $"Data Source={Path.Combine(exeDir, "sheet_db.db")};";
+        // CurrentMutable.RegisterConstant(
+        //     new SheetStorage(
+        //         Locator.Current.GetRequiredService<SerializationService>(),
+        //         connectionString
+        //     )
+        // );
+        
         var exeDir = AppContext.BaseDirectory;
-        var connectionString = $"Data Source={Path.Combine(exeDir, "sheet_db.db")};";
+        var dbPath = Path.Combine(exeDir, "sheet_db.db");
+        var connectionString = $"Data Source={dbPath};";
+
+        var dbOptions = new DbContextOptionsBuilder<DrumBuddyDbContext>()
+            .UseSqlite(connectionString)
+            .Options;
+
+        var dbContext = new DrumBuddyDbContext(dbOptions);
+        
+        dbContext.Database.EnsureCreated();
+
+        CurrentMutable.RegisterConstant(dbContext);
+        CurrentMutable.RegisterConstant(
+            new SheetRepository(
+                dbContext,
+                Locator.Current.GetRequiredService<SerializationService>()
+            )
+        );
         CurrentMutable.RegisterConstant(new MetronomePlayer(FilePathProvider.GetPathToHighBeepSound(),
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(
-            new SheetStorage(
-                Locator.Current.GetRequiredService<SerializationService>(),
-                connectionString
-            )
-        );
-        CurrentMutable.RegisterConstant(
-            new FileConfigurationStorage(Locator.Current.GetRequiredService<SerializationService>(),
-                Path.Combine(FilePathProvider.GetPathForSavedFiles(), "config")));
+            new ConfigurationRepository(dbContext,Locator.Current.GetRequiredService<SerializationService>()));
         CurrentMutable.RegisterConstant(new ConfigurationService(
-            Locator.Current.GetRequiredService<FileConfigurationStorage>(),
+            Locator.Current.GetRequiredService<ConfigurationRepository>(),
             Locator.Current.GetRequiredService<MetronomePlayer>()));
-        CurrentMutable.RegisterConstant(new MidiService(Locator.Current.GetRequiredService<ConfigurationService>()));
+        CurrentMutable.RegisterConstant(new MidiService());
     }
 }

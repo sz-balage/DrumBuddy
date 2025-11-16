@@ -1,16 +1,61 @@
 ﻿using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 using DrumBuddy.Core.Extensions;
 
 namespace DrumBuddy.Core.Models;
 
-public class Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, string description)
+public class Sheet
 {
-    public TimeSpan Length => CalculateLength();
-    public string Name { get; init; } = name;
-    public string Description { get; init; } = description;
+    // Parameterless constructor for JSON deserialization
+    [JsonConstructor]
+    public Sheet() { }
 
-    public Bpm Tempo { get; set; } = tempo;
-    public ImmutableArray<Measure> Measures { get; } = measures;
+    // Original constructor for code usage
+    public Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, string description, Guid? id = null, DateTime? updatedAt = null)
+    {
+        Name = name;
+        Description = description;
+        Tempo = tempo;
+        Measures = measures;
+        Id = id ?? Guid.NewGuid();
+        UpdatedAt = updatedAt ?? DateTime.UtcNow;
+    }
+
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("lastSyncedAt")]
+    public DateTime? LastSyncedAt { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("description")]
+    public string Description { get; set; }
+
+    [JsonPropertyName("tempo")]
+    public Bpm Tempo { get; set; }
+
+    [JsonPropertyName("measures")]
+    public ImmutableArray<Measure> Measures { get; set; }
+    private bool _isSyncEnabled;
+    // client specific
+    [JsonPropertyName("isSyncEnabled")]
+    public bool IsSyncEnabled 
+    { 
+        get => _isSyncEnabled;
+        set
+        {
+            _isSyncEnabled = value;
+            if(!_isSyncEnabled)
+                LastSyncedAt = null;
+        } 
+    }
+    [JsonPropertyName("updatedAt")]
+    public DateTime UpdatedAt { get; set; } 
+
+    [JsonIgnore]
+    public TimeSpan Length => CalculateLength();
 
     private TimeSpan CalculateLength()
     {
@@ -23,5 +68,17 @@ public class Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, str
     public Sheet RenameSheet(string newName, string newDescription)
     {
         return new Sheet(Tempo, Measures, newName, newDescription);
+    }
+
+    public Sheet Sync()
+    {
+        IsSyncEnabled = true;
+        LastSyncedAt = DateTime.Now;
+        return this;
+    }
+    public Sheet UnSync()
+    {
+        IsSyncEnabled = false;
+        return this;
     }
 }

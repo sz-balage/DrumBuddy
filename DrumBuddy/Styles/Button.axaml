@@ -13,6 +13,14 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontFamily" Value="{StaticResource NunitoFont}" />
     </Style>
+    <Style Selector="Button.sync">
+        <Setter Property="Margin" Value="8,-5,0,0"></Setter>
+        <Setter Property="Padding" Value="8,4"></Setter>
+        <Setter Property="Background" Value="Transparent"></Setter>
+    </Style>
+    <Style Selector="Button.sync:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
     <Style Selector="Button.round">
         <Setter Property="CornerRadius" Value="20" />
         <Setter Property="Background" Value="{StaticResource LighterGray}" />

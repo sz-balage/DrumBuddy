@@ -16,8 +16,9 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DrumBuddy.DesignHelpers;
-using DrumBuddy.IO.Data.Storage;
+using DrumBuddy.IO.Data;
 using DrumBuddy.Models;
+using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
 using DrumBuddy.ViewModels.Dialogs;
 using DrumBuddy.Views.Dialogs;
@@ -37,7 +38,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     {
         if (Design.IsDesignMode)
         {
-            var vm = new ManualEditorViewModel(null, new SheetStorage(null, ""), () => Task.CompletedTask);
+            var vm = new ManualEditorViewModel(null, new SheetService(null, null,null), () => Task.CompletedTask);
             vm.LoadSheet(TestSheetProvider.GetTestSheet());
             ViewModel = vm;
         }
