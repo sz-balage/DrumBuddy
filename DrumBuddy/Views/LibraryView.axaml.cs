@@ -138,8 +138,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 var menuItem = new MenuItem { Header = sheet.Name, Tag = sheet };
                 menuItem.Click += async (s, args) =>
                 {
-                    if (s is MenuItem mi && mi.Tag is Sheet selectedSheet)
-                        await ViewModel.CompareSheets(baseSheet.Sheet, selectedSheet);
+                    if (s is MenuItem mi && mi.Tag is SheetViewModel selectedSheet)
+                        await ViewModel.CompareSheets(baseSheet.Sheet, selectedSheet.Sheet);
                 };
                 flyout.Items.Add(menuItem);
             }

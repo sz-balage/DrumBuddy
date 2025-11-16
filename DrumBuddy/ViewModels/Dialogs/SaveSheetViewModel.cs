@@ -18,9 +18,10 @@ public partial class SaveSheetViewModel : ReactiveObject, IValidatableViewModel
     private readonly SheetCreationData _sheetCreationData;
     [Reactive] private string _sheetDescription = "";
     [Reactive] private string _sheetName = "";
-
-    public SaveSheetViewModel(SheetCreationData sheetCreationData)
+    private Guid? _sheetId;
+    public SaveSheetViewModel(SheetCreationData sheetCreationData, Guid? sheetId = null)
     {
+        _sheetId = sheetId;
         _library = Locator.Current.GetRequiredService<LibraryViewModel>();
         _sheetCreationData = sheetCreationData;
         var titleObservable =
@@ -42,7 +43,7 @@ public partial class SaveSheetViewModel : ReactiveObject, IValidatableViewModel
     private async Task SaveSheet()
     {
         _sheetName = _sheetName.Trim();
-        Sheet sheetToSave = new(_sheetCreationData.Bpm, _sheetCreationData.Measures, _sheetName, _sheetDescription);
+        Sheet sheetToSave = new(_sheetCreationData.Bpm, _sheetCreationData.Measures, _sheetName, _sheetDescription,_sheetId);
         await _library.SaveSheet(sheetToSave);
     }
 }

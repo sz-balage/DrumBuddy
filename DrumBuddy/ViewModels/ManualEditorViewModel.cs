@@ -29,6 +29,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     //TODO: make auto save checkbox
     public const int Columns = 16; // one measure, 16 sixteenth steps
     public const int MaxNotesPerColumn = 4; // maximum notes allowed per column (NoteGroup)
+    private Guid _sheetId;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly List<bool[,]> _measureSteps;
     private readonly NotificationService _notificationService;
@@ -70,6 +71,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         _notificationService = new(Locator.Current.GetRequiredService<MainWindow>());
         HostScreen = host;
         UrlPathSegment = "manual-editor";
+        _sheetId = Guid.NewGuid();
         _measureSource.Connect()
             .Bind(out Measures)
             .ObserveOn(RxApp.MainThreadScheduler)
@@ -261,7 +263,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             {
                 Name = dialogResult.Name;
                 Description = dialogResult.Description;
-                CurrentSheet = BuildSheet(CurrentSheet?.Id);
+                CurrentSheet = BuildSheet();
                 _notificationService.ShowNotification(new Notification("Sheet saved.",
                     $"The sheet {Name} successfully saved.", NotificationType.Success));
                 IsSaved = true;
@@ -269,7 +271,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         }
         else
         {
-            CurrentSheet = BuildSheet(CurrentSheet?.Id);
+            CurrentSheet = BuildSheet();
             await _sheetService.UpdateSheetAsync(CurrentSheet!);
         
             _notificationService.ShowNotification(new Notification("Sheet saved.",
@@ -343,12 +345,12 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
             _measureSteps.Add(measureMatrix);
         }
-
+        _sheetId = sheet.Id;
         CurrentMeasureIndex = 0;
         Name = sheet.Name;
         Description = sheet.Description;
         BpmDecimal = sheet.Tempo.Value;
-        CurrentSheet = BuildSheet(sheet.Id);
+        CurrentSheet = BuildSheet();
         DrawSheet();
         IsSaved = true;
     }
@@ -363,7 +365,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         };
     }
 
-    private Sheet BuildSheet(Guid? id = null)
+    private Sheet BuildSheet()
     {
         var allMeasures = new List<Measure>();
 
@@ -393,9 +395,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             allMeasures.Add(new Measure(groups));
         }
         // Use the provided ID, or the current sheet's ID if editing, or generate new if creating
-        var sheetId = id ?? CurrentSheet?.Id ?? Guid.NewGuid();
 
-        return new Sheet(_bpm, [..allMeasures], Name ?? "Untitled", Description ?? "", sheetId);
+        return new Sheet(_bpm, [..allMeasures], Name ?? "Untitled", Description ?? "", _sheetId);
 
     }
 

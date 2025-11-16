@@ -49,7 +49,7 @@ public class SheetRepository
             Description = sheetDto.Description,
             Tempo = sheetDto.Tempo,
             UserId = userId,
-            UpdatedAt = sheetDto.UpdatedAt
+            UpdatedAt = DateTime.SpecifyKind(sheetDto.UpdatedAt, DateTimeKind.Utc)
         };
 
         try
@@ -74,7 +74,7 @@ public class SheetRepository
             Name = sheet.Name,
             Description = sheet.Description,
             Tempo = sheet.Tempo.Value,
-            UpdatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
             UserId = userId 
         };
 
@@ -104,7 +104,7 @@ public class SheetRepository
         record.Description = sheetDto.Description;
         record.Tempo = sheetDto.Tempo;
         record.MeasureBytes = sheetDto.MeasureBytes;
-        record.UpdatedAt = updatedAt;
+        record.UpdatedAt = DateTime.SpecifyKind(updatedAt, DateTimeKind.Utc);
 
         try
         {
@@ -134,7 +134,7 @@ public class SheetRepository
         record.Description = sheet.Description;
         record.Tempo = sheet.Tempo.Value;
         record.MeasureBytes = measureBytes;
-        record.UpdatedAt = updatedAt;
+        record.UpdatedAt = DateTime.SpecifyKind(updatedAt, DateTimeKind.Utc);
 
         try
         {
