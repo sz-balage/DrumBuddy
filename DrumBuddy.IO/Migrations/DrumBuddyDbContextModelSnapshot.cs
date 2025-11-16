@@ -43,7 +43,7 @@ namespace DrumBuddy.IO.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Configurations");
+                    b.ToTable("Configurations", (string)null);
                 });
 
             modelBuilder.Entity("DrumBuddy.IO.Models.SheetRecord", b =>
@@ -81,7 +81,7 @@ namespace DrumBuddy.IO.Migrations
                     b.HasIndex("UserId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Sheets");
+                    b.ToTable("Sheets", (string)null);
                 });
 
             modelBuilder.Entity("DrumBuddy.IO.Models.User", b =>

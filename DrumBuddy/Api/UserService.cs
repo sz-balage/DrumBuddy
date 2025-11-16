@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
+using DrumBuddy.IO.Data;
 
 namespace DrumBuddy.Api;
 
@@ -15,12 +16,15 @@ public class UserService
     private readonly string _rememberMeFilePath;
 
     private string? _cachedToken;
+    private readonly SheetRepository _repository;
     public string? Email { get; private set; }
     public string? UserName { get; private set; }
     public bool IsOnline => !string.IsNullOrEmpty(Email) && IsTokenValid();
+    public string? UserId { get; set; }
 
-    public UserService()
+    public UserService(SheetRepository repository)
     {
+        _repository = repository;
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var drumBuddyFolder = Path.Combine(appDataPath, "DrumBuddy");
 
@@ -32,11 +36,13 @@ public class UserService
 
     public string? GetToken() => _cachedToken;
 
-    public void SetToken(string token,string userName, string email)
+    public async Task SetToken(string token,string userName, string email, string userId)
     {
         _cachedToken = token;
         UserName = userName;
         Email = email;
+        UserId = userId;
+        await _repository.CreateUserIfNotExistsAsync(userId);
     }
 
     public void ClearToken()
@@ -44,6 +50,7 @@ public class UserService
         _cachedToken = null;
         UserName = null;
         Email = null;
+        UserId = null;
     }
     public bool IsTokenValid() => !string.IsNullOrEmpty(_cachedToken);
 

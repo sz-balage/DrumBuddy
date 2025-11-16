@@ -59,7 +59,8 @@ public class App : Application
     {
         RegisterCoreServices();
         RegisterIOServices();
-        var tokenService = new UserService();
+        var tokenService = new UserService(
+            Locator.Current.GetRequiredService<SheetRepository>());
         CurrentMutable.Register(() => tokenService, typeof(UserService));
 
         var authHandler = new AuthHeaderHandler(tokenService)

@@ -17,32 +17,30 @@ public class SheetRepository
         _serializationService = serializationService;
     }
 
-    public async Task<ImmutableArray<Sheet>> LoadSheetsAsync(string? userId = null)
+    public async Task<ImmutableArray<Sheet>> LoadSheetsAsync(string? userId)
     {
-        var query = _context.Sheets.AsQueryable();
-        query = query.Where(s => s.UserId == userId); 
-        //TODO: give more thought to how guest vs logged in user sheets are handled, for now guest sheets are available in guest mode, user sheets when logged in
+        IQueryable<SheetRecord> query = _context.Sheets;
+
+        query = query.Where(s => s.UserId == userId);
         var records = await query
             .OrderBy(s => s.Name)
             .ToListAsync();
-
         var sheets = records.Select(DeserializeToSheet).ToList();
         return [..sheets];
     }
 
-    public async Task<Sheet?> GetSheetByIdAsync(Guid id, string? userId = null)
+    public async Task<Sheet?> GetSheetByIdAsync(Guid id, string? userId)
     {
-        var query = _context.Sheets.AsQueryable();
-        
+        IQueryable<SheetRecord> query = _context.Sheets;
+        query = query.Where(s => s.UserId == userId);
         if (!string.IsNullOrEmpty(userId))
-            query = query.Where(s => s.UserId == userId);
+            query = query.Where(s => s.UserId == null || s.UserId == userId);
 
         var record = await query.FirstOrDefaultAsync(s => s.Id == id);
         return record == null ? null : DeserializeToSheet(record);
     }
-    public async Task SaveSheetAsync(SheetDto sheetDto, string? userId = null)
+    public async Task SaveSheetAsync(SheetDto sheetDto, string? userId)
     {
-
         var record = new SheetRecord
         {
             Id = sheetDto.Id,
@@ -51,7 +49,7 @@ public class SheetRepository
             Description = sheetDto.Description,
             Tempo = sheetDto.Tempo,
             UserId = userId,
-            UpdatedAt = sheetDto.UpdatedAt//null for client, actual userId for server
+            UpdatedAt = sheetDto.UpdatedAt
         };
 
         try
@@ -65,7 +63,7 @@ public class SheetRepository
         }
     }
 
-    public async Task SaveSheetAsync(Sheet sheet, string? userId = null)
+    public async Task SaveSheetAsync(Sheet sheet, string? userId)
     {
         var measureBytes = _serializationService.SerializeMeasurementData(sheet.Measures);
 
@@ -77,7 +75,7 @@ public class SheetRepository
             Description = sheet.Description,
             Tempo = sheet.Tempo.Value,
             UpdatedAt = DateTime.UtcNow,
-            UserId = userId //null for client, actual userId for server
+            UserId = userId 
         };
 
         try
@@ -90,7 +88,7 @@ public class SheetRepository
             throw new InvalidOperationException("You already have a sheet with that name", ex);
         }
     }
-    public async Task UpdateSheetAsync(SheetDto sheetDto, DateTime updatedAt, string? userId = null)
+    public async Task UpdateSheetAsync(SheetDto sheetDto, DateTime updatedAt, string? userId)
     {
         var query = _context.Sheets.AsQueryable();
         
@@ -118,12 +116,12 @@ public class SheetRepository
             throw new InvalidOperationException("A sheet with that name already exists", ex);
         }
     }
-    public async Task UpdateSheetAsync(Sheet sheet, DateTime updatedAt, string? userId = null)
+    public async Task UpdateSheetAsync(Sheet sheet, DateTime updatedAt, string? userId)
     {
         var query = _context.Sheets.AsQueryable();
         
-        if (!string.IsNullOrEmpty(userId))
-            query = query.Where(s => s.UserId == userId);
+        query = query.Where(s => s.UserId == userId);
+
 
         var record = await query.FirstOrDefaultAsync(s => s.Id == sheet.Id);
 
@@ -149,12 +147,12 @@ public class SheetRepository
         }
     }
 
-    public async Task DeleteSheetAsync(Guid id, string? userId = null)
+    public async Task DeleteSheetAsync(Guid id, string? userId)
     {
         var query = _context.Sheets.AsQueryable();
         
-        if (!string.IsNullOrEmpty(userId))
-            query = query.Where(s => s.UserId == userId);
+        query = query.Where(s => s.UserId == userId);
+
 
         var record = await query.FirstOrDefaultAsync(s => s.Id == id);
 
@@ -164,43 +162,30 @@ public class SheetRepository
         _context.Sheets.Remove(record);
         await _context.SaveChangesAsync();
     }
+    // public async Task UpdateSheetUserIdAsync(Guid sheetId, string userId)
+    // {
+    //     var record = await _context.Sheets.FirstAsync(s => s.Id == sheetId);
+    //     record.UserId = userId;
+    //     await _context.SaveChangesAsync();
+    // }
 
-    public bool SheetExists(string sheetName, string? userId = null)
+    public async Task CreateUserIfNotExistsAsync(string? userId)
     {
-        var query = _context.Sheets.AsQueryable();
-        query = query.Where(s => s.Name == sheetName);
-        return query.Any(s => s.Name == sheetName);
-    }
-
-    public async Task RenameSheetAsync(string oldSheetName, Sheet newSheet, DateTime updatedAt, string? userId = null)
-    {
-        var query = _context.Sheets.AsQueryable();
-        
-        if (!string.IsNullOrEmpty(userId))
-            query = query.Where(s => s.UserId == userId);
-
-        var record = await query.FirstOrDefaultAsync(s => s.Name == oldSheetName);
-
-        if (record == null)
-            throw new InvalidOperationException($"Sheet '{oldSheetName}' not found");
-
-        var measureBytes = _serializationService.SerializeMeasurementData(newSheet.Measures);
-
-        record.Name = newSheet.Name;
-        record.Description = newSheet.Description;
-        record.Tempo = newSheet.Tempo.Value;
-        record.MeasureBytes = measureBytes;
-        record.UpdatedAt = updatedAt;
-
-        try
+        if (string.IsNullOrEmpty(userId))
+            return;
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
         {
-            _context.Sheets.Update(record);
+            var userName = $"Local_{userId.Substring(0, 8)}"; // e.g. Local_72e6e134
+            _context.Users.Add(new User { Id = userId, UserName = userName });
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("IX_Sheets_UserId_Name") == true)
-        {
-            throw new InvalidOperationException("A sheet with that name already exists", ex);
-        }
+    }
+    public bool SheetExists(string sheetName, string? userId)
+    {
+        IQueryable<SheetRecord> query = _context.Sheets;
+        return query.Any(s =>
+            s.Name == sheetName && s.UserId == userId);
     }
 
     public static string GenerateCopyName(string originalName, HashSet<string?> existingNames)

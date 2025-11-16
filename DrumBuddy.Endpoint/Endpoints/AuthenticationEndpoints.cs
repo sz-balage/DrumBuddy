@@ -59,7 +59,8 @@ public static class AuthenticationEndpoints
         {
             userName = user.UserName,
             email = user.Email,
-            token
+            token,
+            userId = user.Id
         });
     }
 
@@ -88,7 +89,8 @@ public static class AuthenticationEndpoints
         {
             username = user.UserName,
             email = user.Email,
-            token
+            token,
+            userId = user.Id
         });
     }
     private static async Task<IResult> ForgotPassword(

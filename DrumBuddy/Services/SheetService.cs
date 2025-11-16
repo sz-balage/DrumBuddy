@@ -8,13 +8,8 @@ using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Data;
 
 namespace DrumBuddy.Services;
-
 public class SheetService
-{
-    //sheets are always saved with userid set to null to the local, sqlite db
-    //on the server side, sheets are saved with the actual userid
-    //when syncing, server will only return sheets for the logged in user, and if sheet is synced,
-    //all requests will contain the userid
+{ 
     private readonly SheetRepository _repository;
     private readonly UserService _userService;
     private readonly ApiClient _apiClient;
@@ -41,7 +36,7 @@ public class SheetService
             return syncedSheets;
         }
 
-        return await _repository.LoadSheetsAsync();
+        return await _repository.LoadSheetsAsync(_userService.UserId);
     }
 
     /// <summary>
@@ -49,7 +44,7 @@ public class SheetService
     /// </summary>
     public async Task<Sheet?> GetSheetByIdAsync(Guid id)
     {
-        return await _repository.GetSheetByIdAsync(id);
+        return await _repository.GetSheetByIdAsync(id,_userService.UserId);
     }
 
     /// <summary>
@@ -57,7 +52,7 @@ public class SheetService
     /// </summary>
     public async Task CreateSheetAsync(Sheet sheet)
     {
-        await _repository.SaveSheetAsync(sheet); //local save, userid null
+        await _repository.SaveSheetAsync(sheet,_userService.UserId); //local save, userid null
         // if (sheet.IsSyncEnabled && _userService.IsOnline)
         // {
         //     try
@@ -75,7 +70,6 @@ public class SheetService
     public async Task<bool> SyncSheetToServer(Sheet sheet)
     {
         var updatedAt = DateTime.UtcNow;
-        await _repository.UpdateSheetAsync(sheet, updatedAt);
         if (sheet.IsSyncEnabled && _userService.IsOnline)
             try
             {
@@ -93,7 +87,7 @@ public class SheetService
 
     public async Task<bool> UnSyncSheetToServer(Sheet sheet)
     {
-        await _repository.UpdateSheetAsync(sheet, DateTime.UtcNow);
+        await _repository.UpdateSheetAsync(sheet, DateTime.UtcNow,_userService.UserId);
         try
         {
             await _apiClient.DeleteSheetAsync(sheet.Id);
@@ -112,7 +106,7 @@ public class SheetService
     public async Task UpdateSheetAsync(Sheet sheet)
     {
         var updatedAt = DateTime.UtcNow;
-        await _repository.UpdateSheetAsync(sheet, updatedAt); //local update userid null
+        await _repository.UpdateSheetAsync(sheet, updatedAt,_userService.UserId); //local update userid null
 
         // Sync to server if logged in
         if (sheet.IsSyncEnabled && _userService.IsOnline)
@@ -134,7 +128,7 @@ public class SheetService
     public async Task DeleteSheetAsync(Sheet sheet)
     {
         // Delete from local database
-        await _repository.DeleteSheetAsync(sheet.Id);
+        await _repository.DeleteSheetAsync(sheet.Id,_userService.UserId);
 
         // Delete from server if logged in
         if (sheet.IsSyncEnabled && _userService.IsOnline)
@@ -153,28 +147,7 @@ public class SheetService
     /// </summary>
     public bool SheetExists(string sheetName)
     {
-        return _repository.SheetExists(sheetName);
-    }
-
-    /// <summary>
-    ///     Rename a sheet locally and sync to server if online
-    /// </summary>
-    public async Task RenameSheetAsync(string oldName, Sheet newSheet)
-    {
-        var updatedAt = DateTime.UtcNow;
-        await _repository.RenameSheetAsync(oldName, newSheet, updatedAt);
-
-        if (newSheet.IsSyncEnabled && _userService.IsOnline)
-            try
-            {
-                await _apiClient.UpdateSheetAsync(newSheet.Id, newSheet, updatedAt);
-                newSheet.IsSyncEnabled = true;
-                newSheet.LastSyncedAt = DateTime.Now;
-            }
-            catch
-            {
-                newSheet.IsSyncEnabled = false;
-            }
+        return _repository.SheetExists(sheetName,_userService.UserId);
     }
 
     /// <summary>
@@ -188,7 +161,7 @@ public class SheetService
     /// <returns>Sheets to store locally, synced with server versions</returns>
     private async Task<ImmutableArray<Sheet>> SyncWithServerAsync()
     {
-        var localSheets = (await _repository.LoadSheetsAsync()).ToList();
+        var localSheets = (await _repository.LoadSheetsAsync(_userService.UserId)).ToList();
         var remoteSummaries = await _apiClient.GetSheetSummariesAsync();
 
         var localMap = localSheets.ToDictionary(s => s.Id);
@@ -208,9 +181,9 @@ public class SheetService
                 }
 
                 // server sheet is newer → delete local version & download server one
-                await _repository.DeleteSheetAsync(localWithSameName.Id);
+                await _repository.DeleteSheetAsync(localWithSameName.Id,_userService.UserId);
                 var remoteFull = await _apiClient.GetSheetAsync(remoteSummary.Id);
-                await _repository.SaveSheetAsync(remoteFull);
+                await _repository.SaveSheetAsync(remoteFull,_userService.UserId);
                 localSheets.Remove(localWithSameName);
                 localSheets.Add(remoteFull.Sync());
                 continue;
@@ -219,7 +192,7 @@ public class SheetService
             if (!localMap.TryGetValue(remoteSummary.Id, out var local))
             {
                 var remote = await _apiClient.GetSheetAsync(remoteSummary.Id);
-                await _repository.SaveSheetAsync(remote);
+                await _repository.SaveSheetAsync(remote,_userService.UserId);
                 localSheets.Add(remote.Sync());
                 continue;
             }
@@ -227,7 +200,7 @@ public class SheetService
             if (remoteSummary.UpdatedAt > local.UpdatedAt)
             {
                 var remote = await _apiClient.GetSheetAsync(remoteSummary.Id);
-                await _repository.UpdateSheetAsync(remote, remote.UpdatedAt);
+                await _repository.UpdateSheetAsync(remote, remote.UpdatedAt,_userService.UserId);
             }
             else if (local.UpdatedAt > remoteSummary.UpdatedAt)
             {
