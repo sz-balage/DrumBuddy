@@ -61,7 +61,7 @@ public class FileStorageInteractionService(
 
         var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
         if (parentFolder is not null)
-            configurationService.Set(LastJsonFolderKey, parentFolder);
+            await configurationService.SetAsync(LastJsonFolderKey, parentFolder);
 
         return file.Name;
     }
@@ -101,7 +101,7 @@ public class FileStorageInteractionService(
 
         var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
         if (parentFolder is not null)
-            configurationService.Set(LastMidiFolderKey, parentFolder);
+            await configurationService.SetAsync(LastMidiFolderKey, parentFolder);
 
         midiService.ExportToMidi(sheet, file.Path.AbsolutePath);
 
@@ -144,7 +144,7 @@ public class FileStorageInteractionService(
 
         var parentFolder = Path.GetDirectoryName(file.Path.LocalPath);
         if (parentFolder is not null)
-            configurationService.Set(LastMusicXmlFolderKey, parentFolder);
+            await configurationService.SetAsync(LastMusicXmlFolderKey, parentFolder);
 
         MusicXmlExporter.ExportSheetToMusicXml(sheet, file.Path.AbsolutePath);
 
@@ -186,7 +186,7 @@ public class FileStorageInteractionService(
 
         var parentFolder = Path.GetDirectoryName(files.FirstOrDefault()?.Path.LocalPath);
         if (parentFolder is not null)
-            configurationService.Set(LastImportFolderKey, parentFolder);
+            await configurationService.SetAsync(LastImportFolderKey, parentFolder);
 
         return sheetsAndExceptions;
     }

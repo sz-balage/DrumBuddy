@@ -27,15 +27,8 @@
                            Margin="18"
                            Classes="header"
                            VerticalAlignment="Center" />
-                <Button Classes="round" Command="{Binding SyncToServerCommand}"
-                        IsVisible="{Binding CanSyncToServer}">
-                    <StackPanel Orientation="Horizontal">
-                        <PathIcon Data="{StaticResource Cloud}"/>
-                        <TextBlock Text="Sync configuration to server"
-                                   Margin="10,0,0,0"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </Button>
+                <PathIcon Data="{StaticResource Cloud}"  IsVisible="{Binding CanSyncToServer}"/>
+                <PathIcon Data="{StaticResource CloudOff}"  IsVisible="{Binding !CanSyncToServer}"/>
             </StackPanel>
             <TextBlock x:Name="ListeningDrumText"
                        IsVisible="{Binding DrumMappingTabSelected}"

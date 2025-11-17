@@ -191,7 +191,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
         else
         {
             _midiService.SetUserChosenDeviceAsInput(chosenDevice);
-            _configurationService.Set(LastDeviceKey, chosenDevice.Name);
+            await _configurationService.SetAsync(LastDeviceKey, chosenDevice.Name);
             SuccessfulConnection("Connected to " + chosenDevice?.Name);
         }
     }

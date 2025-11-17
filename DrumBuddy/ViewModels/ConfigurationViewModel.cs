@@ -60,9 +60,33 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         ListeningDrumChanged
             .Subscribe(UpdateListeningDrum);
         this.WhenAnyValue(vm => vm.MetronomeVolume)
-            .Subscribe(vol => _configService.MetronomeVolume = vol);
+            .Throttle(TimeSpan.FromMilliseconds(1000))
+            .Subscribe(async void (vol) =>
+            {
+                try
+                {
+                    _configService.MetronomeVolume = vol;
+                    await _configService.SaveAsync();
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
+            });
         this.WhenAnyValue(vm => vm.KeyboardInput)
-            .Subscribe(enabled => _configService.KeyboardInput = enabled);
+            .Throttle(TimeSpan.FromMilliseconds(1000))
+            .Subscribe(async void (enabled) =>
+            {
+                try
+                {
+                    _configService.KeyboardInput = enabled;
+                    await _configService.SaveAsync();
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
+            });
         LoadConfig().Wait();
     }
 
@@ -128,9 +152,30 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
             _beatsSubscription = _midiService
                 .GetRawNoteObservable()
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(OnMidiNoteReceived);
+                .Subscribe(async void (n) =>
+                {
+                    try
+                    {
+                        await OnMidiNoteReceivedAsync(n);
+                    }
+                    catch (Exception e)
+                    {
+                        //ignored
+                    }
+                });
         else if (KeyboardBeats is not null)
-            _beatsSubscription = KeyboardBeats.ObserveOn(RxApp.MainThreadScheduler).Subscribe(OnMidiNoteReceived);
+            _beatsSubscription = KeyboardBeats.ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(async void (n) =>
+                {
+                    try
+                    {
+                        await OnMidiNoteReceivedAsync(n);
+                    }
+                    catch (Exception e)
+                    {
+                        //ignored
+                    }
+                });
     }
 
     [ReactiveCommand]
@@ -153,36 +198,16 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         UpdateListeningDrum(null);
     }
     [ReactiveCommand]
-    private async Task SyncToServer()
-    {
-        var success = await _configService.SyncToServer();
-        if (success)
-        {
-            _notificationService.ShowNotification(new Notification("Sync Successful",
-                "Configuration synchronized with server.",
-                NotificationType.Success,
-                TimeSpan.FromSeconds(3)));
-        }
-        else
-        {
-            _notificationService.ShowNotification(new Notification(
-                "Sync Failed",
-                "Could not synchronize configuration with server.",
-                NotificationType.Error,
-                TimeSpan.FromSeconds(3)));
-        }
-    }
-    [ReactiveCommand]
-    private void RevertToDefaultMappings()
+    private async Task RevertToDefaultMappings()
     {
         if (KeyboardInput)
-            _configService.SetDefaultKeyboardMappings();
+            await _configService.SetDefaultKeyboardMappings();
         else
-            _configService.SetDefaultDrumMappings();
+            await _configService.SetDefaultDrumMappings();
         UpdateDrumMappings();
     }
 
-    private void OnMidiNoteReceived(int noteNumber)
+    private async Task OnMidiNoteReceivedAsync(int noteNumber)
     {
         if (_configService.ListeningDrum is null)
         {
@@ -191,7 +216,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
             return;
         }
 
-        _configService.MapDrum(noteNumber);
+        await _configService.MapDrumAsync(noteNumber);
         UpdateDrumMappings();
     }
 
