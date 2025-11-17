@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrumBuddy.Core", "DrumBuddy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrumBuddy.IO", "DrumBuddy.IO\DrumBuddy.IO.csproj", "{0EAC9624-359B-4B44-ABA0-5C9F8E2710FF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrumBuddy.Core.Unit", "DrumBuddy.Unit\DrumBuddy.Core.Unit.csproj", "{52354F9F-A702-45F7-A052-A29BA2DC290D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrumBuddy.Core.Unit", "DrumBuddy.Core.Unit\DrumBuddy.Core.Unit.csproj", "{52354F9F-A702-45F7-A052-A29BA2DC290D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrumBuddy.Desktop", "DrumBuddy.Desktop\DrumBuddy.Desktop.csproj", "{5D5006CC-5C24-412A-8800-539311DD0606}"
 EndProject
