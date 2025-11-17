@@ -96,11 +96,10 @@ public class ApiClient
     public async Task DeleteSheetAsync(Guid id) 
         => await _sheetApi.DeleteSheetAsync(id);
 
-    // Configuration methods
-    public async Task<AppConfiguration> GetConfigurationAsync()
+    public async Task<ConfigurationResponse> GetConfigurationAsync()
         => await _configurationApi.GetConfigurationAsync();
 
-    public async Task UpdateConfigurationAsync(AppConfiguration configuration)
+    public async Task UpdateConfigurationAsync(AppConfiguration configuration, DateTime updatedAt)
         => await _configurationApi.UpdateConfigurationAsync(
-            new UpdateConfigurationRequest(configuration));
+            new UpdateConfigurationRequest(configuration, updatedAt));
 }

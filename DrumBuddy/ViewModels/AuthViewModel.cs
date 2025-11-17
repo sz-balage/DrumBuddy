@@ -26,6 +26,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
     private readonly ApiClient _apiClient;
     private readonly NotificationService _notificationService;
     private readonly UserService _userService;
+    private readonly ConfigurationViewModel _configVm;
     
     [Reactive] private string _confirmPassword = string.Empty;
     [Reactive] private string _email = string.Empty;
@@ -40,6 +41,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
     {
         _apiClient = Locator.Current.GetRequiredService<ApiClient>();
         _userService = Locator.Current.GetRequiredService<UserService>();
+        _configVm = Locator.Current.GetRequiredService<ConfigurationViewModel>();
         _notificationService = new NotificationService(mainWindow);
 
         _ = LoadRememberedCredentialsAsync();
@@ -131,6 +133,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
     [ReactiveCommand]
     private void GuestLogin()
     {
+        _configVm.LoadConfig();
         _notificationService.ShowNotification(new Notification(
             "Guest Login",
             "You are now logged in as a guest.",
@@ -143,6 +146,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         {
             IsLoading = true;
             await _apiClient.LoginAsync(_email, _password);
+            _configVm.LoadConfig();
             return true;
         }
         catch (Refit.ApiException apiException)
@@ -175,6 +179,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             IsLoading = true;
             await _apiClient.RegisterAsync(_email, _password, _userName); 
             _userService.ClearRememberedCredentials();
+            _configVm.LoadConfig();
             return true;
         }
         catch (Refit.ApiException apiException)

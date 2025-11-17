@@ -82,6 +82,11 @@ public class App : Application
             () => new ApiClient(authApi, sheetApi, configApi, tokenService,
                 Locator.Current.GetRequiredService<SerializationService>()),
             typeof(ApiClient));
+        CurrentMutable.RegisterConstant(new ConfigurationService(
+            Locator.Current.GetRequiredService<ConfigurationRepository>(),
+            Locator.Current.GetRequiredService<MetronomePlayer>(),
+            Locator.Current.GetRequiredService<UserService>()
+            ));
         CurrentMutable.RegisterConstant(new SheetService(
             Locator.Current.GetRequiredService<SheetRepository>(),
             Locator.Current.GetRequiredService<UserService>(),
@@ -174,9 +179,6 @@ public class App : Application
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(
             new ConfigurationRepository(dbContext,Locator.Current.GetRequiredService<SerializationService>()));
-        CurrentMutable.RegisterConstant(new ConfigurationService(
-            Locator.Current.GetRequiredService<ConfigurationRepository>(),
-            Locator.Current.GetRequiredService<MetronomePlayer>()));
         CurrentMutable.RegisterConstant(new MidiService());
     }
 }

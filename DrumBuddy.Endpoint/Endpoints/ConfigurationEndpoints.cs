@@ -34,7 +34,12 @@ public static class ConfigurationEndpoints
             return Results.Unauthorized();
 
         var config = await repository.LoadConfigAsync(userId);
-        return Results.Ok(config);
+        return Results.Ok(
+            new
+            {
+                Configuration = config.Config,
+                UpdatedAt = config.UpdatedAt
+            });
     }
 
     private static async Task<IResult> UpdateConfiguration(
@@ -49,7 +54,7 @@ public static class ConfigurationEndpoints
 
         try
         {
-            await repository.SaveConfigAsync(request.Configuration, userId);
+            await repository.SaveConfigAsync(request.Configuration, userId, request.UpdatedAt);
             return Results.Ok();
         }
         catch (Exception ex)

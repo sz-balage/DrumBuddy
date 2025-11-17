@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using DrumBuddy.Api;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Services;
@@ -15,29 +16,17 @@ public class ConfigurationService
     private readonly BehaviorSubject<Drum?> _listeningDrum = new(null);
     private readonly MetronomePlayer _metronomePlayer;
     private readonly ConfigurationRepository _configRepository;
+    private readonly UserService _userService;
     private AppConfiguration _config;
 
     public ConfigurationService(ConfigurationRepository configRepository,
-        MetronomePlayer metronomePlayer)
+        MetronomePlayer metronomePlayer,
+        UserService userService)
     {
         _configRepository = configRepository;
         _metronomePlayer = metronomePlayer;
-        _config = _configRepository.LoadConfig();
-        if (_config.UserSettings is null)
-            _config.UserSettings = new Dictionary<string, string>();
-        if (_config.DrumMapping.Count == 0)
-        {
-            SetDefaultDrumMappings();
-        }
-
-        if (_config.KeyboardMapping.Count == 0)
-        {
-            SetDefaultKeyboardMappings();
-        }
-
-        foreach (var drum in Enum.GetValues<Drum>()) //always override positions with default for now
-            if (drum != Drum.Rest)
-                _config.DrumPositions[drum] = DefaultPosition(drum);
+        _userService = userService;
+        LoadConfig();
     }
 
     public IReadOnlyDictionary<Drum, DrumPositionSlot> DrumPositions => _config.DrumPositions;
@@ -76,7 +65,9 @@ public class ConfigurationService
 
     private void Save()
     {
-        _configRepository.SaveConfig(_config);
+        //sync logic comes here TODO
+        var now = DateTime.UtcNow;
+        _configRepository.SaveConfig(_config, _userService.UserId, now);
     }
 
     private static DrumPositionSlot DefaultPosition(Drum drum)
@@ -164,5 +155,27 @@ public class ConfigurationService
             if (drum != Drum.Rest)
                 _config.KeyboardMapping[drum] = (int)drum;
         Save();
+    }
+
+    public void LoadConfig()
+    {
+        //TODO: get from server and compare updatedAt timestamps for sync
+        var local = _configRepository.LoadConfig(_userService.UserId);
+        _config = local.Config;
+        if (_config.UserSettings is null)
+            _config.UserSettings = new Dictionary<string, string>();
+        if (_config.DrumMapping.Count == 0)
+        {
+            SetDefaultDrumMappings();
+        }
+
+        if (_config.KeyboardMapping.Count == 0)
+        {
+            SetDefaultKeyboardMappings();
+        }
+
+        foreach (var drum in Enum.GetValues<Drum>()) //always override positions with default for now
+            if (drum != Drum.Rest)
+                _config.DrumPositions[drum] = DefaultPosition(drum);
     }
 }

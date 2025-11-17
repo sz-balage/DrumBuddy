@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Input;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
@@ -35,7 +36,6 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         _midiService = midiService;
         _configService = configService;
         _mainVm = hostScreen as MainViewModel;
-        InitConfig();
         this.WhenAnyValue(vm => vm.MetronomeVolume)
             .Subscribe(vol => _configService.MetronomeVolume = vol);
         this.WhenAnyValue(vm => vm.KeyboardInput)
@@ -54,6 +54,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
             .Subscribe(vol => _configService.MetronomeVolume = vol);
         this.WhenAnyValue(vm => vm.KeyboardInput)
             .Subscribe(enabled => _configService.KeyboardInput = enabled);
+        LoadConfig();
     }
 
     public ObservableCollection<DrumMappingItem> DrumMappings { get; } = new();
@@ -81,12 +82,14 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         StopListening();
     }
 
-    private void InitConfig()
+    public void LoadConfig()
     {
+        _configService.LoadConfig();
+        DrumMappings.Clear();
         foreach (var kvp in _configService.Mapping)
             DrumMappings.Add(new DrumMappingItem(kvp.Key, kvp.Value));
-        _metronomeVolume = _configService.MetronomeVolume;
-        _keyboardInput = _configService.KeyboardInput;
+        MetronomeVolume = _configService.MetronomeVolume;
+        KeyboardInput = _configService.KeyboardInput;
         UpdateDrumMappings();
     }
 
