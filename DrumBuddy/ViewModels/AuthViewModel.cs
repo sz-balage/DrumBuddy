@@ -131,9 +131,9 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         NavigateToHome();
     }
     [ReactiveCommand]
-    private void GuestLogin()
+    private async Task GuestLogin()
     {
-        _configVm.LoadConfig();
+        await _configVm.LoadConfig();
         _notificationService.ShowNotification(new Notification(
             "Guest Login",
             "You are now logged in as a guest.",
@@ -146,7 +146,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         {
             IsLoading = true;
             await _apiClient.LoginAsync(_email, _password);
-            _configVm.LoadConfig();
+            await _configVm.LoadConfig();
             return true;
         }
         catch (Refit.ApiException apiException)
@@ -179,7 +179,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             IsLoading = true;
             await _apiClient.RegisterAsync(_email, _password, _userName); 
             _userService.ClearRememberedCredentials();
-            _configVm.LoadConfig();
+            await _configVm.LoadConfig();
             return true;
         }
         catch (Refit.ApiException apiException)

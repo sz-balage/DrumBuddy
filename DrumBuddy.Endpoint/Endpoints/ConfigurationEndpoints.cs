@@ -54,7 +54,7 @@ public static class ConfigurationEndpoints
 
         try
         {
-            await repository.SaveConfigAsync(request.Configuration, userId, request.UpdatedAt);
+            await repository.UpdateConfigAsync(request.Configuration, userId, request.UpdatedAt);
             return Results.Ok();
         }
         catch (Exception ex)

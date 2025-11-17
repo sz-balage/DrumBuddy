@@ -4,13 +4,17 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using DrumBuddy.Core.Enums;
+using DrumBuddy.Extensions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
+using DrumBuddy.Views;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using Splat;
 
 namespace DrumBuddy.ViewModels;
 
@@ -26,7 +30,10 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 
     private IObservable<int>? _keyboardBeats;
     [Reactive] private bool _keyboardInput;
+    [Reactive] private bool _canSyncToServer;
     [Reactive] private int _metronomeVolume = 8000;
+    private readonly NotificationService _notificationService;
+    private readonly MainWindow _mainWindow;
 
     public ConfigurationViewModel(IScreen hostScreen,
         MidiService midiService,
@@ -35,6 +42,8 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = configService;
+        _mainWindow = Locator.Current.GetRequiredService<MainWindow>();
+        _notificationService = new NotificationService(_mainWindow);
         _mainVm = hostScreen as MainViewModel;
         this.WhenAnyValue(vm => vm.MetronomeVolume)
             .Subscribe(vol => _configService.MetronomeVolume = vol);
@@ -54,7 +63,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
             .Subscribe(vol => _configService.MetronomeVolume = vol);
         this.WhenAnyValue(vm => vm.KeyboardInput)
             .Subscribe(enabled => _configService.KeyboardInput = enabled);
-        LoadConfig();
+        LoadConfig().Wait();
     }
 
     public ObservableCollection<DrumMappingItem> DrumMappings { get; } = new();
@@ -82,9 +91,10 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         StopListening();
     }
 
-    public void LoadConfig()
+    public async Task LoadConfig()
     {
-        _configService.LoadConfig();
+        await _configService.LoadConfig();
+        CanSyncToServer = _configService.CanSyncToServer;
         DrumMappings.Clear();
         foreach (var kvp in _configService.Mapping)
             DrumMappings.Add(new DrumMappingItem(kvp.Key, kvp.Value));
@@ -142,7 +152,26 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         _configService.StopListening();
         UpdateListeningDrum(null);
     }
-
+    [ReactiveCommand]
+    private async Task SyncToServer()
+    {
+        var success = await _configService.SyncToServer();
+        if (success)
+        {
+            _notificationService.ShowNotification(new Notification("Sync Successful",
+                "Configuration synchronized with server.",
+                NotificationType.Success,
+                TimeSpan.FromSeconds(3)));
+        }
+        else
+        {
+            _notificationService.ShowNotification(new Notification(
+                "Sync Failed",
+                "Could not synchronize configuration with server.",
+                NotificationType.Error,
+                TimeSpan.FromSeconds(3)));
+        }
+    }
     [ReactiveCommand]
     private void RevertToDefaultMappings()
     {

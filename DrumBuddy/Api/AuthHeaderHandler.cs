@@ -1,10 +1,8 @@
-using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using DrumBuddy.Api;
 
-namespace DrumBuddy.Services;
+namespace DrumBuddy.Api;
 
 public class AuthHeaderHandler : DelegatingHandler
 {

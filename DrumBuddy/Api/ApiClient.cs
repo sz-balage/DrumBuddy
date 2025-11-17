@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DrumBuddy.Api.Models;
 using DrumBuddy.Api.Refit;
@@ -100,6 +101,12 @@ public class ApiClient
         => await _configurationApi.GetConfigurationAsync();
 
     public async Task UpdateConfigurationAsync(AppConfiguration configuration, DateTime updatedAt)
-        => await _configurationApi.UpdateConfigurationAsync(
+    {
+        var x = JsonSerializer.Serialize(
+            new UpdateConfigurationRequest(configuration, updatedAt),
+            new JsonSerializerOptions { WriteIndented = true }
+        );
+        await _configurationApi.UpdateConfigurationAsync(
             new UpdateConfigurationRequest(configuration, updatedAt));
+    }
 }

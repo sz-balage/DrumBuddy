@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using DrumBuddy.Api;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Services;
 using DrumBuddy.IO.Storage;
+using ReactiveUI.SourceGenerators;
 
 namespace DrumBuddy.Services;
 
@@ -18,15 +20,18 @@ public class ConfigurationService
     private readonly ConfigurationRepository _configRepository;
     private readonly UserService _userService;
     private AppConfiguration _config;
+    private ApiClient _apiClient;
 
     public ConfigurationService(ConfigurationRepository configRepository,
         MetronomePlayer metronomePlayer,
-        UserService userService)
+        UserService userService,
+        ApiClient apiClient)
     {
         _configRepository = configRepository;
         _metronomePlayer = metronomePlayer;
         _userService = userService;
-        LoadConfig();
+        _apiClient = apiClient;
+        LoadConfig().Wait();
     }
 
     public IReadOnlyDictionary<Drum, DrumPositionSlot> DrumPositions => _config.DrumPositions;
@@ -67,9 +72,23 @@ public class ConfigurationService
     {
         //sync logic comes here TODO
         var now = DateTime.UtcNow;
-        _configRepository.SaveConfig(_config, _userService.UserId, now);
+        _configRepository.UpdateConfig(_config, _userService.UserId, now);
     }
-
+    public async Task<bool> SyncToServer()
+    {
+        if (!CanSyncToServer) return false;
+        var now = DateTime.UtcNow;
+        await _configRepository.UpdateConfigAsync(_config, _userService.UserId, now);
+        try
+        {
+            await _apiClient.UpdateConfigurationAsync(_config, now);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
     private static DrumPositionSlot DefaultPosition(Drum drum)
     {
         return drum switch
@@ -157,11 +176,39 @@ public class ConfigurationService
         Save();
     }
 
-    public void LoadConfig()
+    public async Task LoadConfig()
     {
-        //TODO: get from server and compare updatedAt timestamps for sync
-        var local = _configRepository.LoadConfig(_userService.UserId);
-        _config = local.Config;
+        CanSyncToServer = _userService.IsOnline;
+        var local = await _configRepository.LoadConfigAsync(_userService.UserId);
+        if (CanSyncToServer)
+        {
+            try
+            {
+                var serverConfig = await _apiClient.GetConfigurationAsync();
+                if(serverConfig.UpdatedAt > local.UpdatedAt)
+                {
+                    _config = serverConfig.Configuration;
+                    await _configRepository.UpdateConfigAsync(_config, _userService.UserId, serverConfig.UpdatedAt);
+                }
+                else if(serverConfig.UpdatedAt < local.UpdatedAt)
+                {
+                    _config = local.Config;
+                    await _apiClient.UpdateConfigurationAsync(local.Config, local.UpdatedAt);
+                }
+                else
+                {
+                    _config = local.Config;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+        else
+        { 
+            _config = local.Config;
+        }
         if (_config.UserSettings is null)
             _config.UserSettings = new Dictionary<string, string>();
         if (_config.DrumMapping.Count == 0)
@@ -178,4 +225,6 @@ public class ConfigurationService
             if (drum != Drum.Rest)
                 _config.DrumPositions[drum] = DefaultPosition(drum);
     }
+
+    public bool CanSyncToServer { get; private set; }
 }

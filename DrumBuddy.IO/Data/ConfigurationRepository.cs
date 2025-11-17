@@ -17,7 +17,7 @@ public class ConfigurationRepository
         _serializationService = serializationService;
     }
 
-    public async Task SaveConfigAsync(AppConfiguration config, string? userId, DateTime updatedAt)
+    public async Task UpdateConfigAsync(AppConfiguration config, string? userId, DateTime updatedAt)
     {
         var json = _serializationService.SerializeAppConfiguration(config);
 
@@ -27,7 +27,7 @@ public class ConfigurationRepository
         if (existing != null)
         {
             existing.ConfigurationData = json;
-            existing.LastUpdated = updatedAt;
+            existing.LastUpdated = DateTime.SpecifyKind(updatedAt, DateTimeKind.Utc);
             _context.Configurations.Update(existing);
         }
         else
@@ -36,7 +36,7 @@ public class ConfigurationRepository
             {
                 Id = Guid.NewGuid(),
                 ConfigurationData = json,
-                LastUpdated = DateTime.UtcNow,
+                LastUpdated = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 UserId = userId
             };
             _context.Configurations.Add(record);
@@ -66,9 +66,9 @@ public class ConfigurationRepository
     }
 
     // Backward compatible method names
-    public void SaveConfig(AppConfiguration config, string? userId, DateTime updatedAt)
+    public void UpdateConfig(AppConfiguration config, string? userId, DateTime updatedAt)
     {
-        SaveConfigAsync(config, userId,updatedAt).Wait();
+        UpdateConfigAsync(config, userId,updatedAt).Wait();
     }
 
     public (AppConfiguration Config, DateTime UpdatedAt) LoadConfig(string? userId)
