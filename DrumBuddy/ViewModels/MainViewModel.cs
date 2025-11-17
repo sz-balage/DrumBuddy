@@ -54,7 +54,19 @@ public partial class MainViewModel : ReactiveObject, IScreen
         _midiService!.InputDeviceDisconnected
             .Subscribe(connected => { NoConnection = true; });
         this.WhenAnyValue(vm => vm.SelectedPaneItem)
-            .Subscribe(OnSelectedPaneItemChanged);
+            .Subscribe(OnSelectedPaneItemChanged); 
+        this.WhenAnyValue(vm => vm.IsKeyboardInput)
+            .Subscribe(async void (_) =>
+            {
+                try
+                {
+                    await TryConnect();
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
+            });
         CanRetry = true;
     }
 
