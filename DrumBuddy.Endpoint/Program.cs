@@ -20,6 +20,7 @@ builder.Services.AddApplicationDbContext(builder.Configuration);
 builder.Services.AddApplicationIdentity();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddApplicationCors();
+builder.Services.AddJsonOptions(); // Add this line
 builder.Services.AddScoped<SerializationService>();
 builder.Services.AddScoped<SheetRepository>();
 builder.Services.AddScoped<ConfigurationRepository>();

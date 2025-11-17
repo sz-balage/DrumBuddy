@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
+using DrumBuddy.Api;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.IO.Services;
 using DrumBuddy.IO.Storage;
+using ReactiveUI.SourceGenerators;
 
 namespace DrumBuddy.Services;
 
@@ -15,31 +18,37 @@ public class ConfigurationService
     private readonly BehaviorSubject<Drum?> _listeningDrum = new(null);
     private readonly MetronomePlayer _metronomePlayer;
     private readonly ConfigurationRepository _configRepository;
+    private readonly UserService _userService;
     private AppConfiguration _config;
+    private ApiClient _apiClient;
 
     public ConfigurationService(ConfigurationRepository configRepository,
-        MetronomePlayer metronomePlayer)
+        MetronomePlayer metronomePlayer,
+        UserService userService,
+        ApiClient apiClient)
     {
         _configRepository = configRepository;
         _metronomePlayer = metronomePlayer;
-        _config = _configRepository.LoadConfig();
-        if (_config.UserSettings is null)
-            _config.UserSettings = new Dictionary<string, string>();
-        if (_config.DrumMapping.Count == 0)
-        {
-            SetDefaultDrumMappings();
-        }
-
-        if (_config.KeyboardMapping.Count == 0)
-        {
-            SetDefaultKeyboardMappings();
-        }
-
-        foreach (var drum in Enum.GetValues<Drum>()) //always override positions with default for now
-            if (drum != Drum.Rest)
-                _config.DrumPositions[drum] = DefaultPosition(drum);
+        _userService = userService;
+        _apiClient = apiClient;
+        LoadConfig().Wait();
     }
-
+    public async Task SaveAsync()
+    {
+        var now = DateTime.UtcNow;
+        await _configRepository.UpdateConfigAsync(_config, _userService.UserId, now);
+        if(CanSyncToServer)
+        {
+            try
+            {
+                await _apiClient.UpdateConfigurationAsync(_config, now);
+            }
+            catch (Exception e)
+            {
+                //ignore
+            }
+        }
+    }
     public IReadOnlyDictionary<Drum, DrumPositionSlot> DrumPositions => _config.DrumPositions;
 
     public int MetronomeVolume
@@ -48,7 +57,6 @@ public class ConfigurationService
         set
         {
             _config.MetronomeVolume = value;
-            Save();
             _metronomePlayer?.SetVolume(value);
         }
     }
@@ -59,7 +67,6 @@ public class ConfigurationService
         set
         {
             _config.KeyboardInput = value;
-            Save();
         }
     }
 
@@ -73,12 +80,7 @@ public class ConfigurationService
     }
 
     public IObservable<Drum?> ListeningDrumChanged => _listeningDrum.AsObservable();
-
-    private void Save()
-    {
-        _configRepository.SaveConfig(_config);
-    }
-
+    
     private static DrumPositionSlot DefaultPosition(Drum drum)
     {
         return drum switch
@@ -100,18 +102,12 @@ public class ConfigurationService
 
     public IReadOnlyDictionary<Drum, int> GetDrumMapping() => _config.DrumMapping;
     public IReadOnlyDictionary<Drum, int> GetKeyboardMapping() => _config.KeyboardMapping;
-
-    // === new drum position update ===
-    public void UpdateDrumPositions(Dictionary<Drum, DrumPositionSlot> newPositions)
-    {
-        _config.DrumPositions = newPositions;
-        Save();
-    }
+    
 
     public void StartListening(Drum drum) => ListeningDrum = drum;
     public void StopListening() => ListeningDrum = null;
 
-    public void MapDrum(int receivedNote)
+    public async Task MapDrumAsync(int receivedNote)
     {
         if (ListeningDrum is null || receivedNote < 0)
             return;
@@ -123,14 +119,14 @@ public class ConfigurationService
             targetMapping[alreadyMappedDrum] = -1;
 
         targetMapping[ListeningDrum.Value] = receivedNote;
-        Save();
+        await SaveAsync();
         StopListening();
     }
 
-    public void Set<T>(string key, T value)
+    public async Task SetAsync<T>(string key, T value)
     {
         _config.UserSettings[key] = value?.ToString() ?? string.Empty;
-        Save();
+        await SaveAsync();
     }
 
     public T? Get<T>(string key)
@@ -150,19 +146,71 @@ public class ConfigurationService
         }
     }
 
-    public void SetDefaultDrumMappings()
+    public async Task SetDefaultDrumMappings()
     {
         foreach (var drum in Enum.GetValues<Drum>())
             if (drum != Drum.Rest)
                 _config.DrumMapping[drum] = (int)drum;
-        Save();
+        await SaveAsync();
     }
 
-    public void SetDefaultKeyboardMappings()
+    public async Task SetDefaultKeyboardMappings()
     {
         foreach (var drum in Enum.GetValues<Drum>())
             if (drum != Drum.Rest)
                 _config.KeyboardMapping[drum] = (int)drum;
-        Save();
+        await SaveAsync();
     }
+
+    public async Task LoadConfig()
+    {
+        CanSyncToServer = _userService.IsOnline;
+        var local = await _configRepository.LoadConfigAsync(_userService.UserId);
+        if (CanSyncToServer)
+        {
+            try
+            {
+                var serverConfig = await _apiClient.GetConfigurationAsync();
+                if(serverConfig.UpdatedAt > local.UpdatedAt)
+                {
+                    _config = serverConfig.Configuration;
+                    await _configRepository.UpdateConfigAsync(_config, _userService.UserId, serverConfig.UpdatedAt);
+                }
+                else if(serverConfig.UpdatedAt < local.UpdatedAt)
+                {
+                    _config = local.Config;
+                    await _apiClient.UpdateConfigurationAsync(local.Config, local.UpdatedAt);
+                }
+                else
+                {
+                    _config = local.Config;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+        else
+        { 
+            _config = local.Config;
+        }
+        if (_config.UserSettings is null)
+            _config.UserSettings = new Dictionary<string, string>();
+        if (_config.DrumMapping.Count == 0)
+        {
+            await SetDefaultDrumMappings();
+        }
+
+        if (_config.KeyboardMapping.Count == 0)
+        {
+            await SetDefaultKeyboardMappings();
+        }
+
+        foreach (var drum in Enum.GetValues<Drum>()) //always override positions with default for now
+            if (drum != Drum.Rest)
+                _config.DrumPositions[drum] = DefaultPosition(drum);
+    }
+
+    public bool CanSyncToServer { get; private set; }
 }

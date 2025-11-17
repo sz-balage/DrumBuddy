@@ -5,9 +5,9 @@ namespace DrumBuddy.Extensions;
 
 public static class LocatorExtensions
 {
-    public static T GetRequiredService<T>(this IReadonlyDependencyResolver provider)
+    public static T GetRequiredService<T>(this IReadonlyDependencyResolver provider, string? contract = null)
     {
-        var service = provider.GetService<T>();
+        var service = provider.GetService<T>(contract);
         if (service is null) throw new Exception($"Service of type {typeof(T).FullName} could not be resolved.");
         return service;
     }

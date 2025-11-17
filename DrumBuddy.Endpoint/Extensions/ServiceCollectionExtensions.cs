@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using DrumBuddy.Endpoint.Services;
 using DrumBuddy.IO.Data;
 using DrumBuddy.IO.Models;
@@ -20,7 +21,16 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+    public static IServiceCollection AddJsonOptions(
+        this IServiceCollection services)
+    {
+        services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
 
+        return services;
+    }
     public static IServiceCollection AddApplicationIdentity(
         this IServiceCollection services)
     {

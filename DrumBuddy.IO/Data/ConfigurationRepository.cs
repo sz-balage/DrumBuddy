@@ -17,7 +17,7 @@ public class ConfigurationRepository
         _serializationService = serializationService;
     }
 
-    public async Task SaveConfigAsync(AppConfiguration config, string? userId = null)
+    public async Task UpdateConfigAsync(AppConfiguration config, string? userId, DateTime updatedAt)
     {
         var json = _serializationService.SerializeAppConfiguration(config);
 
@@ -27,7 +27,7 @@ public class ConfigurationRepository
         if (existing != null)
         {
             existing.ConfigurationData = json;
-            existing.LastUpdated = DateTime.UtcNow;
+            existing.LastUpdated = DateTime.SpecifyKind(updatedAt, DateTimeKind.Utc);
             _context.Configurations.Update(existing);
         }
         else
@@ -36,7 +36,7 @@ public class ConfigurationRepository
             {
                 Id = Guid.NewGuid(),
                 ConfigurationData = json,
-                LastUpdated = DateTime.UtcNow,
+                LastUpdated = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                 UserId = userId
             };
             _context.Configurations.Add(record);
@@ -45,34 +45,34 @@ public class ConfigurationRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<AppConfiguration> LoadConfigAsync(string? userId = null)
+    public async Task<(AppConfiguration Config, DateTime UpdatedAt)> LoadConfigAsync(string? userId)
     {
         var record = await _context.Configurations
             .FirstOrDefaultAsync(c => c.UserId == userId);
 
         if (record == null)
-            return new AppConfiguration();
+            return (new AppConfiguration(), DateTime.MinValue);
 
         try
         {
             var appConfig = _serializationService.DeserializeAppConfiguration(record.ConfigurationData);
-            return appConfig ?? new AppConfiguration();
+            return (appConfig ?? new AppConfiguration(), record.LastUpdated);
         }
         catch
         {
             // Return default on error
-            return new AppConfiguration();
+            return (new AppConfiguration(), DateTime.MinValue);
         }
     }
 
     // Backward compatible method names
-    public void SaveConfig(AppConfiguration config)
+    public void UpdateConfig(AppConfiguration config, string? userId, DateTime updatedAt)
     {
-        SaveConfigAsync(config).Wait();
+        UpdateConfigAsync(config, userId,updatedAt).Wait();
     }
 
-    public AppConfiguration LoadConfig()
+    public (AppConfiguration Config, DateTime UpdatedAt) LoadConfig(string? userId)
     {
-        return LoadConfigAsync().Result;
+        return LoadConfigAsync(userId).Result;
     }
 }

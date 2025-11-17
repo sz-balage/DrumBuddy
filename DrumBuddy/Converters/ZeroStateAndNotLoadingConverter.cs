@@ -15,9 +15,9 @@ public class ZeroStateAndNotLoadingConverter : IMultiValueConverter
         // values[0] is Sheets.Count
         // values[1] is IsLoadingSheets
         
-        var sheetsCount = values[0] is int count ? count : 0;
-        var isLoading = values[1] is bool loading ? loading : false;
+        var canShowEmptyState = values[0] is true;
+        var isLoading = values[1] is true;
 
-        return sheetsCount == 0 && !isLoading;
+        return canShowEmptyState && !isLoading;
     }
 }

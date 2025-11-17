@@ -68,7 +68,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         Func<Task> onClose)
     {
         _sheetService = sheetService;
-        _notificationService = new(Locator.Current.GetRequiredService<MainWindow>());
+        _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
         HostScreen = host;
         UrlPathSegment = "manual-editor";
         _sheetId = Guid.NewGuid();

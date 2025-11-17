@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -63,10 +65,7 @@ public class App : Application
             Locator.Current.GetRequiredService<SheetRepository>());
         CurrentMutable.Register(() => tokenService, typeof(UserService));
 
-        var authHandler = new AuthHeaderHandler(tokenService)
-        {
-            InnerHandler = new HttpClientHandler()
-        };
+      
         //TODO: handle dev and prod base addresses
 #if DEBUG
         var baseAddress = new Uri("https://localhost:7258"); // local dev backend
@@ -74,14 +73,37 @@ public class App : Application
         var baseAddress = new Uri("https://api.drumbuddy.hu"); // production backend
 #endif
 
-        var authApi   = RestService.For<IAuthApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
-        var sheetApi  = RestService.For<ISheetApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
-        var configApi = RestService.For<IConfigurationApi>(new HttpClient(authHandler) { BaseAddress = baseAddress });
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = { new JsonStringEnumConverter() }
+        };
+
+        var refitSettings = new RefitSettings
+        {
+            ContentSerializer = new SystemTextJsonContentSerializer(jsonOptions)
+        };
+        var authHandler = new AuthHeaderHandler(tokenService) {
+            InnerHandler = new HttpClientHandler()
+        };
+
+        var loggingHandler = new LoggingHandler { InnerHandler = authHandler };
+        var httpClient = new HttpClient(loggingHandler) { BaseAddress = baseAddress };
+        
+        var authApi   = RestService.For<IAuthApi>(new HttpClient(authHandler) { BaseAddress = baseAddress }, refitSettings);
+        var sheetApi  = RestService.For<ISheetApi>(new HttpClient(authHandler) { BaseAddress = baseAddress }, refitSettings);
+        var configApi = RestService.For<IConfigurationApi>(httpClient, refitSettings);
 
         CurrentMutable.Register(
             () => new ApiClient(authApi, sheetApi, configApi, tokenService,
                 Locator.Current.GetRequiredService<SerializationService>()),
             typeof(ApiClient));
+        CurrentMutable.RegisterConstant(new ConfigurationService(
+            Locator.Current.GetRequiredService<ConfigurationRepository>(),
+            Locator.Current.GetRequiredService<MetronomePlayer>(),
+            Locator.Current.GetRequiredService<UserService>(),
+            Locator.Current.GetRequiredService<ApiClient>()
+            ));
         CurrentMutable.RegisterConstant(new SheetService(
             Locator.Current.GetRequiredService<SheetRepository>(),
             Locator.Current.GetRequiredService<UserService>(),
@@ -99,6 +121,8 @@ public class App : Application
         CurrentMutable.RegisterConstant(new PdfGenerator());
         CurrentMutable.RegisterConstant<IScreen>(Locator.Current.GetService<MainViewModel>());
         CurrentMutable.RegisterConstant(new MainWindow());
+        CurrentMutable.RegisterConstant(new NotificationService(
+            Locator.Current.GetRequiredService<MainWindow>()),"MainWindowNotificationService");
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
             Locator.Current.GetRequiredService<SheetService>(),
@@ -117,7 +141,6 @@ public class App : Application
                 Locator.Current.GetRequiredService<ConfigurationService>(),
                 Locator.Current.GetRequiredService<SheetService>(),
                 Locator.Current.GetRequiredService<MetronomePlayer>()));
-
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() },
             typeof(IViewFor<HomeViewModel>));
         CurrentMutable.Register(
@@ -174,9 +197,6 @@ public class App : Application
             FilePathProvider.GetPathToRegularBeepSound()));
         CurrentMutable.RegisterConstant(
             new ConfigurationRepository(dbContext,Locator.Current.GetRequiredService<SerializationService>()));
-        CurrentMutable.RegisterConstant(new ConfigurationService(
-            Locator.Current.GetRequiredService<ConfigurationRepository>(),
-            Locator.Current.GetRequiredService<MetronomePlayer>()));
         CurrentMutable.RegisterConstant(new MidiService());
     }
 }

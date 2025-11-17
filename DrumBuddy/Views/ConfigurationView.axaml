@@ -22,10 +22,14 @@
     </UserControl.Styles>
     <Grid RowDefinitions="66,*">
         <Grid Background="{StaticResource HeaderGray}">
-            <TextBlock Text="Configuration editor"
-                       Margin="18"
-                       Classes="header"
-                       VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Configuration editor"
+                           Margin="18"
+                           Classes="header"
+                           VerticalAlignment="Center" />
+                <PathIcon Data="{StaticResource Cloud}"  IsVisible="{Binding CanSyncToServer}"/>
+                <PathIcon Data="{StaticResource CloudOff}"  IsVisible="{Binding !CanSyncToServer}"/>
+            </StackPanel>
             <TextBlock x:Name="ListeningDrumText"
                        IsVisible="{Binding DrumMappingTabSelected}"
                        HorizontalAlignment="Center"
@@ -33,8 +37,7 @@
                        Classes="header"
                        FontSize="16"
                        FontWeight="SemiBold" />
-            <Button x:Name="ZeroStateImportSheetButton"
-                    IsVisible="{Binding DrumMappingTabSelected}"
+            <Button IsVisible="{Binding DrumMappingTabSelected}"
                     Height="66"
                     HorizontalAlignment="Right"
                     Background="{StaticResource HeaderGray}"

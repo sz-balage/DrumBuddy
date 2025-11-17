@@ -482,7 +482,7 @@
                      Grid.ColumnSpan="2" Columns="2">
             <UniformGrid.IsVisible>
                 <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
-                    <Binding Path="Sheets.Count" />
+                    <Binding Path="CanShowEmptyState" />
                     <Binding Path="IsLoadingSheets" />
                 </MultiBinding>
             </UniformGrid.IsVisible>

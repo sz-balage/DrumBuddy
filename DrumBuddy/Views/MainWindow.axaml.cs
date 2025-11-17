@@ -60,7 +60,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             {
                 authContent.Children.Add(new AuthView
                 {
-                    ViewModel = new AuthViewModel(this)
+                    ViewModel = new AuthViewModel()
                 });
                 this.WhenAnyValue(v => v.ViewModel!.IsAuthenticated)
                     .Where(isAuth => isAuth)

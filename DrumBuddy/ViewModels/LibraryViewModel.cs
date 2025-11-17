@@ -54,7 +54,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         _userService = Locator.Current.GetRequiredService<UserService>();
         _mainWindow = Locator.Current.GetRequiredService<MainWindow>();
-        _notificationService = new NotificationService(_mainWindow);
+        _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
         _pdfGenerator = pdfGenerator;
         _fileStorageInteractionService = fileStorageInteractionService;
         _midiService = midiService;
@@ -77,6 +77,11 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
                         : SortExpressionComparer<SheetViewModel>.Ascending(s => s.Name)
                 };
             });
+        _sheetSource.CountChanged.Subscribe(count =>
+        {
+            CanShowEmptyState = _sheetSource.Count == 0;
+        });
+        
         var filter = this.WhenAnyValue(vm => vm.FilterText)
             .Throttle(TimeSpan.FromMilliseconds(200))
             .DistinctUntilChanged()
@@ -100,6 +105,9 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             .ToObservable()
             .Subscribe());
     }
+    [Reactive]
+    private bool _canShowEmptyState;
+
     public bool IsOnline => _userService.IsOnline;
     public IEnumerable<SortOption> SortOptions => Enum.GetValues<SortOption>();
 
@@ -398,6 +406,9 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
     private async Task LoadSheets()
     {
+        FilterText = "";
+        SelectedSortOption = SortOption.Name;
+        IsSortDescending = false;
         IsLoadingSheets = true;
         try
         { 
@@ -442,4 +453,5 @@ public interface ILibraryViewModel : IRoutableViewModel
     void BatchExportSheets(List<SheetViewModel> selected, SaveFormat saveFormat);
     ReactiveCommand<SheetViewModel, Unit> TurnOnSyncForSelectedSheetCommand { get; }
     ReactiveCommand<SheetViewModel, Unit> TurnOffSyncForSelectedSheetCommand { get; }
+    bool CanShowEmptyState { get; set; }
 }

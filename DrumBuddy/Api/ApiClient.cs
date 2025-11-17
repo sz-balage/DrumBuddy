@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DrumBuddy.Api.Models;
 using DrumBuddy.Api.Refit;
@@ -96,11 +97,16 @@ public class ApiClient
     public async Task DeleteSheetAsync(Guid id) 
         => await _sheetApi.DeleteSheetAsync(id);
 
-    // Configuration methods
-    public async Task<AppConfiguration> GetConfigurationAsync()
+    public async Task<ConfigurationResponse> GetConfigurationAsync()
         => await _configurationApi.GetConfigurationAsync();
 
-    public async Task UpdateConfigurationAsync(AppConfiguration configuration)
-        => await _configurationApi.UpdateConfigurationAsync(
-            new UpdateConfigurationRequest(configuration));
+    public async Task UpdateConfigurationAsync(AppConfiguration configuration, DateTime updatedAt)
+    {
+        var x = JsonSerializer.Serialize(
+            new UpdateConfigurationRequest(configuration, updatedAt),
+            new JsonSerializerOptions { WriteIndented = true }
+        );
+        await _configurationApi.UpdateConfigurationAsync(
+            new UpdateConfigurationRequest(configuration, updatedAt));
+    }
 }

@@ -124,7 +124,8 @@ public partial class EditingViewModel : ReactiveObject
             await _pdfGenerator.ExportSheetToPdf(measures, OriginalSheet.Name, OriginalSheet.Description,
                 OriginalSheet.Tempo);
             var message = $"{OriginalSheet.Name} exported successfully.";
-            _notificationService.ShowNotification(new Notification("Successful export.", message));
+            _notificationService.ShowNotification(new Notification("Successful export.", message,
+                NotificationType.Success));
         }
         catch (Exception e)
         {

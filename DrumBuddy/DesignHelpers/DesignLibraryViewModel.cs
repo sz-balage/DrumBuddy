@@ -93,5 +93,5 @@ public class DesignLibraryViewModel : ReactiveObject, ILibraryViewModel
     ReactiveCommand<SheetViewModel, Unit> ILibraryViewModel.TurnOnSyncForSelectedSheetCommand => _turnOnSyncForSelectedSheetCommand;
 
     ReactiveCommand<SheetViewModel, Unit> ILibraryViewModel.TurnOffSyncForSelectedSheetCommand => _turnOffSyncForSelectedSheetCommand;
-
+    public bool CanShowEmptyState { get; set; }
 }

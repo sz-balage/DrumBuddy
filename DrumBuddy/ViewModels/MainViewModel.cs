@@ -54,7 +54,19 @@ public partial class MainViewModel : ReactiveObject, IScreen
         _midiService!.InputDeviceDisconnected
             .Subscribe(connected => { NoConnection = true; });
         this.WhenAnyValue(vm => vm.SelectedPaneItem)
-            .Subscribe(OnSelectedPaneItemChanged);
+            .Subscribe(OnSelectedPaneItemChanged); 
+        this.WhenAnyValue(vm => vm.IsKeyboardInput)
+            .Subscribe(async void (_) =>
+            {
+                try
+                {
+                    await TryConnect();
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
+            });
         CanRetry = true;
     }
 
@@ -89,7 +101,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
 
     public void SetTopLevelWindow(Window window)
     {
-        _notificationService = new NotificationService(window);
+        _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
     }
 
     public void NavigateFromCode(IRoutableViewModel viewModel)
@@ -191,7 +203,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
         else
         {
             _midiService.SetUserChosenDeviceAsInput(chosenDevice);
-            _configurationService.Set(LastDeviceKey, chosenDevice.Name);
+            await _configurationService.SetAsync(LastDeviceKey, chosenDevice.Name);
             SuccessfulConnection("Connected to " + chosenDevice?.Name);
         }
     }

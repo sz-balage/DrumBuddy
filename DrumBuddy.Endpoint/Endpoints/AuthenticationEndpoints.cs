@@ -87,7 +87,7 @@ public static class AuthenticationEndpoints
 
         return Results.Ok(new
         {
-            username = user.UserName,
+            userName = user.UserName,
             email = user.Email,
             token,
             userId = user.Id
