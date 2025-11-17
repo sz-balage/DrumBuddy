@@ -89,7 +89,7 @@ public partial class MainViewModel : ReactiveObject, IScreen
 
     public void SetTopLevelWindow(Window window)
     {
-        _notificationService = new NotificationService(window);
+        _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
     }
 
     public void NavigateFromCode(IRoutableViewModel viewModel)

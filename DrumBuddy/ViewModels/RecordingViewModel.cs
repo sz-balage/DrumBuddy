@@ -63,7 +63,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         _midiService = midiService;
         _configService = configService;
         _sheetService = sheetService;
-        _notificationService = new(Locator.Current.GetRequiredService<MainWindow>());
+        _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
         _metronomePlayer = metronomePlayer;
 
         //binding measuresource

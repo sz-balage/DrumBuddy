@@ -37,13 +37,12 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
     [Reactive] private string _userName = string.Empty;
     [Reactive] private bool _isResetPasswordMode;
     private IObservable<bool> _signInCanExecute => this.IsValid();
-    public AuthViewModel(MainWindow mainWindow)
+    public AuthViewModel()
     {
         _apiClient = Locator.Current.GetRequiredService<ApiClient>();
         _userService = Locator.Current.GetRequiredService<UserService>();
         _configVm = Locator.Current.GetRequiredService<ConfigurationViewModel>();
-        _notificationService = new NotificationService(mainWindow);
-
+        _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
         _ = LoadRememberedCredentialsAsync();
         
         this.ValidationRule(

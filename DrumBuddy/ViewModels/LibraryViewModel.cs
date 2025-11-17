@@ -54,7 +54,7 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
     {
         _userService = Locator.Current.GetRequiredService<UserService>();
         _mainWindow = Locator.Current.GetRequiredService<MainWindow>();
-        _notificationService = new NotificationService(_mainWindow);
+        _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
         _pdfGenerator = pdfGenerator;
         _fileStorageInteractionService = fileStorageInteractionService;
         _midiService = midiService;

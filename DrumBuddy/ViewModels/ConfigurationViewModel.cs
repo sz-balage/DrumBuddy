@@ -33,7 +33,6 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] private bool _canSyncToServer;
     [Reactive] private int _metronomeVolume = 8000;
     private readonly NotificationService _notificationService;
-    private readonly MainWindow _mainWindow;
 
     public ConfigurationViewModel(IScreen hostScreen,
         MidiService midiService,
@@ -42,8 +41,8 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = configService;
-        _mainWindow = Locator.Current.GetRequiredService<MainWindow>();
-        _notificationService = new NotificationService(_mainWindow);
+        var mainViewModel = Locator.Current.GetRequiredService<MainViewModel>();
+        _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
         _mainVm = hostScreen as MainViewModel;
         this.WhenAnyValue(vm => vm.MetronomeVolume)
             .Subscribe(vol => _configService.MetronomeVolume = vol);

@@ -121,6 +121,8 @@ public class App : Application
         CurrentMutable.RegisterConstant(new PdfGenerator());
         CurrentMutable.RegisterConstant<IScreen>(Locator.Current.GetService<MainViewModel>());
         CurrentMutable.RegisterConstant(new MainWindow());
+        CurrentMutable.RegisterConstant(new NotificationService(
+            Locator.Current.GetRequiredService<MainWindow>()),"MainWindowNotificationService");
         CurrentMutable.RegisterConstant(new HomeViewModel());
         CurrentMutable.RegisterConstant(new LibraryViewModel(Locator.Current.GetRequiredService<IScreen>(),
             Locator.Current.GetRequiredService<SheetService>(),
@@ -139,7 +141,6 @@ public class App : Application
                 Locator.Current.GetRequiredService<ConfigurationService>(),
                 Locator.Current.GetRequiredService<SheetService>(),
                 Locator.Current.GetRequiredService<MetronomePlayer>()));
-
         CurrentMutable.Register(() => new HomeView { ViewModel = Locator.Current.GetRequiredService<HomeViewModel>() },
             typeof(IViewFor<HomeViewModel>));
         CurrentMutable.Register(
