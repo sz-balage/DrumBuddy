@@ -37,8 +37,8 @@ public partial class RythmicGroupViewModel : ReactiveObject
     private void DrawNotes(RythmicGroup rythmicGroup)
     {
         var data = _drawHelper.GetLinesAndImagesToDraw(rythmicGroup);
-        LinesCollection.Add(data.LineAndStrokes);
-        NotesImageAndBoundsList.AddRange(data.Images);
+        LinesCollection.Add(data.Item2);
+        NotesImageAndBoundsList.AddRange(data.Item1);
     }
 
     public void Hide()
