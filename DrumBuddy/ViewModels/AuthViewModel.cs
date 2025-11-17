@@ -1,21 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
+using System.Net;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Avalonia.Controls.Notifications;
 using DrumBuddy.Api;
 using DrumBuddy.Extensions;
 using DrumBuddy.Services;
-using DrumBuddy.Views;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Abstractions;
 using ReactiveUI.Validation.Contexts;
 using ReactiveUI.Validation.Extensions;
+using Refit;
 using Splat;
 using Notification = Avalonia.Controls.Notifications.Notification;
 
@@ -24,19 +25,19 @@ namespace DrumBuddy.ViewModels;
 public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
 {
     private readonly ApiClient _apiClient;
+    private readonly ConfigurationViewModel _configVm;
     private readonly NotificationService _notificationService;
     private readonly UserService _userService;
-    private readonly ConfigurationViewModel _configVm;
-    
+
     [Reactive] private string _confirmPassword = string.Empty;
     [Reactive] private string _email = string.Empty;
     [Reactive] private bool _isLoading;
     [Reactive] private bool _isLoginMode = true;
+    [Reactive] private bool _isResetPasswordMode;
     [Reactive] private string _password = string.Empty;
     [Reactive] private bool _rememberMe;
     [Reactive] private string _userName = string.Empty;
-    [Reactive] private bool _isResetPasswordMode;
-    private IObservable<bool> _signInCanExecute => this.IsValid();
+
     public AuthViewModel()
     {
         _apiClient = Locator.Current.GetRequiredService<ApiClient>();
@@ -44,7 +45,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         _configVm = Locator.Current.GetRequiredService<ConfigurationViewModel>();
         _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
         _ = LoadRememberedCredentialsAsync();
-        
+
         this.ValidationRule(
             vm => vm.Email,
             IsValidEmail,
@@ -53,21 +54,21 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         this.ValidationRule(
             vm => vm.Password,
             this.WhenAnyValue(vm => vm.IsLoginMode, vm => vm.Password),
-            x => !x.Item1 || !string.IsNullOrWhiteSpace(x.Item2), 
+            x => !x.Item1 || !string.IsNullOrWhiteSpace(x.Item2),
             _ => "Password cannot be empty");
 
         this.ValidationRule(
             vm => vm.Password,
             this.WhenAnyValue(vm => vm.IsLoginMode, vm => vm.Password),
-            x => x.Item1 || IsStrongPassword(x.Item2), 
+            x => x.Item1 || IsStrongPassword(x.Item2),
             _ => "Password must be at least 6 characters and contain at least one uppercase letter");
 
         this.ValidationRule(
             vm => vm.ConfirmPassword,
             this.WhenAnyValue(vm => vm.IsLoginMode, vm => vm.ConfirmPassword, vm => vm.Password),
-            x => x.Item1 || x.Item2 == x.Item3, 
+            x => x.Item1 || x.Item2 == x.Item3,
             _ => "Passwords do not match");
-        
+
         var isValid = this.IsValid();
 
         LoginCommand = ReactiveCommand.CreateFromTask(ExecuteLogin, isValid);
@@ -76,6 +77,8 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         LoginCommand.Where(s => s).Subscribe(success => HandleAuthSuccess(success, "Login successful"));
         RegisterCommand.Where(s => s).Subscribe(success => HandleAuthSuccess(success, "Registration successful"));
     }
+
+    private IObservable<bool> _signInCanExecute => this.IsValid();
 
     public ReactiveCommand<Unit, bool> LoginCommand { get; }
     public ReactiveCommand<Unit, bool> RegisterCommand { get; }
@@ -124,11 +127,12 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             NotificationType.Success));
         if (_rememberMe)
             _ = _userService.SaveRememberedCredentialsAsync(_email, _password);
-        else 
+        else
             _userService.ClearRememberedCredentials();
 
         NavigateToHome();
     }
+
     [ReactiveCommand]
     private async Task GuestLogin()
     {
@@ -139,6 +143,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             NotificationType.Success));
         NavigateToHome();
     }
+
     private async Task<bool> ExecuteLogin()
     {
         try
@@ -148,7 +153,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             await _configVm.LoadConfig();
             return true;
         }
-        catch (Refit.ApiException apiException)
+        catch (ApiException apiException)
         {
             var errorMessage = GetApiErrorMessage(apiException);
             _notificationService.ShowNotification(new Notification(
@@ -176,12 +181,13 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         try
         {
             IsLoading = true;
-            await _apiClient.RegisterAsync(_email, _password, _userName); 
+            await _apiClient.RegisterAsync(_email, _password, _userName);
             _userService.ClearRememberedCredentials();
             await _configVm.LoadConfig();
+            IsLoginMode = true;
             return true;
         }
-        catch (Refit.ApiException apiException)
+        catch (ApiException apiException)
         {
             var errorMessage = GetApiErrorMessage(apiException);
             _notificationService.ShowNotification(new Notification(
@@ -203,6 +209,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             IsLoading = false;
         }
     }
+
     [ReactiveCommand]
     private async Task ResetPassword()
     {
@@ -217,7 +224,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
                 NotificationType.Success));
             CancelResetPassword();
         }
-        catch (Refit.ApiException apiException)
+        catch (ApiException apiException)
         {
             var errorMessage = GetApiErrorMessage(apiException);
             _notificationService.ShowNotification(new Notification(
@@ -238,22 +245,22 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         }
     }
 
-    private string GetApiErrorMessage(Refit.ApiException apiException)
+    private string GetApiErrorMessage(ApiException apiException)
     {
         try
         {
-            using var doc = System.Text.Json.JsonDocument.Parse(apiException.Content);
+            using var doc = JsonDocument.Parse(apiException.Content);
             var root = doc.RootElement;
 
             if (root.TryGetProperty("errors", out var errorsElement))
             {
                 var errorMessages = new List<string>();
 
-                if (errorsElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                if (errorsElement.ValueKind == JsonValueKind.Array)
                 {
                     foreach (var error in errorsElement.EnumerateArray())
                     {
-                        if (error.ValueKind == System.Text.Json.JsonValueKind.String)
+                        if (error.ValueKind == JsonValueKind.String)
                         {
                             errorMessages.Add(error.GetString() ?? "Unknown error");
                         }
@@ -266,8 +273,8 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
                 }
             }
 
-            if (root.TryGetProperty("message", out var messageElement) && 
-                messageElement.ValueKind == System.Text.Json.JsonValueKind.String)
+            if (root.TryGetProperty("message", out var messageElement) &&
+                messageElement.ValueKind == JsonValueKind.String)
             {
                 return messageElement.GetString() ?? "An error occurred";
             }
@@ -275,12 +282,13 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         catch
         {
             // Fallback to raw content
-            if(apiException.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            if (apiException.StatusCode == HttpStatusCode.Unauthorized)
                 return "Invalid email or password.";
         }
 
         return apiException.Content ?? "An error occurred. Please try again.";
     }
+
     [ReactiveCommand]
     private void CancelResetPassword()
     {
@@ -298,6 +306,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         UserName = string.Empty;
         RememberMe = false;
     }
+
     private void NavigateToHome()
     {
         var mainVm = Locator.Current.GetService<MainViewModel>();
