@@ -39,6 +39,7 @@ public class SheetRepository
         var record = await query.FirstOrDefaultAsync(s => s.Id == id);
         return record == null ? null : DeserializeToSheet(record);
     }
+
     public async Task SaveSheetAsync(SheetDto sheetDto, string? userId)
     {
         var record = new SheetRecord
@@ -57,7 +58,7 @@ public class SheetRepository
             _context.Sheets.Add(record);
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("IX_Sheets_UserId_Name") == true)
+        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("SQLite Error 19") == true)
         {
             throw new InvalidOperationException("You already have a sheet with that name", ex);
         }
@@ -75,7 +76,7 @@ public class SheetRepository
             Description = sheet.Description,
             Tempo = sheet.Tempo.Value,
             UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
-            UserId = userId 
+            UserId = userId
         };
 
         try
@@ -83,15 +84,16 @@ public class SheetRepository
             _context.Sheets.Add(record);
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("IX_Sheets_UserId_Name") == true)
+        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("SQLite Error 19") == true)
         {
             throw new InvalidOperationException("You already have a sheet with that name", ex);
         }
     }
+
     public async Task UpdateSheetAsync(SheetDto sheetDto, DateTime updatedAt, string? userId)
     {
         var query = _context.Sheets.AsQueryable();
-        
+
         if (!string.IsNullOrEmpty(userId))
             query = query.Where(s => s.UserId == userId);
 
@@ -116,10 +118,11 @@ public class SheetRepository
             throw new InvalidOperationException("A sheet with that name already exists", ex);
         }
     }
+
     public async Task UpdateSheetAsync(Sheet sheet, DateTime updatedAt, string? userId)
     {
         var query = _context.Sheets.AsQueryable();
-        
+
         query = query.Where(s => s.UserId == userId);
 
 
@@ -150,7 +153,7 @@ public class SheetRepository
     public async Task DeleteSheetAsync(Guid id, string? userId)
     {
         var query = _context.Sheets.AsQueryable();
-        
+
         query = query.Where(s => s.UserId == userId);
 
 
@@ -181,6 +184,7 @@ public class SheetRepository
             await _context.SaveChangesAsync();
         }
     }
+
     public bool SheetExists(string sheetName, string? userId)
     {
         IQueryable<SheetRecord> query = _context.Sheets;
@@ -207,7 +211,7 @@ public class SheetRepository
     private Sheet DeserializeToSheet(SheetRecord record)
     {
         var measures = _serializationService.DeserializeMeasurementData(record.MeasureBytes);
-        
+
         return new Sheet(
             new Bpm(record.Tempo),
             [..measures],
