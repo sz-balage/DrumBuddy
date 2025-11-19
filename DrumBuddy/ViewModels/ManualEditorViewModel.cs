@@ -11,11 +11,9 @@ using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Core.Services;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO.Data;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels.HelperViewModels;
-using DrumBuddy.Views;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -29,13 +27,12 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     //TODO: make auto save checkbox
     public const int Columns = 16; // one measure, 16 sixteenth steps
     public const int MaxNotesPerColumn = 4; // maximum notes allowed per column (NoteGroup)
-    private Guid _sheetId;
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly List<bool[,]> _measureSteps;
     private readonly NotificationService _notificationService;
     private readonly Func<Task> _onClose;
-    private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     private readonly SheetService _sheetService;
+    private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
 
     public readonly Drum[] Drums = new[]
     {
@@ -63,6 +60,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
     [Reactive] private bool _isSaved = true;
     [Reactive] private string? _name;
+    private Guid _sheetId;
 
     public ManualEditorViewModel(IScreen host, SheetService sheetService,
         Func<Task> onClose)
@@ -97,11 +95,24 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         _bpm = 100;
         CurrentSheet = BuildSheet();
         BpmDecimal = CurrentSheet.Tempo.Value;
+        // Build matrix VM from measure (initial)
+        BuildMatrixRowsFromCurrentMeasure();
+
+        // When selected measure changes, rebuild matrix rows to reflect current measure
+        this.WhenAnyValue(vm => vm.CurrentMeasureIndex)
+            .Subscribe(_ => BuildMatrixRowsFromCurrentMeasure());
         DrawSheet();
         SaveCommand.ThrownExceptions.Subscribe(ex => Console.WriteLine(ex.Message));
         _onClose = onClose;
         IsSaved = true;
     }
+
+    // New: matrix exposed as ObservableCollection of RowViewModel
+    public ObservableCollection<RowViewModel> MatrixRows { get; } = new();
+
+    // New: step header sequence (1..16)
+    public ReadOnlyCollection<int> StepHeaders { get; } =
+        Enumerable.Range(1, Columns).ToList().AsReadOnly();
 
     public Sheet? CurrentSheet
     {
@@ -129,6 +140,167 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
     public IScreen HostScreen { get; }
     public string? UrlPathSegment { get; }
+
+    private Unit ToggleCellInternal(int row, int col)
+    {
+        // re-use existing ToggleStep logic but operate on _measureSteps directly
+        if (row < 0 || row >= Drums.Length) return Unit.Default;
+        if (col < 0 || col >= Columns) return Unit.Default;
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return Unit.Default;
+
+        IsSaved = false;
+        var matrix = _measureSteps[CurrentMeasureIndex];
+        var current = matrix[row, col];
+
+        var hatDrums = new[] { Drum.HiHat, Drum.HiHat_Open, Drum.HiHat_Pedal };
+        var hatIndices = hatDrums
+            .Select(d => Array.IndexOf(Drums, d))
+            .Where(i => i >= 0)
+            .ToArray();
+        var isHatRow = hatIndices.Contains(row);
+
+        if (!current)
+        {
+            var currentCount = 0;
+            for (var r = 0; r < Drums.Length; r++)
+                if (matrix[r, col])
+                    currentCount++;
+
+            if (isHatRow)
+            {
+                var otherHatsChecked = hatIndices.Count(i => i != row && matrix[i, col]);
+                var prospective = currentCount - otherHatsChecked + 1;
+                if (prospective > MaxNotesPerColumn) return Unit.Default;
+
+                foreach (var i in hatIndices)
+                    if (i != row)
+                        matrix[i, col] = false;
+
+                matrix[row, col] = true;
+            }
+            else
+            {
+                if (currentCount >= MaxNotesPerColumn) return Unit.Default;
+                matrix[row, col] = true;
+            }
+        }
+        else
+        {
+            matrix[row, col] = false;
+        }
+
+        // update sheet & cell VMs
+        CurrentSheet = BuildSheet();
+        SyncCellsFromMeasure(); // update StepCellViewModels' IsChecked / IsEnabled
+        RedrawMeasureAt();
+        return Unit.Default;
+    }
+
+    /// <summary>
+    ///     Create/refresh MatrixRows based on _measureSteps[CurrentMeasureIndex]
+    ///     Called when measure selection changes or when reloading a sheet
+    /// </summary>
+    private void BuildMatrixRowsFromCurrentMeasure()
+    {
+        MatrixRows.Clear();
+
+        // ensure valid current measure
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count)
+        {
+            // create empty rows
+            for (var r = 0; r < Drums.Length; r++)
+            {
+                var rowVm = new RowViewModel(Drums[r]);
+                for (var c = 0; c < Columns; c++)
+                {
+                    var cellVm = new StepCellViewModel(r, c, ToggleCellInternal)
+                        { IsChecked = false, IsEnabled = true };
+                    rowVm.Cells.Add(cellVm);
+                }
+
+                MatrixRows.Add(rowVm);
+            }
+
+            return;
+        }
+
+        var matrix = _measureSteps[CurrentMeasureIndex];
+
+        for (var r = 0; r < Drums.Length; r++)
+        {
+            var rowVm = new RowViewModel(Drums[r]);
+            for (var c = 0; c < Columns; c++)
+            {
+                var cellVm = new StepCellViewModel(r, c, ToggleCellInternal)
+                {
+                    IsChecked = matrix[r, c],
+                    IsEnabled = true // will be corrected in SyncColumnEnabledStates
+                };
+                rowVm.Cells.Add(cellVm);
+            }
+
+            MatrixRows.Add(rowVm);
+        }
+
+        // ensure enable/disable state is correct per column
+        for (var c = 0; c < Columns; c++)
+            UpdateColumnEnabledState(c);
+    }
+
+    /// <summary>
+    ///     Called after we mutate _measureSteps to sync StepCellViewModels
+    ///     Only updates IsChecked / IsEnabled properties (no recreation)
+    /// </summary>
+    private void SyncCellsFromMeasure()
+    {
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
+        var matrix = _measureSteps[CurrentMeasureIndex];
+
+        for (var r = 0; r < Drums.Length; r++)
+        {
+            var rowVm = MatrixRows.ElementAtOrDefault(r);
+            if (rowVm == null) continue;
+            for (var c = 0; c < Columns; c++)
+            {
+                var cellVm = rowVm.Cells.ElementAtOrDefault(c);
+                if (cellVm == null) continue;
+                var newChecked = matrix[r, c];
+                if (cellVm.IsChecked != newChecked)
+                    cellVm.IsChecked = newChecked;
+            }
+        }
+
+        for (var c = 0; c < Columns; c++)
+            UpdateColumnEnabledState(c);
+    }
+
+    private void UpdateColumnEnabledState(int col)
+    {
+        if (col < 0 || col >= Columns) return;
+        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
+
+        var count = 0;
+        var matrix = _measureSteps[CurrentMeasureIndex];
+        for (var r = 0; r < Drums.Length; r++)
+            if (matrix[r, col])
+                count++;
+
+        var limitReached = count >= MaxNotesPerColumn;
+
+        // If limit reached, disable unchecked cells; checked cells remain enabled so they can be toggled off
+        for (var r = 0; r < Drums.Length; r++)
+        {
+            var rowVm = MatrixRows.ElementAtOrDefault(r);
+            if (rowVm == null) continue;
+            var cellVm = rowVm.Cells.ElementAtOrDefault(col);
+            if (cellVm == null) continue;
+
+            if (cellVm.IsChecked)
+                cellVm.IsEnabled = true;
+            else
+                cellVm.IsEnabled = !limitReached;
+        }
+    }
 
     [ReactiveCommand]
     private async Task NavigateBack()
@@ -162,6 +334,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
         CurrentMeasureIndex = idx - 1;
         CurrentSheet = BuildSheet();
+        BuildMatrixRowsFromCurrentMeasure();
         DrawSheet();
         IsSaved = false;
     }
@@ -175,6 +348,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
         CurrentMeasureIndex = idx + 1;
         CurrentSheet = BuildSheet();
+        BuildMatrixRowsFromCurrentMeasure();
         DrawSheet();
         IsSaved = false;
     }
@@ -273,7 +447,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         {
             CurrentSheet = BuildSheet();
             await _sheetService.UpdateSheetAsync(CurrentSheet!);
-        
+
             _notificationService.ShowNotification(new Notification("Sheet saved.",
                 $"The sheet {Name} successfully saved.", NotificationType.Success));
             IsSaved = true;
@@ -289,6 +463,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         _measureSteps.Add(newMeasure);
         CurrentMeasureIndex = _measureSteps.Count - 1;
         CurrentSheet = BuildSheet();
+        BuildMatrixRowsFromCurrentMeasure();
         DrawSheet();
     }
 
@@ -321,6 +496,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             _measureSteps.Add(new bool[Drums.Length, Columns]);
             CurrentMeasureIndex = 0;
             CurrentSheet = BuildSheet();
+            BuildMatrixRowsFromCurrentMeasure();
             DrawSheet();
             return;
         }
@@ -328,7 +504,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         foreach (var measure in sheet.Measures)
         {
             var measureMatrix = new bool[Drums.Length, Columns];
-            
+
             var col = 0;
             foreach (var group in measure.Groups)
             foreach (var noteGroup in group.NoteGroups)
@@ -345,12 +521,14 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
             _measureSteps.Add(measureMatrix);
         }
+
         _sheetId = sheet.Id;
         CurrentMeasureIndex = 0;
         Name = sheet.Name;
         Description = sheet.Description;
         BpmDecimal = sheet.Tempo.Value;
         CurrentSheet = BuildSheet();
+        BuildMatrixRowsFromCurrentMeasure();
         DrawSheet();
         IsSaved = true;
     }
@@ -397,7 +575,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         // Use the provided ID, or the current sheet's ID if editing, or generate new if creating
 
         return new Sheet(_bpm, [..allMeasures], Name ?? "Untitled", Description ?? "", _sheetId);
-
     }
 
     private void DrawSheet()
@@ -437,6 +614,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         else
             CurrentMeasureIndex = 0;
         IsSaved = false;
+
+        BuildMatrixRowsFromCurrentMeasure();
     }
 
     public void DuplicateSelectedMeasure()
@@ -453,7 +632,9 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         CurrentSheet = BuildSheet();
         DrawSheet();
 
-        CurrentMeasureIndex = CurrentMeasureIndex + 1; // move selection to the new duplicate
+        CurrentMeasureIndex = CurrentMeasureIndex + 1;
         IsSaved = false;
+
+        BuildMatrixRowsFromCurrentMeasure();
     }
 }

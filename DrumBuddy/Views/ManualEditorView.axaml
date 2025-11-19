@@ -7,6 +7,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
                                 mc:Ignorable="d" d:DesignWidth="1600" d:DesignHeight="800"
+                                x:DataType="vm:ManualEditorViewModel"
                                 x:Class="DrumBuddy.Views.ManualEditorView">
     <Grid>
         <Grid RowDefinitions="Auto,*,Auto,*" x:Name="Root">
@@ -153,7 +154,6 @@
                                     </Button>
                                 </StackPanel>
                             </Grid>
-
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -196,7 +196,111 @@
             </Grid>
             <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                           Background="{StaticResource HeaderGray}">
-                <Grid x:Name="MatrixGrid" />
+                <Border Padding="12">
+                    <Grid RowDefinitions="Auto,*">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="Drum \ Step"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                                       FontSize="16" FontWeight="SemiBold" />
+
+                            <ItemsControl Grid.Column="1" Grid.ColumnSpan="16" ItemsSource="{Binding StepHeaders}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1" Columns="16" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="4">
+                                            <TextBlock Text="{Binding}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="16" />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding MatrixRows}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="11" Columns="1" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}"
+                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                   Margin="4,0,8,0" FontSize="16" />
+
+                                        <ItemsControl Grid.Column="1" Grid.ColumnSpan="16"
+                                                      ItemsSource="{Binding Cells}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <UniformGrid Rows="1" Columns="16" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <ToggleButton Classes="stepButton"
+                                                                  IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                                                  IsEnabled="{Binding IsEnabled}"
+                                                                  Command="{Binding ToggleCommand}"
+                                                                  HorizontalAlignment="Stretch"
+                                                                  VerticalAlignment="Stretch"
+                                                                  Margin="1" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
             </ScrollViewer>
         </Grid>
     </Grid>

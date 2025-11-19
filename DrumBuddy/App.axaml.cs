@@ -156,6 +156,11 @@ public class App : Application
             () => new ManualView { ViewModel = Locator.Current.GetRequiredService<ManualViewModel>() },
             typeof(IViewFor<ManualViewModel>));
         CurrentMutable.Register(
+            () => new ManualEditorView(),
+            typeof(IViewFor<ManualEditorViewModel>)
+        );
+
+        CurrentMutable.Register(
             () => new ConfigurationView { ViewModel = Locator.Current.GetRequiredService<ConfigurationViewModel>() },
             typeof(IViewFor<ConfigurationViewModel>));
     }

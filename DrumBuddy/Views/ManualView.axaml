@@ -4,7 +4,6 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
                                 xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:views="clr-namespace:DrumBuddy.Views"
                                 xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
                                 xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -38,7 +37,7 @@
             <Grid>
                 <Button Classes="card" CornerRadius="0" x:Name="EditButton" IsEnabled="{Binding !IsLoadingSheets}">
                     <Grid>
-                        <StackPanel Orientation="Vertical" 
+                        <StackPanel Orientation="Vertical"
                                     IsVisible="{Binding !IsLoadingSheets}"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
@@ -50,23 +49,22 @@
                                        FontSize="22"
                                        FontWeight="SemiBold"
                                        HorizontalAlignment="Center"
-                                       TextAlignment="Center" />                
+                                       TextAlignment="Center" />
                         </StackPanel>
-                        <StackPanel  Orientation="Vertical" 
-                                     IsVisible="{Binding IsLoadingSheets}" 
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Center"
-                                     Spacing="12">
+                        <StackPanel Orientation="Vertical"
+                                    IsVisible="{Binding IsLoadingSheets}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="12">
                             <avaloniaProgressRing:ProgressRing
                                 Width="64"
                                 Height="64" Margin="5"
-                                IsActive="True"
-                            />
+                                IsActive="True" />
                             <TextBlock TextAlignment="Center"
-                                       FontWeight="SemiBold" 
-                                       FontSize="22" 
+                                       FontWeight="SemiBold"
+                                       FontSize="22"
                                        Text="Sheets are loading"
-                                       Margin="0,5,0,0"/>
+                                       Margin="0,5,0,0" />
                         </StackPanel>
                     </Grid>
                 </Button>
@@ -125,6 +123,6 @@
 
             </Grid>
         </UniformGrid>
-        <views:ManualEditorView Grid.Row="0" Grid.RowSpan="2" x:Name="EditorView" />
+        <Grid Grid.Row="0" Grid.RowSpan="2" x:Name="EditorPlaceHolder" />
     </Grid>
 </reactiveUi:ReactiveUserControl>

@@ -37,7 +37,7 @@
         </LinearGradientBrush>
         <converters:DrumHighlightConverter x:Key="DrumHighlightConverter" />
         <converters:NoteToKeyboardKeyConverter x:Key="NoteToKeyboardKeyConverter" />
-        <converters:SyncIconVisibleConverter x:Key="SyncIconVisibleConverter"/>
+        <converters:SyncIconVisibleConverter x:Key="SyncIconVisibleConverter" />
         <converters:StringNotEmptyToBoolConverter x:Key="StringNotEmptyToBoolConverter"></converters:StringNotEmptyToBoolConverter>
         <converters:ButtonIconEnabledStateForegroundConverter x:Key="ButtonIconEnabledStateForegroundConverter" />
         <converters:ZeroStateAndNotLoadingConverter x:Key="ZeroStateAndNotLoadingConverter" />
@@ -75,6 +75,7 @@
         <StyleInclude Source="/Styles/MenuItem.axaml" />
         <StyleInclude Source="/Styles/TextBlock.axaml" />
         <StyleInclude Source="/Styles/TextBox.axaml" />
+        <StyleInclude Source="/Styles/ToggleButton.axaml" />
     </Application.Styles>
 
 </Application>
