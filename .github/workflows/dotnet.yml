@@ -1,5 +1,3 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
 name: Test on all platforms
 
@@ -26,13 +24,23 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: 🧱 Restore and Build
-        run: dotnet build DrumBuddy.Desktop -c Release /p:VSTestLogger=
+      - name: 🧱 Restore dependencies
+        run: dotnet restore
 
-        
-      - name: 🧪 Run tests
-        run: dotnet test DrumBuddy.Unit/DrumBuddy.Core.Unit.csproj --configuration Release --no-build --verbosity normal --logger "console;verbosity=detailed"
+      - name: 🔨 Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: 🧪 Run DrumBuddy.Core.Unit tests
+        run: dotnet test DrumBuddy.Core.Unit/DrumBuddy.Core.Unit.csproj --configuration Release --no-build --verbosity normal --logger "console;verbosity=detailed"
         env:
           DOTNET_ROLL_FORWARD: Major
 
+      - name: 🧪 Run DrumBuddy.IO tests
+        run: dotnet test DrumBuddy.IO/DrumBuddy.IO.csproj --configuration Release --no-build --verbosity normal --logger "console;verbosity=detailed"
+        env:
+          DOTNET_ROLL_FORWARD: Major
 
+      - name: 🧪 Run DrumBuddy.Unit tests
+        run: dotnet test DrumBuddy.Unit/DrumBuddy.Unit.csproj --configuration Release --no-build --verbosity normal --logger "console;verbosity=detailed"
+        env:
+          DOTNET_ROLL_FORWARD: Major
