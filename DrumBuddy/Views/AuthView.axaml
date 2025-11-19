@@ -166,6 +166,14 @@
                                 Command="{Binding GuestLoginCommand}">
                             <TextBlock Text="Continue as a guest (offline mode)" />
                         </Button>
+                        <Button x:Name="ToggleAnimationButton"
+                                Classes="registerForm"
+                                Content="Stop Animation"
+                                HorizontalAlignment="Center"
+                                Margin="0,10,0,0"
+                                FontSize="12"
+                                Background="Transparent"
+                                Foreground="{StaticResource Accent}" />
                     </StackPanel>
                     <StackPanel IsVisible="{Binding IsResetPasswordMode}" Spacing="16">
                         <TextBlock Text="Reset your password"
@@ -209,7 +217,8 @@
                                 HorizontalAlignment="Left"
                                 FontSize="12"
                                 Padding="0"
-                                Content="← Back" />
+                                Content="← Back"
+                                Classes="registerForm" />
                     </StackPanel>
                 </StackPanel>
 
