@@ -9,7 +9,7 @@
                                 mc:Ignorable="d" d:DesignWidth="1600" d:DesignHeight="800"
                                 x:DataType="vm:ManualEditorViewModel"
                                 x:Class="DrumBuddy.Views.ManualEditorView">
-    <Grid>
+    <Grid Background="{StaticResource CardItemColor}">
         <Grid RowDefinitions="Auto,*,Auto,*" x:Name="Root">
             <Border Height="66" Margin="0,0,0,10" Grid.Row="0" Background="{StaticResource HeaderGray}">
                 <Grid>
@@ -65,138 +65,175 @@
                     </Button>
                 </Grid>
             </Border>
-            <ScrollViewer Grid.Row="1" x:Name="MeasuresScrollViewer" VerticalScrollBarVisibility="Auto" MinHeight="200">
-                <ItemsControl x:Name="MeasuresItemsControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <helperViews:MeasureWrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Border x:Name="MeasureBorder"
-                                        PointerPressed="MeasureBorder_OnPointerPressed"
-                                        BorderThickness="2"
-                                        CornerRadius="8"
-                                        BorderBrush="Transparent"
-                                        HorizontalAlignment="Stretch"
-                                        Margin="-3"
-                                        VerticalAlignment="Stretch">
-                                    <helperViews:MeasureView />
-                                </Border>
-                                <StackPanel Orientation="Horizontal"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Top">
-                                    <Button x:Name="MoveLeftMeasureButton" IsVisible="False"
-                                            Width="32" Height="32"
-                                            Background="White"
-                                            BorderThickness="1"
-                                            BorderBrush="{StaticResource HeaderGray}"
-                                            Cursor="Hand"
-                                            Click="MoveLeftMeasureButton_OnClick">
-                                        <Button.Styles>
-                                            <Style Selector="Button:pointerover">
-                                                <Setter Property="Background" Value="{StaticResource HeaderGray}" />
-                                            </Style>
-                                        </Button.Styles>
-                                        <PathIcon Foreground="{StaticResource Accent}"
-                                                  Data="{StaticResource ArrowLeft}" />
-                                    </Button>
-                                    <Button x:Name="DeleteMeasureButton" IsVisible="False"
-                                            Width="32"
-                                            Height="32"
-                                            Background="White"
-                                            Foreground="{StaticResource Error}"
-                                            BorderThickness="1"
-                                            BorderBrush="{StaticResource HeaderGray}"
-                                            Cursor="Hand"
-                                            Click="DeleteMeasureButton_OnClick">
-                                        <Button.Styles>
-                                            <Style Selector="Button:pointerover">
-                                                <Setter Property="Background" Value="{StaticResource HeaderGray}" />
-                                            </Style>
-                                        </Button.Styles>
-                                        <PathIcon Foreground="{StaticResource Error}" Data="{StaticResource delete}" />
-                                    </Button>
-                                    <Button x:Name="DuplicateMeasureButton"
-                                            IsVisible="False"
-                                            Width="32"
-                                            Height="32"
-                                            Background="White"
-                                            BorderThickness="1"
-                                            BorderBrush="{StaticResource HeaderGray}"
-                                            Cursor="Hand"
-                                            Click="DuplicateMeasureButton_OnClick">
-                                        <Button.Styles>
-                                            <Style Selector="Button:pointerover">
-                                                <Setter Property="Background" Value="{StaticResource HeaderGray}" />
-                                            </Style>
-                                        </Button.Styles>
-                                        <PathIcon Foreground="{StaticResource Accent}"
-                                                  Data="{StaticResource Duplicate}" />
-                                    </Button>
+            <Border Grid.Row="1"
+                    BorderBrush="{StaticResource HeaderGray}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Background="White"
+                    BoxShadow="0 2 6 #00000030"
+                    Padding="8"
+                    Margin="8">
+                <ScrollViewer x:Name="MeasuresScrollViewer"
+                              VerticalScrollBarVisibility="Auto"
+                              MinHeight="200">
+                    <ItemsControl x:Name="MeasuresItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <helperViews:MeasureWrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Border x:Name="MeasureBorder"
+                                            PointerPressed="MeasureBorder_OnPointerPressed"
+                                            BorderThickness="2"
+                                            CornerRadius="8"
+                                            BorderBrush="Transparent"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="-3"
+                                            VerticalAlignment="Stretch">
+                                        <helperViews:MeasureView />
+                                    </Border>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Top">
+                                        <Button x:Name="MoveLeftMeasureButton" IsVisible="False"
+                                                Width="32" Height="32"
+                                                Background="White"
+                                                BorderThickness="1"
+                                                BorderBrush="{StaticResource HeaderGray}"
+                                                Cursor="Hand"
+                                                Click="MoveLeftMeasureButton_OnClick">
+                                            <Button.Styles>
+                                                <Style Selector="Button:pointerover">
+                                                    <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                                </Style>
+                                            </Button.Styles>
+                                            <PathIcon Foreground="{StaticResource Accent}"
+                                                      Data="{StaticResource ArrowLeft}" />
+                                        </Button>
+                                        <Button x:Name="DeleteMeasureButton" IsVisible="False"
+                                                Width="32"
+                                                Height="32"
+                                                Background="White"
+                                                Foreground="{StaticResource Error}"
+                                                BorderThickness="1"
+                                                BorderBrush="{StaticResource HeaderGray}"
+                                                Cursor="Hand"
+                                                Click="DeleteMeasureButton_OnClick">
+                                            <Button.Styles>
+                                                <Style Selector="Button:pointerover">
+                                                    <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                                </Style>
+                                            </Button.Styles>
+                                            <PathIcon Foreground="{StaticResource Error}"
+                                                      Data="{StaticResource delete}" />
+                                        </Button>
+                                        <Button x:Name="DuplicateMeasureButton"
+                                                IsVisible="False"
+                                                Width="32"
+                                                Height="32"
+                                                Background="White"
+                                                BorderThickness="1"
+                                                BorderBrush="{StaticResource HeaderGray}"
+                                                Cursor="Hand"
+                                                Click="DuplicateMeasureButton_OnClick">
+                                            <Button.Styles>
+                                                <Style Selector="Button:pointerover">
+                                                    <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                                </Style>
+                                            </Button.Styles>
+                                            <PathIcon Foreground="{StaticResource Accent}"
+                                                      Data="{StaticResource Duplicate}" />
+                                        </Button>
 
-                                    <Button x:Name="MoveRightMeasureButton" IsVisible="False"
-                                            Width="32" Height="32"
-                                            Background="White"
-                                            BorderThickness="1"
-                                            BorderBrush="{StaticResource HeaderGray}"
-                                            Cursor="Hand"
-                                            Click="MoveRightMeasureButton_OnClick">
-                                        <Button.Styles>
-                                            <Style Selector="Button:pointerover">
-                                                <Setter Property="Background" Value="{StaticResource HeaderGray}" />
-                                            </Style>
-                                        </Button.Styles>
-                                        <PathIcon Foreground="{StaticResource Accent}"
-                                                  Data="{StaticResource ArrowRight}" />
-                                    </Button>
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                                        <Button x:Name="MoveRightMeasureButton" IsVisible="False"
+                                                Width="32" Height="32"
+                                                Background="White"
+                                                BorderThickness="1"
+                                                BorderBrush="{StaticResource HeaderGray}"
+                                                Cursor="Hand"
+                                                Click="MoveRightMeasureButton_OnClick">
+                                            <Button.Styles>
+                                                <Style Selector="Button:pointerover">
+                                                    <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                                </Style>
+                                            </Button.Styles>
+                                            <PathIcon Foreground="{StaticResource Accent}"
+                                                      Data="{StaticResource ArrowRight}" />
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+            <Border Grid.Row="2"
+                    BorderBrush="{StaticResource HeaderGray}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Background="{StaticResource CardItemColor}"
+                    Padding="8"
+                    Margin="9"
+                    BoxShadow="0 2 6 #00000030">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                    <Button Grid.Column="0"
+                            Classes="round"
+                            x:Name="AddMeasureButton"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Background="{StaticResource CardItemColor}"
+                            Width="32"
+                            Height="32"
+                            Margin="10,0,12,0"
+                            ToolTip.Tip="Add new measure">
+                        <PathIcon Data="{StaticResource PlusRegular}" />
+                    </Button>
 
-            <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,Auto,Auto" Background="{StaticResource HeaderGray}">
-                <Button Grid.Column="0"
-                        x:Name="AddMeasureButton"
-                        Content="+"
-                        FontSize="16"
-                        FontWeight="Bold"
-                        Width="32"
-                        Height="32"
-                        Margin="10,0,12,0"
-                        ToolTip.Tip="Add new measure" />
+                    <TextBlock Grid.Column="1"
+                               FontFamily="{StaticResource NunitoFont}"
+                               Classes="header"
+                               x:Name="MeasureDisplayText"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               FontWeight="SemiBold" />
 
-                <TextBlock Grid.Column="1"
-                           FontFamily="{StaticResource NunitoFont}"
-                           Classes="header"
-                           x:Name="MeasureDisplayText"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           FontWeight="SemiBold" />
+                    <Button Grid.Column="2"
+                            Classes="round"
+                            x:Name="BackButton"
+                            Background="{StaticResource CardItemColor}"
+                            Width="32"
+                            Height="32"
+                            Margin="0,0,4,0"
+                            ToolTip.Tip="Previous measure">
+                        <PathIcon Data="{StaticResource ArrowPrevious}" />
+                    </Button>
 
-                <Button Grid.Column="2"
-                        x:Name="BackButton"
-                        Content="◀"
-                        Width="32"
-                        Height="32"
-                        Margin="0,0,4,0"
-                        ToolTip.Tip="Previous measure" />
+                    <Button Grid.Column="3"
+                            Classes="round"
+                            x:Name="ForwardButton"
+                            Background="{StaticResource CardItemColor}"
+                            Width="32"
+                            Height="32"
+                            Margin="4,0,10,0"
+                            ToolTip.Tip="Next measure">
+                        <PathIcon Data="{StaticResource ArrowNext}" />
+                    </Button>
+                </Grid>
+            </Border>
+            <Border Grid.Row="3"
+                    Background="{StaticResource CardItemColor}"
+                    CornerRadius="12"
+                    BorderBrush="{StaticResource HeaderGray}"
+                    BorderThickness="1"
+                    BoxShadow="0 2 6 #00000030"
+                    Padding="12"
+                    Margin="8">
 
-                <Button Grid.Column="3"
-                        x:Name="ForwardButton"
-                        Content="▶"
-                        Width="32"
-                        Height="32"
-                        Margin="4,0,10,0"
-                        ToolTip.Tip="Next measure" />
-            </Grid>
-            <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
-                          Background="{StaticResource HeaderGray}">
-                <Border Padding="12">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto">
                     <Grid RowDefinitions="Auto,*">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -218,10 +255,6 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Column="0" Text="Drum \ Step"
-                                       VerticalAlignment="Center" HorizontalAlignment="Center"
-                                       FontSize="16" FontWeight="SemiBold" />
 
                             <ItemsControl Grid.Column="1" Grid.ColumnSpan="16" ItemsSource="{Binding StepHeaders}">
                                 <ItemsControl.ItemsPanel>
@@ -300,8 +333,8 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Grid>
-                </Border>
-            </ScrollViewer>
+                </ScrollViewer>
+            </Border>
         </Grid>
     </Grid>
 </reactiveUi:ReactiveUserControl>
