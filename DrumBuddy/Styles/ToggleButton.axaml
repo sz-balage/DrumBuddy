@@ -32,5 +32,8 @@
         <Style Selector="^:checked">
             <Setter Property="Background" Value="{StaticResource Accent}" />
         </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Background" Value="{StaticResource DarkerGray}" />
+        </Style>
     </Style>
 </Styles>
