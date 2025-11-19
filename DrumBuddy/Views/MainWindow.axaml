@@ -63,6 +63,13 @@
                                 </Button>
                             </Grid>
                             <ListBox x:Name="PaneListBox">
+                                <ListBox.Styles>
+                                    <Style Selector="ListBoxItem">
+                                        <Setter Property="Margin" Value="0,0,0,8" />
+                                        <Setter Property="CornerRadius" Value="8" />
+                                        <Setter Property="Background" Value="#f5f5f5" />
+                                    </Style>
+                                </ListBox.Styles>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="{x:Type models:NavigationMenuItemTemplate}">
                                         <StackPanel Spacing="15" Orientation="Horizontal">
