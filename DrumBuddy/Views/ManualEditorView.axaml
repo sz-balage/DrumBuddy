@@ -104,7 +104,8 @@
                                                 BorderThickness="1"
                                                 BorderBrush="{StaticResource HeaderGray}"
                                                 Cursor="Hand"
-                                                Click="MoveLeftMeasureButton_OnClick">
+                                                Click="MoveLeftMeasureButton_OnClick"
+                                                ToolTip.Tip="Move measure to the left">
                                             <Button.Styles>
                                                 <Style Selector="Button:pointerover">
                                                     <Setter Property="Background" Value="{StaticResource HeaderGray}" />
@@ -121,7 +122,8 @@
                                                 BorderThickness="1"
                                                 BorderBrush="{StaticResource HeaderGray}"
                                                 Cursor="Hand"
-                                                Click="DeleteMeasureButton_OnClick">
+                                                Click="DeleteMeasureButton_OnClick"
+                                                ToolTip.Tip="Delete measure">
                                             <Button.Styles>
                                                 <Style Selector="Button:pointerover">
                                                     <Setter Property="Background" Value="{StaticResource HeaderGray}" />
@@ -138,7 +140,8 @@
                                                 BorderThickness="1"
                                                 BorderBrush="{StaticResource HeaderGray}"
                                                 Cursor="Hand"
-                                                Click="DuplicateMeasureButton_OnClick">
+                                                Click="DuplicateMeasureButton_OnClick"
+                                                ToolTip.Tip="Duplicate measure">
                                             <Button.Styles>
                                                 <Style Selector="Button:pointerover">
                                                     <Setter Property="Background" Value="{StaticResource HeaderGray}" />
@@ -154,7 +157,8 @@
                                                 BorderThickness="1"
                                                 BorderBrush="{StaticResource HeaderGray}"
                                                 Cursor="Hand"
-                                                Click="MoveRightMeasureButton_OnClick">
+                                                Click="MoveRightMeasureButton_OnClick"
+                                                ToolTip.Tip="Move measure to the right">
                                             <Button.Styles>
                                                 <Style Selector="Button:pointerover">
                                                     <Setter Property="Background" Value="{StaticResource HeaderGray}" />
