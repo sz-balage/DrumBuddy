@@ -68,7 +68,7 @@ public class App : Application
 
         //TODO: handle dev and prod base addresses
 #if DEBUG
-        var baseAddress = new Uri("https://api.drumbuddy.hu"); // local dev backend
+        var baseAddress = new Uri("https://api.dev.drumbuddy.hu"); // dev backend
 #else
         var baseAddress = new Uri("https://api.drumbuddy.hu"); // production backend
 #endif

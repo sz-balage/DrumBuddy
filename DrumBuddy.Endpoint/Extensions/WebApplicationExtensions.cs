@@ -7,7 +7,9 @@ public static class WebApplicationExtensions
 {
     public static void UseApplicationMiddleware(this WebApplication app)
     {
-        if (app.Environment.IsDevelopment())
+        var env = app.Configuration["ASPNETCORE_ENVIRONMENT"];
+
+        if (env == "Local" || env == "Development")
         {
             app.MapOpenApi();
             app.MapScalarApiReference();
@@ -23,6 +25,6 @@ public static class WebApplicationExtensions
     {
         app.MapAuthenticationEndpoints();
         app.MapSheetEndpoints();
-        app.MapConfigurationEndpoints(); 
+        app.MapConfigurationEndpoints();
     }
 }
