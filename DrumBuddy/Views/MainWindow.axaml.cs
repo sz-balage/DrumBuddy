@@ -113,7 +113,9 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.IsPaneOpen, v => v.SplitView.IsPaneOpen)
                 .DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.TogglePaneCommand, v => v.TriggerPaneButton)
+            this.BindCommand(ViewModel, vm => vm.TogglePaneCommand, v => v.OpenPaneButton)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.TogglePaneCommand, v => v.ClosePaneButton)
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.Router, v => v.RoutedViewHost.Router)
                 .DisposeWith(d);

@@ -50,10 +50,18 @@
                 <SplitView.Pane>
                     <Grid>
                         <StackPanel Spacing="11" Margin="5">
-                            <Button x:Name="TriggerPaneButton" Height="50" Width="41"
-                                    Background="{StaticResource HeaderGray}">
-                                <PathIcon Data="{StaticResource Line_Horizontal_3}" />
-                            </Button>
+                            <Grid>
+                                <Button x:Name="OpenPaneButton" Height="50" Width="41"
+                                        HorizontalAlignment="Left" IsVisible="{Binding !IsPaneOpen}"
+                                        Background="{StaticResource HeaderGray}">
+                                    <PathIcon Data="{StaticResource PaneClose}" />
+                                </Button>
+                                <Button x:Name="ClosePaneButton" Height="50" Width="41"
+                                        HorizontalAlignment="Right" IsVisible="{Binding IsPaneOpen}"
+                                        Background="{StaticResource HeaderGray}">
+                                    <PathIcon Data="{StaticResource PaneOpen}" />
+                                </Button>
+                            </Grid>
                             <ListBox x:Name="PaneListBox">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="{x:Type models:NavigationMenuItemTemplate}">
@@ -101,13 +109,14 @@
                                                        TextTrimming="CharacterEllipsis" />
                                             <Separator HorizontalAlignment="Stretch" />
                                             <Button x:Name="SignOutButton"
-                                                Command="{Binding SignOutCommand}"
+                                                    Command="{Binding SignOutCommand}"
                                                     Background="Transparent"
                                                     Foreground="Black"
                                                     HorizontalAlignment="Stretch"
                                                     HorizontalContentAlignment="Left">
                                                 <StackPanel Orientation="Horizontal">
-                                                    <PathIcon Data="{StaticResource SignOut}" Width="16" Height="16" Margin="0,0,10,0" />
+                                                    <PathIcon Data="{StaticResource SignOut}" Width="16" Height="16"
+                                                              Margin="0,0,10,0" />
                                                     <TextBlock FontWeight="SemiBold"
                                                                Margin="0,1,0,0"
                                                                Text="Sign out" />
