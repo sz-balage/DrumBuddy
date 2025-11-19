@@ -57,7 +57,7 @@
                                      BorderThickness="1"
                                      BorderBrush="{StaticResource HeaderGray}"
                                      Padding="12,10"
-                                     CornerRadius="8"/>
+                                     CornerRadius="8" />
                             <TextBlock x:Name="EmailValidation" Foreground="{StaticResource Error}"
                                        IsVisible="{Binding Text, ElementName=EmailValidation,
                                    Converter={StaticResource StringNotEmptyToBoolConverter}}"
@@ -73,7 +73,7 @@
                                  BorderThickness="1"
                                  BorderBrush="{StaticResource HeaderGray}"
                                  Padding="12,10"
-                                 CornerRadius="8"/>
+                                 CornerRadius="8" />
 
                         <StackPanel>
                             <TextBox x:Name="PasswordBox"
@@ -85,7 +85,7 @@
                                      BorderThickness="1"
                                      BorderBrush="{StaticResource HeaderGray}"
                                      Padding="12,10"
-                                     CornerRadius="8"/>
+                                     CornerRadius="8" />
                             <TextBlock x:Name="PasswordValidation"
                                        Foreground="{StaticResource Error}"
                                        FontSize="12"
@@ -105,7 +105,7 @@
                                      BorderThickness="1"
                                      BorderBrush="{StaticResource HeaderGray}"
                                      Padding="12,10"
-                                     CornerRadius="8"/>
+                                     CornerRadius="8" />
                             <TextBlock x:Name="ConfirmPasswordValidation"
                                        Foreground="{StaticResource Error}"
                                        FontSize="12"
@@ -149,27 +149,21 @@
                         </Button>
 
                         <Button x:Name="ToggleModeButton"
-                                Background="Transparent"
-                                Foreground="{StaticResource Accent}"
-                                Command="{Binding ToggleModeCommand}"
-                                FontSize="12"
-                                Padding="0">
+                                Classes="registerForm"
+                                IsEnabled="{Binding !IsLoading}"
+                                Command="{Binding ToggleModeCommand}">
                             <TextBlock x:Name="ToggleButtonText" />
                         </Button>
                         <Button x:Name="ForgotPassword"
-                                Background="Transparent"
-                                Foreground="{StaticResource Accent}"
-                                Command="{Binding ShowResetPasswordCommand}"
-                                FontSize="12"
-                                Padding="0">
+                                Classes="registerForm"
+                                IsEnabled="{Binding !IsLoading}"
+                                Command="{Binding ShowResetPasswordCommand}">
                             <TextBlock Text="Forgot your password? Click here!" />
                         </Button>
                         <Button x:Name="GuestLogin"
-                                Background="Transparent"
-                                Foreground="{StaticResource Accent}"
-                                Command="{Binding GuestLoginCommand}"
-                                FontSize="12"
-                                Padding="0">
+                                Classes="registerForm"
+                                IsEnabled="{Binding !IsLoading}"
+                                Command="{Binding GuestLoginCommand}">
                             <TextBlock Text="Continue as a guest (offline mode)" />
                         </Button>
                     </StackPanel>
@@ -177,7 +171,7 @@
                         <TextBlock Text="Reset your password"
                                    Classes="header"
                                    FontSize="14"
-                                   Foreground="#666666" 
+                                   Foreground="#666666"
                                    HorizontalAlignment="Center"
                                    Margin="0,16,0,8" />
                         <StackPanel>
@@ -199,14 +193,15 @@
                                    Converter={StaticResource StringNotEmptyToBoolConverter}}" />
                         </StackPanel>
                         <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsLoginMode}"
+                                IsVisible="{Binding IsResetPasswordMode}"
                                 Classes="confirm"
                                 Height="40"
                                 FontSize="14"
                                 FontWeight="SemiBold"
                                 Margin="0,8,0,0"
                                 Command="{Binding ResetPasswordCommand}">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Send password reset email" />
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Text="Send password reset email" />
                         </Button>
                         <Button Background="Transparent"
                                 Foreground="{StaticResource Accent}"
