@@ -107,10 +107,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         IsSaved = true;
     }
 
-    // New: matrix exposed as ObservableCollection of RowViewModel
     public ObservableCollection<RowViewModel> MatrixRows { get; } = new();
 
-    // New: step header sequence (1..16)
     public ReadOnlyCollection<int> StepHeaders { get; } =
         Enumerable.Range(1, Columns).ToList().AsReadOnly();
 
@@ -143,7 +141,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
     private Unit ToggleCellInternal(int row, int col)
     {
-        // re-use existing ToggleStep logic but operate on _measureSteps directly
         if (row < 0 || row >= Drums.Length) return Unit.Default;
         if (col < 0 || col >= Columns) return Unit.Default;
         if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return Unit.Default;
@@ -189,9 +186,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             matrix[row, col] = false;
         }
 
-        // update sheet & cell VMs
         CurrentSheet = BuildSheet();
-        SyncCellsFromMeasure(); // update StepCellViewModels' IsChecked / IsEnabled
+        SyncCellsFromMeasure();
         RedrawMeasureAt();
         return Unit.Default;
     }
@@ -287,7 +283,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
         var limitReached = count >= MaxNotesPerColumn;
 
-        // If limit reached, disable unchecked cells; checked cells remain enabled so they can be toggled off
+        // if limit reached, disable unchecked cells
         for (var r = 0; r < Drums.Length; r++)
         {
             var rowVm = MatrixRows.ElementAtOrDefault(r);
