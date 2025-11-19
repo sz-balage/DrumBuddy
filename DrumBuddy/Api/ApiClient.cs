@@ -10,16 +10,16 @@ using DrumBuddy.IO.Models;
 
 namespace DrumBuddy.Api;
 
-public class ApiClient
+public class ApiClient : IApiClient
 {
     private readonly IAuthApi _authApi;
-    private readonly ISheetApi _sheetApi;
     private readonly IConfigurationApi _configurationApi;
-    private readonly UserService _userService;
     private readonly SerializationService _serializationService;
+    private readonly ISheetApi _sheetApi;
+    private readonly UserService _userService;
 
     public ApiClient(
-        IAuthApi authApi, 
+        IAuthApi authApi,
         ISheetApi sheetApi,
         IConfigurationApi configurationApi,
         UserService userService,
@@ -40,6 +40,7 @@ public class ApiClient
         await _userService.SetToken(result.Token, result.UserName, result.Email, result.UserId);
         return result;
     }
+
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(string email)
     {
         var request = new AuthRequests.ForgotPasswordRequest() { Email = email };
@@ -56,13 +57,13 @@ public class ApiClient
     }
 
     // Sheet methods
-    public async Task<List<SheetSummaryDto>> GetSheetSummariesAsync() 
+    public async Task<List<SheetSummaryDto>> GetSheetSummariesAsync()
         => await _sheetApi.GetSheetSummariesAsync();
 
-    public async Task<Sheet> GetSheetAsync(Guid id) 
+    public async Task<Sheet> GetSheetAsync(Guid id)
         => await _sheetApi.GetSheetAsync(id);
 
-    public async Task CreateSheetAsync(Sheet sheet, DateTime syncedAt) 
+    public async Task CreateSheetAsync(Sheet sheet, DateTime syncedAt)
     {
         var measureBytes = _serializationService.SerializeMeasurementData(sheet.Measures);
         var dto = new SheetDto
@@ -78,7 +79,7 @@ public class ApiClient
         await _sheetApi.CreateSheetAsync(new CreateSheetRequest(dto));
     }
 
-    public async Task UpdateSheetAsync(Guid id, Sheet sheet, DateTime updatedAt) 
+    public async Task UpdateSheetAsync(Guid id, Sheet sheet, DateTime updatedAt)
     {
         var measureBytes = _serializationService.SerializeMeasurementData(sheet.Measures);
         var dto = new SheetDto
@@ -94,7 +95,7 @@ public class ApiClient
         await _sheetApi.UpdateSheetAsync(id, new UpdateSheetRequest(dto));
     }
 
-    public async Task DeleteSheetAsync(Guid id) 
+    public async Task DeleteSheetAsync(Guid id)
         => await _sheetApi.DeleteSheetAsync(id);
 
     public async Task<ConfigurationResponse> GetConfigurationAsync()

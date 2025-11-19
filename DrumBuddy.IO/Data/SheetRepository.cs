@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DrumBuddy.IO.Data;
 
-public class SheetRepository
+public class SheetRepository : ISheetRepository
 {
     private readonly DrumBuddyDbContext _context;
     private readonly SerializationService _serializationService;

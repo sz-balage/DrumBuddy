@@ -8,19 +8,15 @@ using DrumBuddy.IO.Data;
 
 namespace DrumBuddy.Api;
 
-public class UserService
+public class UserService : IUserService
 {
     private static readonly byte[] EncryptionKey = new byte[]
         { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10 };
 
     private readonly string _rememberMeFilePath;
+    private readonly SheetRepository _repository;
 
     private string? _cachedToken;
-    private readonly SheetRepository _repository;
-    public string? Email { get; private set; }
-    public string? UserName { get; private set; }
-    public bool IsOnline => !string.IsNullOrEmpty(Email) && IsTokenValid();
-    public string? UserId { get; set; }
 
     public UserService(SheetRepository repository)
     {
@@ -34,9 +30,14 @@ public class UserService
         _rememberMeFilePath = Path.Combine(drumBuddyFolder, ".drumbuddy");
     }
 
+    public string? Email { get; private set; }
+    public string? UserName { get; private set; }
+    public bool IsOnline => !string.IsNullOrEmpty(Email) && IsTokenValid();
+    public string? UserId { get; set; }
+
     public string? GetToken() => _cachedToken;
 
-    public async Task SetToken(string token,string userName, string email, string userId)
+    public async Task SetToken(string token, string userName, string email, string userId)
     {
         _cachedToken = token;
         UserName = userName;
@@ -52,6 +53,7 @@ public class UserService
         Email = null;
         UserId = null;
     }
+
     public bool IsTokenValid() => !string.IsNullOrEmpty(_cachedToken);
 
     public async Task SaveRememberedCredentialsAsync(string email, string password)
