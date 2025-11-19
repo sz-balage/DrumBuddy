@@ -9,14 +9,11 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
-using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DrumBuddy.DesignHelpers;
-using DrumBuddy.IO.Data;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
 using DrumBuddy.ViewModels;
@@ -38,7 +35,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     {
         if (Design.IsDesignMode)
         {
-            var vm = new ManualEditorViewModel(null, new SheetService(null, null,null), () => Task.CompletedTask);
+            var vm = new ManualEditorViewModel(null, new SheetService(null, null, null), () => Task.CompletedTask);
             vm.LoadSheet(TestSheetProvider.GetTestSheet());
             ViewModel = vm;
         }
@@ -78,14 +75,7 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
                 .DisposeWith(d);
             this.WhenAnyValue(v => v.ViewModel)
                 .WhereNotNull()
-                .Subscribe(vm =>
-                {
-                    BuildMatrix(vm);
-                    UpdateMeasureBorders(vm.CurrentMeasureIndex);
-                    vm.WhenAnyValue(x => x.CurrentMeasureIndex)
-                        .Subscribe(_ => BuildMatrix(vm))
-                        .DisposeWith(d);
-                })
+                .Subscribe(vm => { UpdateMeasureBorders(vm.CurrentMeasureIndex); })
                 .DisposeWith(d);
             this.WhenAnyValue(x => x.ViewModel.CurrentMeasureIndex)
                 .Subscribe(currentIndex => UpdateMeasureBorders(currentIndex))
@@ -94,8 +84,6 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
             this.BindInteraction(ViewModel, vm => vm.ShowConfirmation, ConfirmationHandler);
         });
     }
-
-    private Grid _matrixGrid => this.FindControl<Grid>("MatrixGrid");
 
     private async Task ConfirmationHandler(IInteractionContext<Unit, Confirmation> context)
     {
@@ -119,7 +107,8 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     private async Task SaveHandler(IInteractionContext<SheetCreationData, SheetNameAndDescription> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();
-        var saveView = new SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input, ViewModel.CurrentSheet.Id) };
+        var saveView = new SaveSheetView
+            { ViewModel = new SaveSheetViewModel(context.Input, ViewModel.CurrentSheet.Id) };
         var result = await saveView.ShowDialog<SheetNameAndDescription>(mainWindow);
         context.SetOutput(result);
     }
@@ -170,138 +159,6 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
     {
         if (ViewModel is null) return;
         ViewModel.MoveSelectedMeasureRight();
-    }
-
-    // TODO: move most of this logic to axaml
-    private void BuildMatrix(ManualEditorViewModel vm)
-    {
-        _matrixGrid.Children.Clear();
-        _matrixGrid.ColumnDefinitions.Clear();
-        _matrixGrid.RowDefinitions.Clear();
-
-        _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(100)));
-        for (var c = 0; c < StepCount; c++)
-            _matrixGrid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
-
-        _matrixGrid.RowDefinitions.Add(new RowDefinition(new GridLength(40)));
-        for (var r = 0; r < vm.Drums.Length; r++)
-            _matrixGrid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
-
-        _stepButtons = new ToggleButton[vm.Drums.Length, StepCount];
-
-        var header = new TextBlock
-        {
-            Text = "Drum \\ Step",
-            Margin = new Thickness(2),
-            VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            FontSize = 16,
-            FontFamily = new FontFamily("NunitoFont"),
-            FontWeight = FontWeight.SemiBold
-        };
-        Grid.SetRow(header, 0);
-        Grid.SetColumn(header, 0);
-        _matrixGrid.Children.Add(header);
-
-        for (var c = 0; c < StepCount; c++)
-        {
-            var label = new TextBlock
-            {
-                Text = (c + 1).ToString(),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 16,
-                FontFamily = new FontFamily("NunitoFont"),
-                Foreground = new SolidColorBrush(Colors.Black)
-            };
-
-            if (c % 4 == 0)
-            {
-                label.FontWeight = FontWeight.Bold;
-                label.Foreground = new SolidColorBrush(new Color(0xFF, 0x00, 0x7A, 0xCC));
-            }
-
-            Grid.SetRow(label, 0);
-            Grid.SetColumn(label, c + 1);
-            _matrixGrid.Children.Add(label);
-        }
-
-        for (var r = 0; r < vm.Drums.Length; r++)
-        {
-            var drumLabel = new TextBlock
-            {
-                Text = vm.Drums[r].ToString(),
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(4, 0, 4, 0),
-                FontSize = 16,
-                FontFamily = new FontFamily("NunitoFont")
-            };
-            Grid.SetRow(drumLabel, r + 1);
-            Grid.SetColumn(drumLabel, 0);
-            _matrixGrid.Children.Add(drumLabel);
-
-            for (var c = 0; c < StepCount; c++)
-            {
-                var btn = new ToggleButton
-                {
-                    Margin = new Thickness(2),
-                    Content = null,
-                    IsChecked = vm.GetStep(r, c),
-                    CornerRadius = new CornerRadius(3),
-                    Background = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
-                    BorderBrush = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
-                    BorderThickness = new Thickness(1),
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch
-                };
-
-                var checkedStyle = new Style(x => x.OfType<ToggleButton>().Class(":checked"));
-                checkedStyle.Setters.Add(new Setter(BackgroundProperty,
-                    new SolidColorBrush(Color.FromRgb(200, 80, 80))));
-                checkedStyle.Setters.Add(new Setter(BorderBrushProperty,
-                    new SolidColorBrush(Color.FromRgb(220, 100, 100))));
-                btn.Styles.Add(checkedStyle);
-
-
-                var rr = r;
-                var cc = c;
-                btn.Checked += (_, __) =>
-                {
-                    vm.ToggleStep(rr, cc);
-                    UpdateColumnEnabledState(cc, vm);
-                };
-                btn.Unchecked += (_, __) =>
-                {
-                    vm.ToggleStep(rr, cc);
-                    UpdateColumnEnabledState(cc, vm);
-                };
-
-                Grid.SetRow(btn, r + 1);
-                Grid.SetColumn(btn, c + 1);
-                _matrixGrid.Children.Add(btn);
-                _stepButtons[r, c] = btn;
-            }
-        }
-
-        for (var c = 0; c < StepCount; c++)
-            UpdateColumnEnabledState(c, vm);
-    }
-
-    private void UpdateColumnEnabledState(int col, ManualEditorViewModel vm)
-    {
-        if (_stepButtons == null || _stepButtons.Length == 0) return;
-        var active = vm.CountCheckedInColumn(col);
-        var limitReached = active >= ManualEditorViewModel.MaxNotesPerColumn; // use constant from VM
-        for (var r = 0; r < vm.Drums.Length; r++)
-        {
-            var btn = _stepButtons[r, col];
-            if (btn == null) continue;
-            if (btn.IsChecked == true)
-                btn.IsEnabled = true; // allow unchecking
-            else
-                btn.IsEnabled = !limitReached;
-        }
     }
 
     private void MeasureBorder_OnPointerPressed(object? sender, PointerPressedEventArgs e)

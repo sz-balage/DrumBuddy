@@ -1,0 +1,39 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20" Width="100" Height="50">
+            <ToggleButton Classes="stepButton"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Margin="2">
+                asdasdasd
+            </ToggleButton>
+        </Border>
+    </Design.PreviewWith>
+    <Style Selector="ToggleButton.stepButton">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource DarkerGray}" />
+        <Setter Property="Background" Value="{StaticResource LighterGray}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="ToggleButton">
+                <Border
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding CornerRadius}">
+                    <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:checked">
+            <Setter Property="Background" Value="{StaticResource Accent}" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Background" Value="{StaticResource DarkerGray}" />
+        </Style>
+    </Style>
+</Styles>

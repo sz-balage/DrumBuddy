@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+﻿using System;
+using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Core.Models;
@@ -17,7 +18,7 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.EditorVisible, v => v.CardGrid.IsVisible, b => !b)
                 .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.EditorVisible, v => v.EditorView.IsVisible)
+            this.OneWayBind(ViewModel, vm => vm.EditorVisible, v => v.EditorPlaceHolder.IsVisible)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.SheetListVisible, v => v.SheetChooserStackPanel.IsVisible)
                 .DisposeWith(d);
@@ -27,8 +28,16 @@ public partial class ManualView : ReactiveUserControl<ManualViewModel>
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.Sheets, v => v.SheetListBox.ItemsSource)
                 .DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Editor, v => v.EditorView.ViewModel)
-                .DisposeWith(d);
+            ViewModel.WhenAnyValue(x => x.Editor).Subscribe(vm =>
+            {
+                if (vm == null)
+                    return;
+                EditorPlaceHolder.Children.Clear();
+                EditorPlaceHolder.Children.Add(new ManualEditorView
+                {
+                    ViewModel = vm
+                });
+            });
             this.BindCommand(ViewModel, vm => vm.AddNewSheetCommand, v => v.AddButton)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.EditExistingSheetCommand, v => v.EditButton)

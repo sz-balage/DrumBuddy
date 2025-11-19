@@ -31,7 +31,7 @@
                     <Grid>
                         <Border
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="2"
+                            BorderThickness="1"
                             CornerRadius="0 0 10 10">
                             <ContentPresenter
                                 Name="PART_ContentPresenter"
@@ -59,7 +59,8 @@
         <!--  Selected state  -->
         <!--  We don't use selector to PART_LayoutRoot, so developer can override selected item background with TabStripItem.Background  -->
         <Style Selector="^:selected">
-            <Setter Property="Background" Value="{DynamicResource DarkerGray}" />
+            <Setter Property="Background" Value="{DynamicResource CardItemColor}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
         </Style>
 
         <!--  Disabled state  -->

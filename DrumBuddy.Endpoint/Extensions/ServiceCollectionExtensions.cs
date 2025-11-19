@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
     public static IServiceCollection AddJsonOptions(
         this IServiceCollection services)
     {
@@ -31,20 +32,21 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
     public static IServiceCollection AddApplicationIdentity(
         this IServiceCollection services)
     {
         services.AddIdentity<User, IdentityRole>(options =>
-        {
-            options.Password.RequireDigit = true;
-            options.Password.RequireLowercase = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequiredLength = 6;
-            options.User.RequireUniqueEmail = true;
-        })
-        .AddEntityFrameworkStores<DrumBuddyDbContext>()
-        .AddDefaultTokenProviders();
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 6;
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<DrumBuddyDbContext>()
+            .AddDefaultTokenProviders();
 
         return services;
     }
@@ -58,25 +60,25 @@ public static class ServiceCollectionExtensions
         var audience = configuration["JwtSettings:Audience"];
 
         services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = "Bearer";
-            options.DefaultChallengeScheme = "Bearer";
-        })
-        .AddJwtBearer("Bearer", options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = issuer,
-                ValidAudience = audience,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(secretKey)),
-                ClockSkew = TimeSpan.Zero
-            };
-        });
+                options.DefaultAuthenticateScheme = "Bearer";
+                options.DefaultChallengeScheme = "Bearer";
+            })
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(secretKey)),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
         services.AddAuthorization();
         services.AddScoped<TokenService>();
@@ -92,26 +94,29 @@ public static class ServiceCollectionExtensions
             options.AddDefaultPolicy(policy =>
             {
                 policy.AllowAnyOrigin()
-                      .AllowAnyMethod()
-                      .AllowAnyHeader();
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
             });
         });
 
         return services;
     }
+
     private static string GetConnectionString(IConfiguration configuration)
     {
         var env = configuration["ASPNETCORE_ENVIRONMENT"];
-        
-        if (env == "Development")
+
+        if (env == "Local")
         {
             return configuration.GetConnectionString("DefaultConnection")
-                   ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json");
+                   ?? throw new InvalidOperationException(
+                       "Connection string 'DefaultConnection' not found in appsettings.json");
         }
         else
         {
             return configuration["DATABASE_CONNECTION_STRING"]
-                   ?? throw new InvalidOperationException("Environment variable 'DATABASE_CONNECTION_STRING' not found.");
+                   ?? throw new InvalidOperationException(
+                       "Environment variable 'DATABASE_CONNECTION_STRING' not found.");
         }
     }
 }

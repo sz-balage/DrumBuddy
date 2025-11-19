@@ -10,7 +10,7 @@
         <Setter Property="Margin" Value="0,0,0,10" />
         <Setter Property="CornerRadius" Value="6" />
         <Setter Property="FontFamily" Value="{StaticResource NunitoFont}" />
-        <Setter Property="Background" Value="#f5f5f5" />
+        <Setter Property="Background" Value="{StaticResource CardItemColor}" />
         <Setter Property="BorderBrush" Value="{StaticResource Primary}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>

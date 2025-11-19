@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Api;
@@ -55,22 +54,53 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             // this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.AuthContent.IsVisible, 
             //         isAuth => !isAuth)
             //     .DisposeWith(d);
-
-            if (this.FindControl<Grid>("AuthContentPlaceholder") is { } authContent)
-            {
-                authContent.Children.Add(new AuthView
+            this.WhenAnyValue(v => v.ViewModel!.IsAuthenticated)
+                .DistinctUntilChanged()
+                .Subscribe(isAuth =>
                 {
-                    ViewModel = new AuthViewModel()
-                });
-                this.WhenAnyValue(v => v.ViewModel!.IsAuthenticated)
-                    .Where(isAuth => isAuth)
-                    .Do(_ =>
+                    var authContent = this.FindControl<Grid>("AuthContentPlaceholder");
+                    if (!isAuth)
                     {
-                        TryConnectToMidi();
-                    })
-                    .Subscribe()
-                    .DisposeWith(d);
-            }
+                        if (authContent != null)
+                        {
+                            authContent.Children.Clear(); // Dispose old instance
+                            authContent.Children.Add(new AuthView { ViewModel = new AuthViewModel() });
+                        }
+                    }
+                    else
+                    {
+                        if (authContent != null)
+                            authContent.Children.Clear(); // Dispose old instance
+                    }
+                })
+                .DisposeWith(d);
+
+            // if (this.FindControl<Grid>("AuthContentPlaceholder") is { } authContent)
+            // {
+            //     authContent.Children.Add(new AuthView
+            //     {
+            //         ViewModel = new AuthViewModel()
+            //     });
+            //     this.WhenAnyValue(v => v.ViewModel!.IsAuthenticated)
+            //         .Do(IsAuthenticated =>
+            //         {
+            //             if (IsAuthenticated)
+            //             {
+            //                 TryConnectToMidi();
+            //                 authContent.Children.Clear();
+            //             }
+            //             else
+            //             {
+            //                 authContent.Children.Clear();
+            //                 authContent.Children.Add(new AuthView
+            //                 {
+            //                     ViewModel = new AuthViewModel()
+            //                 });
+            //             }
+            //         })
+            //         .Subscribe()
+            //         .DisposeWith(d);
+            // }
 
             this.OneWayBind(ViewModel, vm => vm.PaneItems, v => v.PaneListBox.ItemsSource)
                 .DisposeWith(d);
@@ -83,7 +113,9 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.IsPaneOpen, v => v.SplitView.IsPaneOpen)
                 .DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.TogglePaneCommand, v => v.TriggerPaneButton)
+            this.BindCommand(ViewModel, vm => vm.TogglePaneCommand, v => v.OpenPaneButton)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.TogglePaneCommand, v => v.ClosePaneButton)
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.Router, v => v.RoutedViewHost.Router)
                 .DisposeWith(d);
