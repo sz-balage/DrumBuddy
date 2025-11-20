@@ -17,7 +17,12 @@
     <Design.DataContext>
         <designHelpers:DesignCompareViewModel />
     </Design.DataContext>
-    <Grid>
+    <Grid Opacity="0" x:Name="Root">
+        <Grid.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.5" />
+            </Transitions>
+        </Grid.Transitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="400" />
             <ColumnDefinition Width="Auto" />

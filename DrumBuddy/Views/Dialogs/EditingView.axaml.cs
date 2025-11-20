@@ -80,6 +80,12 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
     private Grid _countDownGrid => this.FindControl<Grid>("CountdownGrid")!;
     private CheckBox _keyboardCheckBox => this.FindControl<CheckBox>("KeyboardInputCheckBox")!;
 
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+        Root.Opacity = 1;
+    }
+
     private async Task SaveHandler(IInteractionContext<SheetCreationData, string?> context)
     {
         var mainWindow = Locator.Current.GetService<MainWindow>();

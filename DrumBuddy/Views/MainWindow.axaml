@@ -20,7 +20,12 @@
             <Setter Property="Opacity" Value="0.5" />
         </Style>
     </Window.Styles>
-    <Grid>
+    <Grid Opacity="0" x:Name="Root">
+        <Grid.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.5" />
+            </Transitions>
+        </Grid.Transitions>
         <Grid x:Name="AuthContentPlaceholder" />
         <Grid x:Name="MainContent" IsVisible="False">
             <Grid.RowDefinitions>

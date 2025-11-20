@@ -12,7 +12,12 @@
                      MinWidth="400"
                      Title="Edit window" WindowState="Maximized"
                      x:Class="DrumBuddy.Views.Dialogs.EditingView">
-    <Grid>
+    <Grid Opacity="0" x:Name="Root">
+        <Grid.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.5" />
+            </Transitions>
+        </Grid.Transitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
