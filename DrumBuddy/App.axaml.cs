@@ -8,6 +8,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
+using Avalonia.Styling;
 using DrumBuddy.Api;
 using DrumBuddy.Api.Refit;
 using DrumBuddy.Core.Services;
@@ -49,6 +51,27 @@ public class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
+
+    public void SetTheme(ThemeVariant theme)
+    {
+        RequestedThemeVariant = theme;
+
+        if (theme == ThemeVariant.Dark)
+        {
+            Resources["HeaderGray"] = new SolidColorBrush(Color.Parse("#333333"));
+            Resources["CardItemColor"] = new SolidColorBrush(Color.Parse("#1E1E1E"));
+            Resources["LighterGray"] = new SolidColorBrush(Color.Parse("#444444"));
+            Resources["DarkerGray"] = new SolidColorBrush(Color.Parse("#555555"));
+        }
+        else
+        {
+            Resources["HeaderGray"] = new SolidColorBrush(Color.Parse("#CCCCCC"));
+            Resources["CardItemColor"] = new SolidColorBrush(Color.Parse("#f5f5f5"));
+            Resources["LighterGray"] = new SolidColorBrush(Color.Parse("#ffe6e6e6"));
+            Resources["DarkerGray"] = new SolidColorBrush(Color.Parse("#ADADAD"));
+        }
+    }
+
 
     private static void RegisterDesignTimeServices()
     {

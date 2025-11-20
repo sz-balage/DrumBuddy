@@ -9,7 +9,7 @@
                           x:Class="DrumBuddy.Views.HomeView">
     <Border>
         <Grid RowDefinitions="66,*">
-            <Border Background="{StaticResource HeaderGray}">
+            <Border Background="{DynamicResource HeaderGray}">
                 <TextBlock Text="Home"
                            Margin="18"
                            Classes="header"

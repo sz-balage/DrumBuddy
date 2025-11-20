@@ -22,7 +22,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Background="{StaticResource HeaderGray}">
+        <Border Grid.Row="0" Background="{DynamicResource HeaderGray}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.3*" />
@@ -33,7 +33,7 @@
                         IsVisible="{Binding !IsViewOnly}"
                         Grid.Row="0"
                         Grid.Column="0"
-                        Background="{StaticResource HeaderGray}">
+                        Background="{DynamicResource HeaderGray}">
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource RecordIcon}" />
                         <TextBlock Text="Start Recording" FontFamily="{StaticResource NunitoFont}"
@@ -46,7 +46,7 @@
                             Grid.Column="0"
                             Orientation="Horizontal">
                     <Button x:Name="StopRecordingButton"
-                            Background="{StaticResource HeaderGray}">
+                            Background="{DynamicResource HeaderGray}">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource RecordIcon}"
                                       Foreground="Red" />
@@ -78,7 +78,7 @@
                 <Button Grid.Column="2" x:Name="SaveButton"
                         Click="SaveButton_OnClick"
                         IsVisible="{Binding !IsViewOnly}"
-                        Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
+                        Background="{DynamicResource HeaderGray}" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource Save}" Margin="0,0,0,5" />
                         <TextBlock Text="Save" FontFamily="{StaticResource NunitoFont}"
@@ -90,7 +90,7 @@
                         IsVisible="{Binding IsViewOnly}"
                         IsEnabled="{Binding !IsExporting}"
                         Click="Export_OnClick"
-                        Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
+                        Background="{DynamicResource HeaderGray}" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource Pdf}" Margin="0,0,0,5" />
                         <TextBlock x:Name="ExportTextBlock"

@@ -51,19 +51,19 @@
                        OpenPaneLength="200"
                        CompactPaneLength="52"
                        DisplayMode="CompactInline"
-                       PaneBackground="{StaticResource HeaderGray}">
+                       PaneBackground="{DynamicResource HeaderGray}">
                 <SplitView.Pane>
                     <Grid>
                         <StackPanel Spacing="11" Margin="5">
                             <Grid>
                                 <Button x:Name="OpenPaneButton" Height="50" Width="41"
                                         HorizontalAlignment="Left" IsVisible="{Binding !IsPaneOpen}"
-                                        Background="{StaticResource HeaderGray}">
+                                        Background="{DynamicResource HeaderGray}">
                                     <PathIcon Data="{StaticResource PaneClose}" />
                                 </Button>
                                 <Button x:Name="ClosePaneButton" Height="50" Width="41"
                                         HorizontalAlignment="Right" IsVisible="{Binding IsPaneOpen}"
-                                        Background="{StaticResource HeaderGray}">
+                                        Background="{DynamicResource HeaderGray}">
                                     <PathIcon Data="{StaticResource PaneOpen}" />
                                 </Button>
                             </Grid>
@@ -110,7 +110,7 @@
                                         Width="41" Height="50"
                                         CornerRadius="20"
                                         HorizontalAlignment="Left"
-                                        Background="{StaticResource HeaderGray}">
+                                        Background="{DynamicResource HeaderGray}">
                                     <Button.Flyout>
                                         <Flyout Placement="TopEdgeAlignedLeft">
                                             <StackPanel Width="160" Spacing="2">

@@ -10,7 +10,7 @@
         WindowStartupLocation="CenterScreen"
         Topmost="True"
         x:Class="DrumBuddy.Views.Dialogs.ErrorWindow"
-        x:DataType="vm:ErrorViewModel" Background="{StaticResource HeaderGray}"
+        x:DataType="vm:ErrorViewModel" Background="{DynamicResource HeaderGray}"
         Title="DrumBuddy Error">
 
     <Design.DataContext>
@@ -32,7 +32,7 @@
 
         <TextBlock Grid.Row="2" Text="{Binding Title}"
                    TextWrapping="Wrap" />
-        <TextBox Grid.Row="3" Background="{StaticResource LighterGray}" TextWrapping="Wrap" IsReadOnly="True"
+        <TextBox Grid.Row="3" Background="{DynamicResource LighterGray}" TextWrapping="Wrap" IsReadOnly="True"
                  Text="{Binding Description}" />
     </Grid>
 </Window>

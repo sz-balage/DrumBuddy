@@ -30,7 +30,7 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0" RowDefinitions="66,*">
-            <Grid Background="{StaticResource HeaderGray}">
+            <Grid Background="{DynamicResource HeaderGray}">
                 <TextBlock Classes="header" HorizontalAlignment="Left" VerticalAlignment="Center"
                            x:Name="BaseSheetNameTB" />
             </Grid>
@@ -39,13 +39,13 @@
             </ScrollViewer>
         </Grid>
         <GridSplitter Grid.Column="1"
-                      Background="{StaticResource DarkerGray}"
-                      BorderBrush="{StaticResource DarkerGray}"
+                      Background="{DynamicResource DarkerGray}"
+                      BorderBrush="{DynamicResource DarkerGray}"
                       BorderThickness="2"
                       ResizeDirection="Columns"
                       DoubleTapped="GridSplitter_OnDoubleTapped" />
         <Grid Grid.Column="2" RowDefinitions="66,*">
-            <Grid Background="{StaticResource HeaderGray}">
+            <Grid Background="{DynamicResource HeaderGray}">
                 <TextBlock Classes="header"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"

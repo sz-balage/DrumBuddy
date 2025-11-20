@@ -9,9 +9,9 @@
                                 mc:Ignorable="d" d:DesignWidth="1600" d:DesignHeight="800"
                                 x:DataType="vm:ManualEditorViewModel"
                                 x:Class="DrumBuddy.Views.ManualEditorView">
-    <Grid Background="{StaticResource CardItemColor}">
+    <Grid Background="{DynamicResource CardItemColor}">
         <Grid RowDefinitions="Auto,*,Auto,*" x:Name="Root">
-            <Border Height="66" Margin="0,0,0,10" Grid.Row="0" Background="{StaticResource HeaderGray}">
+            <Border Height="66" Margin="0,0,0,10" Grid.Row="0" Background="{DynamicResource HeaderGray}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.3*" />
@@ -20,7 +20,7 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal">
                         <Button x:Name="NavigateBackButton" Height="66" Width="41" Margin="0,0,0,6"
-                                Background="{StaticResource HeaderGray}">
+                                Background="{DynamicResource HeaderGray}">
                             <PathIcon Data="{StaticResource ArrowLeft}" />
                         </Button>
                         <TextBlock Text="Manual editor"
@@ -55,7 +55,7 @@
                                        VerticalAlignment="Center" />
                     </StackPanel>
                     <Button Grid.Column="2" x:Name="SaveButton"
-                            Background="{StaticResource HeaderGray}" HorizontalAlignment="Right">
+                            Background="{DynamicResource HeaderGray}" HorizontalAlignment="Right">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource Save}" Margin="0,0,0,5" />
                             <TextBlock Text="Save" FontFamily="{StaticResource NunitoFont}"
@@ -66,7 +66,7 @@
                 </Grid>
             </Border>
             <Border Grid.Row="1"
-                    BorderBrush="{StaticResource HeaderGray}"
+                    BorderBrush="{DynamicResource HeaderGray}"
                     BorderThickness="1"
                     CornerRadius="12"
                     Background="White"
@@ -102,13 +102,13 @@
                                                 Width="32" Height="32"
                                                 Background="White"
                                                 BorderThickness="1"
-                                                BorderBrush="{StaticResource HeaderGray}"
+                                                BorderBrush="{DynamicResource HeaderGray}"
                                                 Cursor="Hand"
                                                 Click="MoveLeftMeasureButton_OnClick"
                                                 ToolTip.Tip="Move measure to the left">
                                             <Button.Styles>
                                                 <Style Selector="Button:pointerover">
-                                                    <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                                    <Setter Property="Background" Value="{DynamicResource HeaderGray}" />
                                                 </Style>
                                             </Button.Styles>
                                             <PathIcon Foreground="{StaticResource Accent}"
@@ -120,13 +120,13 @@
                                                 Background="White"
                                                 Foreground="{StaticResource Error}"
                                                 BorderThickness="1"
-                                                BorderBrush="{StaticResource HeaderGray}"
+                                                BorderBrush="{DynamicResource HeaderGray}"
                                                 Cursor="Hand"
                                                 Click="DeleteMeasureButton_OnClick"
                                                 ToolTip.Tip="Delete measure">
                                             <Button.Styles>
                                                 <Style Selector="Button:pointerover">
-                                                    <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                                    <Setter Property="Background" Value="{DynamicResource HeaderGray}" />
                                                 </Style>
                                             </Button.Styles>
                                             <PathIcon Foreground="{StaticResource Error}"
@@ -138,13 +138,13 @@
                                                 Height="32"
                                                 Background="White"
                                                 BorderThickness="1"
-                                                BorderBrush="{StaticResource HeaderGray}"
+                                                BorderBrush="{DynamicResource HeaderGray}"
                                                 Cursor="Hand"
                                                 Click="DuplicateMeasureButton_OnClick"
                                                 ToolTip.Tip="Duplicate measure">
                                             <Button.Styles>
                                                 <Style Selector="Button:pointerover">
-                                                    <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                                    <Setter Property="Background" Value="{DynamicResource HeaderGray}" />
                                                 </Style>
                                             </Button.Styles>
                                             <PathIcon Foreground="{StaticResource Accent}"
@@ -155,13 +155,13 @@
                                                 Width="32" Height="32"
                                                 Background="White"
                                                 BorderThickness="1"
-                                                BorderBrush="{StaticResource HeaderGray}"
+                                                BorderBrush="{DynamicResource HeaderGray}"
                                                 Cursor="Hand"
                                                 Click="MoveRightMeasureButton_OnClick"
                                                 ToolTip.Tip="Move measure to the right">
                                             <Button.Styles>
                                                 <Style Selector="Button:pointerover">
-                                                    <Setter Property="Background" Value="{StaticResource HeaderGray}" />
+                                                    <Setter Property="Background" Value="{DynamicResource HeaderGray}" />
                                                 </Style>
                                             </Button.Styles>
                                             <PathIcon Foreground="{StaticResource Accent}"
@@ -175,10 +175,10 @@
                 </ScrollViewer>
             </Border>
             <Border Grid.Row="2"
-                    BorderBrush="{StaticResource HeaderGray}"
+                    BorderBrush="{DynamicResource HeaderGray}"
                     BorderThickness="1"
                     CornerRadius="12"
-                    Background="{StaticResource CardItemColor}"
+                    Background="{DynamicResource CardItemColor}"
                     Padding="8"
                     Margin="9"
                     BoxShadow="0 2 6 #00000030">
@@ -188,7 +188,7 @@
                             x:Name="AddMeasureButton"
                             FontSize="16"
                             FontWeight="Bold"
-                            Background="{StaticResource CardItemColor}"
+                            Background="{DynamicResource CardItemColor}"
                             Width="32"
                             Height="32"
                             Margin="10,0,12,0"
@@ -207,7 +207,7 @@
                     <Button Grid.Column="2"
                             Classes="round"
                             x:Name="BackButton"
-                            Background="{StaticResource CardItemColor}"
+                            Background="{DynamicResource CardItemColor}"
                             Width="32"
                             Height="32"
                             Margin="0,0,4,0"
@@ -218,7 +218,7 @@
                     <Button Grid.Column="3"
                             Classes="round"
                             x:Name="ForwardButton"
-                            Background="{StaticResource CardItemColor}"
+                            Background="{DynamicResource CardItemColor}"
                             Width="32"
                             Height="32"
                             Margin="4,0,10,0"
@@ -228,9 +228,9 @@
                 </Grid>
             </Border>
             <Border Grid.Row="3"
-                    Background="{StaticResource CardItemColor}"
+                    Background="{DynamicResource CardItemColor}"
                     CornerRadius="12"
-                    BorderBrush="{StaticResource HeaderGray}"
+                    BorderBrush="{DynamicResource HeaderGray}"
                     BorderThickness="1"
                     BoxShadow="0 2 6 #00000030"
                     Padding="12"

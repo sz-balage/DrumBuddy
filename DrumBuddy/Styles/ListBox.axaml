@@ -12,8 +12,8 @@
     <Style Selector="ListBoxItem">
         <Setter Property="Margin" Value="1,0,1,8" />
         <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Background" Value="{StaticResource CardItemColor}" />
-        <Setter Property="BorderBrush" Value="{StaticResource HeaderGray}" />
+        <Setter Property="Background" Value="{DynamicResource CardItemColor}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource HeaderGray}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">

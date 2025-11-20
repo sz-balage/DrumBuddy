@@ -4,14 +4,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls.Notifications;
-using Avalonia.Input;
+using Avalonia;
+using Avalonia.Styling;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
-using DrumBuddy.Views;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
@@ -24,15 +23,17 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     private readonly ConfigurationService _configService;
     private readonly MainViewModel _mainVm;
     private readonly MidiService _midiService;
+    private readonly NotificationService _notificationService;
     private IDisposable? _beatsSubscription;
+    [Reactive] private bool _canSyncToServer;
+
+    [Reactive] private ThemeVariant? _currentTheme;
 
     [Reactive] private bool _drumMappingTabSelected;
 
     private IObservable<int>? _keyboardBeats;
     [Reactive] private bool _keyboardInput;
-    [Reactive] private bool _canSyncToServer;
     [Reactive] private int _metronomeVolume = 8000;
-    private readonly NotificationService _notificationService;
 
     public ConfigurationViewModel(IScreen hostScreen,
         MidiService midiService,
@@ -108,6 +109,17 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 
     public string? UrlPathSegment { get; }
     public IScreen HostScreen { get; }
+
+    [ReactiveCommand]
+    private void ToggleTheme()
+    {
+        var newTheme = CurrentTheme == ThemeVariant.Light
+            ? ThemeVariant.Dark
+            : ThemeVariant.Light;
+
+        CurrentTheme = newTheme;
+        ((App)Application.Current!).SetTheme(newTheme);
+    }
 
     public void CancelMapping()
     {
@@ -196,6 +208,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         _configService.StopListening();
         UpdateListeningDrum(null);
     }
+
     [ReactiveCommand]
     private async Task RevertToDefaultMappings()
     {

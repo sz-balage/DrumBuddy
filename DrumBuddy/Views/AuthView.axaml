@@ -53,9 +53,9 @@
                                      Classes="login clearButton"
                                      Watermark="Email address"
                                      Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="{StaticResource LighterGray}"
+                                     Background="{DynamicResource LighterGray}"
                                      BorderThickness="1"
-                                     BorderBrush="{StaticResource HeaderGray}"
+                                     BorderBrush="{DynamicResource HeaderGray}"
                                      Padding="12,10"
                                      CornerRadius="8" />
                             <TextBlock x:Name="EmailValidation" Foreground="{StaticResource Error}"
@@ -69,9 +69,9 @@
                                  IsVisible="{Binding !IsLoginMode}"
                                  Watermark="Username"
                                  Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
-                                 Background="{StaticResource LighterGray}"
+                                 Background="{DynamicResource LighterGray}"
                                  BorderThickness="1"
-                                 BorderBrush="{StaticResource HeaderGray}"
+                                 BorderBrush="{DynamicResource HeaderGray}"
                                  Padding="12,10"
                                  CornerRadius="8" />
 
@@ -81,9 +81,9 @@
                                      Classes="login revealPasswordButton"
                                      Watermark="Password"
                                      Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="{StaticResource LighterGray}"
+                                     Background="{DynamicResource LighterGray}"
                                      BorderThickness="1"
-                                     BorderBrush="{StaticResource HeaderGray}"
+                                     BorderBrush="{DynamicResource HeaderGray}"
                                      Padding="12,10"
                                      CornerRadius="8" />
                             <TextBlock x:Name="PasswordValidation"
@@ -101,9 +101,9 @@
                                      PasswordChar="*"
                                      Watermark="Confirm password"
                                      Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="{StaticResource LighterGray}"
+                                     Background="{DynamicResource LighterGray}"
                                      BorderThickness="1"
-                                     BorderBrush="{StaticResource HeaderGray}"
+                                     BorderBrush="{DynamicResource HeaderGray}"
                                      Padding="12,10"
                                      CornerRadius="8" />
                             <TextBlock x:Name="ConfirmPasswordValidation"
@@ -187,9 +187,9 @@
                                      Classes="login"
                                      Watermark="Email address"
                                      Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="{StaticResource LighterGray}"
+                                     Background="{DynamicResource LighterGray}"
                                      BorderThickness="1"
-                                     BorderBrush="{StaticResource HeaderGray}"
+                                     BorderBrush="{DynamicResource HeaderGray}"
                                      Padding="12,10"
                                      CornerRadius="8" />
 

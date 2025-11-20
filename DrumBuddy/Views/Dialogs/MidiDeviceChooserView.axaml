@@ -10,7 +10,7 @@
                            x:DataType="dialogs:MidiDeviceChooserViewModel"
                            Title="Choose a MIDI device">
     <Grid RowDefinitions="0.1*,0.8*,0.1*">
-        <Grid Background="{StaticResource HeaderGray}">
+        <Grid Background="{DynamicResource HeaderGray}">
             <TextBlock VerticalAlignment="Center" Classes="header">Choose a MIDI device to use with DrumBuddy</TextBlock>
         </Grid>
         <ListBox Grid.Row="1" ItemsSource="{Binding MidiDevices}"

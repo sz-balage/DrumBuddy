@@ -15,7 +15,7 @@
             <RowDefinition Height="66" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Background="{StaticResource HeaderGray}">
+        <Border Grid.Row="0" Background="{DynamicResource HeaderGray}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.3*" />
@@ -25,7 +25,7 @@
                 <Button x:Name="StartRecordingButton"
                         Grid.Row="0"
                         Grid.Column="0"
-                        Background="{StaticResource HeaderGray}">
+                        Background="{DynamicResource HeaderGray}">
                     <StackPanel Orientation="Horizontal">
                         <PathIcon Data="{StaticResource RecordIcon}" />
                         <TextBlock Text="Start Recording" FontFamily="{StaticResource NunitoFont}"
@@ -37,7 +37,7 @@
                             Grid.Column="0"
                             Orientation="Horizontal">
                     <Button x:Name="StopRecordingButton"
-                            Background="{StaticResource HeaderGray}">
+                            Background="{DynamicResource HeaderGray}">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource RecordIcon}"
                                       Foreground="Red" />
@@ -117,7 +117,7 @@
         </ScrollViewer>
         <ComboBox Grid.Row="1" x:Name="OverlaySheetComboBox"
                   IsVisible="{Binding !IsLoadingSheets}"
-                  Background="{StaticResource HeaderGray}"
+                  Background="{DynamicResource HeaderGray}"
                   HorizontalAlignment="Right"
                   SelectedItem="{Binding SelectedSheetOption}"
                   ItemsSource="{Binding SheetOptions}"
@@ -136,7 +136,7 @@
         </ComboBox>
         <Border Grid.Row="1"
                 IsVisible="{Binding IsLoadingSheets}"
-                Background="{StaticResource HeaderGray}"
+                Background="{DynamicResource HeaderGray}"
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 Width="240">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
