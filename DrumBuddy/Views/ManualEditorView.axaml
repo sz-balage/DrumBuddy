@@ -270,6 +270,7 @@
                                     <DataTemplate>
                                         <Border Padding="4">
                                             <TextBlock Text="{Binding}"
+                                                       FontWeight="{Binding Converter={StaticResource NoteGroupIndexToFontWeightConverter}}"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center"
                                                        FontSize="16" />

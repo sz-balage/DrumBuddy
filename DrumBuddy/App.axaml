@@ -42,6 +42,7 @@
         <converters:StringNotEmptyToBoolConverter x:Key="StringNotEmptyToBoolConverter"></converters:StringNotEmptyToBoolConverter>
         <converters:ButtonIconEnabledStateForegroundConverter x:Key="ButtonIconEnabledStateForegroundConverter" />
         <converters:ZeroStateAndNotLoadingConverter x:Key="ZeroStateAndNotLoadingConverter" />
+        <converters:NoteGroupIndexToFontWeightConverter x:Key="NoteGroupIndexToFontWeightConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>
