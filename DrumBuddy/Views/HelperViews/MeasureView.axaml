@@ -23,7 +23,7 @@
                     <Line StartPoint="0,170" EndPoint="1200,170" Stroke="Black" StrokeThickness="2" />
                     <Line StartPoint="1200,90" EndPoint="1200,170" Stroke="Black" StrokeThickness="2" />
                 </Canvas>
-                <Grid x:Name="EditIndicator">
+                <Grid x:Name="EditIndicator" IsVisible="False">
                     <Line StartPoint="0,90" EndPoint="0,170"
                           Stroke="{StaticResource Accent}"
                           StrokeThickness="4" />
