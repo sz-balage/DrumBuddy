@@ -62,6 +62,8 @@ public class App : Application
             Resources["CardItemColor"] = new SolidColorBrush(Color.Parse("#1E1E1E"));
             Resources["LighterGray"] = new SolidColorBrush(Color.Parse("#444444"));
             Resources["DarkerGray"] = new SolidColorBrush(Color.Parse("#555555"));
+            Resources["Primary"] = Color.Parse("#146090");
+            Resources["Secondary"] = Color.Parse("#1C90D9");
         }
         else
         {
@@ -69,6 +71,8 @@ public class App : Application
             Resources["CardItemColor"] = new SolidColorBrush(Color.Parse("#f5f5f5"));
             Resources["LighterGray"] = new SolidColorBrush(Color.Parse("#ffe6e6e6"));
             Resources["DarkerGray"] = new SolidColorBrush(Color.Parse("#ADADAD"));
+            Resources["Primary"] = Color.Parse("#81C4EE");
+            Resources["Secondary"] = Color.Parse("#C9E6F8");
         }
     }
 

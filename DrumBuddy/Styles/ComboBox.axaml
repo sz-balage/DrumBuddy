@@ -11,21 +11,21 @@
         <Setter Property="CornerRadius" Value="6" />
         <Setter Property="FontFamily" Value="{StaticResource NunitoFont}" />
         <Setter Property="Background" Value="{DynamicResource CardItemColor}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Primary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 
     <Style Selector="ComboBox:pointerover">
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="{StaticResource Primary}" />
-                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+                <GradientStop Offset="0" Color="{DynamicResource Primary}" />
+                <GradientStop Offset="1" Color="{DynamicResource Secondary}" />
             </LinearGradientBrush>
         </Setter>
         <Setter Property="BorderBrush">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="{StaticResource Primary}" />
-                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+                <GradientStop Offset="0" Color="{DynamicResource Primary}" />
+                <GradientStop Offset="1" Color="{DynamicResource Secondary}" />
             </LinearGradientBrush>
         </Setter>
     </Style>

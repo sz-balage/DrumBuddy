@@ -12,8 +12,8 @@
     <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="50%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="{StaticResource Primary}" />
-                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+                <GradientStop Offset="0" Color="{DynamicResource Primary}" />
+                <GradientStop Offset="1" Color="{DynamicResource Secondary}" />
             </LinearGradientBrush>
         </Grid.Background>
         <Canvas x:Name="FloatingIconsCanvas" Background="Transparent" />

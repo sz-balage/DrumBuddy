@@ -72,7 +72,6 @@
                                     <Style Selector="ListBoxItem">
                                         <Setter Property="Margin" Value="0,0,0,8" />
                                         <Setter Property="CornerRadius" Value="8" />
-                                        <Setter Property="Background" Value="#f5f5f5" />
                                     </Style>
                                 </ListBox.Styles>
                                 <ListBox.ItemTemplate>

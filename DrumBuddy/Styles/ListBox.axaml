@@ -19,16 +19,16 @@
     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="{StaticResource Primary}" />
-                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+                <GradientStop Offset="0" Color="{DynamicResource Primary}" />
+                <GradientStop Offset="1" Color="{DynamicResource Secondary}" />
             </LinearGradientBrush>
         </Setter>
     </Style>
     <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="{StaticResource Primary}" />
-                <GradientStop Offset="1" Color="{StaticResource Primary}" />
+                <GradientStop Offset="0" Color="{DynamicResource Primary}" />
+                <GradientStop Offset="1" Color="{DynamicResource Primary}" />
             </LinearGradientBrush>
         </Setter>
     </Style>
