@@ -10,7 +10,8 @@
         WindowStartupLocation="CenterScreen"
         Topmost="True"
         x:Class="DrumBuddy.Views.Dialogs.ErrorWindow"
-        x:DataType="vm:ErrorViewModel" Background="{DynamicResource HeaderGray}"
+        x:DataType="vm:ErrorViewModel"
+        Background="{DynamicResource CardItemColor}"
         Title="DrumBuddy Error">
 
     <Design.DataContext>
