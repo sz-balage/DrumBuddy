@@ -88,12 +88,18 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="models:Sheet">
                                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
-                                    <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-                                              Data="{StaticResource music}"
+                                    <PathIcon Grid.RowSpan="2" Grid.Column="0"
+                                              Data="{StaticResource Cloud}"
                                               Width="30"
                                               Height="30"
                                               Margin="5,0,20,0"
-                                              Foreground="#444444" />
+                                              IsVisible="{Binding IsSyncEnabled}" />
+                                    <PathIcon Grid.RowSpan="2" Grid.Column="0"
+                                              Data="{StaticResource CloudOff}"
+                                              Width="30"
+                                              Height="30"
+                                              Margin="5,0,20,0"
+                                              IsVisible="{Binding !IsSyncEnabled}" />
                                     <StackPanel Grid.Row="0" Grid.Column="1"
                                                 Orientation="Horizontal"
                                                 Margin="0,0,0,4">

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Extensions;
-using DrumBuddy.IO.Data;
-using DrumBuddy.IO.Services;
 using DrumBuddy.Services;
 using DynamicData;
 using ReactiveUI;
@@ -16,13 +15,13 @@ namespace DrumBuddy.ViewModels;
 
 public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
 {
-    private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     private readonly SheetService _sheetService;
+    private readonly SourceCache<Sheet, string> _sheetSource = new(s => s.Name);
     public readonly ReadOnlyObservableCollection<Sheet> Sheets;
     [Reactive] private ManualEditorViewModel? _editor;
     [Reactive] private bool _editorVisible;
-    [Reactive] private bool _sheetListVisible;
     [Reactive] private bool _isLoadingSheets;
+    [Reactive] private bool _sheetListVisible;
 
     public ManualViewModel(IScreen host)
     {
@@ -36,6 +35,9 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
             .Subscribe();
         EditorVisible = false;
         SheetListVisible = false;
+        this.WhenNavigatedTo(() => LoadExistingSheets()
+            .ToObservable()
+            .Subscribe());
     }
 
     public IScreen HostScreen { get; }
@@ -82,14 +84,15 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
         EditorVisible = false;
         SheetListVisible = false;
     }
+
     public async Task LoadExistingSheets()
     {
         IsLoadingSheets = true;
+        _sheetSource.Clear();
         var sheets = await _sheetService.LoadSheetsAsync(); //TODO: figure this out
         foreach (var sheet in sheets) _sheetSource.AddOrUpdate(sheet);
         IsLoadingSheets = false;
         if (sheets.Length == 0)
             AddNewSheet();
-        
     }
 }
