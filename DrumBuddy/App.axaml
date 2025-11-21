@@ -31,6 +31,7 @@
         <SolidColorBrush x:Key="DarkerGray">#ADADAD</SolidColorBrush>
         <SolidColorBrush x:Key="LighterGray">#EBEBEB</SolidColorBrush>
         <SolidColorBrush x:Key="CardItemColor">#f5f5f5</SolidColorBrush>
+        <SolidColorBrush x:Key="ButtonIconEnabled">#FFFFFF</SolidColorBrush>
 
         <Color x:Key="AppGreen">#77A690</Color>
         <Color x:Key="Error">#D62828</Color>

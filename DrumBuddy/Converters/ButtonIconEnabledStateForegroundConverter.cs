@@ -1,15 +1,23 @@
 using System;
 using System.Globalization;
+using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
-using DrumBuddy.Services;
 
 namespace DrumBuddy.Converters;
 
 public class ButtonIconEnabledStateForegroundConverter : IValueConverter
 {
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
-        value is not bool enabled ? null : enabled ? Brushes.Black : Brushes.Gray;
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not bool enabled)
+            return null;
+
+        return enabled
+            ? new SolidColorBrush((Color)App.Current?.FindResource("NoteColor"))
+            : Brushes.Gray;
+        // : App.Current?.FindResource("LighterGray");
+    }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
