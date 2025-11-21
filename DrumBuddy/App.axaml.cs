@@ -66,6 +66,7 @@ public class App : Application
             Resources["Secondary"] = Color.Parse("#1C90D9");
             Resources["ButtonPointerOverBackground"] = Color.Parse("#5C5C5C");
             Resources["NoteColor"] = Color.Parse("#FFFFFF");
+            Resources["AppGreen"] = Color.Parse("#517B67");
         }
         else
         {
@@ -77,6 +78,7 @@ public class App : Application
             Resources["Secondary"] = Color.Parse("#C9E6F8");
             Resources["ButtonPointerOverBackground"] = Color.Parse("#F5F5F5");
             Resources["NoteColor"] = Color.Parse("#000000");
+            Resources["AppGreen"] = Color.Parse("#77A690");
         }
     }
 

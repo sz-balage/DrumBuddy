@@ -102,7 +102,7 @@
     </Style>
 
     <Style Selector="Button.Highlight">
-        <Setter Property="Background" Value="{StaticResource AppGreen}" />
+        <Setter Property="Background" Value="{DynamicResource AppGreen}" />
         <Setter Property="Foreground" Value="White" />
     </Style>
 </Styles>
