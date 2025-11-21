@@ -1,8 +1,15 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
-        <Border Padding="20">
+        <Border Padding="20" Background="{StaticResource HeaderGray}">
             <!-- Add Controls for Previewer Here -->
+            <ListBox>
+                <ListBoxItem>Asd</ListBoxItem>
+                <ListBoxItem>Asd</ListBoxItem>
+                <ListBoxItem>Asd</ListBoxItem>
+                <ListBoxItem>Asd</ListBoxItem>
+                <ListBoxItem>Asd</ListBoxItem>
+            </ListBox>
         </Border>
     </Design.PreviewWith>
     <Style Selector="ListBox">
@@ -13,7 +20,7 @@
         <Setter Property="Margin" Value="1,0,1,8" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Background" Value="{DynamicResource CardItemColor}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource HeaderGray}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DarkerGray}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
@@ -31,5 +38,6 @@
                 <GradientStop Offset="1" Color="{DynamicResource Primary}" />
             </LinearGradientBrush>
         </Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
     </Style>
 </Styles>

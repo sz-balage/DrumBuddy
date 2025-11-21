@@ -48,6 +48,7 @@
         <converters:ButtonIconEnabledStateForegroundConverter x:Key="ButtonIconEnabledStateForegroundConverter" />
         <converters:ZeroStateAndNotLoadingConverter x:Key="ZeroStateAndNotLoadingConverter" />
         <converters:NoteGroupIndexToFontWeightConverter x:Key="NoteGroupIndexToFontWeightConverter" />
+        <converters:IsListeningToBorderBrushConverter x:Key="IsListeningToBorderBrushConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>

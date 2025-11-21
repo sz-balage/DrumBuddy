@@ -12,11 +12,10 @@
                                 x:Class="DrumBuddy.Views.ConfigurationView">
     <UserControl.Styles>
         <Style Selector="Border.Drum">
-            <Setter Property="Background" Value="{DynamicResource HeaderGray}" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="10" />
             <Setter Property="Margin" Value="0,8,0,0" />
-            <Setter Property="BorderBrush" Value="{DynamicResource HeaderGray}" />
+            <Setter Property="Background" Value="{DynamicResource CardItemColor}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
     </UserControl.Styles>
@@ -67,7 +66,7 @@
                             <DataTemplate x:DataType="models:DrumMappingItem">
                                 <Border CornerRadius="6"
                                         Classes="Drum"
-                                        Background="{DynamicResource CardItemColor}"
+                                        BorderBrush="{Binding IsListening, Converter={StaticResource IsListeningToBorderBrushConverter}}"
                                         VerticalAlignment="Stretch">
                                     <Grid VerticalAlignment="Stretch" ColumnDefinitions="Auto,Auto,*,Auto">
                                         <TextBlock Text="{Binding DrumName}"
