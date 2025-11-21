@@ -112,7 +112,8 @@
                                            Measures="{Binding Measures}" />
                 <helperViews:MeasuresPanel Measures="{Binding OverlayMeasures}"
                                            IsVisible="{Binding OverlayVisible}"
-                                           Opacity="0.3" />
+                                           NoteOverlayOpacity="0.7"
+                                           LineOverlayOpacity="0.5" />
             </Grid>
         </ScrollViewer>
         <ComboBox Grid.Row="1" x:Name="OverlaySheetComboBox"

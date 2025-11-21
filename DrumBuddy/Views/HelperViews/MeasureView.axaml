@@ -52,7 +52,9 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <helperViews:RythmicGroupView HorizontalContentAlignment="Stretch" />
+                                <helperViews:RythmicGroupView HorizontalContentAlignment="Stretch"
+                                                              LineOverlayOpacity="{Binding RelativeSource={RelativeSource AncestorType=helperViews:MeasureView}, Path=LineOverlayOpacity}"
+                                                              NoteOverlayOpacity="{Binding RelativeSource={RelativeSource AncestorType=helperViews:MeasureView}, Path=NoteOverlayOpacity}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

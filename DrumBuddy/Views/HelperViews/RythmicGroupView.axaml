@@ -6,6 +6,7 @@
                           xmlns:vm="clr-namespace:DrumBuddy.ViewModels.HelperViewModels"
                           xmlns:rxui="http://reactiveui.net"
                           xmlns:models="clr-namespace:DrumBuddy.Models"
+                          xmlns:helperViews="clr-namespace:DrumBuddy.Views.HelperViews"
                           mc:Ignorable="d"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
@@ -26,6 +27,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:NoteImageAndBounds}">
                     <Border Width="{Binding Bounds.Width}"
+                            Opacity="{Binding RelativeSource={RelativeSource AncestorType=helperViews:RythmicGroupView}, Path=NoteOverlayOpacity}"
                             Height="{Binding Bounds.Height}">
                         <Border.Background>
                             <SolidColorBrush Color="{DynamicResource NoteColor}" />
@@ -52,6 +54,7 @@
                 <DataTemplate DataType="{x:Type models:LineAndStroke}">
                     <Line StartPoint="{Binding StartPoint}"
                           EndPoint="{Binding EndPoint}"
+                          Opacity="{Binding RelativeSource={RelativeSource AncestorType=helperViews:RythmicGroupView}, Path=LineOverlayOpacity}"
                           Stroke="{DynamicResource NoteColor}"
                           StrokeThickness="{Binding StrokeThickness}" />
                 </DataTemplate>

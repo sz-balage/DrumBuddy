@@ -14,6 +14,12 @@ namespace DrumBuddy.Views.HelperViews;
 
 public partial class MeasuresPanel : UserControl
 {
+    public static readonly StyledProperty<double> LineOverlayOpacityProperty =
+        AvaloniaProperty.Register<RythmicGroupView, double>(nameof(LineOverlayOpacity), 1.0);
+
+    public static readonly StyledProperty<double> NoteOverlayOpacityProperty =
+        AvaloniaProperty.Register<RythmicGroupView, double>(nameof(LineOverlayOpacity), 1.0);
+
     public static readonly StyledProperty<IEnumerable> MeasuresProperty =
         AvaloniaProperty.Register<MeasuresPanel, IEnumerable>(nameof(Measures));
 
@@ -26,6 +32,18 @@ public partial class MeasuresPanel : UserControl
         // Bind the Measures property to ItemsControl.ItemsSource
         this.GetObservable(MeasuresProperty)
             .Subscribe(measures => _measuresItemControl.ItemsSource = measures);
+    }
+
+    public double LineOverlayOpacity
+    {
+        get => GetValue(LineOverlayOpacityProperty);
+        set => SetValue(LineOverlayOpacityProperty, value);
+    }
+
+    public double NoteOverlayOpacity
+    {
+        get => GetValue(NoteOverlayOpacityProperty);
+        set => SetValue(NoteOverlayOpacityProperty, value);
     }
 
     public IEnumerable Measures
