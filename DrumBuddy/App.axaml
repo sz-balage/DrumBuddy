@@ -21,6 +21,7 @@
             avares://DrumBuddy/Assets/Fonts/#Nunito
         </FontFamily>
         <Color x:Key="Primary">#81C4EE</Color>
+        <Color x:Key="ButtonPointerOverBackground">#F5F5F5</Color>
         <Color x:Key="Secondary">#C9E6F8</Color>
         <Color x:Key="Accent">#0D7AE7</Color>
         <Color x:Key="AccentLighter">#3E99F4</Color>

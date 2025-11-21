@@ -19,7 +19,7 @@
         <Canvas x:Name="FloatingIconsCanvas" Background="Transparent" />
 
         <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Border Background="White"
+            <Border Background="{StaticResource CardItemColor}"
                     CornerRadius="20"
                     Padding="40"
                     Width="420">
@@ -36,16 +36,14 @@
                                    HorizontalAlignment="Center"
                                    IsVisible="{Binding IsLoginMode}"
                                    Text="Sign in to your account"
-                                   FontSize="14"
-                                   Foreground="#666666" />
+                                   FontSize="14" />
 
                         <TextBlock Classes="header"
                                    x:Name="RegisterPromptTextBlock"
                                    HorizontalAlignment="Center"
                                    IsVisible="{Binding !IsLoginMode}"
                                    Text="Create your account"
-                                   FontSize="14"
-                                   Foreground="#666666" />
+                                   FontSize="14" />
                         <!-- TODO make login possible with user name too-->
 
                         <StackPanel>
@@ -179,7 +177,6 @@
                         <TextBlock Text="Reset your password"
                                    Classes="header"
                                    FontSize="14"
-                                   Foreground="#666666"
                                    HorizontalAlignment="Center"
                                    Margin="0,16,0,8" />
                         <StackPanel>

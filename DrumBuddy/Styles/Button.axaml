@@ -28,7 +28,7 @@
         <Setter Property="BorderThickness" Value="1" />
     </Style>
     <Style Selector="Button.round:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource CardItemColor}" />
+        <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
         <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
     </Style>
     <Style Selector="Button.confirm">

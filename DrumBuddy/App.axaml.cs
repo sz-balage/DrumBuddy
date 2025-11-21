@@ -64,6 +64,7 @@ public class App : Application
             Resources["DarkerGray"] = new SolidColorBrush(Color.Parse("#555555"));
             Resources["Primary"] = Color.Parse("#146090");
             Resources["Secondary"] = Color.Parse("#1C90D9");
+            Resources["ButtonPointerOverBackground"] = Color.Parse("#5C5C5C");
         }
         else
         {
@@ -73,6 +74,7 @@ public class App : Application
             Resources["DarkerGray"] = new SolidColorBrush(Color.Parse("#ADADAD"));
             Resources["Primary"] = Color.Parse("#81C4EE");
             Resources["Secondary"] = Color.Parse("#C9E6F8");
+            Resources["ButtonPointerOverBackground"] = Color.Parse("#F5F5F5");
         }
     }
 

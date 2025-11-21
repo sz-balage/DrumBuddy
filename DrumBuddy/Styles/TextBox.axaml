@@ -12,6 +12,6 @@
     </Style>
     <Style Selector="TextBox.login:pointerover /template/ Border#PART_BorderElement">
         <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource LighterGray}" />
     </Style>
 </Styles>

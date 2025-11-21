@@ -122,7 +122,6 @@
                                                 <Button x:Name="SignOutButton"
                                                         Command="{Binding SignOutCommand}"
                                                         Background="Transparent"
-                                                        Foreground="Black"
                                                         HorizontalAlignment="Stretch"
                                                         HorizontalContentAlignment="Left">
                                                     <StackPanel Orientation="Horizontal">
