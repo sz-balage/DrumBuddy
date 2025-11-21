@@ -69,7 +69,6 @@
                     BorderBrush="{DynamicResource HeaderGray}"
                     BorderThickness="1"
                     CornerRadius="12"
-                    Background="White"
                     BoxShadow="0 2 6 #00000030"
                     Padding="8"
                     Margin="8">

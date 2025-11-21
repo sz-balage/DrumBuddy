@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.Media;
 using DrumBuddy.Core.Models;
 
 namespace DrumBuddy.Models;
@@ -19,7 +18,6 @@ public class LineAndStroke
     public Point StartPoint { get; }
     public Point EndPoint { get; }
     public double StrokeThickness { get; }
-    public IBrush StrokeColor { get; } = Brushes.Black;
     public LineType LineType { get; }
 }
 

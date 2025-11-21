@@ -25,13 +25,20 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:NoteImageAndBounds}">
-                    <Image Source="{Binding Image}"
-                           Width="{Binding Bounds.Width}"
-                           Height="{Binding Bounds.Height}">
-                        <Image.RenderTransform>
+                    <Border Width="{Binding Bounds.Width}"
+                            Height="{Binding Bounds.Height}">
+                        <Border.Background>
+                            <SolidColorBrush Color="{DynamicResource NoteColor}" />
+                        </Border.Background>
+
+                        <Border.OpacityMask>
+                            <ImageBrush Source="{Binding Image}" Stretch="Fill" />
+                        </Border.OpacityMask>
+
+                        <Border.RenderTransform>
                             <TranslateTransform X="{Binding Bounds.X}" Y="{Binding Bounds.Y}" />
-                        </Image.RenderTransform>
-                    </Image>
+                        </Border.RenderTransform>
+                    </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -45,7 +52,7 @@
                 <DataTemplate DataType="{x:Type models:LineAndStroke}">
                     <Line StartPoint="{Binding StartPoint}"
                           EndPoint="{Binding EndPoint}"
-                          Stroke="{Binding StrokeColor}"
+                          Stroke="{DynamicResource NoteColor}"
                           StrokeThickness="{Binding StrokeThickness}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
