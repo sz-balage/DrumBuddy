@@ -17,6 +17,12 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
     public static readonly StyledProperty<bool> IsBeingEditedProperty =
         AvaloniaProperty.Register<MeasureView, bool>(nameof(IsBeingEdited));
 
+    public static readonly StyledProperty<double> LineOverlayOpacityProperty =
+        AvaloniaProperty.Register<RythmicGroupView, double>(nameof(LineOverlayOpacity), 1.0);
+
+    public static readonly StyledProperty<double> NoteOverlayOpacityProperty =
+        AvaloniaProperty.Register<RythmicGroupView, double>(nameof(LineOverlayOpacity), 1.0);
+
     public MeasureView()
     {
         InitializeComponent();
@@ -43,6 +49,18 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
                 .Subscribe(isEdited => _editIndicator.IsVisible = isEdited)
                 .DisposeWith(d);
         });
+    }
+
+    public double LineOverlayOpacity
+    {
+        get => GetValue(LineOverlayOpacityProperty);
+        set => SetValue(LineOverlayOpacityProperty, value);
+    }
+
+    public double NoteOverlayOpacity
+    {
+        get => GetValue(NoteOverlayOpacityProperty);
+        set => SetValue(NoteOverlayOpacityProperty, value);
     }
 
     public bool IsBeingEdited

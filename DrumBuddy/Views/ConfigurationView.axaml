@@ -8,20 +8,20 @@
                                 xmlns:viewModels="clr-namespace:DrumBuddy.ViewModels"
                                 xmlns:models="clr-namespace:DrumBuddy.Models"
                                 xmlns:views="clr-namespace:DrumBuddy.Views"
+                                xmlns:services="clr-namespace:DrumBuddy.Services"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="DrumBuddy.Views.ConfigurationView">
     <UserControl.Styles>
         <Style Selector="Border.Drum">
-            <Setter Property="Background" Value="{StaticResource HeaderGray}" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="10" />
             <Setter Property="Margin" Value="0,8,0,0" />
-            <Setter Property="BorderBrush" Value="{StaticResource HeaderGray}" />
+            <Setter Property="Background" Value="{DynamicResource CardItemColor}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
     </UserControl.Styles>
     <Grid RowDefinitions="66,*">
-        <Grid Background="{StaticResource HeaderGray}">
+        <Grid Background="{DynamicResource HeaderGray}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Configuration editor"
                            Margin="18"
@@ -40,7 +40,7 @@
             <Button IsVisible="{Binding DrumMappingTabSelected}"
                     Height="66"
                     HorizontalAlignment="Right"
-                    Background="{StaticResource HeaderGray}"
+                    Background="{DynamicResource HeaderGray}"
                     Command="{Binding RevertToDefaultMappingsCommand}">
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource Undo}" />
@@ -67,7 +67,7 @@
                             <DataTemplate x:DataType="models:DrumMappingItem">
                                 <Border CornerRadius="6"
                                         Classes="Drum"
-                                        Background="{StaticResource CardItemColor}"
+                                        BorderBrush="{Binding IsListening, Converter={StaticResource IsListeningToBorderBrushConverter}}"
                                         VerticalAlignment="Stretch">
                                     <Grid VerticalAlignment="Stretch" ColumnDefinitions="Auto,Auto,*,Auto">
                                         <TextBlock Text="{Binding DrumName}"
@@ -122,7 +122,7 @@
                      FontSize="16">
                 <StackPanel Spacing="16" Margin="0,4,0,0">
                     <Expander Header="Audio Settings"
-                              Background="{StaticResource CardItemColor}"
+                              Background="{DynamicResource CardItemColor}"
                               HorizontalAlignment="Stretch"
                               CornerRadius="8"
                               FontSize="16"
@@ -143,14 +143,14 @@
                         </StackPanel>
                     </Expander>
                     <Expander Header="Input Settings"
-                              Background="{StaticResource CardItemColor}"
+                              Background="{DynamicResource CardItemColor}"
                               HorizontalAlignment="Stretch"
                               CornerRadius="8"
                               FontSize="16"
                               FontWeight="SemiBold"
                               IsExpanded="True"
                               Margin="0,0,0,4">
-                        <Grid RowDefinitions="Auto,*">
+                        <Grid RowDefinitions="Auto,*,*">
                             <StackPanel Spacing="8">
                                 <TextBlock Text="Input Mode"
                                            FontWeight="Medium"
@@ -197,6 +197,21 @@
                                                    VerticalAlignment="Center" />
                                     </StackPanel>
                                 </Button>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Margin="0,20,0,0" HorizontalAlignment="Left" Spacing="8">
+                                <TextBlock Text="Theme"
+                                           FontWeight="Medium"
+                                           FontSize="14" />
+                                <ComboBox ItemsSource="{Binding AvailableThemes}"
+                                          SelectedItem="{Binding SelectedThemeMode}"
+                                          Width="150">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="services:ThemeMode">
+                                            <TextBlock
+                                                Text="{Binding Converter={StaticResource ThemeModeDisplayConverter}}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                             </StackPanel>
                         </Grid>
                     </Expander>

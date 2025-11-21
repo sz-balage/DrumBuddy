@@ -10,7 +10,7 @@
                                 x:DataType="vm:ManualViewModel"
                                 x:Class="DrumBuddy.Views.ManualView">
     <Grid RowDefinitions="66,*">
-        <Border Background="{StaticResource HeaderGray}" HorizontalAlignment="Stretch">
+        <Border Background="{DynamicResource HeaderGray}" HorizontalAlignment="Stretch">
             <TextBlock Text="Manual editor"
                        Margin="18"
                        Classes="header"
@@ -69,10 +69,10 @@
                     </Grid>
                 </Button>
                 <Grid RowDefinitions="Auto,*" x:Name="SheetChooserStackPanel">
-                    <Border Height="66" Background="{StaticResource HeaderGray}">
+                    <Border Height="66" Background="{DynamicResource HeaderGray}">
                         <StackPanel Orientation="Horizontal">
                             <Button x:Name="CancelSheetChoosingButton" Height="66" Width="41"
-                                    Background="{StaticResource HeaderGray}">
+                                    Background="{DynamicResource HeaderGray}">
                                 <PathIcon Data="{StaticResource ArrowLeft}" />
                             </Button>
                             <TextBlock Text="Choose a sheet to edit"
@@ -88,12 +88,18 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="models:Sheet">
                                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
-                                    <PathIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-                                              Data="{StaticResource music}"
+                                    <PathIcon Grid.RowSpan="2" Grid.Column="0"
+                                              Data="{StaticResource Cloud}"
                                               Width="30"
                                               Height="30"
                                               Margin="5,0,20,0"
-                                              Foreground="#444444" />
+                                              IsVisible="{Binding IsSyncEnabled}" />
+                                    <PathIcon Grid.RowSpan="2" Grid.Column="0"
+                                              Data="{StaticResource CloudOff}"
+                                              Width="30"
+                                              Height="30"
+                                              Margin="5,0,20,0"
+                                              IsVisible="{Binding !IsSyncEnabled}" />
                                     <StackPanel Grid.Row="0" Grid.Column="1"
                                                 Orientation="Horizontal"
                                                 Margin="0,0,0,4">

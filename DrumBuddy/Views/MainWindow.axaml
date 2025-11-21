@@ -20,7 +20,12 @@
             <Setter Property="Opacity" Value="0.5" />
         </Style>
     </Window.Styles>
-    <Grid>
+    <Grid Opacity="0" x:Name="Root">
+        <Grid.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.5" />
+            </Transitions>
+        </Grid.Transitions>
         <Grid x:Name="AuthContentPlaceholder" />
         <Grid x:Name="MainContent" IsVisible="False">
             <Grid.RowDefinitions>
@@ -46,19 +51,19 @@
                        OpenPaneLength="200"
                        CompactPaneLength="52"
                        DisplayMode="CompactInline"
-                       PaneBackground="{StaticResource HeaderGray}">
+                       PaneBackground="{DynamicResource HeaderGray}">
                 <SplitView.Pane>
                     <Grid>
                         <StackPanel Spacing="11" Margin="5">
                             <Grid>
                                 <Button x:Name="OpenPaneButton" Height="50" Width="41"
                                         HorizontalAlignment="Left" IsVisible="{Binding !IsPaneOpen}"
-                                        Background="{StaticResource HeaderGray}">
+                                        Background="{DynamicResource HeaderGray}">
                                     <PathIcon Data="{StaticResource PaneClose}" />
                                 </Button>
                                 <Button x:Name="ClosePaneButton" Height="50" Width="41"
                                         HorizontalAlignment="Right" IsVisible="{Binding IsPaneOpen}"
-                                        Background="{StaticResource HeaderGray}">
+                                        Background="{DynamicResource HeaderGray}">
                                     <PathIcon Data="{StaticResource PaneOpen}" />
                                 </Button>
                             </Grid>
@@ -67,7 +72,6 @@
                                     <Style Selector="ListBoxItem">
                                         <Setter Property="Margin" Value="0,0,0,8" />
                                         <Setter Property="CornerRadius" Value="8" />
-                                        <Setter Property="Background" Value="#f5f5f5" />
                                     </Style>
                                 </ListBox.Styles>
                                 <ListBox.ItemTemplate>
@@ -105,7 +109,7 @@
                                         Width="41" Height="50"
                                         CornerRadius="20"
                                         HorizontalAlignment="Left"
-                                        Background="{StaticResource HeaderGray}">
+                                        Background="{DynamicResource HeaderGray}">
                                     <Button.Flyout>
                                         <Flyout Placement="TopEdgeAlignedLeft">
                                             <StackPanel Width="160" Spacing="2">
@@ -118,7 +122,6 @@
                                                 <Button x:Name="SignOutButton"
                                                         Command="{Binding SignOutCommand}"
                                                         Background="Transparent"
-                                                        Foreground="Black"
                                                         HorizontalAlignment="Stretch"
                                                         HorizontalContentAlignment="Left">
                                                     <StackPanel Orientation="Horizontal">

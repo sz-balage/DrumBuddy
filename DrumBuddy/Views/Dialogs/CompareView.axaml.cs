@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using DrumBuddy.DesignHelpers;
 using DrumBuddy.ViewModels.Dialogs;
@@ -41,6 +42,12 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
     private TextBlock _comparedSheetPercentageTB => this.FindControl<TextBlock>("ComparedSheetPercentageTB")!;
     private ScrollViewer _baseScrollViewer => this.FindControl<ScrollViewer>("BaseScrollViewer")!;
     private ScrollViewer _comparedScrollViewer => this.FindControl<ScrollViewer>("ComparedScrollViewer")!;
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+        Root.Opacity = 1;
+    }
 
     private void BaseScrollChanged(object? sender, ScrollChangedEventArgs e)
     {

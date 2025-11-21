@@ -9,6 +9,7 @@
         WindowStartupLocation="CenterOwner"
         ExtendClientAreaChromeHints="NoChrome"
         ExtendClientAreaToDecorationsHint="True"
+        Background="{DynamicResource CardItemColor}"
         CanResize="False">
     <Grid Margin="20">
         <Grid.RowDefinitions>

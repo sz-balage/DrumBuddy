@@ -21,20 +21,25 @@
             avares://DrumBuddy/Assets/Fonts/#Nunito
         </FontFamily>
         <Color x:Key="Primary">#81C4EE</Color>
+        <Color x:Key="ButtonPointerOverBackground">#F5F5F5</Color>
+        <Color x:Key="NoteColor">#000000</Color>
         <Color x:Key="Secondary">#C9E6F8</Color>
         <Color x:Key="Accent">#0D7AE7</Color>
         <Color x:Key="AccentLighter">#3E99F4</Color>
-        <Color x:Key="HeaderGray">#CCCCCC</Color>
-        <Color x:Key="DarkerGray">#ADADAD</Color>
-        <Color x:Key="LighterGray">#EBEBEB</Color>
+
+        <SolidColorBrush x:Key="HeaderGray">#CCCCCC</SolidColorBrush>
+        <SolidColorBrush x:Key="DarkerGray">#ADADAD</SolidColorBrush>
+        <SolidColorBrush x:Key="LighterGray">#EBEBEB</SolidColorBrush>
+        <SolidColorBrush x:Key="CardItemColor">#f5f5f5</SolidColorBrush>
+        <SolidColorBrush x:Key="ButtonIconEnabled">#FFFFFF</SolidColorBrush>
+
         <Color x:Key="AppGreen">#77A690</Color>
         <Color x:Key="Error">#D62828</Color>
         <Color x:Key="ErrorLighter">#DC4141</Color>
         <Color x:Key="ErrorDarker">#BE2323</Color>
-        <Color x:Key="CardItemColor">#f5f5f5</Color>
         <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Offset="0" Color="{StaticResource Primary}" />
-            <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+            <GradientStop Offset="0" Color="{DynamicResource Primary}" />
+            <GradientStop Offset="1" Color="{DynamicResource Secondary}" />
         </LinearGradientBrush>
         <converters:DrumHighlightConverter x:Key="DrumHighlightConverter" />
         <converters:NoteToKeyboardKeyConverter x:Key="NoteToKeyboardKeyConverter" />
@@ -42,6 +47,9 @@
         <converters:StringNotEmptyToBoolConverter x:Key="StringNotEmptyToBoolConverter"></converters:StringNotEmptyToBoolConverter>
         <converters:ButtonIconEnabledStateForegroundConverter x:Key="ButtonIconEnabledStateForegroundConverter" />
         <converters:ZeroStateAndNotLoadingConverter x:Key="ZeroStateAndNotLoadingConverter" />
+        <converters:NoteGroupIndexToFontWeightConverter x:Key="NoteGroupIndexToFontWeightConverter" />
+        <converters:IsListeningToBorderBrushConverter x:Key="IsListeningToBorderBrushConverter" />
+        <converters:ThemeModeDisplayConverter x:Key="ThemeModeDisplayConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>

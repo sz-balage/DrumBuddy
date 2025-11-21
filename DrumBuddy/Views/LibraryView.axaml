@@ -4,10 +4,8 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
                           xmlns:rxui="http://reactiveui.net"
-                          xmlns:models="clr-namespace:DrumBuddy.Core.Models;assembly=DrumBuddy.Core"
                           xmlns:designHelpers="clr-namespace:DrumBuddy.DesignHelpers"
                           xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
-                          xmlns:converters="clr-namespace:DrumBuddy.Converters"
                           xmlns:views="clr-namespace:DrumBuddy.Views"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Views.LibraryView"
@@ -25,8 +23,8 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        
-        <Grid Background="{StaticResource HeaderGray}" 
+
+        <Grid Background="{DynamicResource HeaderGray}"
               HorizontalAlignment="Stretch"
               IsVisible="{Binding !IsLoadingSheets}">
             <TextBlock Text="Your Sheet Library"
@@ -38,7 +36,7 @@
                        x:Name="ZeroStateTextBlock"
                        Classes="header"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center" >
+                       VerticalAlignment="Center">
                 <TextBlock.IsVisible>
                     <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
                         <Binding Path="Sheets.Count" />
@@ -49,14 +47,16 @@
             <Button x:Name="ZeroStateImportSheetButton"
                     Height="66"
                     HorizontalAlignment="Right"
-                    Background="{StaticResource HeaderGray}"
+                    Background="{DynamicResource HeaderGray}"
+                    IsVisible="{Binding Sheets.Empty}"
+                    IsEnabled="{Binding !IsLoadingSheets}"
                     Command="{Binding ImportSheetCommand}">
-                <Button.IsVisible>
-                    <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
-                        <Binding Path="Sheets.Count" />
-                        <Binding Path="IsLoadingSheets" />
-                    </MultiBinding>
-                </Button.IsVisible>
+                <!-- <Button.IsVisible> -->
+                <!--     <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}"> -->
+                <!--         <Binding Path="Sheets.Count" /> -->
+                <!--         <Binding Path="IsLoadingSheets" /> -->
+                <!--     </MultiBinding> -->
+                <!-- </Button.IsVisible> -->
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource Add}" />
                     <TextBlock Text="Import sheets"
@@ -68,57 +68,40 @@
             </Button>
         </Grid>
         <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2"
-                    Orientation="Vertical" 
-                    IsVisible="{Binding IsLoadingSheets}" 
+                    Orientation="Vertical"
+                    IsVisible="{Binding IsLoadingSheets}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Spacing="12"
                     Background="White">
             <avaloniaProgressRing:ProgressRing
                 Width="64"
-                Height="64" 
+                Height="64"
                 Margin="5"
                 IsActive="True"
                 Foreground="{StaticResource Accent}" />
             <TextBlock TextAlignment="Center"
-                       FontWeight="SemiBold" 
-                       FontSize="22" 
+                       FontWeight="SemiBold"
+                       FontSize="22"
                        Text="Sheets are loading"
-                       Margin="0,5,0,0"/>
+                       Margin="0,5,0,0" />
         </StackPanel>
         <Border Grid.Row="1" Margin="0"
-                Background="{StaticResource LighterGray}"
+                Background="{DynamicResource LighterGray}"
                 Padding="12,6"
                 IsVisible="{Binding !IsLoadingSheets}">
             <Grid ColumnDefinitions="Auto,*">
                 <StackPanel Grid.Column="0" Orientation="Horizontal"
                             HorizontalAlignment="Left">
                     <Button Command="{Binding SortByDescendingCommand}"
-                            Background="{StaticResource LighterGray}"
-                            BorderThickness="1"
-                            BorderBrush="{StaticResource HeaderGray}"
-                            CornerRadius="20"
+                            Classes="round"
                             IsVisible="{Binding !IsSortDescending}">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Background" Value="White" />
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                            </Style>
-                        </Button.Styles>
+
                         <PathIcon Data="{StaticResource SortAscending}" />
                     </Button>
                     <Button IsVisible="{Binding IsSortDescending}"
-                            CornerRadius="20"
-                            Background="{StaticResource LighterGray}"
-                            BorderThickness="1"
-                            BorderBrush="{StaticResource HeaderGray}"
+                            Classes="round"
                             Command="{Binding SortByAscendingCommand}">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Background" Value="White" />
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                            </Style>
-                        </Button.Styles>
                         <PathIcon Data="{StaticResource SortDescending}" />
                     </Button>
                     <ComboBox
@@ -128,33 +111,37 @@
                         Height="35"
                         ItemsSource="{Binding SortOptions}"
                         SelectedItem="{Binding SelectedSortOption}"
-                        Background="{StaticResource LighterGray}"
+                        Background="{DynamicResource LighterGray}"
                         BorderThickness="1"
-                        BorderBrush="{StaticResource HeaderGray}"
+                        BorderBrush="{DynamicResource HeaderGray}"
                         ToolTip.Tip="Sort by">
                         <ComboBox.Styles>
                             <Style Selector="ComboBox:pointerover /template/ Border#Background">
-                                <Setter Property="Background" Value="White" />
+                                <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
                                 <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
                             </Style>
                             <Style Selector="ComboBox:pressed /template/ Border#Background">
-                                <Setter Property="Background" Value="White" />
+                                <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
                                 <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
                             </Style>
                         </ComboBox.Styles>
                     </ComboBox>
                 </StackPanel>
                 <TextBox Grid.Column="1" Width="220" CornerRadius="20"
-                         Background="{StaticResource LighterGray}"
+                         Background="{DynamicResource LighterGray}"
                          BorderThickness="1"
-                         BorderBrush="{StaticResource HeaderGray}"
+                         BorderBrush="{DynamicResource HeaderGray}"
                          Watermark="Search by name or description..."
                          HorizontalAlignment="Left"
                          Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.Styles>
                         <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
                             <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                            <Setter Property="Background" Value="White" />
+                            <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
+                        </Style>
+                        <Style Selector="TextBox:pressed /template/ Border#PART_BorderElement">
+                            <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
                         </Style>
                     </TextBox.Styles>
                 </TextBox>
@@ -214,12 +201,6 @@
                     <Button x:Name="SelectAllButton"
                             Classes="round"
                             Click="SelectAllButton_OnClick">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Background" Value="White" />
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                            </Style>
-                        </Button.Styles>
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource Checkmark}" />
                             <TextBlock Text="Select all"
@@ -261,8 +242,7 @@
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,Auto,*,Auto">
                         <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="30" Height="30" Margin="5,0,20,0">
                             <PathIcon Data="{StaticResource Cloud}"
-                                      Width="20" Height="20"
-                                      Foreground="{StaticResource Accent}">
+                                      Width="20" Height="20">
                                 <PathIcon.IsVisible>
                                     <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
                                         <Binding Path="IsSyncEnabled" />
@@ -271,8 +251,7 @@
                                 </PathIcon.IsVisible>
                             </PathIcon>
                             <PathIcon Data="{StaticResource CloudOff}"
-                                      Width="20" Height="20"
-                                      Foreground="Black">
+                                      Width="20" Height="20">
                                 <PathIcon.IsVisible>
                                     <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
                                         <Binding Path="!IsSyncEnabled" />
@@ -280,7 +259,7 @@
                                     </MultiBinding>
                                 </PathIcon.IsVisible>
                             </PathIcon>
-                            
+
                             <avaloniaProgressRing:ProgressRing
                                 IsActive="{Binding IsSyncing}"
                                 IsVisible="{Binding IsSyncing}"
@@ -376,7 +355,7 @@
                                     </MenuItem>
                                 </MenuFlyout>
                             </Button.Flyout>
-                            
+
                             <StackPanel Orientation="Horizontal">
                                 <PathIcon Data="{StaticResource Export}" Width="16" Height="16" Margin="0,0,10,0" />
                                 <TextBlock FontWeight="SemiBold" Opacity="0.8" Text="Export to" />
@@ -385,26 +364,26 @@
                         <Grid Grid.Row="1" Grid.Column="4"
                               VerticalAlignment="Center"
                               IsVisible="{Binding $parent[views:LibraryView].((vm:LibraryViewModel)DataContext).IsOnline}">
-                            <Button 
-                                    Classes="sync"
-                                    IsEnabled="{Binding !IsSyncing}"
-                                    IsVisible="{Binding !IsSyncEnabled}"
-                                    Click="EnableSyncButton_OnClick">
+                            <Button
+                                Classes="sync"
+                                IsEnabled="{Binding !IsSyncing}"
+                                IsVisible="{Binding !IsSyncEnabled}"
+                                Click="EnableSyncButton_OnClick">
                                 <StackPanel Orientation="Horizontal">
-                                    <PathIcon Data="{StaticResource Cloud}" 
+                                    <PathIcon Data="{StaticResource Cloud}"
                                               Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
                                               Width="16" Height="16" Margin="0,0,10,0" />
                                     <TextBlock FontWeight="SemiBold"
                                                Opacity="0.8" Text="Turn on sync" />
                                 </StackPanel>
                             </Button>
-                            <Button 
-                                    Classes="sync"
-                                    IsEnabled="{Binding !IsSyncing}"
-                                    IsVisible="{Binding IsSyncEnabled}"
-                                    Click="DisableSyncButton_OnClick">
+                            <Button
+                                Classes="sync"
+                                IsEnabled="{Binding !IsSyncing}"
+                                IsVisible="{Binding IsSyncEnabled}"
+                                Click="DisableSyncButton_OnClick">
                                 <StackPanel Orientation="Horizontal">
-                                    <PathIcon Data="{StaticResource CloudOff}" 
+                                    <PathIcon Data="{StaticResource CloudOff}"
                                               Foreground="{Binding !IsSyncing, Converter={StaticResource ButtonIconEnabledStateForegroundConverter}}"
                                               Width="16" Height="16" Margin="0,0,10,0" />
                                     <TextBlock FontWeight="SemiBold"
@@ -477,8 +456,8 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <UniformGrid Grid.Row="1" Grid.Column="0" 
-                     Grid.RowSpan="2" 
+        <UniformGrid Grid.Row="1" Grid.Column="0"
+                     Grid.RowSpan="2"
                      Grid.ColumnSpan="2" Columns="2">
             <UniformGrid.IsVisible>
                 <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">

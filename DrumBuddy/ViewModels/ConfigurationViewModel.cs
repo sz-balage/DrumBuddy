@@ -4,14 +4,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls.Notifications;
-using Avalonia.Input;
+using Avalonia;
+using Avalonia.Styling;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Extensions;
 using DrumBuddy.IO.Services;
 using DrumBuddy.Models;
 using DrumBuddy.Services;
-using DrumBuddy.Views;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Splat;
@@ -24,26 +23,39 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     private readonly ConfigurationService _configService;
     private readonly MainViewModel _mainVm;
     private readonly MidiService _midiService;
+    private readonly NotificationService _notificationService;
+    private readonly ThemePreferenceService _themePreferenceService;
     private IDisposable? _beatsSubscription;
+    [Reactive] private bool _canSyncToServer;
+
+    [Reactive] private ThemeVariant? _currentTheme;
 
     [Reactive] private bool _drumMappingTabSelected;
 
     private IObservable<int>? _keyboardBeats;
     [Reactive] private bool _keyboardInput;
-    [Reactive] private bool _canSyncToServer;
     [Reactive] private int _metronomeVolume = 8000;
-    private readonly NotificationService _notificationService;
+    [Reactive] private ThemeMode _selectedThemeMode;
 
     public ConfigurationViewModel(IScreen hostScreen,
         MidiService midiService,
-        ConfigurationService configService)
+        ConfigurationService configService,
+        ThemePreferenceService themePreferenceService)
     {
         HostScreen = hostScreen;
         _midiService = midiService;
         _configService = configService;
+        _themePreferenceService = themePreferenceService;
         var mainViewModel = Locator.Current.GetRequiredService<MainViewModel>();
         _notificationService = Locator.Current.GetRequiredService<NotificationService>("MainWindowNotificationService");
         _mainVm = hostScreen as MainViewModel;
+        this.WhenAnyValue(vm => vm.SelectedThemeMode)
+            .Skip(1)
+            .Subscribe(async mode =>
+            {
+                await ApplyThemeAsync(mode);
+                await _themePreferenceService.SavePreferenceAsync(mode);
+            });
         this.WhenAnyValue(vm => vm.MetronomeVolume)
             .Subscribe(vol => _configService.MetronomeVolume = vol);
         this.WhenAnyValue(vm => vm.KeyboardInput)
@@ -91,6 +103,9 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 
     public ObservableCollection<DrumMappingItem> DrumMappings { get; } = new();
 
+    public ObservableCollection<ThemeMode> AvailableThemes { get; } =
+        new(Enum.GetValues(typeof(ThemeMode)).Cast<ThemeMode>());
+
     public IObservable<int>? KeyboardBeats
     {
         get => _keyboardBeats;
@@ -109,6 +124,19 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     public string? UrlPathSegment { get; }
     public IScreen HostScreen { get; }
 
+    private async Task ApplyThemeAsync(ThemeMode mode)
+    {
+        var themeVariant = mode switch
+        {
+            ThemeMode.Light => ThemeVariant.Light,
+            ThemeMode.Dark => ThemeVariant.Dark,
+            _ => ThemeVariant.Default
+        };
+
+        var app = (App)Application.Current!;
+        app.SetTheme(themeVariant);
+    }
+
     public void CancelMapping()
     {
         StopListening();
@@ -117,12 +145,16 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
     public async Task LoadConfig()
     {
         await _configService.LoadConfig();
+
         CanSyncToServer = _configService.CanSyncToServer;
         DrumMappings.Clear();
         foreach (var kvp in _configService.Mapping)
             DrumMappings.Add(new DrumMappingItem(kvp.Key, kvp.Value));
         MetronomeVolume = _configService.MetronomeVolume;
         KeyboardInput = _configService.KeyboardInput;
+
+        SelectedThemeMode = _themePreferenceService.Preference.Mode;
+
         UpdateDrumMappings();
     }
 
@@ -196,6 +228,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         _configService.StopListening();
         UpdateListeningDrum(null);
     }
+
     [ReactiveCommand]
     private async Task RevertToDefaultMappings()
     {

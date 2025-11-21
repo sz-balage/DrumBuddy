@@ -1,22 +1,16 @@
 using System;
 using System.Globalization;
-using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
 
 namespace DrumBuddy.Converters;
 
-public class ButtonIconEnabledStateForegroundConverter : IValueConverter
+public class NoteGroupIndexToFontWeightConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not bool enabled)
-            return null;
-
-        return enabled
-            ? new SolidColorBrush((Color)App.Current?.FindResource("NoteColor"))
-            : Brushes.Gray;
-        // : App.Current?.FindResource("LighterGray");
+        return value is not int idx ? null :
+            (idx - 1) % 4 == 0 ? FontWeight.Bold : FontWeight.Normal;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

@@ -11,6 +11,7 @@
         CanResize="False"
         x:DataType="dialogs:ConfirmationViewModel"
         x:Class="DrumBuddy.Views.Dialogs.ConfirmationView"
+        Background="{DynamicResource CardItemColor}"
         Title="User confirmation needed">
     <Grid Margin="20" RowDefinitions="Auto,Auto">
         <TextBlock Grid.Row="0"

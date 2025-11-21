@@ -16,14 +16,19 @@
         <Border Background="Transparent">
             <Grid Width="1200" Height="200">
                 <Canvas x:Name="MeasureCanvas">
-                    <Line StartPoint="0,90" EndPoint="1200,90" Stroke="Black" StrokeThickness="2" />
-                    <Line StartPoint="0,110" EndPoint="1200,110" Stroke="Black" StrokeThickness="2" />
-                    <Line StartPoint="0,130" EndPoint="1200,130" Stroke="Black" StrokeThickness="2" />
-                    <Line StartPoint="0,150" EndPoint="1200,150" Stroke="Black" StrokeThickness="2" />
-                    <Line StartPoint="0,170" EndPoint="1200,170" Stroke="Black" StrokeThickness="2" />
-                    <Line StartPoint="1200,90" EndPoint="1200,170" Stroke="Black" StrokeThickness="2" />
+                    <Line StartPoint="0,90" EndPoint="1200,90" Stroke="{DynamicResource NoteColor}" StrokeThickness="2" />
+                    <Line StartPoint="0,110" EndPoint="1200,110" Stroke="{DynamicResource NoteColor}"
+                          StrokeThickness="2" />
+                    <Line StartPoint="0,130" EndPoint="1200,130" Stroke="{DynamicResource NoteColor}"
+                          StrokeThickness="2" />
+                    <Line StartPoint="0,150" EndPoint="1200,150" Stroke="{DynamicResource NoteColor}"
+                          StrokeThickness="2" />
+                    <Line StartPoint="0,170" EndPoint="1200,170" Stroke="{DynamicResource NoteColor}"
+                          StrokeThickness="2" />
+                    <Line StartPoint="1200,90" EndPoint="1200,170" Stroke="{DynamicResource NoteColor}"
+                          StrokeThickness="2" />
                 </Canvas>
-                <Grid x:Name="EditIndicator">
+                <Grid x:Name="EditIndicator" IsVisible="False">
                     <Line StartPoint="0,90" EndPoint="0,170"
                           Stroke="{StaticResource Accent}"
                           StrokeThickness="4" />
@@ -47,7 +52,9 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <helperViews:RythmicGroupView HorizontalContentAlignment="Stretch" />
+                                <helperViews:RythmicGroupView HorizontalContentAlignment="Stretch"
+                                                              LineOverlayOpacity="{Binding RelativeSource={RelativeSource AncestorType=helperViews:MeasureView}, Path=LineOverlayOpacity}"
+                                                              NoteOverlayOpacity="{Binding RelativeSource={RelativeSource AncestorType=helperViews:MeasureView}, Path=NoteOverlayOpacity}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

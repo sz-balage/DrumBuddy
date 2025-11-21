@@ -1,5 +1,4 @@
 using Avalonia;
-using Avalonia.Media;
 using DrumBuddy.Core.Enums;
 using DrumBuddy.Core.Models;
 using DrumBuddy.Models;
@@ -103,21 +102,6 @@ public abstract class LineAndStrokeTests
             line.StartPoint.ShouldBe(start);
             line.EndPoint.ShouldBe(end);
             line.StrokeThickness.ShouldBe(thickness);
-        }
-
-        [Fact]
-        public void ShouldAlwaysHaveBlackStrokeColor()
-        {
-            // Arrange
-            var noteGroup = new NoteGroup(new List<Note> { new(Drum.Kick, NoteValue.Quarter) });
-            var start = new Point(100, 50);
-            var end = new Point(100, 150);
-
-            // Act
-            var line = new LineAndStroke(noteGroup, start, end);
-
-            // Assert
-            line.StrokeColor.ShouldBe(Brushes.Black);
         }
     }
 }

@@ -12,8 +12,8 @@
     </Design.PreviewWith>
     <Style Selector="ToggleButton.stepButton">
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{StaticResource DarkerGray}" />
-        <Setter Property="Background" Value="{StaticResource LighterGray}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DarkerGray}" />
+        <Setter Property="Background" Value="{DynamicResource LighterGray}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -33,7 +33,7 @@
             <Setter Property="Background" Value="{StaticResource Accent}" />
         </Style>
         <Style Selector="^:disabled">
-            <Setter Property="Background" Value="{StaticResource DarkerGray}" />
+            <Setter Property="Background" Value="{DynamicResource DarkerGray}" />
         </Style>
     </Style>
 </Styles>

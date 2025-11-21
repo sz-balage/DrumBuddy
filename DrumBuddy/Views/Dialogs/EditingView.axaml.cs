@@ -32,6 +32,7 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                     isExporting ? "Exporting..." : "Export to pdf")
                 .DisposeWith(d);
             Title = "Viewing Sheet - " + ViewModel.OriginalSheet.Name;
+            this.Bind(ViewModel, vm => vm.BpmDecimal, v => v._bpmNumeric.Value);
             //editing stuff
             if (!ViewModel.IsViewOnly)
             {
@@ -49,7 +50,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
                     i => { return !i; });
                 this.OneWayBind(ViewModel, vm => vm.IsRecording, v => v._stopRecordingButton.IsVisible,
                     i => { return i; });
-                this.Bind(ViewModel, vm => vm.BpmDecimal, v => v._bpmNumeric.Value);
                 this.Bind(ViewModel, vm => vm.TimeElapsed, v => v._timeElapsedTB.Text);
                 this.OneWayBind(ViewModel, vm => vm.CountDown, v => v._countDownTB.Text)
                     .DisposeWith(d);
@@ -79,6 +79,12 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
     private TextBlock _countDownTB => this.FindControl<TextBlock>("CountdownTextBlock")!;
     private Grid _countDownGrid => this.FindControl<Grid>("CountdownGrid")!;
     private CheckBox _keyboardCheckBox => this.FindControl<CheckBox>("KeyboardInputCheckBox")!;
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+        Root.Opacity = 1;
+    }
 
     private async Task SaveHandler(IInteractionContext<SheetCreationData, string?> context)
     {

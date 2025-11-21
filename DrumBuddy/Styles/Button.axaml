@@ -23,12 +23,12 @@
     </Style>
     <Style Selector="Button.round">
         <Setter Property="CornerRadius" Value="20" />
-        <Setter Property="Background" Value="{StaticResource LighterGray}" />
-        <Setter Property="BorderBrush" Value="{StaticResource HeaderGray}" />
+        <Setter Property="Background" Value="{DynamicResource LighterGray}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource HeaderGray}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
     <Style Selector="Button.round:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
         <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
     </Style>
     <Style Selector="Button.confirm">
@@ -57,7 +57,7 @@
     </Style>
     <Style Selector="Button.registerForm:disabled /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource HeaderGray}" />
+        <Setter Property="Foreground" Value="{DynamicResource HeaderGray}" />
     </Style>
     <Style Selector="Button.card">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -66,8 +66,8 @@
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="Background">
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Offset="0" Color="{StaticResource Primary}" />
-                <GradientStop Offset="1" Color="{StaticResource Secondary}" />
+                <GradientStop Offset="0" Color="{DynamicResource Primary}" />
+                <GradientStop Offset="1" Color="{DynamicResource Secondary}" />
             </LinearGradientBrush>
         </Setter>
         <Setter Property="Transitions">
@@ -93,7 +93,7 @@
     </Style>
 
     <Style Selector="Button.card:pointerover">
-        <Setter Property="Background" Value="{StaticResource Primary}" />
+        <Setter Property="Background" Value="{DynamicResource Primary}" />
     </Style>
 
     <Style Selector="Button.Unmapped">
@@ -102,7 +102,7 @@
     </Style>
 
     <Style Selector="Button.Highlight">
-        <Setter Property="Background" Value="{StaticResource AppGreen}" />
+        <Setter Property="Background" Value="{DynamicResource AppGreen}" />
         <Setter Property="Foreground" Value="White" />
     </Style>
 </Styles>

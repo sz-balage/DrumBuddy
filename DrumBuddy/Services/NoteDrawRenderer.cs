@@ -66,7 +66,7 @@ public class NoteDrawRenderer
             {
                 NoteValue.Quarter => (new Uri(BaseNotationPath + "quarter_rest.png"), new Size(60, 60)),
                 NoteValue.Eighth => (new Uri(BaseNotationPath + "eighth_rest.png"), new Size(40, 40)),
-                _ => (new Uri(BaseNotationPath + "sixteenth_rest.png"), new Size(60, 60))
+                _ => (new Uri(BaseNotationPath + "sixteenth_rest.png"), new Size(28, 60))
             },
 
             _ => (new Uri(BaseNotationPath + "note_head.png"), NoteHeadSize)

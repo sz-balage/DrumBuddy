@@ -8,9 +8,10 @@
         Title="Rename Drum Sheet"
         Width="450" Height="340"
         WindowStartupLocation="CenterOwner"
-        ExtendClientAreaChromeHints="NoChrome" 
-        ExtendClientAreaToDecorationsHint="True" 
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaToDecorationsHint="True"
         CanResize="False"
+        Background="{DynamicResource CardItemColor}"
         x:DataType="dialogVm:RenameSheetViewModel">
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="20">
         <TextBlock Grid.Row="0"

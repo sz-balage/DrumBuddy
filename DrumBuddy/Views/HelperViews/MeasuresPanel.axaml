@@ -16,6 +16,8 @@
             <DataTemplate>
                 <helperViews:MeasureView PointerPressed="OnMeasurePointerPressed"
                                          HorizontalAlignment="Left"
+                                         LineOverlayOpacity="{Binding RelativeSource={RelativeSource AncestorType=helperViews:MeasuresPanel}, Path=LineOverlayOpacity}"
+                                         NoteOverlayOpacity="{Binding RelativeSource={RelativeSource AncestorType=helperViews:MeasuresPanel}, Path=NoteOverlayOpacity}"
                                          VerticalAlignment="Top" />
             </DataTemplate>
         </ItemsControl.ItemTemplate>

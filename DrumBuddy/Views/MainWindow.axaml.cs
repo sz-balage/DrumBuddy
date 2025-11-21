@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using DrumBuddy.Api;
@@ -169,6 +170,12 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
 
     private RoutedViewHost _routedViewHost => this.FindControl<RoutedViewHost>("RoutedViewHost");
     private Button _retryButton => this.FindControl<Button>("RetryButton");
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+        Root.Opacity = 1;
+    }
 
     private void TryConnectToMidi()
     {
