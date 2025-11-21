@@ -48,13 +48,15 @@
                     Height="66"
                     HorizontalAlignment="Right"
                     Background="{DynamicResource HeaderGray}"
+                    IsVisible="{Binding Sheets.Empty}"
+                    IsEnabled="{Binding !IsLoadingSheets}"
                     Command="{Binding ImportSheetCommand}">
-                <Button.IsVisible>
-                    <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}">
-                        <Binding Path="Sheets.Count" />
-                        <Binding Path="IsLoadingSheets" />
-                    </MultiBinding>
-                </Button.IsVisible>
+                <!-- <Button.IsVisible> -->
+                <!--     <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}"> -->
+                <!--         <Binding Path="Sheets.Count" /> -->
+                <!--         <Binding Path="IsLoadingSheets" /> -->
+                <!--     </MultiBinding> -->
+                <!-- </Button.IsVisible> -->
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource Add}" />
                     <TextBlock Text="Import sheets"
@@ -92,31 +94,14 @@
                 <StackPanel Grid.Column="0" Orientation="Horizontal"
                             HorizontalAlignment="Left">
                     <Button Command="{Binding SortByDescendingCommand}"
-                            Background="{DynamicResource LighterGray}"
-                            BorderThickness="1"
-                            BorderBrush="{DynamicResource HeaderGray}"
-                            CornerRadius="20"
+                            Classes="round"
                             IsVisible="{Binding !IsSortDescending}">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Background" Value="White" />
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                            </Style>
-                        </Button.Styles>
+
                         <PathIcon Data="{StaticResource SortAscending}" />
                     </Button>
                     <Button IsVisible="{Binding IsSortDescending}"
-                            CornerRadius="20"
-                            Background="{DynamicResource LighterGray}"
-                            BorderThickness="1"
-                            BorderBrush="{DynamicResource HeaderGray}"
+                            Classes="round"
                             Command="{Binding SortByAscendingCommand}">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Background" Value="White" />
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                            </Style>
-                        </Button.Styles>
                         <PathIcon Data="{StaticResource SortDescending}" />
                     </Button>
                     <ComboBox
@@ -132,11 +117,11 @@
                         ToolTip.Tip="Sort by">
                         <ComboBox.Styles>
                             <Style Selector="ComboBox:pointerover /template/ Border#Background">
-                                <Setter Property="Background" Value="White" />
+                                <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
                                 <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
                             </Style>
                             <Style Selector="ComboBox:pressed /template/ Border#Background">
-                                <Setter Property="Background" Value="White" />
+                                <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
                                 <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
                             </Style>
                         </ComboBox.Styles>
@@ -152,7 +137,11 @@
                     <TextBox.Styles>
                         <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
                             <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                            <Setter Property="Background" Value="White" />
+                            <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
+                        </Style>
+                        <Style Selector="TextBox:pressed /template/ Border#PART_BorderElement">
+                            <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                            <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBackground}" />
                         </Style>
                     </TextBox.Styles>
                 </TextBox>
@@ -212,12 +201,6 @@
                     <Button x:Name="SelectAllButton"
                             Classes="round"
                             Click="SelectAllButton_OnClick">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Background" Value="White" />
-                                <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
-                            </Style>
-                        </Button.Styles>
                         <StackPanel Orientation="Horizontal">
                             <PathIcon Data="{StaticResource Checkmark}" />
                             <TextBlock Text="Select all"
