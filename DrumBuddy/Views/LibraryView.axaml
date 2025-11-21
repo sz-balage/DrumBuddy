@@ -242,8 +242,7 @@
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,Auto,*,Auto">
                         <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="30" Height="30" Margin="5,0,20,0">
                             <PathIcon Data="{StaticResource Cloud}"
-                                      Width="20" Height="20"
-                                      Foreground="{StaticResource Accent}">
+                                      Width="20" Height="20">
                                 <PathIcon.IsVisible>
                                     <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
                                         <Binding Path="IsSyncEnabled" />
@@ -252,8 +251,7 @@
                                 </PathIcon.IsVisible>
                             </PathIcon>
                             <PathIcon Data="{StaticResource CloudOff}"
-                                      Width="20" Height="20"
-                                      Foreground="Black">
+                                      Width="20" Height="20">
                                 <PathIcon.IsVisible>
                                     <MultiBinding Converter="{StaticResource SyncIconVisibleConverter}">
                                         <Binding Path="!IsSyncEnabled" />
