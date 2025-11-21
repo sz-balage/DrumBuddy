@@ -8,6 +8,7 @@
                                 xmlns:viewModels="clr-namespace:DrumBuddy.ViewModels"
                                 xmlns:models="clr-namespace:DrumBuddy.Models"
                                 xmlns:views="clr-namespace:DrumBuddy.Views"
+                                xmlns:services="clr-namespace:DrumBuddy.Services"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="DrumBuddy.Views.ConfigurationView">
     <UserControl.Styles>
@@ -197,7 +198,21 @@
                                     </StackPanel>
                                 </Button>
                             </StackPanel>
-                            <Button Grid.Row="2" Command="{Binding ToggleThemeCommand}">Toggle theme</Button>
+                            <StackPanel Grid.Row="2" Margin="0,20,0,0" HorizontalAlignment="Left" Spacing="8">
+                                <TextBlock Text="Theme"
+                                           FontWeight="Medium"
+                                           FontSize="14" />
+                                <ComboBox ItemsSource="{Binding AvailableThemes}"
+                                          SelectedItem="{Binding SelectedThemeMode}"
+                                          Width="150">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="services:ThemeMode">
+                                            <TextBlock
+                                                Text="{Binding Converter={StaticResource ThemeModeDisplayConverter}}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
                         </Grid>
                     </Expander>
 

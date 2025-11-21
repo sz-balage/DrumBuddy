@@ -31,6 +31,8 @@ namespace DrumBuddy;
 
 public class App : Application
 {
+    private ThemePreferenceService? _themePreferenceService;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -38,10 +40,19 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        _themePreferenceService = new ThemePreferenceService();
+        CurrentMutable.RegisterConstant(_themePreferenceService);
+        _themePreferenceService.Initialize();
+
         if (Design.IsDesignMode)
             RegisterDesignTimeServices();
         else
             RegisterProdServices();
+
+        //apply saved theme immediately
+        var themeVariant = _themePreferenceService.ResolveThemeVariant();
+        if (themeVariant is not null)
+            SetTheme(themeVariant);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -52,11 +63,14 @@ public class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    public void SetTheme(ThemeVariant theme)
+    public void SetTheme(ThemeVariant? theme)
     {
-        RequestedThemeVariant = theme;
+        if (theme is not null)
+            RequestedThemeVariant = theme;
+        else
+            RequestedThemeVariant = ThemeVariant.Default; // System preference
 
-        if (theme == ThemeVariant.Dark)
+        if (theme == ThemeVariant.Dark || (theme == null && IsDarkMode()))
         {
             Resources["HeaderGray"] = new SolidColorBrush(Color.Parse("#333333"));
             Resources["CardItemColor"] = new SolidColorBrush(Color.Parse("#1E1E1E"));
@@ -80,6 +94,13 @@ public class App : Application
             Resources["NoteColor"] = Color.Parse("#000000");
             Resources["AppGreen"] = Color.Parse("#77A690");
         }
+    }
+
+    private static bool IsDarkMode()
+    {
+        // This is a simple check - you might want to implement platform-specific detection
+        var now = DateTime.Now.TimeOfDay;
+        return now < TimeSpan.FromHours(6) || now > TimeSpan.FromHours(18);
     }
 
 
@@ -134,6 +155,7 @@ public class App : Application
             () => new ApiClient(authApi, sheetApi, configApi, tokenService,
                 Locator.Current.GetRequiredService<SerializationService>()),
             typeof(ApiClient));
+
         CurrentMutable.RegisterConstant(new ConfigurationService(
             Locator.Current.GetRequiredService<ConfigurationRepository>(),
             Locator.Current.GetRequiredService<MetronomePlayer>(),
@@ -170,7 +192,9 @@ public class App : Application
         CurrentMutable.RegisterConstant(
             new ConfigurationViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<MidiService>(),
-                Locator.Current.GetRequiredService<ConfigurationService>()));
+                Locator.Current.GetRequiredService<ConfigurationService>(),
+                Locator.Current.GetRequiredService<ThemePreferenceService>()
+            ));
         CurrentMutable.Register(() =>
             new RecordingViewModel(Locator.Current.GetRequiredService<IScreen>(),
                 Locator.Current.GetRequiredService<MidiService>(),

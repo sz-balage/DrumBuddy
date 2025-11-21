@@ -45,7 +45,7 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
             // this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeIcon.Foreground, ki => ki ? NoteColor : Brushes.Gray);
             this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.RevertTextBlock.Text,
                 ki => ki ? "Revert keyboard mappings" : "Revert drum mappings");
-            ViewModel.ToggleThemeCommand.Subscribe(_ =>
+            ViewModel.WhenAnyValue(vm => vm.SelectedThemeMode).Subscribe(_ =>
             {
                 TriggerKeyboardAndMidiForegrounds(ViewModel.KeyboardInput);
             });

@@ -49,6 +49,7 @@
         <converters:ZeroStateAndNotLoadingConverter x:Key="ZeroStateAndNotLoadingConverter" />
         <converters:NoteGroupIndexToFontWeightConverter x:Key="NoteGroupIndexToFontWeightConverter" />
         <converters:IsListeningToBorderBrushConverter x:Key="IsListeningToBorderBrushConverter" />
+        <converters:ThemeModeDisplayConverter x:Key="ThemeModeDisplayConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme>
