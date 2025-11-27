@@ -137,19 +137,23 @@ public class App : Application
         {
             ContentSerializer = new SystemTextJsonContentSerializer(jsonOptions)
         };
-        var authHandler = new AuthHeaderHandler(tokenService)
+
+        var authApi =
+            RestService.For<IAuthApi>(new HttpClient { BaseAddress = baseAddress }, refitSettings);
+        var refreshTokenHandler = new RefreshTokenHandler(tokenService, authApi)
         {
             InnerHandler = new HttpClientHandler()
         };
 
-        var loggingHandler = new LoggingHandler { InnerHandler = authHandler };
-        var httpClient = new HttpClient(loggingHandler) { BaseAddress = baseAddress };
-
-        var authApi =
-            RestService.For<IAuthApi>(new HttpClient(authHandler) { BaseAddress = baseAddress }, refitSettings);
+        var authHandler = new AuthHeaderHandler(tokenService)
+        {
+            InnerHandler = refreshTokenHandler
+        };
         var sheetApi =
             RestService.For<ISheetApi>(new HttpClient(authHandler) { BaseAddress = baseAddress }, refitSettings);
-        var configApi = RestService.For<IConfigurationApi>(httpClient, refitSettings);
+        var configApi =
+            RestService.For<IConfigurationApi>(new HttpClient(authHandler) { BaseAddress = baseAddress },
+                refitSettings);
 
         CurrentMutable.Register(
             () => new ApiClient(authApi, sheetApi, configApi, tokenService,

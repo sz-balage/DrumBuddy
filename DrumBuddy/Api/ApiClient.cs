@@ -37,7 +37,7 @@ public class ApiClient : IApiClient
     {
         var request = new AuthRequests.LoginRequest(email, password);
         var result = await _authApi.LoginAsync(request);
-        await _userService.SetToken(result.Token, result.UserName, result.Email, result.UserId);
+        await _userService.SetToken(result.Token, result.RefreshToken, result.UserName, result.Email, result.UserId);
         return result;
     }
 
@@ -52,7 +52,7 @@ public class ApiClient : IApiClient
     {
         var request = new AuthRequests.RegisterRequest(email, password, userName);
         var result = await _authApi.RegisterAsync(request);
-        await _userService.SetToken(result.Token, result.UserName, result.Email, result.UserId);
+        await _userService.SetToken(result.Token, result.RefreshToken, result.UserName, result.Email, result.UserId);
         return result;
     }
 

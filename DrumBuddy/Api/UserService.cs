@@ -30,6 +30,8 @@ public class UserService : IUserService
         _rememberMeFilePath = Path.Combine(drumBuddyFolder, ".drumbuddy");
     }
 
+    public string RefreshToken { get; private set; }
+
     public string? Email { get; private set; }
     public string? UserName { get; private set; }
     public bool IsOnline => !string.IsNullOrEmpty(Email) && IsTokenValid();
@@ -37,9 +39,10 @@ public class UserService : IUserService
 
     public string? GetToken() => _cachedToken;
 
-    public async Task SetToken(string token, string userName, string email, string userId)
+    public async Task SetToken(string token, string refreshToken, string userName, string email, string userId)
     {
         _cachedToken = token;
+        RefreshToken = refreshToken;
         UserName = userName;
         Email = email;
         UserId = userId;
