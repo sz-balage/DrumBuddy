@@ -59,14 +59,14 @@ public class UserService : IUserService
 
     public bool IsTokenValid() => !string.IsNullOrEmpty(_cachedToken);
 
-    public async Task SaveRememberedCredentialsAsync(string email, string password)
+    public async Task SaveRememberedCredentialsAsync(string email, string refreshToken)
     {
         try
         {
             var credentials = new RememberedCredentials
             {
                 Email = email,
-                Password = password
+                RefreshToken = refreshToken
             };
             var json = JsonSerializer.Serialize(credentials);
             var encryptedData = EncryptString(json);
@@ -78,7 +78,7 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<(string? Email, string? Password)?> LoadRememberedCredentialsAsync()
+    public async Task<(string? Email, string? RefreshToken)?> LoadRememberedCredentialsAsync()
     {
         try
         {
@@ -89,11 +89,12 @@ public class UserService : IUserService
             var json = DecryptString(encryptedData);
             var credentials = JsonSerializer.Deserialize<RememberedCredentials>(json);
 
-            return credentials != null ? (credentials.Email, credentials.Password) : null;
+            return credentials != null
+                ? (credentials.Email, credentials.RefreshToken)
+                : null;
         }
-        catch (Exception ex)
+        catch
         {
-            Debug.WriteLine($"Failed to load remembered credentials: {ex.Message}");
             return null;
         }
     }
@@ -161,6 +162,6 @@ public class UserService : IUserService
     private class RememberedCredentials
     {
         public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } = string.Empty;
     }
 }

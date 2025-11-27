@@ -32,7 +32,6 @@ public class ApiClient : IApiClient
         _serializationService = serializationService;
     }
 
-    // Auth methods
     public async Task<LoginResponse> LoginAsync(string email, string password)
     {
         var request = new AuthRequests.LoginRequest(email, password);
@@ -56,7 +55,6 @@ public class ApiClient : IApiClient
         return result;
     }
 
-    // Sheet methods
     public async Task<List<SheetSummaryDto>> GetSheetSummariesAsync()
         => await _sheetApi.GetSheetSummariesAsync();
 
@@ -109,5 +107,14 @@ public class ApiClient : IApiClient
         );
         await _configurationApi.UpdateConfigurationAsync(
             new UpdateConfigurationRequest(configuration, updatedAt));
+    }
+
+    public async Task<RefreshResponse> RefreshTokenAsync(string refreshToken)
+    {
+        var request = new AuthRequests.RefreshRequest(refreshToken);
+        var result = await _authApi.RefreshAsync(request);
+        await _userService.SetToken(result.AccessToken, result.RefreshToken, result.UserName, result.Email,
+            result.UserId);
+        return result;
     }
 }

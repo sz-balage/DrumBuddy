@@ -29,5 +29,10 @@ public class AuthRequests
 
     public record RefreshRequest(string RefreshToken);
 
-    public record RefreshResponse(string AccessToken, string RefreshToken);
+    public record RefreshResponse(
+        string UserName,
+        string Email,
+        string AccessToken,
+        string RefreshToken,
+        string UserId);
 }

@@ -35,9 +35,10 @@ public class RefreshTokenHandler : DelegatingHandler
                 await _userService.SetToken(
                     refreshResponse.AccessToken,
                     refreshResponse.RefreshToken,
-                    _userService.UserName!,
-                    _userService.Email!,
-                    _userService.UserId!);
+                    refreshResponse.UserName!,
+                    refreshResponse.Email!,
+                    refreshResponse.UserId!);
+                await _userService.SaveRememberedCredentialsAsync(refreshResponse.Email, refreshResponse.RefreshToken);
 
                 request.Headers.Authorization =
                     new AuthenticationHeaderValue("Bearer", refreshResponse.AccessToken);

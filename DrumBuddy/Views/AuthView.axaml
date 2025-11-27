@@ -5,10 +5,10 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:vm="clr-namespace:DrumBuddy.ViewModels"
                           xmlns:rxui="http://reactiveui.net"
+                          xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                           x:Class="DrumBuddy.Views.AuthView"
                           x:DataType="vm:AuthViewModel">
-    <!-- TODO: fix misalignment of textblocks when validating texts are not visible -->
     <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="50%,0%" EndPoint="100%,100%">
@@ -23,202 +23,219 @@
                     CornerRadius="20"
                     Padding="40"
                     Width="420">
-                <StackPanel Spacing="16">
-                    <TextBlock Text="DrumBuddy"
-                               Classes="header"
-                               HorizontalAlignment="Center"
-                               FontSize="28"
-                               FontWeight="SemiBold" />
-                    <StackPanel Spacing="16" IsVisible="{Binding !IsResetPasswordMode}">
-
-                        <TextBlock Classes="header"
-                                   x:Name="LoginPromptTextBlock"
-                                   HorizontalAlignment="Center"
-                                   IsVisible="{Binding IsLoginMode}"
-                                   Text="Sign in to your account"
-                                   FontSize="14" />
-
-                        <TextBlock Classes="header"
-                                   x:Name="RegisterPromptTextBlock"
-                                   HorizontalAlignment="Center"
-                                   IsVisible="{Binding !IsLoginMode}"
-                                   Text="Create your account"
-                                   FontSize="14" />
-                        <!-- TODO make login possible with user name too-->
-
-                        <StackPanel>
-                            <TextBox x:Name="EmailTextBox"
-                                     Classes="login clearButton"
-                                     Watermark="Email address"
-                                     Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="{DynamicResource LighterGray}"
-                                     BorderThickness="1"
-                                     BorderBrush="{DynamicResource HeaderGray}"
-                                     Padding="12,10"
-                                     CornerRadius="8" />
-                            <TextBlock x:Name="EmailValidation" Foreground="{StaticResource Error}"
-                                       IsVisible="{Binding Text, ElementName=EmailValidation,
-                                   Converter={StaticResource StringNotEmptyToBoolConverter}}"
-                                       FontSize="12" Margin="0,4,0,0" />
-                        </StackPanel>
-
-                        <TextBox x:Name="UserNameTextBox"
-                                 Classes="login"
-                                 IsVisible="{Binding !IsLoginMode}"
-                                 Watermark="Username"
-                                 Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
-                                 Background="{DynamicResource LighterGray}"
-                                 BorderThickness="1"
-                                 BorderBrush="{DynamicResource HeaderGray}"
-                                 Padding="12,10"
-                                 CornerRadius="8" />
-
-                        <StackPanel>
-                            <TextBox x:Name="PasswordBox"
-                                     PasswordChar="*"
-                                     Classes="login revealPasswordButton"
-                                     Watermark="Password"
-                                     Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="{DynamicResource LighterGray}"
-                                     BorderThickness="1"
-                                     BorderBrush="{DynamicResource HeaderGray}"
-                                     Padding="12,10"
-                                     CornerRadius="8" />
-                            <TextBlock x:Name="PasswordValidation"
-                                       Foreground="{StaticResource Error}"
-                                       FontSize="12"
-                                       Margin="0,4,0,0"
-                                       IsVisible="{Binding Text, ElementName=PasswordValidation, 
-                                   Converter={StaticResource StringNotEmptyToBoolConverter}}"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-                        <!-- TODO make pw visibility toggle-->
-                        <StackPanel IsVisible="{Binding !IsLoginMode}">
-                            <TextBox x:Name="ConfirmPasswordBox"
-                                     Classes="login revealPasswordButton"
-                                     PasswordChar="*"
-                                     Watermark="Confirm password"
-                                     Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="{DynamicResource LighterGray}"
-                                     BorderThickness="1"
-                                     BorderBrush="{DynamicResource HeaderGray}"
-                                     Padding="12,10"
-                                     CornerRadius="8" />
-                            <TextBlock x:Name="ConfirmPasswordValidation"
-                                       Foreground="{StaticResource Error}"
-                                       FontSize="12"
-                                       Margin="0,4,0,0"
-                                       IsVisible="{Binding Text, ElementName=ConfirmPasswordValidation, 
-                                   Converter={StaticResource StringNotEmptyToBoolConverter}}"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <CheckBox x:Name="RememberMeCheckBox"
-                                  IsVisible="{Binding IsLoginMode}"
-                                  IsChecked="{Binding RememberMe}"
-                                  Content="Remember me"
-                                  Foreground="{StaticResource Accent}"
-                                  FontSize="13" />
-                        <!-- TODO Add auto login button also-->
-
-                        <Button x:Name="LoginButton"
-                                IsVisible="{Binding IsLoginMode}"
-                                HorizontalAlignment="Stretch"
-                                Classes="confirm"
-                                Height="40"
-                                FontSize="14"
-                                FontWeight="SemiBold"
-                                Margin="0,8,0,0">
-                            <TextBlock HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Text="Sign in" />
-                        </Button>
-                        <Button x:Name="RegisterButton"
-                                IsVisible="{Binding !IsLoginMode}"
-                                HorizontalAlignment="Stretch"
-                                Classes="confirm"
-                                Height="40"
-                                FontSize="14"
-                                FontWeight="SemiBold"
-                                Margin="0,8,0,0">
-                            <TextBlock HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Text="Create account" />
-                        </Button>
-
-                        <Button x:Name="ToggleModeButton"
-                                Classes="registerForm"
-                                IsEnabled="{Binding !IsLoading}"
-                                Command="{Binding ToggleModeCommand}">
-                            <TextBlock x:Name="ToggleButtonText" />
-                        </Button>
-                        <Button x:Name="ForgotPassword"
-                                Classes="registerForm"
-                                IsEnabled="{Binding !IsLoading}"
-                                Command="{Binding ShowResetPasswordCommand}">
-                            <TextBlock Text="Forgot your password? Click here!" />
-                        </Button>
-                        <Button x:Name="GuestLogin"
-                                Classes="registerForm"
-                                IsEnabled="{Binding !IsLoading}"
-                                Command="{Binding GuestLoginCommand}">
-                            <TextBlock Text="Continue as a guest (offline mode)" />
-                        </Button>
-                        <Button x:Name="ToggleAnimationButton"
-                                Classes="registerForm"
-                                Content="Stop Animation"
+                <Grid>
+                    <StackPanel Orientation="Vertical"
+                                IsVisible="{Binding IsCredentialLoading}"
                                 HorizontalAlignment="Center"
-                                Margin="0,10,0,0"
-                                FontSize="12"
-                                Background="Transparent"
-                                Foreground="{StaticResource Accent}" />
+                                VerticalAlignment="Center"
+                                Spacing="12">
+                        <avaloniaProgressRing:ProgressRing
+                            Width="64"
+                            Height="64" Margin="5"
+                            IsActive="True" />
+                        <TextBlock TextAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   FontSize="22"
+                                   Text="Loading"
+                                   Margin="0,5,0,0" />
                     </StackPanel>
-                    <StackPanel IsVisible="{Binding IsResetPasswordMode}" Spacing="16">
-                        <TextBlock Text="Reset your password"
+                    <StackPanel Spacing="16"
+                                IsVisible="{Binding !IsCredentialLoading}">
+                        <TextBlock Text="DrumBuddy"
                                    Classes="header"
-                                   FontSize="14"
                                    HorizontalAlignment="Center"
-                                   Margin="0,16,0,8" />
-                        <StackPanel>
-                            <TextBox x:Name="ResetEmailTextBox"
+                                   FontSize="28"
+                                   FontWeight="SemiBold" />
+                        <StackPanel Spacing="16" IsVisible="{Binding !IsResetPasswordMode}">
+
+                            <TextBlock Classes="header"
+                                       x:Name="LoginPromptTextBlock"
+                                       HorizontalAlignment="Center"
+                                       IsVisible="{Binding IsLoginMode}"
+                                       Text="Sign in to your account"
+                                       FontSize="14" />
+
+                            <TextBlock Classes="header"
+                                       x:Name="RegisterPromptTextBlock"
+                                       HorizontalAlignment="Center"
+                                       IsVisible="{Binding !IsLoginMode}"
+                                       Text="Create your account"
+                                       FontSize="14" />
+                            <!-- TODO make login possible with user name too-->
+
+                            <StackPanel>
+                                <TextBox x:Name="EmailTextBox"
+                                         Classes="login clearButton"
+                                         Watermark="Email address"
+                                         Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                         Background="{DynamicResource LighterGray}"
+                                         BorderThickness="1"
+                                         BorderBrush="{DynamicResource HeaderGray}"
+                                         Padding="12,10"
+                                         CornerRadius="8" />
+                                <TextBlock x:Name="EmailValidation" Foreground="{StaticResource Error}"
+                                           IsVisible="{Binding Text, ElementName=EmailValidation,
+                                   Converter={StaticResource StringNotEmptyToBoolConverter}}"
+                                           FontSize="12" Margin="0,4,0,0" />
+                            </StackPanel>
+
+                            <TextBox x:Name="UserNameTextBox"
                                      Classes="login"
-                                     Watermark="Email address"
-                                     Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                     IsVisible="{Binding !IsLoginMode}"
+                                     Watermark="Username"
+                                     Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
                                      Background="{DynamicResource LighterGray}"
                                      BorderThickness="1"
                                      BorderBrush="{DynamicResource HeaderGray}"
                                      Padding="12,10"
                                      CornerRadius="8" />
 
-                            <TextBlock x:Name="ResetEmailValidation"
-                                       Foreground="{StaticResource Error}"
-                                       FontSize="12"
-                                       Margin="0,4,0,0"
-                                       IsVisible="{Binding Text, ElementName=ResetEmailValidation, 
-                                   Converter={StaticResource StringNotEmptyToBoolConverter}}" />
-                        </StackPanel>
-                        <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsResetPasswordMode}"
-                                Classes="confirm"
-                                Height="40"
-                                FontSize="14"
-                                FontWeight="SemiBold"
-                                Margin="0,8,0,0"
-                                Command="{Binding ResetPasswordCommand}">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       Text="Send password reset email" />
-                        </Button>
-                        <Button Background="Transparent"
-                                Foreground="{StaticResource Accent}"
-                                Command="{Binding CancelResetPasswordCommand}"
-                                HorizontalAlignment="Left"
-                                FontSize="12"
-                                Padding="0"
-                                Content="← Back"
-                                Classes="registerForm" />
-                    </StackPanel>
-                </StackPanel>
+                            <StackPanel>
+                                <TextBox x:Name="PasswordBox"
+                                         PasswordChar="*"
+                                         Classes="login revealPasswordButton"
+                                         Watermark="Password"
+                                         Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
+                                         Background="{DynamicResource LighterGray}"
+                                         BorderThickness="1"
+                                         BorderBrush="{DynamicResource HeaderGray}"
+                                         Padding="12,10"
+                                         CornerRadius="8" />
+                                <TextBlock x:Name="PasswordValidation"
+                                           Foreground="{StaticResource Error}"
+                                           FontSize="12"
+                                           Margin="0,4,0,0"
+                                           IsVisible="{Binding Text, ElementName=PasswordValidation, 
+                                   Converter={StaticResource StringNotEmptyToBoolConverter}}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <!-- TODO make pw visibility toggle-->
+                            <StackPanel IsVisible="{Binding !IsLoginMode}">
+                                <TextBox x:Name="ConfirmPasswordBox"
+                                         Classes="login revealPasswordButton"
+                                         PasswordChar="*"
+                                         Watermark="Confirm password"
+                                         Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}"
+                                         Background="{DynamicResource LighterGray}"
+                                         BorderThickness="1"
+                                         BorderBrush="{DynamicResource HeaderGray}"
+                                         Padding="12,10"
+                                         CornerRadius="8" />
+                                <TextBlock x:Name="ConfirmPasswordValidation"
+                                           Foreground="{StaticResource Error}"
+                                           FontSize="12"
+                                           Margin="0,4,0,0"
+                                           IsVisible="{Binding Text, ElementName=ConfirmPasswordValidation, 
+                                   Converter={StaticResource StringNotEmptyToBoolConverter}}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
 
+                            <CheckBox x:Name="RememberMeCheckBox"
+                                      IsVisible="{Binding IsLoginMode}"
+                                      IsChecked="{Binding RememberMe}"
+                                      Content="Remember me"
+                                      Foreground="{StaticResource Accent}"
+                                      FontSize="13" />
+                            <!-- TODO Add auto login button also-->
+
+                            <Button x:Name="LoginButton"
+                                    IsVisible="{Binding IsLoginMode}"
+                                    HorizontalAlignment="Stretch"
+                                    Classes="confirm"
+                                    Height="40"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Margin="0,8,0,0">
+                                <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Text="Sign in" />
+                            </Button>
+                            <Button x:Name="RegisterButton"
+                                    IsVisible="{Binding !IsLoginMode}"
+                                    HorizontalAlignment="Stretch"
+                                    Classes="confirm"
+                                    Height="40"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Margin="0,8,0,0">
+                                <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Text="Create account" />
+                            </Button>
+
+                            <Button x:Name="ToggleModeButton"
+                                    Classes="registerForm"
+                                    IsEnabled="{Binding !IsLoading}"
+                                    Command="{Binding ToggleModeCommand}">
+                                <TextBlock x:Name="ToggleButtonText" />
+                            </Button>
+                            <Button x:Name="ForgotPassword"
+                                    Classes="registerForm"
+                                    IsEnabled="{Binding !IsLoading}"
+                                    Command="{Binding ShowResetPasswordCommand}">
+                                <TextBlock Text="Forgot your password? Click here!" />
+                            </Button>
+                            <Button x:Name="GuestLogin"
+                                    Classes="registerForm"
+                                    IsEnabled="{Binding !IsLoading}"
+                                    Command="{Binding GuestLoginCommand}">
+                                <TextBlock Text="Continue as a guest (offline mode)" />
+                            </Button>
+                            <Button x:Name="ToggleAnimationButton"
+                                    Classes="registerForm"
+                                    Content="Stop Animation"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,10,0,0"
+                                    FontSize="12"
+                                    Background="Transparent"
+                                    Foreground="{StaticResource Accent}" />
+                        </StackPanel>
+                        <StackPanel IsVisible="{Binding IsResetPasswordMode}" Spacing="16">
+                            <TextBlock Text="Reset your password"
+                                       Classes="header"
+                                       FontSize="14"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,16,0,8" />
+                            <StackPanel>
+                                <TextBox x:Name="ResetEmailTextBox"
+                                         Classes="login"
+                                         Watermark="Email address"
+                                         Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                         Background="{DynamicResource LighterGray}"
+                                         BorderThickness="1"
+                                         BorderBrush="{DynamicResource HeaderGray}"
+                                         Padding="12,10"
+                                         CornerRadius="8" />
+
+                                <TextBlock x:Name="ResetEmailValidation"
+                                           Foreground="{StaticResource Error}"
+                                           FontSize="12"
+                                           Margin="0,4,0,0"
+                                           IsVisible="{Binding Text, ElementName=ResetEmailValidation, 
+                                   Converter={StaticResource StringNotEmptyToBoolConverter}}" />
+                            </StackPanel>
+                            <Button HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding IsResetPasswordMode}"
+                                    Classes="confirm"
+                                    Height="40"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Margin="0,8,0,0"
+                                    Command="{Binding ResetPasswordCommand}">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Text="Send password reset email" />
+                            </Button>
+                            <Button Background="Transparent"
+                                    Foreground="{StaticResource Accent}"
+                                    Command="{Binding CancelResetPasswordCommand}"
+                                    HorizontalAlignment="Left"
+                                    FontSize="12"
+                                    Padding="0"
+                                    Content="← Back"
+                                    Classes="registerForm" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
             </Border>
         </Grid>
 

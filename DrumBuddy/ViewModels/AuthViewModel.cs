@@ -31,6 +31,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
 
     [Reactive] private string _confirmPassword = string.Empty;
     [Reactive] private string _email = string.Empty;
+    [Reactive] private bool _isCredentialLoading;
     [Reactive] private bool _isLoading;
     [Reactive] private bool _isLoginMode = true;
     [Reactive] private bool _isResetPasswordMode;
@@ -111,13 +112,34 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
     private async Task LoadRememberedCredentialsAsync()
     {
         var credentials = await _userService.LoadRememberedCredentialsAsync();
-        if (credentials.HasValue)
+        if (!credentials.HasValue)
+            return;
+        IsCredentialLoading = true;
+        try
         {
-            Email = credentials.Value.Email ?? string.Empty;
-            Password = credentials.Value.Password ?? string.Empty;
-            RememberMe = true;
+            var response = await _apiClient.RefreshTokenAsync(credentials.Value.RefreshToken);
+            await _userService.SetToken(
+                response.AccessToken,
+                response.RefreshToken,
+                response.UserName, // username fetched later
+                response.Email,
+                response.UserId
+            );
+
+            await _configVm.LoadConfig();
+            NavigateToHome();
+        }
+        catch
+        {
+            //saved token is invalid -> clear it and stay on login screen
+            _userService.ClearRememberedCredentials();
+        }
+        finally
+        {
+            IsCredentialLoading = false;
         }
     }
+
 
     private void HandleAuthSuccess(bool success, string title)
     {
@@ -126,7 +148,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             $"Welcome, {_email}!",
             NotificationType.Success));
         if (_rememberMe)
-            _ = _userService.SaveRememberedCredentialsAsync(_email, _password);
+            _ = _userService.SaveRememberedCredentialsAsync(_email, _userService.RefreshToken);
         else
             _userService.ClearRememberedCredentials();
 

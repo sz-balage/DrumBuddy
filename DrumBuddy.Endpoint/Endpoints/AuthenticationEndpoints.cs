@@ -177,6 +177,7 @@ public static class AuthenticationEndpoints
 
         await userManager.UpdateAsync(user);
 
-        return Results.Ok(new AuthRequests.RefreshResponse(newAccessToken, newRefreshToken));
+        return Results.Ok(new AuthRequests.RefreshResponse(user.UserName, user.Email, newAccessToken, newRefreshToken,
+            user.Id));
     }
 }
