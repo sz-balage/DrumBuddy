@@ -9,10 +9,10 @@ public interface IUserService
     bool IsOnline { get; }
     string? UserId { get; set; }
     string? GetToken();
-    Task SetToken(string token, string userName, string email, string userId);
+    Task SetToken(string token, string refreshToken, string userName, string email, string userId);
     void ClearToken();
     bool IsTokenValid();
-    Task SaveRememberedCredentialsAsync(string email, string password);
-    Task<(string? Email, string? Password)?> LoadRememberedCredentialsAsync();
+    Task SaveRememberedCredentialsAsync(string email, string refreshToken);
+    Task<(string? Email, string? RefreshToken)?> LoadRememberedCredentialsAsync();
     void ClearRememberedCredentials();
 }

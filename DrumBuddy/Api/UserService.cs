@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DrumBuddy.IO.Data;
@@ -10,9 +11,6 @@ namespace DrumBuddy.Api;
 
 public class UserService : IUserService
 {
-    private static readonly byte[] EncryptionKey = new byte[]
-        { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10 };
-
     private readonly string _rememberMeFilePath;
     private readonly SheetRepository _repository;
 
@@ -30,6 +28,8 @@ public class UserService : IUserService
         _rememberMeFilePath = Path.Combine(drumBuddyFolder, ".drumbuddy");
     }
 
+    public string RefreshToken { get; private set; }
+
     public string? Email { get; private set; }
     public string? UserName { get; private set; }
     public bool IsOnline => !string.IsNullOrEmpty(Email) && IsTokenValid();
@@ -37,9 +37,10 @@ public class UserService : IUserService
 
     public string? GetToken() => _cachedToken;
 
-    public async Task SetToken(string token, string userName, string email, string userId)
+    public async Task SetToken(string token, string refreshToken, string userName, string email, string userId)
     {
         _cachedToken = token;
+        RefreshToken = refreshToken;
         UserName = userName;
         Email = email;
         UserId = userId;
@@ -56,17 +57,17 @@ public class UserService : IUserService
 
     public bool IsTokenValid() => !string.IsNullOrEmpty(_cachedToken);
 
-    public async Task SaveRememberedCredentialsAsync(string email, string password)
+    public async Task SaveRememberedCredentialsAsync(string email, string refreshToken)
     {
         try
         {
             var credentials = new RememberedCredentials
             {
                 Email = email,
-                Password = password
+                RefreshToken = refreshToken
             };
             var json = JsonSerializer.Serialize(credentials);
-            var encryptedData = EncryptString(json);
+            var encryptedData = EncryptStringWithDerivedKey(json);
             await File.WriteAllBytesAsync(_rememberMeFilePath, encryptedData);
         }
         catch (Exception ex)
@@ -75,7 +76,7 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<(string? Email, string? Password)?> LoadRememberedCredentialsAsync()
+    public async Task<(string? Email, string? RefreshToken)?> LoadRememberedCredentialsAsync()
     {
         try
         {
@@ -83,14 +84,15 @@ public class UserService : IUserService
                 return null;
 
             var encryptedData = await File.ReadAllBytesAsync(_rememberMeFilePath);
-            var json = DecryptString(encryptedData);
+            var json = DecryptStringWithDerivedKey(encryptedData);
             var credentials = JsonSerializer.Deserialize<RememberedCredentials>(json);
 
-            return credentials != null ? (credentials.Email, credentials.Password) : null;
+            return credentials != null
+                ? (credentials.Email, credentials.RefreshToken)
+                : null;
         }
-        catch (Exception ex)
+        catch
         {
-            Debug.WriteLine($"Failed to load remembered credentials: {ex.Message}");
             return null;
         }
     }
@@ -108,11 +110,20 @@ public class UserService : IUserService
         }
     }
 
-    private byte[] EncryptString(string plainText)
+    private byte[] GetDerivedKey()
+    {
+        var machineId = $"{Environment.MachineName}:{Environment.UserName}";
+        using (var sha = SHA256.Create())
+        {
+            return sha.ComputeHash(Encoding.UTF8.GetBytes(machineId));
+        }
+    }
+
+    private byte[] EncryptStringWithDerivedKey(string plainText)
     {
         using (var aes = Aes.Create())
         {
-            aes.Key = EncryptionKey;
+            aes.Key = GetDerivedKey();
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
 
@@ -132,15 +143,14 @@ public class UserService : IUserService
         }
     }
 
-    private string DecryptString(byte[] cipherText)
+    private string DecryptStringWithDerivedKey(byte[] cipherText)
     {
         using (var aes = Aes.Create())
         {
-            aes.Key = EncryptionKey;
+            aes.Key = GetDerivedKey();
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
 
-            // Read IV from the beginning
             byte[] iv = new byte[aes.IV.Length];
             Array.Copy(cipherText, 0, iv, 0, iv.Length);
             aes.IV = iv;
@@ -158,6 +168,6 @@ public class UserService : IUserService
     private class RememberedCredentials
     {
         public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } = string.Empty;
     }
 }

@@ -1,9 +1,9 @@
 using DrumBuddy.Endpoint.Services;
 using DrumBuddy.IO.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrumBuddy.Endpoint.Endpoints;
-
 
 public static class AuthenticationEndpoints
 {
@@ -12,7 +12,7 @@ public static class AuthenticationEndpoints
         var group = app.MapGroup("/api/auth")
             .WithTags("Authentication")
             .AllowAnonymous();
-        
+
         group.MapPost("/register", Register)
             .WithName("Register")
             .WithOpenApi();
@@ -20,13 +20,17 @@ public static class AuthenticationEndpoints
         group.MapPost("/login", Login)
             .WithName("Login")
             .WithOpenApi();
-        
+
         group.MapPost("/forgot-password", ForgotPassword)
             .WithName("ForgotPassword")
             .WithOpenApi();
-        
+
         group.MapPost("/reset-password", ResetPassword)
             .WithName("ResetPassword")
+            .WithOpenApi();
+
+        group.MapPost("/refresh", Refresh)
+            .WithName("RefreshToken")
             .WithOpenApi();
     }
 
@@ -54,12 +58,17 @@ public static class AuthenticationEndpoints
         }
 
         var token = tokenService.GenerateAccessToken(user.Id, user.Email!);
+        var refreshToken = tokenService.GenerateRefreshToken();
 
-        return Results.Ok(new 
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(30);
+        await userManager.UpdateAsync(user);
+        return Results.Ok(new
         {
             userName = user.UserName,
             email = user.Email,
             token,
+            refreshToken,
             userId = user.Id
         });
     }
@@ -84,15 +93,22 @@ public static class AuthenticationEndpoints
         }
 
         var token = tokenService.GenerateAccessToken(user.Id, user.Email!);
+        var refreshToken = tokenService.GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(30);
+        await userManager.UpdateAsync(user);
 
         return Results.Ok(new
         {
             userName = user.UserName,
             email = user.Email,
             token,
+            refreshToken,
             userId = user.Id
         });
     }
+
     private static async Task<IResult> ForgotPassword(
         AuthRequests.ForgotPasswordRequest request,
         UserManager<User> userManager,
@@ -100,16 +116,17 @@ public static class AuthenticationEndpoints
         IConfiguration configuration)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
-        
+
         if (user == null)
         {
             return Results.Ok(new { message = "If email exists, a reset link has been sent" });
         }
 
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
-        
+
         var websiteurl = configuration["AppSettings:WebsiteUrl"];
-        var resetLink = $"{websiteurl}/reset-password.html?email={Uri.EscapeDataString(request.Email)}&token={Uri.EscapeDataString(token)}";
+        var resetLink =
+            $"{websiteurl}/reset-password.html?email={Uri.EscapeDataString(request.Email)}&token={Uri.EscapeDataString(token)}";
 
         var emailSent = await emailService.SendPasswordResetEmailAsync(user.Email!, resetLink);
 
@@ -130,6 +147,7 @@ public static class AuthenticationEndpoints
         {
             return Results.BadRequest(new { message = "Invalid email" });
         }
+
         var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
 
         if (!result.Succeeded)
@@ -138,5 +156,29 @@ public static class AuthenticationEndpoints
         }
 
         return Results.Ok(new { message = "Password reset successfully" });
+    }
+
+    private static async Task<IResult> Refresh(
+        AuthRequests.RefreshRequest request,
+        UserManager<User> userManager,
+        TokenService tokenService)
+    {
+        var user = await userManager.Users
+            .FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
+
+        if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
+            return Results.Unauthorized();
+
+        var newAccessToken = tokenService.GenerateAccessToken(user.Id, user.Email!);
+        var newRefreshToken = tokenService.GenerateRefreshToken();
+
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(30);
+
+        await userManager.UpdateAsync(user);
+
+        return Results.Ok(new AuthRequests.RefreshResponse(user.UserName ?? "", user.Email, newAccessToken,
+            newRefreshToken,
+            user.Id));
     }
 }
