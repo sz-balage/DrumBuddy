@@ -113,9 +113,11 @@ Use the same commands as above, but with the DrumBuddy-osx-x64.dmg build.
 
 ## Usage
 After installation:
+- Create an account, or continue in offline mode (as a guest)
 - Connect, and select your electronic drum kit (or try out the app via keyboard input)
 - Configure your MIDI mappings in the Configuration section
 - Create new sheets either by recording your beats, or creating them manually
+- Sync your work to the cloud, so you can access it from any device
 - Compare sheets to see the difference
 
 ## Roadmap
