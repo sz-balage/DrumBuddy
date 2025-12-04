@@ -12,7 +12,7 @@ public class MidiService
     private readonly Subject<bool> _inputDeviceDisconnected = new();
     private readonly Subject<int> _notes = new();
     private bool _isConnected;
-    private MidiInProcedure? _midiCallback; // Hold a strong reference!
+    private MidiInProcedure? _midiCallback; 
 
 
     public bool IsConnected
