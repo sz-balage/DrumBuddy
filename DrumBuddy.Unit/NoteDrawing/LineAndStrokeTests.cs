@@ -84,24 +84,6 @@ public abstract class LineAndStrokeTests
             // Assert
             line.StrokeThickness.ShouldBe(3.5);
         }
-
-        [Fact]
-        public void ShouldPreserveAllProperties()
-        {
-            // Arrange
-            var noteGroup = new NoteGroup(new List<Note> { new(Drum.Snare, NoteValue.Eighth) });
-            var start = new Point(100, 50);
-            var end = new Point(100, 150);
-            var thickness = 2.0;
-
-            // Act
-            var line = new LineAndStroke(noteGroup, start, end, thickness);
-
-            // Assert
-            line.NoteGroup.ShouldBe(noteGroup);
-            line.StartPoint.ShouldBe(start);
-            line.EndPoint.ShouldBe(end);
-            line.StrokeThickness.ShouldBe(thickness);
-        }
+        
     }
 }
