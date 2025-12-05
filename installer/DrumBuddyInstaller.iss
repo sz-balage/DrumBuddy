@@ -19,7 +19,7 @@ OutputDir=Output
 OutputBaseFilename=DrumBuddy-Setup-{#AppVersion}
 Compression=lzma
 SolidCompression=yes
-; SetupIconFile=images\DrumBuddy.ico  ; optional, if you add an .ico later
+SetupIconFile=images\app.ico  ; optional, if you add an .ico later
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -29,8 +29,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Source: "{#AppDir}\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 [Icons]
-Name: "{group}\DrumBuddy"; Filename: "{app}\DrumBuddy.Desktop.exe"; WorkingDir: "{app}"
-Name: "{commondesktop}\DrumBuddy"; Filename: "{app}\DrumBuddy.Desktop.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{group}\DrumBuddy"; Filename: "{app}\DrumBuddy.Desktop.exe"; WorkingDir: "{app}"; IconFilename: "{app}\DrumBuddy.Desktop.exe";
+Name: "{commondesktop}\DrumBuddy"; Filename: "{app}\DrumBuddy.Desktop.exe"; WorkingDir: "{app}"; IconFilename: "{app}\DrumBuddy.Desktop.exe"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"
