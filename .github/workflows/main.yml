@@ -165,6 +165,9 @@ jobs:
     steps:
       - name: 🧩 Checkout repository
         uses: actions/checkout@v4
+      - name: 🔍 List downloaded artifacts
+        run: |
+          ls -R ./artifacts
 
       - name: 📥 Download all artifacts
         uses: actions/download-artifact@v4
