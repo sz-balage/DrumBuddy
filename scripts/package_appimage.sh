@@ -24,10 +24,15 @@ cp -r "${PUBLISH_DIR}/"** "${APPDIR}/usr/bin/" 2>/dev/null || true
 
 # Copy icon (256x256 PNG)
 if [[ -f "${ICON_SRC}" ]]; then
+  # For appimagetool: icon at top-level AppDir
+  cp "${ICON_SRC}" "${APPDIR}/${APP_NAME}.png"
+  # Optional: also install into icon theme dir
+  mkdir -p "${APPDIR}/usr/share/icons/hicolor/256x256/apps"
   cp "${ICON_SRC}" "${APPDIR}/usr/share/icons/hicolor/256x256/apps/${APP_NAME}.png"
 else
   echo "⚠️ Icon ${ICON_SRC} not found, continuing without custom icon"
 fi
+
 
 # AppRun (launcher)
 cat > "${APPDIR}/AppRun" << 'EOF'
@@ -44,7 +49,7 @@ Name=DrumBuddy
 Exec=DrumBuddy.Desktop
 Icon=${APP_NAME}
 Type=Application
-Categories=Audio;Music;
+Categories=AudioVideo;Audio;Music;
 EOF
 
 # appimagetool
