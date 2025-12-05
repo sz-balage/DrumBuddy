@@ -135,13 +135,17 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup -y
+        
       - name: 🏷️ Get version from csproj
         id: version
         shell: pwsh
         run: |
           [xml]$proj = Get-Content "DrumBuddy.Desktop/DrumBuddy.Desktop.csproj"
           $version = $proj.Project.PropertyGroup.Version
+          $version = $version.Trim()
+          Write-Host "Detected version: '$version'"
           "version=$version" >> $env:GITHUB_OUTPUT
+
       - name: 💽 Build Windows installer (Inno Setup)
         shell: pwsh
         env:
