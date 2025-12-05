@@ -29,14 +29,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Source: "{#AppDir}\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 [Icons]
-Name: "{group}\DrumBuddy"; 
-  Filename: "{app}\DrumBuddy.Desktop.exe"; 
-  WorkingDir: "{app}"
-
-Name: "{commondesktop}\DrumBuddy"; 
-  Filename: "{app}\DrumBuddy.Desktop.exe"; 
-  WorkingDir: "{app}"; 
-  Tasks: desktopicon
+Name: "{group}\DrumBuddy"; Filename: "{app}\DrumBuddy.Desktop.exe"; WorkingDir: "{app}"
+Name: "{commondesktop}\DrumBuddy"; Filename: "{app}\DrumBuddy.Desktop.exe"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"
