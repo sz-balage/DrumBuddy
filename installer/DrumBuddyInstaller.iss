@@ -19,7 +19,7 @@ OutputDir=Output
 OutputBaseFilename=DrumBuddy-Setup-{#AppVersion}
 Compression=lzma
 SolidCompression=yes
-SetupIconFile=images\app.ico  ; optional, if you add an .ico later
+SetupIconFile=..\images\app.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
