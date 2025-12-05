@@ -234,17 +234,19 @@ public class App : Application
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "IO is the correct term here.")]
     private static void RegisterIOServices()
     {
-        // var exeDir = AppContext.BaseDirectory;
-        // var connectionString = $"Data Source={Path.Combine(exeDir, "sheet_db.db")};";
-        // CurrentMutable.RegisterConstant(
-        //     new SheetStorage(
-        //         Locator.Current.GetRequiredService<SerializationService>(),
-        //         connectionString
-        //     )
-        // );
-
         var exeDir = AppContext.BaseDirectory;
-        var dbPath = Path.Combine(exeDir, "sheet_db.db");
+        var templateDbPath = Path.Combine(exeDir, "sheet_db.db");
+
+        var appDataRoot = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        var dataDir = Path.Combine(appDataRoot, "DrumBuddy");
+        Directory.CreateDirectory(dataDir);
+        var dbPath = Path.Combine(dataDir, "sheet_db.db");
+
+        if (!File.Exists(dbPath) && File.Exists(templateDbPath))
+        {
+            File.Copy(templateDbPath, dbPath);
+        }
+
         var connectionString = $"Data Source={dbPath};";
 
         var dbOptions = new DbContextOptionsBuilder<DrumBuddyDbContext>()
