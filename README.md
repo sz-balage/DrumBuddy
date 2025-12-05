@@ -79,37 +79,63 @@ DrumBuddy is 100% C#, leveraging modern cross-platform and reactive technologies
 ## Getting Started
 
 ### Installation
+---
 
 #### 🪟 Windows
-1. Download the latest `DrumBuddy-win-x64.zip` from [Releases](https://github.com/baluka1118/DrumBuddy/releases)
-2. Unzip the archive
-3. Launch `DrumBuddy.Desktop.exe`
-   - Windows Defender may block it — click **“More Info → Run Anyway”**
+
+1. Download the latest **`DrumBuddy-Setup-x.y.z.exe`** from  
+   👉 https://github.com/sz-balage/DrumBuddy/releases
+2. Run the installer and follow the setup wizard.
+3. Launch DrumBuddy from the **Start Menu** or **Desktop shortcut**.
+
+> ⚠️ Windows SmartScreen may display a warning.  
+> Click **More info → Run anyway** to continue.
+
+---
 
 #### 🐧 Linux
-1. Download the latest `DrumBuddy-linux-x64.zip` from [Releases](https://github.com/baluka1118/DrumBuddy/releases)
-2. Unzip it
-3. Navigate into the unzipped folder, and make the executable runnable:
-   ```bash
-   cd linux-x64
-   chmod +x DrumBuddy.Desktop
-4. Now you can run the app via terminal or file manager
 
-#### 🍎 macOS 
-For the time being, due to a lack of a paid developer certificate, you can only run DrumBuddy on macOS by manually signing it yourself.
-##### Silicon 
-1. Download the latest `DrumBuddy-osx-arm64.dmg` from [Releases](https://github.com/baluka1118/DrumBuddy/releases)
-2. Run the disk image and drag the app to the Applications folder
-3. Open up the terminal, and navigate to your Applications folder
-4. Execute the following commands:
+DrumBuddy is distributed as an **AppImage**, which works on most modern Linux distributions.
+
+1. Download **`DrumBuddy-linux-x64.AppImage`** from  
+   👉 https://github.com/sz-balage/DrumBuddy/releases
+2. Make the file executable:
    ```bash
+   chmod +x DrumBuddy-linux-x64.AppImage
+   ```
+3. Run the application:
+   ```bash
+   ./DrumBuddy-linux-x64.AppImage
+   ```
+
+You can also integrate the AppImage into your desktop environment using your file manager.
+
+---
+
+#### 🍎 macOS
+
+Due to the lack of a paid Apple Developer certificate, DrumBuddy must be manually authorized before first use.
+
+##### Apple Silicon (M processors)
+
+1. Download **`DrumBuddy-osx-arm64.dmg`** from  
+   👉 https://github.com/sz-balage/DrumBuddy/releases
+2. Open the disk image and drag **DrumBuddy.app** into the **Applications** folder.
+3. Open **Terminal** and run:
+   ```bash
+   cd /Applications
    sudo xattr -cr DrumBuddy.app
    sudo xattr -rd com.apple.quarantine DrumBuddy.app
    sudo codesign --force --deep --sign - DrumBuddy.app
-5. Now you can run the app
-The app will ask for your permission to access the documents folder, in order to store exported app related data.
-##### Intel
-Use the same commands as above, but with the DrumBuddy-osx-x64.dmg build.
+   ```
+4. Launch DrumBuddy normally.
+
+##### Intel Macs
+
+1. Download **`DrumBuddy-osx-x64.dmg`**
+2. Follow the same steps as above.
+
+> 📝 On first launch, DrumBuddy will request permission to access your **Documents** folder for exporting and storing user data.
 
 ## Usage
 After installation:
