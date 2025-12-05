@@ -31,7 +31,15 @@ public class ConfigurationService
         _metronomePlayer = metronomePlayer;
         _userService = userService;
         _apiClient = apiClient;
-        LoadConfig().Wait();
+        try
+        {
+            LoadConfig().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
     }
     public async Task SaveAsync()
     {
