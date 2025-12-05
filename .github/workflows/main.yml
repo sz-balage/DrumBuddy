@@ -140,11 +140,16 @@ jobs:
         id: version
         shell: pwsh
         run: |
-          [xml]$proj = Get-Content "DrumBuddy.Desktop/DrumBuddy.Desktop.csproj"
-          $version = $proj.Project.PropertyGroup.Version
-          $version = $version.Trim()
+          $match = Select-String -Path "DrumBuddy.Desktop/DrumBuddy.Desktop.csproj" -Pattern '<Version>(.+)</Version>'
+          if (-not $match) {
+            Write-Error "Could not find <Version> element in DrumBuddy.Desktop.csproj"
+            exit 1
+          }
+      
+          $version = $match.Matches[0].Groups[1].Value.Trim()
           Write-Host "Detected version: '$version'"
           "version=$version" >> $env:GITHUB_OUTPUT
+
 
       - name: 💽 Build Windows installer (Inno Setup)
         shell: pwsh
