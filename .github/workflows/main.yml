@@ -207,6 +207,9 @@ jobs:
           tag_name: v${{ steps.version.outputs.version }}
           name: DrumBuddy v${{ steps.version.outputs.version }}
           files: |
-            artifacts/**/*
+            artifacts/DrumBuddy-linux-x64-AppImage/*
+            artifacts/DrumBuddy-osx-x64-dmg/*
+            artifacts/DrumBuddy-osx-arm64-dmg/*
+            artifacts/DrumBuddy-win-x64-installer/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
