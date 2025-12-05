@@ -1,5 +1,12 @@
-#define AppVersion GetCustomOption("AppVersion", "0.0.0")
-#define AppDir GetCustomOption("AppDir", ".")
+; If AppVersion/AppDir are not provided via /D on the command line,
+; fall back to sensible defaults.
+#ifndef AppVersion
+  #define AppVersion "0.0.0"
+#endif
+
+#ifndef AppDir
+  #define AppDir "."
+#endif
 
 [Setup]
 AppId={{B2C3C0B5-1234-4F0C-ABCD-123456789ABC}
@@ -12,13 +19,13 @@ OutputDir=installer\Output
 OutputBaseFilename=DrumBuddy-Setup-{#AppVersion}
 Compression=lzma
 SolidCompression=yes
-; If you later add a .ico: SetupIconFile=images\DrumBuddy.ico
+; SetupIconFile=images\DrumBuddy.ico  ; optional, if you add an .ico later
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-; DRUMBUDDY_BUILD_DIR points to publish\win-x64 in the workflow
+; AppDir is passed from CI as the publish\win-x64 folder
 Source: "{#AppDir}\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 [Icons]
