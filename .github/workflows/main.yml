@@ -28,14 +28,21 @@ jobs:
       - name: 🏗️ Publish for ${{ matrix.os }}
         run: |
           dotnet publish DrumBuddy.Desktop -c Release -r ${{ matrix.os }} --self-contained true -o publish/${{ matrix.os }}
-
+      # 🍏 macOS .app bundle (you said this is already good)
       - name: 🍏 Package macOS .app bundle
         if: startsWith(matrix.os, 'osx-')
         run: |
           chmod +x ./scripts/package_macos_app.sh
           ./scripts/package_macos_app.sh "${{ matrix.os }}"
-
+      # 🐧 Linux AppImage
+      - name: 🧰 Package Linux AppImage
+        if: matrix.os == 'linux-x64'
+        run: |
+          chmod +x ./scripts/package_appimage.sh
+          ./scripts/package_appimage.sh
+      # 📦 Create zip for non-Linux targets
       - name: 📦 Create zip
+        if: matrix.os != 'linux-x64'
         run: |
           cd publish
           if [[ "${{ matrix.os }}" == osx-* ]]; then
@@ -43,14 +50,23 @@ jobs:
           else
             zip -r DrumBuddy-${{ matrix.os }}.zip ${{ matrix.os }}
           fi
+      # 💾 Upload Linux AppImage
+      - name: 💾 Upload AppImage artifact
+        if: matrix.os == 'linux-x64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrumBuddy-linux-x64-AppImage
+          path: publish/DrumBuddy-linux-x64.AppImage
 
-      - name: 💾 Upload build artifact
+      # 💾 Upload zip artifacts (Windows + macOS)
+      - name: 💾 Upload zip artifact
+        if: matrix.os != 'linux-x64'
         uses: actions/upload-artifact@v4
         with:
           name: DrumBuddy-${{ matrix.os }}
           path: publish/DrumBuddy-${{ matrix.os }}.zip
 
-  # 🍏 Separate job to build DMGs on macOS runners
+  # 🍏 DMG on macOS runners (unchanged except paths stay correct)
   build-dmg:
     needs: build-and-release
     runs-on: macos-latest
@@ -72,11 +88,9 @@ jobs:
         run: |
           cd publish
           unzip -q DrumBuddy-${{ matrix.arch }}.zip
-
       - name: 🧰 Install create-dmg
         run: |
           brew install create-dmg
-
       - name: 💿 Create DMG
         run: |
           cd publish
@@ -90,16 +104,73 @@ jobs:
             --app-drop-link 450 200 \
             "dmg/DrumBuddy-${{ matrix.arch }}.dmg" \
             "DrumBuddy.app"
-
       - name: 💾 Upload DMG artifact
         uses: actions/upload-artifact@v4
         with:
           name: DrumBuddy-${{ matrix.arch }}-dmg
           path: publish/dmg/DrumBuddy-${{ matrix.arch }}.dmg
 
+  # 🪟 Build Windows installer on Windows runner
+  build-windows-installer:
+    needs: build-and-release
+    runs-on: windows-latest
+
+    steps:
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📥 Download Windows build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DrumBuddy-win-x64
+          path: ./publish
+
+      - name: 📦 Unzip Windows build
+        shell: pwsh
+        run: |
+          Set-Location publish
+          # creates publish/win-x64/...
+          Expand-Archive -Path "DrumBuddy-win-x64.zip" -DestinationPath "."
+      - name: 🧰 Install Inno Setup
+        shell: pwsh
+        run: |
+          choco install innosetup -y
+        
+      - name: 🏷️ Get version from csproj
+        id: version
+        shell: pwsh
+        run: |
+          $match = Select-String -Path "DrumBuddy.Desktop/DrumBuddy.Desktop.csproj" -Pattern '<Version>(.+)</Version>'
+          if (-not $match) {
+            Write-Error "Could not find <Version> element in DrumBuddy.Desktop.csproj"
+            exit 1
+          }
+      
+          $version = $match.Matches[0].Groups[1].Value.Trim()
+          Write-Host "Detected version: '$version'"
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+
+      - name: 💽 Build Windows installer (Inno Setup)
+        shell: pwsh
+        env:
+          DRUMBUDDY_BUILD_DIR: ${{ github.workspace }}\publish\win-x64
+          DRUMBUDDY_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" `
+            "/DAppVersion=$env:DRUMBUDDY_VERSION" `
+            "/DAppDir=$env:DRUMBUDDY_BUILD_DIR" `
+            ".\installer\DrumBuddyInstaller.iss"
+      - name: 💾 Upload Windows installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrumBuddy-win-x64-installer
+          path: installer/Output/DrumBuddy-Setup-${{ steps.version.outputs.version }}.exe
+
   release:
-    needs: [build-and-release, build-dmg]
+    needs: [build-and-release, build-dmg, build-windows-installer]
     runs-on: ubuntu-latest
+
     steps:
       - name: 🧩 Checkout repository
         uses: actions/checkout@v4
@@ -136,6 +207,9 @@ jobs:
           tag_name: v${{ steps.version.outputs.version }}
           name: DrumBuddy v${{ steps.version.outputs.version }}
           files: |
-            artifacts/**/*
+            artifacts/DrumBuddy-linux-x64-AppImage/*
+            artifacts/DrumBuddy-osx-x64-dmg/*
+            artifacts/DrumBuddy-osx-arm64-dmg/*
+            artifacts/DrumBuddy-win-x64-installer/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

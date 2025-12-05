@@ -18,7 +18,9 @@
         <DebugSymbols>false</DebugSymbols>
         <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
     </PropertyGroup>
-
+    <PropertyGroup>
+        <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop"/>
         <PackageReference Include="Avalonia.ReactiveUI"/>
@@ -81,6 +83,11 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>libbassmidi-arm.dylib</Link>
         </None>
+    </ItemGroup>
+    <ItemGroup>
+      <AvaloniaResource Include="..\DrumBuddy\Assets\app.ico">
+        <Link>Assets\app.ico</Link>
+      </AvaloniaResource>
     </ItemGroup>
 
     <!-- copy native libs to publish folder root -->
