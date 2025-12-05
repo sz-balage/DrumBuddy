@@ -177,7 +177,6 @@ public static class MidiExporter
                 {
                     NoteValue.Quarter => 4,
                     NoteValue.Eighth => 2,
-                    NoteValue.Sixteenth => 1,
                     _ => 1
                 };
 

@@ -7,7 +7,7 @@ namespace DrumBuddy.IO.Services;
 
 public static class MusicXmlExporter
 {
-    public static XDocument ExportSheetToMusicXml(Sheet sheet, string filePath)
+    public static void ExportSheetToMusicXml(Sheet sheet, string filePath)
     {
         if (sheet is null) throw new ArgumentNullException(nameof(sheet));
         if (string.IsNullOrWhiteSpace(filePath)) throw new ArgumentNullException(nameof(filePath));
@@ -117,8 +117,6 @@ public static class MusicXmlExporter
         );
 
         doc.Save(filePath);
-
-        return doc;
     }
 
     private static int NoteValueToDivisions(NoteValue nv, int divisions)
@@ -284,8 +282,6 @@ public static class MusicXmlExporter
                     currentRGDuration = 0;
                 }
             }
-
-            // Pad missing groups with rests
             while (rgList.Count < 4)
                 rgList.Add(CreateRestRythmicGroup(NoteValue.Quarter));
 
