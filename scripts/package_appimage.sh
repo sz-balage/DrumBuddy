@@ -56,5 +56,5 @@ if [ ! -f "appimagetool" ]; then
 fi
 
 echo "🧰 Building AppImage -> ${OUT_APPIMAGE}"
-./appimagetool "${APP_NAME}.AppDir" "${OUT_APPIMAGE}"
+APPIMAGE_EXTRACT_AND_RUN=1 ./appimagetool "${APP_NAME}.AppDir" "${OUT_APPIMAGE}"
 echo "✅ AppImage created at ${OUT_APPIMAGE}"
