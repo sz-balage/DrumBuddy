@@ -30,7 +30,7 @@ Source: "{#AppDir}\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 [Icons]
 Name: "{group}\DrumBuddy"; Filename: "{app}\DrumBuddy.Desktop.exe"; WorkingDir: "{app}"; IconFilename: "{app}\DrumBuddy.Desktop.exe"
-Name: "{commondesktop}\DrumBuddy"; Filename: "{app}\DrumBuddy.Desktop.exe"; WorkingDir: "{app}"; Tasks: desktopicon; IconFilename: "{app}\DrumBuddy.Desktop.exe"
+Name: "{commondesktop}\DrumBuddy"; Filename: "{app}\DrumBuddy.Desktop.exe"; WorkingDir: "{app}"; IconFilename: "{app}\DrumBuddy.Desktop.exe"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"
