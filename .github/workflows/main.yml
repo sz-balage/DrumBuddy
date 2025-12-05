@@ -28,21 +28,18 @@ jobs:
       - name: 🏗️ Publish for ${{ matrix.os }}
         run: |
           dotnet publish DrumBuddy.Desktop -c Release -r ${{ matrix.os }} --self-contained true -o publish/${{ matrix.os }}
-
       # 🍏 macOS .app bundle (you said this is already good)
       - name: 🍏 Package macOS .app bundle
         if: startsWith(matrix.os, 'osx-')
         run: |
           chmod +x ./scripts/package_macos_app.sh
           ./scripts/package_macos_app.sh "${{ matrix.os }}"
-
       # 🐧 Linux AppImage
       - name: 🧰 Package Linux AppImage
         if: matrix.os == 'linux-x64'
         run: |
           chmod +x ./scripts/package_appimage.sh
           ./scripts/package_appimage.sh
-
       # 📦 Create zip for non-Linux targets
       - name: 📦 Create zip
         if: matrix.os != 'linux-x64'
@@ -53,7 +50,6 @@ jobs:
           else
             zip -r DrumBuddy-${{ matrix.os }}.zip ${{ matrix.os }}
           fi
-
       # 💾 Upload Linux AppImage
       - name: 💾 Upload AppImage artifact
         if: matrix.os == 'linux-x64'
@@ -92,11 +88,9 @@ jobs:
         run: |
           cd publish
           unzip -q DrumBuddy-${{ matrix.arch }}.zip
-
       - name: 🧰 Install create-dmg
         run: |
           brew install create-dmg
-
       - name: 💿 Create DMG
         run: |
           cd publish
@@ -110,7 +104,6 @@ jobs:
             --app-drop-link 450 200 \
             "dmg/DrumBuddy-${{ matrix.arch }}.dmg" \
             "DrumBuddy.app"
-
       - name: 💾 Upload DMG artifact
         uses: actions/upload-artifact@v4
         with:
@@ -138,19 +131,25 @@ jobs:
           Set-Location publish
           # creates publish/win-x64/...
           Expand-Archive -Path "DrumBuddy-win-x64.zip" -DestinationPath "."
-
       - name: 🧰 Install Inno Setup
         shell: pwsh
         run: |
           choco install innosetup -y
-
+        
       - name: 🏷️ Get version from csproj
         id: version
         shell: pwsh
         run: |
-          [xml]$proj = Get-Content "DrumBuddy.Desktop/DrumBuddy.Desktop.csproj"
-          $version = $proj.Project.PropertyGroup.Version
+          $match = Select-String -Path "DrumBuddy.Desktop/DrumBuddy.Desktop.csproj" -Pattern '<Version>(.+)</Version>'
+          if (-not $match) {
+            Write-Error "Could not find <Version> element in DrumBuddy.Desktop.csproj"
+            exit 1
+          }
+      
+          $version = $match.Matches[0].Groups[1].Value.Trim()
+          Write-Host "Detected version: '$version'"
           "version=$version" >> $env:GITHUB_OUTPUT
+
 
       - name: 💽 Build Windows installer (Inno Setup)
         shell: pwsh
@@ -162,7 +161,6 @@ jobs:
             "/DAppVersion=$env:DRUMBUDDY_VERSION" `
             "/DAppDir=$env:DRUMBUDDY_BUILD_DIR" `
             ".\installer\DrumBuddyInstaller.iss"
-
       - name: 💾 Upload Windows installer artifact
         uses: actions/upload-artifact@v4
         with:
