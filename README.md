@@ -11,7 +11,7 @@
     <strong>Bachelor's Thesis Project by Szabó Balázs</strong>
     <br />
     <br />
-    <a href="https://github.com/sz-balage/DrumBuddy/wiki">Explore DrumBuddy wiki »</a>
+    <a href="https://docs.drumbuddy.hu/">Explore the docs »</a>
     <br />
     <a href="https://github.com/baluka1118/DrumBuddy/issues/new?labels=bug&template=bug_report.md">Report Bug</a>
     &middot;
@@ -120,6 +120,7 @@ After installation:
 - Sync your work to the cloud, so you can access it from any device
 - Compare sheets to see the difference
 
+For more information, <a href="https://docs.drumbuddy.hu/">check out the docs.</a>
 ## Roadmap
 - [x] MIDI, and MusicXML export/import
 - [x] User management, and cloud sync
