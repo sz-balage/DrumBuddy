@@ -164,6 +164,6 @@ Szabó Balázs, szabobazsi11182@gmail.com
 * [JetBrains Rider](https://www.jetbrains.com/rider/)
 
 ---
-### For more info, visit the projects' wiki: [DrumBuddy Wiki](https://github.com/sz-balage/DrumBuddy/wiki)
+### For more info, visit the [documentation](https://docs.drumbuddy.hu/).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
