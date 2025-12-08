@@ -80,7 +80,7 @@ DrumBuddy is 100% C#, leveraging modern cross-platform and reactive technologies
 
 ### Installation
 ---
-
+⚠️ DUE TO A BUG, SOMETIME RELEASES ARE NOT PRESENT DIRECTLY ON THE LINKED PAGE, IF SO, SWITCH TO THE 'TAGS' TAB, AND SELECT, AND DOWNLOAD THE LATEST RELEASE FROM THERE
 #### 🪟 Windows
 
 1. Download the latest **`DrumBuddy-Setup-x.y.z.exe`** from  
