@@ -51,12 +51,6 @@
                     IsVisible="{Binding Sheets.Empty}"
                     IsEnabled="{Binding !IsLoadingSheets}"
                     Command="{Binding ImportSheetCommand}">
-                <!-- <Button.IsVisible> -->
-                <!--     <MultiBinding Converter="{StaticResource ZeroStateAndNotLoadingConverter}"> -->
-                <!--         <Binding Path="Sheets.Count" /> -->
-                <!--         <Binding Path="IsLoadingSheets" /> -->
-                <!--     </MultiBinding> -->
-                <!-- </Button.IsVisible> -->
                 <StackPanel Orientation="Horizontal">
                     <PathIcon Data="{StaticResource Add}" />
                     <TextBlock Text="Import sheets"

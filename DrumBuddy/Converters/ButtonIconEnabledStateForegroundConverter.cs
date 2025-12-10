@@ -16,7 +16,6 @@ public class ButtonIconEnabledStateForegroundConverter : IValueConverter
         return enabled
             ? new SolidColorBrush((Color)App.Current?.FindResource("NoteColor"))
             : Brushes.Gray;
-        // : App.Current?.FindResource("LighterGray");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

@@ -68,7 +68,7 @@ public class App : Application
         if (theme is not null)
             RequestedThemeVariant = theme;
         else
-            RequestedThemeVariant = ThemeVariant.Default; // System preference
+            RequestedThemeVariant = ThemeVariant.Default;
 
         if (theme == ThemeVariant.Dark || (theme == null && IsDarkMode()))
         {
@@ -98,7 +98,6 @@ public class App : Application
 
     private static bool IsDarkMode()
     {
-        // This is a simple check - you might want to implement platform-specific detection
         var now = DateTime.Now.TimeOfDay;
         return now < TimeSpan.FromHours(6) || now > TimeSpan.FromHours(18);
     }

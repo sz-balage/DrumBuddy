@@ -107,7 +107,7 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
 
         if (sourceIsLonger)
         {
-            // scroll step-by-step
+            //scroll step-by-step
             var newTargetOffset = target.Offset.Y + deltaY;
             newTargetOffset = Math.Max(0, Math.Min(newTargetOffset, target.Extent.Height - target.Viewport.Height));
             target.Offset = new Vector(target.Offset.X, newTargetOffset);
@@ -116,7 +116,7 @@ public partial class CompareView : ReactiveWindow<ICompareViewModel>
         }
         else
         {
-            // jump the longer one to match the shorter one
+            //jump the longer one to match the shorter one
             var targetY = Math.Min(source.Offset.Y, target.Extent.Height - target.Viewport.Height);
             target.Offset = new Vector(target.Offset.X, targetY);
 

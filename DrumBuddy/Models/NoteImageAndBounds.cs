@@ -44,7 +44,6 @@ public class NoteImageAndBounds : ReactiveObject
         });
     }
 
-    // Add a method to clear the cache if needed (e.g., when freeing resources)
     public static void ClearCache()
     {
         ImageCache.Clear();

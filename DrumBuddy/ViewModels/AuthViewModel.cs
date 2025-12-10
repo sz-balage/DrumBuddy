@@ -121,7 +121,7 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
             await _userService.SetToken(
                 response.AccessToken,
                 response.RefreshToken,
-                response.UserName, // username fetched later
+                response.UserName, 
                 response.Email,
                 response.UserId
             );
@@ -238,7 +238,6 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         try
         {
             IsLoading = true;
-            //TODO: Change email to user input
             var response = await _apiClient.ForgotPasswordAsync(Email);
             _notificationService.ShowNotification(new Notification(
                 "Password Reset",
@@ -303,7 +302,6 @@ public partial class AuthViewModel : ReactiveObject, IValidatableViewModel
         }
         catch
         {
-            // Fallback to raw content
             if (apiException.StatusCode == HttpStatusCode.Unauthorized)
                 return "Invalid email or password.";
         }

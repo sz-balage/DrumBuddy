@@ -194,7 +194,6 @@
       </ControlTemplate>
     </Setter>
 
-    <!-- Disabled State -->
     <Style Selector="^:disabled">
       <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}" />
 
@@ -208,7 +207,6 @@
       </Style>
     </Style>
 
-    <!-- PointerOver State-->
     <Style Selector="^:pointerover">
       <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundPointerOver}" />
 
@@ -222,7 +220,6 @@
       </Style>
     </Style>
 
-    <!-- Focused State -->
     <Style Selector="^:focus">
       <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundFocused}" />
 

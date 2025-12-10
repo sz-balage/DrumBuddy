@@ -12,9 +12,6 @@ public class ZeroStateAndNotLoadingConverter : IMultiValueConverter
         if (values.Count < 2)
             return false;
 
-        // values[0] is Sheets.Count
-        // values[1] is IsLoadingSheets
-        
         var canShowEmptyState = values[0] is true;
         var isLoading = values[1] is true;
 

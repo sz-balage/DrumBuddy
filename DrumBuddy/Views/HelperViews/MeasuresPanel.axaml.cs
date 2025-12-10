@@ -29,7 +29,6 @@ public partial class MeasuresPanel : UserControl
     {
         InitializeComponent();
 
-        // Bind the Measures property to ItemsControl.ItemsSource
         this.GetObservable(MeasuresProperty)
             .Subscribe(measures => _measuresItemControl.ItemsSource = measures);
     }
@@ -77,7 +76,7 @@ public partial class MeasuresPanel : UserControl
         var idx = MeasuresItemControl.Items.IndexOf(measure);
         var container = MeasuresItemControl.ContainerFromIndex(idx);
         if (container != null)
-            // Scroll the container into view
+            //scroll container into view
             container.BringIntoView();
     }
 }

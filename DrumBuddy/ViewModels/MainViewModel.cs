@@ -115,7 +115,6 @@ public partial class MainViewModel : ReactiveObject, IScreen
         NoConnection = false;
         _notificationService.ShowNotification(new Notification("Successful connection.", message,
             NotificationType.Success));
-        WindowNotificationManager asd = new();
     }
 
     private void ConnectionError(string message)

@@ -6,11 +6,9 @@ namespace DrumBuddy.Core.Models;
 
 public class Sheet
 {
-    // Parameterless constructor for JSON deserialization
     [JsonConstructor]
     public Sheet() { }
 
-    // Original constructor for code usage
     public Sheet(Bpm tempo, ImmutableArray<Measure> measures, string name, string description, Guid? id = null, DateTime? updatedAt = null)
     {
         Name = name;

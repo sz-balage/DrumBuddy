@@ -50,19 +50,15 @@
             <Setter Property="Background" Value="{DynamicResource HeaderGray}" />
         </Style>
 
-        <!--  PointerOver state  -->
         <Style Selector="^:pointerover">
             <Setter Property="Background" Value="{DynamicResource LighterGray}" />
         </Style>
 
-        <!--  Selected state  -->
-        <!--  We don't use selector to PART_LayoutRoot, so developer can override selected item background with TabStripItem.Background  -->
-        <Style Selector="^:selected">
+       <Style Selector="^:selected">
             <Setter Property="Background" Value="{DynamicResource CardItemColor}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
         </Style>
 
-        <!--  Disabled state  -->
         <Style Selector="^:disabled">
             <Setter Property="Foreground" Value="{DynamicResource HeaderGray}" />
         </Style>

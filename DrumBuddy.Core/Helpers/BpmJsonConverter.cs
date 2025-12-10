@@ -14,14 +14,14 @@ public class BpmJsonConverter : JsonConverter<Bpm>
     {
         if (reader.TokenType == JsonTokenType.StartObject)
         {
-            reader.Read(); // Move to the "value" property
+            reader.Read(); //move to the "value" property
             
             if (reader.GetString() == "value")
             {
-                reader.Read(); // Move to the value
+                reader.Read(); //move to the value
                 int bpmValue = reader.GetInt32();
-                reader.Read(); // Move past the value
-                reader.Read(); // Move to EndObject
+                reader.Read(); 
+                reader.Read(); //move to EndObject
                 
                 return new Bpm(bpmValue);
             }

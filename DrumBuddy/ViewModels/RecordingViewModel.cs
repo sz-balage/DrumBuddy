@@ -90,11 +90,6 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         IsRecording = false;
         IsPaused = false;
         CurrentMeasure = null!;
-        // this.WhenNavigatedTo(() =>
-        // {
-        //    return Observable.StartAsync(LoadSheets)
-        //         .Subscribe(); // truly fire-and-forget
-        // });
         SheetOptions = new ObservableCollection<SheetOption>();
     }
 
@@ -124,7 +119,7 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         set
         {
             this.RaiseAndSetIfChanged(ref _selectedSheetOption, value);
-            SelectedSheet = value?.Sheet; // this will still trigger your overlay logic
+            SelectedSheet = value?.Sheet;  
         }
     }
 
@@ -340,7 +335,6 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         _subs.Dispose();
         _timer.Stop();
         ResetPointer();
-        //do something with the done sheet
         IsRecording = false;
         IsPaused = false;
         TimeElapsed = "0:0:0";
@@ -361,8 +355,6 @@ public partial class RecordingViewModel : ReactiveObject, IRoutableViewModel, ID
         //ask user if sheet should be saved
         var dialogResult = await ShowSaveDialog.Handle(new SheetCreationData(_bpm, [..measures]));
         ClearMeasures();
-        // if (save is not null)
-        //     await _library.SaveSheet(new Sheet(_bpm, measures, save));
         if (dialogResult.Name != null)
         {
             _notificationService.ShowNotification(new Notification("Successful save.",

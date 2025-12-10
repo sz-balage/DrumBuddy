@@ -39,10 +39,6 @@ public partial class ConfigurationView : ReactiveUserControl<ConfigurationViewMo
                 .DisposeWith(d);
             ViewModel.WhenAnyValue(x => x.KeyboardInput)
                 .Subscribe(TriggerKeyboardAndMidiForegrounds);
-            // this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.MIDIModeText.Foreground, ki => ki ? Brushes.Gray : NoteColor);        
-            // this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.MIDIModeIcon.Foreground, ki => ki ? Brushes.Gray : NoteColor);     
-            // this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeText.Foreground, ki => ki ? NoteColor : Brushes.Gray);  
-            // this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.KeyboardModeIcon.Foreground, ki => ki ? NoteColor : Brushes.Gray);
             this.OneWayBind(ViewModel, vm => vm.KeyboardInput, v => v.RevertTextBlock.Text,
                 ki => ki ? "Revert keyboard mappings" : "Revert drum mappings");
             ViewModel.WhenAnyValue(vm => vm.SelectedThemeMode).Subscribe(_ =>

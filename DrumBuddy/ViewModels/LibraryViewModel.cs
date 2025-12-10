@@ -27,7 +27,6 @@ namespace DrumBuddy.ViewModels;
 
 public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 {
-    // TODO: add batch import/export
     private readonly FileStorageInteractionService _fileStorageInteractionService;
 
     private readonly MainWindow _mainWindow;
@@ -99,7 +98,6 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             .Filter(filter)
             .SortAndBind(out _sheets, sortChanged)
             .Subscribe();
-        // _sheetSource.AddOrUpdate(new Sheet(new Bpm(100), ImmutableArray<Measure>.Empty, "New Sheet", "New Sheet"));
         _removeCanExecute = this.WhenAnyValue(vm => vm.SelectedSheet).Select(sheet => sheet != null!);
         this.WhenNavigatedTo(() => LoadSheets()
             .ToObservable()
@@ -309,7 +307,6 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
             await _sheetService.UpdateSheetAsync(newSheet);
             _sheetSource.Remove(SelectedSheet);
             _sheetSource.AddOrUpdate(new SheetViewModel(newSheet));
-            //SelectedSheet.RenameSheet(dialogResult);
         }
     }
 
@@ -344,7 +341,6 @@ public partial class LibraryViewModel : ReactiveObject, ILibraryViewModel
 
         var newName = SheetService.GenerateCopyName(original.Name, allNames);
 
-        // Duplicate the object (assuming Sheet is immutable or cloneable)
         var duplicated = original.Sheet.RenameSheet(newName, original.Description);
 
         await _sheetService.CreateSheetAsync(duplicated);

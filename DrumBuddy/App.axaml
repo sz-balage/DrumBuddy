@@ -3,7 +3,6 @@
              xmlns:converters="clr-namespace:DrumBuddy.Converters"
              x:Class="DrumBuddy.App" Name="DrumBuddy"
              RequestedThemeVariant="Light">
-    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
     <NativeMenu.Menu>
         <NativeMenu>
         </NativeMenu>

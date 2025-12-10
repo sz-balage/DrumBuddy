@@ -5,7 +5,7 @@ namespace DrumBuddy.IO.Models;
 public class SheetRecord
 {
     public Guid Id { get; set; }
-    public byte[] MeasureBytes { get; set; } = []; // Protobuf binary
+    public byte[] MeasureBytes { get; set; } = []; //protobuf binary
     public string Name { get; set; } = string.Empty; 
     public string Description { get; set; } = string.Empty; 
     public int Tempo { get; set; }

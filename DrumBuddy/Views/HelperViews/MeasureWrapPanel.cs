@@ -12,7 +12,7 @@ public class MeasureWrapPanel : Panel
         var childWidth = measuresPerRow > 0 && !double.IsInfinity(availableSize.Width)
             ? availableSize.Width / measuresPerRow
             : 400;
-        var childHeight = childWidth / 6; // fixed height
+        var childHeight = childWidth / 6; 
 
         foreach (var child in Children) child.Measure(new Size(childWidth, childHeight));
 

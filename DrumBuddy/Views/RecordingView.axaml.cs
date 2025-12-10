@@ -28,8 +28,6 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
         {
             if (Design.IsDesignMode)
                 return;
-            // this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
-            //     .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.StartRecordingCommand, v => v._startRecordingButton)
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.StopRecordingCommand, v => v._stopRecordingButton)
@@ -47,7 +45,7 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
                 i => { return !i; });
             this.OneWayBind(ViewModel, vm => vm.IsRecording, v => v._stopRecordingButton.IsVisible,
                 i => { return i; });
-            //TODO make visible when implemented
+            //TODO uncomment when implemented
 
             // ViewModel.WhenAnyValue(vm => vm.IsRecording, vm => vm.IsPaused)
             //     .Subscribe(rp =>
@@ -90,14 +88,10 @@ public partial class RecordingView : ReactiveUserControl<RecordingViewModel>
             {
                 MeasuresViewer.BringCurrentMeasureIntoView(measure);
             });
-            // Observable.StartAsync(ViewModel.LoadSheets, RxApp.TaskpoolScheduler)
-            //     .ObserveOn(RxApp.MainThreadScheduler)
-            //     .Subscribe(); // truly fire-and-forget
             _ = ViewModel.LoadSheets();
         });
     }
 
-    // private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl")!;
     private MeasureView MeasureView => this.FindControl<MeasureView>("measure")!;
     private Button _startRecordingButton => this.FindControl<Button>("StartRecordingButton")!;
     private Button _stopRecordingButton => this.FindControl<Button>("StopRecordingButton")!;

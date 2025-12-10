@@ -197,7 +197,6 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         if (SheetsLB.Items is null)
             return;
 
-        // Select all sheets if not already all selected, otherwise clear selection
         var allItems = SheetsLB.Items.Cast<object>().ToList();
         var selectedCount = SheetsLB.SelectedItems?.Count ?? 0;
 

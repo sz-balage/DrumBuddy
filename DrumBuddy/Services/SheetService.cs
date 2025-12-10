@@ -53,19 +53,7 @@ public class SheetService
     /// </summary>
     public async Task CreateSheetAsync(Sheet sheet)
     {
-        await _repository.SaveSheetAsync(sheet, _userService.UserId); //local save, userid null
-        // if (sheet.IsSyncEnabled && _userService.IsOnline)
-        // {
-        //     try
-        //     {
-        //         await _apiClient.CreateSheetAsync(sheet);
-        //         sheet.IsSyncEnabled = true;
-        //     }
-        //     catch
-        //     {
-        //         sheet.IsSyncEnabled = false;
-        //     }
-        // }
+        await _repository.SaveSheetAsync(sheet, _userService.UserId); 
     }
 
     public async Task<bool> SyncSheetToServer(Sheet sheet)
@@ -79,7 +67,6 @@ public class SheetService
             }
             catch (Exception ex)
             {
-                ;
                 return false;
             }
 
@@ -96,7 +83,6 @@ public class SheetService
         }
         catch (Exception ex)
         {
-            ;
             return false;
         }
     }
@@ -109,7 +95,6 @@ public class SheetService
         var updatedAt = DateTime.UtcNow;
         await _repository.UpdateSheetAsync(sheet, updatedAt, _userService.UserId); //local update userid null
 
-        // Sync to server if logged in
         if (sheet.IsSyncEnabled && _userService.IsOnline)
             try
             {
@@ -118,7 +103,6 @@ public class SheetService
             }
             catch
             {
-                // Offline or sync failed - mark for later sync
                 sheet.IsSyncEnabled = false;
             }
     }
@@ -128,10 +112,8 @@ public class SheetService
     /// </summary>
     public async Task DeleteSheetAsync(Sheet sheet)
     {
-        // Delete from local database
         await _repository.DeleteSheetAsync(sheet.Id, _userService.UserId);
 
-        // Delete from server if logged in
         if (sheet.IsSyncEnabled && _userService.IsOnline)
             try
             {
@@ -173,15 +155,15 @@ public class SheetService
             if (localByName.TryGetValue(remoteSummary.Name, out var localWithSameName)
                 && localWithSameName.Id != remoteSummary.Id)
             {
-                // name conflict — resolve based on UpdatedAt
+                //name conflict, resolve based on UpdatedAt
                 if (localWithSameName.UpdatedAt >= remoteSummary.UpdatedAt)
                 {
-                    // local sheet is newer → delete remote version
+                    // local sheet is newer, delete remote version
                     await _apiClient.DeleteSheetAsync(remoteSummary.Id);
                     continue;
                 }
 
-                // server sheet is newer → delete local version & download server one
+                // server sheet is newer, delete local version & download server one
                 await _repository.DeleteSheetAsync(localWithSameName.Id, _userService.UserId);
                 var remoteFull = await _apiClient.GetSheetAsync(remoteSummary.Id);
                 await _repository.SaveSheetAsync(remoteFull, _userService.UserId);

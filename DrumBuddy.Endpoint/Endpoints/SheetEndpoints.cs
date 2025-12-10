@@ -77,7 +77,6 @@ public static class SheetEndpoints
 
         var measures = serializationService.DeserializeMeasurementData(record.MeasureBytes);
 
-        // Restore Guid and sync info
         var result = new Sheet(record.Tempo, measures, record.Name, record.Description, record.Id)
         {
             IsSyncEnabled = true
@@ -120,7 +119,6 @@ public static class SheetEndpoints
 
         try
         {
-            // Pass userId to repository, don't set on Sheet
             await repository.UpdateSheetAsync(request.Sheet, request.Sheet.UpdatedAt, userId);
             return Results.Ok();
         }

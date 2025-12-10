@@ -165,12 +165,6 @@ public class SheetRepository : ISheetRepository
         _context.Sheets.Remove(record);
         await _context.SaveChangesAsync();
     }
-    // public async Task UpdateSheetUserIdAsync(Guid sheetId, string userId)
-    // {
-    //     var record = await _context.Sheets.FirstAsync(s => s.Id == sheetId);
-    //     record.UserId = userId;
-    //     await _context.SaveChangesAsync();
-    // }
 
     public async Task CreateUserIfNotExistsAsync(string? userId)
     {
@@ -218,8 +212,6 @@ public class SheetRepository : ISheetRepository
             record.Name,
             record.Description,
             record.Id,
-            record.UpdatedAt)
-        {
-        };
+            record.UpdatedAt);
     }
 }

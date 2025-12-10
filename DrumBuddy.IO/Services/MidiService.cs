@@ -8,7 +8,6 @@ namespace DrumBuddy.IO.Services;
 
 public class MidiService
 {
-    // private readonly ConfigurationService _configurationService;
     private readonly Subject<bool> _inputDeviceDisconnected = new();
     private readonly Subject<int> _notes = new();
     private bool _isConnected;

@@ -89,7 +89,7 @@ public sealed partial class ManualViewModel : ReactiveObject, IRoutableViewModel
     {
         IsLoadingSheets = true;
         _sheetSource.Clear();
-        var sheets = await _sheetService.LoadSheetsAsync(); //TODO: figure this out
+        var sheets = await _sheetService.LoadSheetsAsync();
         foreach (var sheet in sheets) _sheetSource.AddOrUpdate(sheet);
         IsLoadingSheets = false;
         if (sheets.Length == 0)

@@ -43,7 +43,7 @@ public partial class AuthView : ReactiveUserControl<AuthViewModel>
                     if (e is KeyEventArgs ke && ke.Key == Key.Space)
                         ke.Handled = true;
                 }, handledEventsToo: true);
-                // Observe Text property changes and strip spaces (covers paste/autofill)
+                //trim spaces 
                 pw.GetObservable(TextBox.TextProperty)
                     .Subscribe(_ => FilterOutSpaces(pw)).DisposeWith(d);
             }

@@ -19,7 +19,7 @@ namespace DrumBuddy.ViewModels;
 
 public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
 {
-    // TODO: make drum positions configurable (simple combobox will do)
+    // TODO: make drum positions configurable 
     private readonly ConfigurationService _configService;
     private readonly MainViewModel _mainVm;
     private readonly MidiService _midiService;
@@ -112,7 +112,7 @@ public partial class ConfigurationViewModel : ReactiveObject, IRoutableViewModel
         set
         {
             _keyboardBeats = value;
-            if (KeyboardInput) ChangeSubscription(true); // retrigger when beats source is ready
+            if (KeyboardInput) ChangeSubscription(true); 
         }
     }
 

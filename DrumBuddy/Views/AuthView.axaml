@@ -62,7 +62,7 @@
                                        Text="Create your account"
                                        FontSize="14" />
                             <!-- TODO make login possible with user name too-->
-
+                            
                             <StackPanel>
                                 <TextBox x:Name="EmailTextBox"
                                          Classes="login clearButton"
@@ -109,7 +109,6 @@
                                    Converter={StaticResource StringNotEmptyToBoolConverter}}"
                                            TextWrapping="Wrap" />
                             </StackPanel>
-                            <!-- TODO make pw visibility toggle-->
                             <StackPanel IsVisible="{Binding !IsLoginMode}">
                                 <TextBox x:Name="ConfirmPasswordBox"
                                          Classes="login revealPasswordButton"
@@ -136,7 +135,6 @@
                                       Content="Remember me"
                                       Foreground="{StaticResource Accent}"
                                       FontSize="13" />
-                            <!-- TODO Add auto login button also-->
 
                             <Button x:Name="LoginButton"
                                     IsVisible="{Binding IsLoginMode}"

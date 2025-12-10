@@ -25,15 +25,13 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
             ViewModel = new EditingViewModel(TestSheetProvider.GetTestSheet(), null, null, null, true);
         this.WhenActivated(d =>
         {
-            // this.OneWayBind(ViewModel, vm => vm.Measures, v => v.MeasureControl.ItemsSource)
-            //     .DisposeWith(d);
             ViewModel.SetTopLevelWindow(this);
             this.OneWayBind(ViewModel, vm => vm.IsExporting, v => v.ExportTextBlock.Text, isExporting =>
                     isExporting ? "Exporting..." : "Export to pdf")
                 .DisposeWith(d);
             Title = "Viewing Sheet - " + ViewModel.OriginalSheet.Name;
             this.Bind(ViewModel, vm => vm.BpmDecimal, v => v._bpmNumeric.Value);
-            //editing stuff
+            //editing only bindings
             if (!ViewModel.IsViewOnly)
             {
                 Title = "Editing Sheet - " + ViewModel.OriginalSheet.Name;
@@ -69,7 +67,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
         });
     }
 
-    // private ItemsControl MeasureControl => this.FindControl<ItemsControl>("MeasuresItemControl")!;
     private Button _startRecordingButton => this.FindControl<Button>("StartRecordingButton")!;
     private Button _stopRecordingButton => this.FindControl<Button>("StopRecordingButton")!;
     private Button _pauseRecordingButton => this.FindControl<Button>("PauseRecordingButton")!;
@@ -84,14 +81,6 @@ public partial class EditingView : ReactiveWindow<EditingViewModel>
     {
         base.OnLoaded(e);
         Root.Opacity = 1;
-    }
-
-    private async Task SaveHandler(IInteractionContext<SheetCreationData, string?> context)
-    {
-        var mainWindow = Locator.Current.GetService<MainWindow>();
-        var saveView = new SaveSheetView { ViewModel = new SaveSheetViewModel(context.Input) };
-        var result = await saveView.ShowDialog<string>(mainWindow);
-        context.SetOutput(result);
     }
 
     private void SaveButton_OnClick(object? sender, RoutedEventArgs e)

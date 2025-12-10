@@ -82,7 +82,7 @@ public static class MidiExporter
             : 120;
         var sheetTempo = new Bpm(bpm);
 
-        var midiNotes = midiFile.GetNotes().ToList(); // materialize
+        var midiNotes = midiFile.GetNotes().ToList();
         if (midiNotes.Count == 0)
             return new Sheet(sheetTempo, ImmutableArray<Measure>.Empty, name, description);
 

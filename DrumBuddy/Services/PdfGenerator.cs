@@ -26,7 +26,7 @@ public class PdfGenerator
             Directory.CreateDirectory(_saveDirectory);
     }
 
-    //TODO: scaling feels off (tested on mac)
+    //TODO: scaling feels off on mac
     public async Task ExportSheetToPdf(IEnumerable<MeasureView> measureViews,
         string sheetName,
         string sheetDescription,
@@ -104,7 +104,6 @@ public class PdfGenerator
             new XPoint(pageWidth - margin - textSize.Width, pageHeight - margin),
             XStringFormats.TopLeft);
 
-        // --- Save PDF ---
         try
         {
             var fileName = $"{sheetName}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
@@ -120,12 +119,10 @@ public class PdfGenerator
 
     private async Task<Bitmap> RenderControlToBitmap(Control control, Size logicalSize)
     {
-        // First measure and arrange the control
         control.Measure(logicalSize);
         control.Arrange(new Rect(logicalSize));
         control.UpdateLayout();
 
-        // Convert logical size (DIPs) to pixel size
         var scaling = control.GetVisualRoot()?.RenderScaling ?? 1.0;
         var pixelSize = new PixelSize(
             (int)(logicalSize.Width * scaling),

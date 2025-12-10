@@ -22,8 +22,6 @@ namespace DrumBuddy.Views;
 
 public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
-    //TODO: make auth view navigatable instead of switching visibility in MainWindow
-    //TODO: add logout functionality
     private MidiService _midiService;
     private UserService _userService;
     private bool isClosingConfirmed;
@@ -42,7 +40,6 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             {
                 ViewModel!.SignOutCommand.Execute().Subscribe();
 
-                // Close the flyout if open
                 if (userProfileButton.Flyout?.IsOpen == true)
                     userProfileButton.Flyout.Hide();
             };
@@ -51,10 +48,6 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.AuthContentPlaceholder.IsVisible, b => !b)
                 .DisposeWith(d);
-            //
-            // this.OneWayBind(ViewModel, vm => vm.IsAuthenticated, v => v.AuthContent.IsVisible, 
-            //         isAuth => !isAuth)
-            //     .DisposeWith(d);
             this.WhenAnyValue(v => v.ViewModel!.IsAuthenticated)
                 .DistinctUntilChanged()
                 .Subscribe(isAuth =>
@@ -75,34 +68,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                     }
                 })
                 .DisposeWith(d);
-
-            // if (this.FindControl<Grid>("AuthContentPlaceholder") is { } authContent)
-            // {
-            //     authContent.Children.Add(new AuthView
-            //     {
-            //         ViewModel = new AuthViewModel()
-            //     });
-            //     this.WhenAnyValue(v => v.ViewModel!.IsAuthenticated)
-            //         .Do(IsAuthenticated =>
-            //         {
-            //             if (IsAuthenticated)
-            //             {
-            //                 TryConnectToMidi();
-            //                 authContent.Children.Clear();
-            //             }
-            //             else
-            //             {
-            //                 authContent.Children.Clear();
-            //                 authContent.Children.Add(new AuthView
-            //                 {
-            //                     ViewModel = new AuthViewModel()
-            //                 });
-            //             }
-            //         })
-            //         .Subscribe()
-            //         .DisposeWith(d);
-            // }
-
+            
             this.OneWayBind(ViewModel, vm => vm.PaneItems, v => v.PaneListBox.ItemsSource)
                 .DisposeWith(d);
 
@@ -123,11 +89,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             this.OneWayBind(ViewModel, vm => vm.CanRetry, v => v.RetryButton.IsEnabled,
                     string.IsNullOrEmpty)
                 .DisposeWith(d);
-            // this.Bind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessMessage.Text)
-            //     .DisposeWith(d);
-            // this.OneWayBind(ViewModel, vm => vm.SuccessMessage, v => v.SuccessBorder.IsVisible,
-            //         str => !string.IsNullOrEmpty(str))
-            //     .DisposeWith(d);
+       
             this.BindCommand(ViewModel, vm => vm.TryConnectCommand, v => v._retryButton)
                 .DisposeWith(d);
             this.BindInteraction(ViewModel, vm => vm.ChooseMidiDevice, HandleMidiDeviceChoosing).DisposeWith(d);
@@ -160,7 +122,6 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 .Select(ep => ep.EventArgs as KeyEventArgs)
                 .Select(e => KeyboardBeatProvider.GetDrumValueForKey(e.Key));
             ViewModel.SetTopLevelWindow(this);
-            // Only try connect if already authenticated
             if (ViewModel.IsAuthenticated) TryConnectToMidi();
         });
         InitializeComponent();

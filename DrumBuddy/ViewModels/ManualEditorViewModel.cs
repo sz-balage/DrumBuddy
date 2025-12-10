@@ -25,8 +25,8 @@ namespace DrumBuddy.ViewModels;
 public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 {
     //TODO: make auto save checkbox
-    public const int Columns = 16; // one measure, 16 sixteenth steps
-    public const int MaxNotesPerColumn = 4; // maximum notes allowed per column (NoteGroup)
+    public const int Columns = 16; //one measure, 16 sixteenth steps
+    public const int MaxNotesPerColumn = 4; 
     private readonly SourceList<MeasureViewModel> _measureSource = new();
     private readonly List<bool[,]> _measureSteps;
     private readonly NotificationService _notificationService;
@@ -95,10 +95,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         _bpm = 100;
         CurrentSheet = BuildSheet();
         BpmDecimal = CurrentSheet.Tempo.Value;
-        // Build matrix VM from measure (initial)
         BuildMatrixRowsFromCurrentMeasure();
 
-        // When selected measure changes, rebuild matrix rows to reflect current measure
         this.WhenAnyValue(vm => vm.CurrentMeasureIndex)
             .Subscribe(_ => BuildMatrixRowsFromCurrentMeasure());
         DrawSheet();
@@ -200,10 +198,8 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
     {
         MatrixRows.Clear();
 
-        // ensure valid current measure
         if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count)
         {
-            // create empty rows
             for (var r = 0; r < Drums.Length; r++)
             {
                 var rowVm = new RowViewModel(Drums[r]);
@@ -230,7 +226,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
                 var cellVm = new StepCellViewModel(r, c, ToggleCellInternal)
                 {
                     IsChecked = matrix[r, c],
-                    IsEnabled = true // will be corrected in SyncColumnEnabledStates
+                    IsEnabled = true 
                 };
                 rowVm.Cells.Add(cellVm);
             }
@@ -238,7 +234,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
             MatrixRows.Add(rowVm);
         }
 
-        // ensure enable/disable state is correct per column
         for (var c = 0; c < Columns; c++)
             UpdateColumnEnabledState(c);
     }
@@ -283,7 +278,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
 
         var limitReached = count >= MaxNotesPerColumn;
 
-        // if limit reached, disable unchecked cells
+        //if limit reached, disable unchecked cells
         for (var r = 0; r < Drums.Length; r++)
         {
             var rowVm = MatrixRows.ElementAtOrDefault(r);
@@ -347,78 +342,6 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         BuildMatrixRowsFromCurrentMeasure();
         DrawSheet();
         IsSaved = false;
-    }
-
-    public void ToggleStep(int row, int col)
-    {
-        IsSaved = false;
-        if (row < 0 || row >= Drums.Length) return;
-        if (col < 0 || col >= Columns) return;
-        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return;
-
-        var matrix = _measureSteps[CurrentMeasureIndex];
-        var current = matrix[row, col];
-
-        var hatDrums = new[] { Drum.HiHat, Drum.HiHat_Open, Drum.HiHat_Pedal };
-        var hatIndices = hatDrums
-            .Select(d => Array.IndexOf(Drums, d))
-            .Where(i => i >= 0)
-            .ToArray();
-        var isHatRow = hatIndices.Contains(row);
-
-        if (!current)
-        {
-            var currentCount = 0;
-            for (var r = 0; r < Drums.Length; r++)
-                if (matrix[r, col])
-                    currentCount++;
-
-            if (isHatRow)
-            {
-                var otherHatsChecked = hatIndices.Count(i => i != row && matrix[i, col]);
-                var prospective = currentCount - otherHatsChecked + 1;
-                if (prospective > MaxNotesPerColumn) return;
-
-                foreach (var i in hatIndices)
-                    if (i != row)
-                        matrix[i, col] = false;
-
-                matrix[row, col] = true;
-            }
-            else
-            {
-                if (currentCount >= MaxNotesPerColumn) return;
-                matrix[row, col] = true;
-            }
-        }
-        else
-        {
-            matrix[row, col] = false;
-        }
-
-        CurrentSheet = BuildSheet();
-        RedrawMeasureAt();
-    }
-
-
-    public int CountCheckedInColumn(int col)
-    {
-        if (col < 0 || col >= Columns) return 0;
-        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return 0;
-        var count = 0;
-        var matrix = _measureSteps[CurrentMeasureIndex];
-        for (var r = 0; r < Drums.Length; r++)
-            if (matrix[r, col])
-                count++;
-        return count;
-    }
-
-    public bool GetStep(int row, int col)
-    {
-        if (row < 0 || row >= Drums.Length) return false;
-        if (col < 0 || col >= Columns) return false;
-        if (CurrentMeasureIndex < 0 || CurrentMeasureIndex >= _measureSteps.Count) return false;
-        return _measureSteps[CurrentMeasureIndex][row, col];
     }
 
     [ReactiveCommand]
@@ -628,7 +551,7 @@ public partial class ManualEditorViewModel : ReactiveObject, IRoutableViewModel
         CurrentSheet = BuildSheet();
         DrawSheet();
 
-        CurrentMeasureIndex = CurrentMeasureIndex + 1;
+        CurrentMeasureIndex += 1;
         IsSaved = false;
 
         BuildMatrixRowsFromCurrentMeasure();

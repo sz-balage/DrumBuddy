@@ -4,10 +4,6 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace DrumBuddy.Data;
 
-/// <summary>
-/// Design-time factory for CLIENT (SQLite) migrations
-/// Used by: dotnet ef migrations add ... --project DrumBuddy.IO
-/// </summary>
 public class ClientDbContextFactory : IDesignTimeDbContextFactory<DrumBuddyDbContext>
 {
     public DrumBuddyDbContext CreateDbContext(string[] args)

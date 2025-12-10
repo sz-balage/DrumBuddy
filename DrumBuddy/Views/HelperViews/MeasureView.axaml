@@ -60,14 +60,6 @@
                     </ItemsControl>
                 </Border>
                 <Line x:Name="Pointer" Stroke="Red" StrokeThickness="2" />
-                <!-- <Ellipse x:Name="EditIndicator" -->
-                <!--          Width="20" -->
-                <!--          Height="20" -->
-                <!--          Fill="{StaticResource Accent}" -->
-                <!--          HorizontalAlignment="Left" -->
-                <!--          VerticalAlignment="Top" -->
-                <!--          Margin="10,10,0,0" -->
-                <!--          IsVisible="False" /> -->
             </Grid>
         </Border>
     </Viewbox>

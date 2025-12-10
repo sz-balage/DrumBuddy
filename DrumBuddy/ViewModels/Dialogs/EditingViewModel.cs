@@ -166,12 +166,11 @@ public partial class EditingViewModel : ReactiveObject
 
     private void InitBeatSub()
     {
-        // Get the starting measure index
         var startMeasureIdx = CurrentMeasure != null ? Measures.IndexOf(CurrentMeasure) : 0;
 
         // drum sub
         var measureIdx =
-            startMeasureIdx - 1; // Start one measure before so the first increment puts us at the right position
+            startMeasureIdx - 1; //start one measure before so the first increment puts us at the right position
         var rythmicGroupIndex = -1;
         var delay = 5 * _bpm.QuarterNoteDuration() - _bpm.SixteenthNoteDuration() / 2.0
                     + _bpm

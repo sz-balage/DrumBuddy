@@ -60,15 +60,8 @@ public class ConfigurationRepository
         }
         catch
         {
-            // Return default on error
             return (new AppConfiguration(), DateTime.MinValue);
         }
-    }
-
-    // Backward compatible method names
-    public void UpdateConfig(AppConfiguration config, string? userId, DateTime updatedAt)
-    {
-        UpdateConfigAsync(config, userId,updatedAt).Wait();
     }
 
     public (AppConfiguration Config, DateTime UpdatedAt) LoadConfig(string? userId)

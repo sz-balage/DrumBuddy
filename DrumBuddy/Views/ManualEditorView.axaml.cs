@@ -178,7 +178,6 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         if (ViewModel is null)
             return;
 
-        // Remove the currently selected measure
         ViewModel.DeleteSelectedMeasure();
     }
 
@@ -187,7 +186,6 @@ public partial class ManualEditorView : ReactiveUserControl<ManualEditorViewMode
         if (ViewModel is null)
             return;
 
-        // Remove the currently selected measure
         ViewModel.DuplicateSelectedMeasure();
     }
 }

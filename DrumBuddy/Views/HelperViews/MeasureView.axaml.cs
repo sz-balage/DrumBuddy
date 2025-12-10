@@ -74,7 +74,6 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
     private Line _pointer => this.FindControl<Line>("Pointer");
 
     private Grid _editIndicator => this.FindControl<Grid>("EditIndicator");
-    // private Line _editIndicator2 => this.FindControl<Line>("EditIndicator2");
 
     private void DrawEvaluationBoxes()
     {
@@ -82,7 +81,7 @@ public partial class MeasureView : ReactiveUserControl<MeasureViewModel>
 
         _evalBoxesCanvas.Children.Clear();
 
-        double measureWidth = 1200; // internal logical width before scaling
+        double measureWidth = 1200; 
         var groupWidth = measureWidth / 4.0;
         double boxTop = 90;
         double boxHeight = 80;

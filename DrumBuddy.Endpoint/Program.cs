@@ -28,7 +28,6 @@ builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 
-// Configure middleware and map endpoints
 app.UseApplicationMiddleware();
 app.MapApplicationEndpoints();
 
