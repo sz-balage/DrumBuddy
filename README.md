@@ -137,6 +137,7 @@ Due to the lack of a paid Apple Developer certificate, DrumBuddy must be manuall
 
 > 📝 On first launch, DrumBuddy will request permission to access your **Documents** folder for exporting and storing user data.
 
+If you wish to run the whole stack, you can use the docker-compose-dev.yml file for the database.
 ## Usage
 After installation:
 - Create an account, or continue in offline mode (as a guest)
