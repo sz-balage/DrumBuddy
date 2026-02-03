@@ -11,7 +11,7 @@
     <strong>Bachelor's Thesis Project by Szabó Balázs</strong>
     <br />
     <br />
-    <a href="https://docs.drumbuddy.hu/">Explore the docs »</a>
+  <!-- <a href="https://docs.drumbuddy.hu/">Explore the docs »</a> -->
     <br />
     <a href="https://github.com/baluka1118/DrumBuddy/issues/new?labels=bug&template=bug_report.md">Report Bug</a>
     &middot;
@@ -47,7 +47,7 @@
 
 
 ---
-
+⚠️ The server is currently down, so documentation and account management is not available. The app is still **fully functional** in guest mode.
 ## About The Project
 
 **DrumBuddy** is a cross-platform desktop application built for drummers who want to record, analyze, and improve their rhythm.  
@@ -80,7 +80,6 @@ DrumBuddy is 100% C#, leveraging modern cross-platform and reactive technologies
 
 ### Installation
 ---
-⚠️ DUE TO A BUG, SOMETIME RELEASES ARE NOT PRESENT DIRECTLY ON THE LINKED PAGE, IF SO, SWITCH TO THE 'TAGS' TAB, AND SELECT, AND DOWNLOAD THE LATEST RELEASE FROM THERE
 #### 🪟 Windows
 
 1. Download the latest **`DrumBuddy-Setup-x.y.z.exe`** from  
@@ -146,8 +145,8 @@ After installation:
 - Create new sheets either by recording your beats, or creating them manually
 - Sync your work to the cloud, so you can access it from any device
 - Compare sheets to see the difference
+<!-- For more information, <a href="https://docs.drumbuddy.hu/">check out the docs.</a> -->
 
-For more information, <a href="https://docs.drumbuddy.hu/">check out the docs.</a>
 ## Roadmap
 - [x] MIDI, and MusicXML export/import
 - [x] User management, and cloud sync
