@@ -11,7 +11,7 @@
     <strong>Bachelor's Thesis Project by Szabó Balázs</strong>
     <br />
     <br />
-  <!-- <a href="https://docs.drumbuddy.hu/">Explore the docs »</a> -->
+    <a href="https://docs.drumbuddy.hu/">Explore the docs »</a>
     <br />
     <a href="https://github.com/baluka1118/DrumBuddy/issues/new?labels=bug&template=bug_report.md">Report Bug</a>
     &middot;
@@ -47,7 +47,6 @@
 
 
 ---
-⚠️ The server is currently down, so documentation and account management is not available. The app is still **fully functional** in guest mode.
 ## About The Project
 
 **DrumBuddy** is a cross-platform desktop application built for drummers who want to record, analyze, and improve their rhythm.  
